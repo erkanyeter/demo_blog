@@ -1,0 +1,45 @@
+{
+  "name": "hmvc",
+  "description": "Hierarcial model view controller library.",
+  "version": "0.0.1",
+  "releases": ["0.0.1"],
+  "author": {
+    "name": "Ersin Güvenç",
+    "email": "obulloframework@gmail.com",
+    "url": "https://github.com/obullo"
+  },
+  "component" : "library",
+  "dependencies": {
+    "log":"*",
+    "uri": "*",
+    "router": "*",
+    "config": "*",
+    "controller": "*"
+  },
+  "keywords": [
+    "hmvc",
+    "request",
+    "curl"
+  ],
+  "homepage": "https://github.com/obullo/hmvc",
+  "repo": {
+    "type": "git",
+    "url": "git://github.com/obullo/hmvc.git",
+    "archive" : "zip",
+    "archive_url": "https://github.com/obullo/hmvc/archive/master.zip"
+  },
+  "requires": {
+    "php": ">= 5.4.0",
+    "extensions": ["none"]
+  },
+  "bugs": {
+    "url": "https://github.com/obullo/hmvc/issues",
+    "email": "obulloframework@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
+}

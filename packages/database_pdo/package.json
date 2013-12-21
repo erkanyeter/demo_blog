@@ -1,0 +1,43 @@
+{
+  "name": "database_pdo",
+  "description": "Database pdo package",
+  "version": "0.0.1",
+  "releases": ["0.0.1"],
+  "author": {
+    "name": "Obullo Team",
+    "email": "obulloframework@gmail.com",
+    "url": "https://github.com/obullo"
+  },
+  "component" : "library",
+  "dependencies": {
+    "log":"*",
+    "db": "*"
+  },
+  "keywords": [
+    "database",
+    "pdo",
+    "db",
+    "php data object"
+  ],
+  "homepage": "https://github.com/obullo/database_pdo",
+  "repo": {
+    "type": "git",
+    "url": "git://github.com/obullo/database_pdo.git",
+    "archive" : "zip",
+    "archive_url": "https://github.com/obullo/database_pdo/archive/master.zip"
+  },
+  "requires": {
+    "php": ">= 5.4.0",
+    "extensions": ["pdo"]
+  },
+  "bugs": {
+    "url": "https://github.com/obullo/database_pdo/issues",
+    "email": "obulloframework@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
+}

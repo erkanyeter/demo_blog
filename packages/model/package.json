@@ -1,0 +1,42 @@
+{
+  "name": "model",
+  "description": "Create models on the fly and manage the database tables.",
+  "version": "0.0.1",
+  "releases": ["0.0.1"],
+  "author": {
+    "name": "Obullo Team",
+    "email": "obulloframework@gmail.com",
+    "url": "https://github.com/obullo"
+  },
+  "component" : "library",
+  "dependencies": {
+    "log":"*",
+    "db":"*",
+    "database_pdo":"*",
+    "odm":"*"
+  },
+  "keywords": [
+    "model"
+  ],
+  "homepage": "https://github.com/obullo/model",
+  "repo": {
+    "type": "git",
+    "url": "https://github.com/obullo/model.git",
+    "archive" : "zip",
+    "archive_url": "https://github.com/obullo/model/archive/master.zip"
+  },
+  "requires": {
+    "php": ">= 5.4.0",
+    "extensions": ["none"]
+  },
+  "bugs": {
+    "url": "https://github.com/obullo/model/issues",
+    "email": "obulloframework@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
+}

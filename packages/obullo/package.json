@@ -1,0 +1,50 @@
+{
+  "name": "obullo",
+  "description": "Obullo Core",
+  "version": "2.0",
+  "releases": ["2.0"],
+  "author": {
+    "name": "Obullo Team",
+    "email": "obulloframework@gmail.com",
+    "url": "https://github.com/obullo"
+  },
+  "component" : "library",
+  "dependencies": {
+    "log": "*",
+    "error": "*",
+    "exceptions": "*",
+    "bench": "*",
+    "i":"*",
+    "config": "*",
+    "uri": "*",
+    "router": "*",
+    "locale": "*",
+    "controller": "*"
+  },
+  "keywords": [
+    "obullo",
+    "core",
+    "common"
+  ],
+  "homepage": "https://github.com/obullo/obullo",
+  "repo": {
+    "type": "git",
+    "url": "git://github.com/obullo/obullo.git",
+    "archive" : "zip",
+    "archive_url": "https://github.com/obullo/obullo/archive/master.zip"
+  },
+  "requires": {
+    "php": ">= 5.4.0",
+    "extensions": ["none"]
+  },
+  "bugs": {
+    "url": "https://github.com/obullo/obullo/issues",
+    "email": "obulloframework@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
+}
