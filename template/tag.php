@@ -32,7 +32,7 @@
 				<div id="blockbottom"> </div>
 			</div>
 			
-			<div id="sidebar">
+						<div id="sidebar">
 
 				 <div id="sidepaneluser">
 				 	
@@ -45,11 +45,6 @@
 				 	<a href="create.php">Create New Post</a><br>
 				 	<a href="manage.php">Manage Posts</a><br>
 				 	<a href="approve.php">Approve Comments </a><span class="approve_comments">(3)</span><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
 				 	<a href="#">Logout</a><br>
 				 	</div>
 				 </div>
@@ -65,39 +60,11 @@
 				 	<a href="tag.php">Graphics</a>
 				 	<a href="tag.php">Blog</a>
 				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a><a href="tag.php">Graphics</a>
-				 	<a href="tag.php">Blog</a>
-				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a><a href="tag.php">Graphics</a>
-				 	<a href="tag.php">Blog</a>
-				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a><a href="tag.php">Graphics</a>
-				 	<a href="tag.php">Blog</a>
-				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a>
-				 	</div>
-				 </div>
-
-				<div id="sidepaneluser">
-				 	
-				 	<div class="sidebarheader">
-				 		<div id="block"></div>
-				 		<div id="tags">Recent Comments</div>
-				 	</div>
-
-				 	<div class="tags_a">
-				 	<a href="#">woolrich store</a> on
-				 	<a href="#">Title</a>
-				 	<a href="#">rivenditori woolrich</a> on
-				 	<a href="#">Title</a> Tester on
-				 	<a href="#"> A Test Post</a>
 				 	</div>
 				 </div>
 			</div>
-			
-			<?php 
-				
 
+			<?php 
 				include 'footer.php';
 			 ?>
 		</div>

@@ -29,27 +29,11 @@
 						</div>
 				</div>
 				<div id="post">
-					<div id="title"><h2>Test html Code</h2></div>
-					<div id="author"><small>posted by demo on December 16,2013</small></div>
-					<div id="postcontent">
-					<h1>TEST Title</h1>
-					<ul>
-						<li>Coffea</li>
-						<li>Tea</li>
-						<li>Milk</li>
-					</ul>
-					</div>
-						<div id="postnav">
-							<b>Tags:</b><br>
-							<a href="#">Permalink</a> | <a href="#">Comments (2)</a> | Last Updated On December 15,2013
-						</div>
-				</div>
-				<div id="post">
 					<div id="title"><h2>Welcome!</h2></div>
 					<div id="author"><small>posted by demo on December 16,2013</small></div>
 					<div id="postcontent">
-					This blog system is developed using Yii. It is meant to demonstrate how to use Yii to build a complete real-world application.
-					Complete source code may be found in the Yii releases.
+					This blog system is developed using Obullo. It is meant to demonstrate how to use Obullo to build a complete real-world application.
+					Complete source code may be found in the Obullo releases.
 					Feel free to try this system by writing new posts and leaving comments.
 					</div>
 						<div id="postnav">
@@ -89,11 +73,6 @@
 				 	<a href="manage.php">Manage Posts</a><br>
 				 	<a href="approve.php">Approve Comments </a><span class="approve_comments">(3)</span><br>
 				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
-				 	<a href="#">Logout</a><br>
 				 	</div>
 				 </div>
 
@@ -108,32 +87,6 @@
 				 	<a href="tag.php">Graphics</a>
 				 	<a href="tag.php">Blog</a>
 				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a><a href="tag.php">Graphics</a>
-				 	<a href="tag.php">Blog</a>
-				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a><a href="tag.php">Graphics</a>
-				 	<a href="tag.php">Blog</a>
-				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a><a href="tag.php">Graphics</a>
-				 	<a href="tag.php">Blog</a>
-				 	<a href="tag.php">Test</a>
-				 	<a href="tag.php">Obullo</a>
-				 	</div>
-				 </div>
-
-				<div id="sidepaneluser">
-				 	
-				 	<div class="sidebarheader">
-				 		<div id="block"></div>
-				 		<div id="tags">Recent Comments</div>
-				 	</div>
-
-				 	<div class="tags_a">
-				 	<a href="#">woolrich store</a> on
-				 	<a href="#">Title</a>
-				 	<a href="#">rivenditori woolrich</a> on
-				 	<a href="#">Title</a> Tester on
-				 	<a href="#"> A Test Post</a>
 				 	</div>
 				 </div>
 			</div>
