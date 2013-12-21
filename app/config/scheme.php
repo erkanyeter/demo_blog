@@ -27,9 +27,10 @@
 
 $scheme = array(
 
-	'default' => function($file)
+	'default' => function()
 	{
-	    $this->set('content', $file);
+		$this->set('header', getInstance()->tpl('header',false));
+		$this->set('sidebar', getInstance()->tpl('sidebar',false));
 	    $this->set('footer', getInstance()->tpl('footer',false));
 	},
 );

@@ -1,11 +1,32 @@
+-- phpMyAdmin SQL Dump
+-- version 4.0.6deb1
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Dec 21, 2013 at 01:17 PM
+-- Server version: 5.5.34-0ubuntu0.13.10.1
+-- PHP Version: 5.5.3-1ubuntu2.1
 
-USE `demo_blog`;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
-/*Table structure for table `comments` */
 
-DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
-CREATE TABLE `comments` (
+--
+-- Database: `demo_blog`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `comments`
+--
+
+CREATE TABLE IF NOT EXISTS `comments` (
   `comment_id` int(11) NOT NULL AUTO_INCREMENT,
   `comment_post_id` int(11) NOT NULL,
   `comment_name` varchar(50) NOT NULL,
@@ -16,17 +37,16 @@ CREATE TABLE `comments` (
   `comment_modification_date` datetime DEFAULT NULL,
   `comment_status` enum('0','1') DEFAULT '0',
   PRIMARY KEY (`comment_id`),
-  KEY `comment_post_id` (`comment_post_id`),
-  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`comment_post_id`) REFERENCES `posts` (`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `comment_post_id` (`comment_post_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-/*Data for the table `comments` */
+-- --------------------------------------------------------
 
-/*Table structure for table `contacts` */
+--
+-- Table structure for table `contacts`
+--
 
-DROP TABLE IF EXISTS `contacts`;
-
-CREATE TABLE `contacts` (
+CREATE TABLE IF NOT EXISTS `contacts` (
   `contact_id` int(11) NOT NULL AUTO_INCREMENT,
   `contact_name` varchar(50) DEFAULT NULL,
   `contact_email` varchar(50) DEFAULT NULL,
@@ -34,15 +54,15 @@ CREATE TABLE `contacts` (
   `contact_body` text,
   `contact_creation_date` datetime DEFAULT NULL,
   PRIMARY KEY (`contact_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-/*Data for the table `contacts` */
+-- --------------------------------------------------------
 
-/*Table structure for table `posts` */
+--
+-- Table structure for table `posts`
+--
 
-DROP TABLE IF EXISTS `posts`;
-
-CREATE TABLE `posts` (
+CREATE TABLE IF NOT EXISTS `posts` (
   `post_id` int(11) NOT NULL AUTO_INCREMENT,
   `post_user_id` int(11) DEFAULT NULL,
   `post_title` varchar(50) NOT NULL,
@@ -52,17 +72,16 @@ CREATE TABLE `posts` (
   `post_creation_date` datetime DEFAULT NULL,
   `post_modification_date` datetime DEFAULT NULL,
   PRIMARY KEY (`post_id`),
-  KEY `post_user_id` (`post_user_id`),
-  CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`post_user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `post_user_id` (`post_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-/*Data for the table `posts` */
+-- --------------------------------------------------------
 
-/*Table structure for table `users` */
+--
+-- Table structure for table `users`
+--
 
-DROP TABLE IF EXISTS `users`;
-
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varbinary(50) DEFAULT NULL,
   `user_email` varchar(50) NOT NULL,
@@ -70,11 +89,24 @@ CREATE TABLE `users` (
   `user_creation_date` datetime DEFAULT NULL,
   `user_modification_date` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-/*Data for the table `users` */
+--
+-- Constraints for dumped tables
+--
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+--
+-- Constraints for table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`comment_post_id`) REFERENCES `posts` (`post_id`);
+
+--
+-- Constraints for table `posts`
+--
+ALTER TABLE `posts`
+  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`post_user_id`) REFERENCES `users` (`user_id`);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

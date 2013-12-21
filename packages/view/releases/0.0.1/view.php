@@ -140,14 +140,16 @@ Class View {
      * @param  string $scheme scheme name
      * @return void
      */
-    public function getScheme($file, $schemeName = 'default')
+    public function getScheme($file = '', $schemeName = 'default')
     {
         $args = func_get_args();
+
+        $fileData = (empty($file)) ? array() : array($file);
 
         $schemes = getConfig('scheme');
         if(isset($schemes[$schemeName]) AND is_callable($schemes[$schemeName]))
         {
-            call_user_func_array(Closure::bind($schemes[$schemeName], $this, get_class()), array($file));
+            call_user_func_array(Closure::bind($schemes[$schemeName], $this, get_class()), $fileData);
         }
 
         return $this;

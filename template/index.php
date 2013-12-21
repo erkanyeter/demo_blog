@@ -4,6 +4,7 @@
 		<link rel="stylesheet" href="css/style.css">
 		<meta charset="utf-8">
 	</head>
+	
 	<body>
 		<div id="header"> 
 			<h1 class="obullo">Blog Demo</h1>
@@ -18,7 +19,8 @@
 		</div>
 		<div id="clear"> </div>
 		<div id="containerbox">
-					<div id="content">
+			 
+			 <div id="content">
 				<div id="post">
 					<div id="title"><h2><a href="post.php">Title</a></h2></div>
 					<div id="author"><small>posted by demo on December 16,2013</small></div>
@@ -28,6 +30,7 @@
 							<a href="post.php">Permalink</a> | <a href="post.php#commentcontainer">Comments (2)</a> | Last Updated On December 15,2013
 						</div>
 				</div>
+
 				<div id="post">
 					<div id="title"><h2>Welcome!</h2></div>
 					<div id="author"><small>posted by demo on December 16,2013</small></div>
@@ -41,6 +44,7 @@
 							<a href="#">Permalink</a> | <a href="#">Comments (2)</a> | Last Updated On December 15,2013
 						</div>
 				</div>
+
 				<div id="post">
 					<div id="title"><h2>A Test Post</h2></div>
 					<div id="author"><small>posted by demo on December 16,2013</small></div>
@@ -59,10 +63,9 @@
 				
 				<div id="blockbottom"> </div>
 			</div>
-			<div id="sidebar">
 
+			<div id="sidebar">
 				 <div id="sidepaneluser">
-				 	
 				 	<div class="sidebarheader">
 				 		<div id="block"></div>
 				 		<div id="tags">Demo</div>
@@ -92,10 +95,8 @@
 			</div>
 			
 			<?php 
-				
-
 				include 'footer.php';
-			 ?>
+			?>
 		</div>
 	</body>
 </html>
