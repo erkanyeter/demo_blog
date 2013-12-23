@@ -16,6 +16,7 @@ Class Schema {
 	public $driver;		// Schema driver object
     public $debug;      // debug on / off
     public $debugOutput;  // debug output string
+    public $config;     // schema config
 
 	/**
 	 * Constructor
@@ -29,6 +30,7 @@ Class Schema {
         $this->dbObject    = $dbObject;
         $this->debug       = false;
         $this->debugOutput = '';
+        $this->config      = getConfig('schema');
 
 		$schemaDriver = $this->getDriverName();
 
@@ -187,9 +189,19 @@ Class Schema {
      */
     public function writeToFile($fileContent)
     {
-        $currentSchema = getSchema($this->tablename);
+        if(file_exists($this->getPath()))
+        {
+            $currentSchema = getSchema($this->tablename);
+        }
 
-        $colPrefix = "'colprefix' => '".$this->getModelName()."_'";     // Add coll prefix automatically.
+        $prefix = $this->getModelName().'_';
+
+        if($this->config['use_column_prefix']) // replace the prefix if its enabled globally
+        {
+            $fileContent = str_replace("'$prefix", "'", $fileContent);
+        }
+
+        $colPrefix = "'colprefix' => '".$prefix."'";     // Add coll prefix automatically.
 
         if(isset($currentSchema['*']['colprefix']) AND empty($currentSchema['*']['colprefix'])) // if not exists colprefix in current schema do not add.
         {

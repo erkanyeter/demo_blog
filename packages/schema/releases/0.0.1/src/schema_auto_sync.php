@@ -27,9 +27,17 @@ Abstract Class Schema_Auto_Sync {
 	public function __construct($schemaDBContent, \Schema $schemaObject)
 	{
 	    $fileSchema = getSchema(strtolower($schemaObject->getTableName())); // Get current schema
-	    unset($fileSchema['*']); 						 // Get only fields no settings
+	    						 
+	    $colprefix = $fileSchema['*']['colprefix'];
+		unset($fileSchema['*']);  // Get only fields no settings
 
-	    $this->currentFileSchema = $fileSchema;
+		$newFileSchema = array();
+		foreach($fileSchema as $k => $v)
+		{
+			$newFileSchema[$colprefix.$k] = $v;
+		}
+
+	    $this->currentFileSchema = $fileSchema; // Backup Current Schema
 
 		eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
 		unset($databaseSchema['*']);
@@ -39,7 +47,7 @@ Abstract Class Schema_Auto_Sync {
 		$this->schemaName   = strtolower($this->tablename);  // set schema name
 
 		$this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema);  // Render schema, fetch just types.
-		$this->fileSchema   = $this->_reformatSchemaTypes($fileSchema);
+		$this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema);  // Get just types 
 		$this->db           = $schemaObject->dbObject;     // Database Object
 		$this->schemaObject = $schemaObject; // Schema Object
 		$this->debug        = false;

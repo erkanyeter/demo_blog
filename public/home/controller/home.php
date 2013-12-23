@@ -15,12 +15,8 @@ $c->func('index', function() use($c){
     $c->view('home', function() use($c) {
         
         $this->set('title', 'Welcome to home');
-
-        // $this->set('header', $c->tpl('header', false));
-        // $this->set('sidebar', $c->tpl('sidebar', false));
-        // $this->set('footer', $c->tpl('footer', false));
         $this->getScheme();
-
+        
     });
     
 });

@@ -24,7 +24,7 @@ namespace Database_Pdo\Src\Crud {
     
         foreach ($key as $k => $v)
         {
-            $prefix = (count($crud->ar_having) == 0) ? '' : $type;
+            $prefix = (sizeof($crud->ar_having) == 0) ? '' : $type;
 
             if ($escape === true)
             {

@@ -17,7 +17,7 @@ $auth = array(
     'username_col' => 'user_email',   // The name of the table field that contains the username.
     'password_col' => 'user_password', // The name of the table field that contains the password.
     'login_url'   => '/login',        // Redirect Url for Unsuccessfull logins
-    'dashboard_url' => '/dashboard',  // Redirect Url Successfull logins
+    'dashboard_url' => '/home',  // Redirect Url Successfull logins
 
     // Security Settings
     'password_salt_str'   => '',        // Password salt string for more strong passwords. * Leave it blank if you don't want to use it.
@@ -32,7 +32,7 @@ $auth = array(
 $auth['query'] = function($username) use($auth)
 {
     $this->db->prep();
-    $this->db->select('user_id, user_firstname, user_lastname, user_email');
+    $this->db->select('user_id, user_username, user_password, user_email');
     $this->db->where($auth['username_col'], ':username');
     $this->db->get('users');
     $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),

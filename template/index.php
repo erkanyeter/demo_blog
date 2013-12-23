@@ -7,7 +7,7 @@
 	
 	<body>
 		<div id="header"> 
-			<h1 class="obullo">Blog Demo</h1>
+			<h1 class="logo">Blog Demo</h1>
 			<div id="menu">
 				<ul>
 					<a href="index.php"><li id="active">Home</li></a>

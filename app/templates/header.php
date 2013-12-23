@@ -1,12 +1,22 @@
+<?php
+	$menu = $this->config->item('menu');
+
+	$segment = $this->uri->segment(0);
+	$currentPage = (empty($segment)) ? 'home' : $segment;
+?>
 
 <div id="header"> 
-	<h1 class="obullo">Blog Demo</h1>
+	<h1 class="logo">Blog Demo</h1>
 	<div id="menu">
 		<ul>
-			<a href="index.php"><li id="active">Home</li></a>
-			<a href="about.php"><li>About</li></a>
-			<a href="contact.php"><li>Contact</li></a>
-			<a href="login.php"><li>Login</li></a>
+			<?php 
+			foreach ($menu as $key => $value)
+			{
+				$active = ($currentPage == $key) ? ' id="active" ' : '';
+
+				echo '<li>'.$this->url->anchor($key, $value, " $active ").'</li>';
+			}
+			?>
 		</ul>
 	</div>
 </div>

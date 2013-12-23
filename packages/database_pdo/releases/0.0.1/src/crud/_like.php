@@ -27,7 +27,7 @@ namespace Database_Pdo\Src\Crud {
         {
             $k = $crud->_protectIdentifiers($k);
             
-            $prefix = (count($crud->ar_like) == 0) ? '' : $type;
+            $prefix = (sizeof($crud->ar_like) == 0) ? '' : $type;
         
             // Obullo changes ..
             // if not bind value ... 

@@ -36,7 +36,7 @@ namespace Database_Pdo\Src\Crud {
             $dest = array();
             foreach ($where as $key => $val)
             {
-                $prefix = (count($dest) == 0) ? '' : ' AND ';
+                $prefix = (sizeof($dest) == 0) ? '' : ' AND ';
     
                 if ($val !== '')
                 {

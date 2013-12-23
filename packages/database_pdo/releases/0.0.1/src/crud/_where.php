@@ -32,7 +32,7 @@ namespace Database_Pdo\Src\Crud {
         
         foreach ($key as $k => $v)
         {   
-            $prefix = (count($crud->ar_where) == 0 AND count($crud->ar_cache_where) == 0) ? '' : $type;
+            $prefix = (sizeof($crud->ar_where) == 0 AND sizeof($crud->ar_cache_where) == 0) ? '' : $type;
             
             if (is_null($v) && ! $crud->_hasOperator($k))
             {

@@ -53,7 +53,7 @@ $config = array(
 											   // As a security measure you are STRONGLY encouraged to restrict URLs to as few characters as possible.
 											   // Leave blank to allow all characters -- but only if you are insane.
 	// Enable Query Strings
-	'enable_query_strings' => false, 	// By default Framework uses search-engine friendly segment based URLs: example.com/who/what/where/
+	'enable_query_strings' => true, 	// By default Framework uses search-engine friendly segment based URLs: example.com/who/what/where/
 	'directory_trigger' => 'd',			// You can optionally enable standard query string based URLs: example.com?who=me&what=something&where=here
 	'controller_trigger' => 'c',        // The other items let you set the query string "words" that will invoke your controllers and its functions:
 	'function_trigger' => 'm',			// example.com/index.php?d=directory&c=controller&m=function

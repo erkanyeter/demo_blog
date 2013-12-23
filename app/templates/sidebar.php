@@ -1,18 +1,25 @@
 
 <div id="sidebar">
+
+	<?php if($this->auth->hasIdentity()) { // check is auth ok. ?>
+
 	 <div id="sidepaneluser">
+
 	 	<div class="sidebarheader">
 	 		<div id="block"></div>
-	 		<div id="tags">Demo</div>
+	 		<div id="tags"><?php echo $this->auth->getIdentity('user_username') ?></div>
 	 	</div>
 
 	 	<div class="tags_panel">
-	 	<a href="create.php">Create New Post</a><br>
-	 	<a href="manage.php">Manage Posts</a><br>
-	 	<a href="approve.php">Approve Comments </a><span class="approve_comments">(3)</span><br>
-	 	<a href="#">Logout</a><br>
+		 	<?php echo $this->url->anchor('/post/create', 'Create New Post') ?> <br>
+		 	<?php echo $this->url->anchor('/post/manage', 'Manage Posts') ?> <br>
+		 	<?php echo $this->url->anchor('/post/approve', 'Approve Comments') ?> <span class="approve_comments">(3)</span> <br>
+		 	<?php echo $this->url->anchor('/logout', 'Logout') ?> <br>
 	 	</div>
+
 	 </div>
+
+	<?php } ?>
 
 	 <div id="sidepaneluser">
 	 	

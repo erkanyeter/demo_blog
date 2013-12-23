@@ -47,7 +47,7 @@ namespace Database_Pdo\Src\Crud {
             $table = $crud->_protectIdentifiers($table, true, null, false);
         }
         
-        if (count($crud->ar_where) == 0 AND count($crud->ar_wherein) == 0 AND count($crud->ar_like) == 0)
+        if (sizeof($crud->ar_where) == 0 AND sizeof($crud->ar_wherein) == 0 AND sizeof($crud->ar_like) == 0)
         {
             throw new \Exception("Deletes are not allowed unless they contain a 'where' or 'like' clause.");
             

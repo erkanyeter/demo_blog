@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<div id="header"> 
-			<h1 class="obullo">Blog Demo</h1>
+			<h1 class="logo">Blog Demo</h1>
 			<div id="menu">
 				<ul>
 					<a href="index.php"><li >Home</li></a>
@@ -18,11 +18,13 @@
 		</div>
 		<div id="clear"> </div>
 		<div id="containerbox">
+
 			<div id="content">
 				
 				<div id="navigation">
 					<a href="index.php" >Home</a> » <b> Create Post </b>
 				</div>
+				
 				<h1 class="h1">Create Post </h1>
 				<div id="createpost">
 					<i>Fields with * are required.</i>

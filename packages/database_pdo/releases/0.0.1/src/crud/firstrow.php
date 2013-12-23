@@ -15,7 +15,7 @@ namespace Database_Pdo\Src\Crud {
 
         $result = $crud->_stmtResult($type);
 
-        if (count($result) == 0)
+        if (sizeof($result) == 0)
         {
             return $result;
         }

@@ -28,6 +28,11 @@
 $autorun = array(
 	'controller' => function(){
 
+		new Auth;
+		new Sess;
+
+		$this->config->load('menu');
+
 	}
 );
 

@@ -36,7 +36,7 @@ namespace Database_Pdo\Src\Crud {
             $crud->ar_wherein[] = $crud->escape($value);
         }
 
-        $prefix = (count($crud->ar_where) == 0) ? '' : $type;
+        $prefix = (sizeof($crud->ar_where) == 0) ? '' : $type;
  
         $where_in = $prefix . $crud->_protectIdentifiers($key) . $not . " IN (" . implode(", ", $crud->ar_wherein) . ") ";
 

@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<div id="header"> 
-			<h1 class="obullo">Blog Demo</h1>
+			<h1 class="logo">Blog Demo</h1>
 			<div id="menu">
 				<ul>
 					<a href="index.php"><li>Home</li></a>
@@ -23,7 +23,7 @@
 					<a href="index.php" >Home</a> » <b> Login </b>
 				</div>
 				<h1>Login</h1>
-				<div id="contacttext">
+				<div id="container">
 					<p>Please fill out the following form with your login credentials: </p>
 					<i>Fields with * are required.</i>
 					<form action="index.php" method="post" id="contactform">

@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<div id="header"> 
-			<h1 class="obullo">Blog Demo</h1>
+			<h1 class="logo">Blog Demo</h1>
 			<div id="menu">
 				<ul>
 					<a href="index.php"><li >Home</li></a>
@@ -21,7 +21,7 @@
 			<div id="navigation">
 					<a href="index.php" >Home</a> » <b> Contact </b>
 				</div>
-				<div id="contacttext">
+				<div id="container">
 				<h1>Contact Us</h1>
 				
 					<p>If you have business inquiries or other questions, please fill out the following form to contact us. Thank you. </p>

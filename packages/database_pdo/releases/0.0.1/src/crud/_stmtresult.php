@@ -15,7 +15,7 @@ namespace Database_Pdo\Src\Crud {
     {
         $crud = getInstance()->{\Db::$var};
 
-        if(count($crud->stmt_result) > 0)
+        if(sizeof($crud->stmt_result) > 0)
         {
             return $crud->stmt_result;
         }

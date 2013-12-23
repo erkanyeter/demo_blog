@@ -23,7 +23,7 @@ namespace Database_Pdo\Src\Crud {
         foreach (get_object_vars($object) as $key => $val)
         {
             // There are some built in keys we need to ignore for this conversion
-            if ( ! is_object($val) && ! is_array($val) )
+            if ( ! is_object($val) AND ! is_array($val) )
             {
                 $array[$key] = $val;
             }
