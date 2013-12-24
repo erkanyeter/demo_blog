@@ -295,7 +295,6 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 								case '_auto_increment':
 									$dbCommands[1] = ' NOT NULL';
 									$dbCommands[2] = ' AUTO_INCREMENT';
-									echo $dbCommands[2];
 									break;
 
 								case '_key':
@@ -519,9 +518,9 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					{
 						$ruleString.= trim($this->buildSchemaField($k, $types),'|');
 					}
+					
 					$this->schemaObject->setDebugOutput($ruleString);
-					$this->schemaObject->writeToFile($ruleString);
-					$this->schemaObject->redirect();
+					$this->schemaObject->setOutput($ruleString);
 
 					break;
 				
@@ -557,8 +556,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						}
 
 						$this->schemaObject->setDebugOutput($ruleString);
-						$this->schemaObject->writeToFile($ruleString);
-						$this->schemaObject->redirect();
+						$this->schemaObject->setOutput($ruleString);
 					}
 
 					break;

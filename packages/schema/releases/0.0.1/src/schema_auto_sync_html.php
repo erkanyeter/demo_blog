@@ -14,6 +14,8 @@ Class Schema_Auto_Sync_Html {
 	{
 		$this->syncObject 	= &$syncObject;
 		$this->schemaObject = $schemaObject;
+
+		$this->form = new \Form;
 	}
 
 	// --------------------------------------------------------------------
@@ -30,7 +32,8 @@ Class Schema_Auto_Sync_Html {
 		$html.= '<body>';
 		$html.= '<h1>Synchronize the <i><u>'.strtolower($this->schemaObject->getTableName()).'</u></i> schema</h1>';
 
-		$html.= '<form action="'.$_SERVER['PHP_SELF'].'" method="POST" name="sync_table" id="sync_table" />';
+		$html.= $this->form->open('/'.getInstance()->uri->uriString(), array('method' => 'POST', 'name' => 'sync_table', 'id' => 'sync_table'));
+
 		$html.= '<table class="modelTable" width="%100">';
 		$html.= '<tr>';
 		$html.= '<th>Column Name</th>';
@@ -172,11 +175,14 @@ Class Schema_Auto_Sync_Html {
 		$html.= '</table>';
 
 		$html.= '<input type="hidden" name="lastSyncCommand" id="lastSyncCommand" value="" style="width:500px;">';
-		$html.= '<input type="hidden" name="lastSyncFunc" id="lastSyncFunc" value="" style="width:500px;">';
-		$html.= "\n</form>";
+		$html.= '<input type="hidden" name="lastSyncFunc" id="lastSyncFunc" value="" style="width:500px;">'."\n";
+
+		$html.= $this->form->close();
 		$html.= $this->schemaObject->writeScript();
+
 		$html.= '<p></p>';
 		$html.= '<p class="footer" style="font-size:11px;">* You see this screen because of <kbd>auto sync</kbd> feature enabled in <kbd>development</kbd> mode, you can configure it from your config file. Don\'t forget to close it in <kbd>production</kbd> mode.</p>';
+		
 		$html.= "\n</body>";
 		$html.= "\n</html>";
 

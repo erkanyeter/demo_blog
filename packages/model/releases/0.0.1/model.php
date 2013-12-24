@@ -69,17 +69,32 @@ Class Model {
 
                 if( ! file_exists($schemaPath)) // If schema file exists ?
                 {
-                    $schema->writeToFile($schema->read());  // Write content to schema file
+                    $schema->writeToFile($schema->read(), null);  // Write content to schema file
                 } 
                 else 
                 {
-                    if( ! $schema->tableExists())  // Check table exits.
+                    // Check any changes in the column prefix
+                    // If any changes exists in the colprefix remove the valid schema and create new one
+                    //---------------------------------------------
+
+                    $currentSchema = getSchema($tablename); // Get schema 
+
+                    if(isset($currentSchema['*']['colprefix']) AND $schema->getPrefix() != $currentSchema['*']['colprefix'])
                     {
-                        $schema->createTable(); // Create sql query & run
-                    }
-                    else 
+                        unlink($schema->getPath()); // remove current schema & then rebuild it with new prefix
+
+                        $schema->writeToFile($schema->read(), $currentSchema['*']['colprefix']); // recreate it with new prefix
+                    } 
+                    else  // Check database table
                     {
-                        $schema->syncTable();  // Display sync table
+                        if( ! $schema->tableExists())  // Check table exits.
+                        {
+                            $schema->createTable(); // Create sql query & run
+                        }
+                        else 
+                        {
+                            $schema->syncTable();  // Display sync table
+                        }
                     }
                 }
             

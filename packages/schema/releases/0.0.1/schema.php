@@ -14,9 +14,10 @@ Class Schema {
 	public $tablename;  // Schema tablename
 	public $modelName;	// Schema modelname
 	public $driver;		// Schema driver object
-    public $debug;      // debug on / off
-    public $debugOutput;  // debug output string
-    public $config;     // schema config
+    public $debug;      // Debug on / off
+    public $debugOutput;  // Debug output string
+    public $config;     // Schema config
+    public $output;     // Set schema content
 
 	/**
 	 * Constructor
@@ -175,6 +176,7 @@ Class Schema {
      */
     public function syncTable()
     {
+        echo __FUNCTION__.'<br>';
         $this->driver->sync();
     }
 
@@ -184,18 +186,28 @@ Class Schema {
      * Write schema content to file
      * 
      * @param  string $fileContent schema file content
-     * @param  string $modelName schema model name for prefix
+     * @param  string $prefix schema column prefix
      * @return void
      */
-    public function writeToFile($fileContent)
+    public function writeToFile($fileContent, $prefix = '')
     {
+        echo __FUNCTION__.'<br>';
+        /*
         if(file_exists($this->getPath()))
         {
-            $currentSchema = getSchema($this->tablename);
+
+            // Memory de varsa memory de oku
+            // değişkene ata ve memory yi sil.
+            // SCEHAMA DAN okuma
+
+            $currentSchema = getSchema($this->tablename);            
         }
+        */
 
-        $prefix = $this->getModelName().'_';
+        $currentSchema = getSchema($this->tablename);  
+        $prefix = (is_null($prefix)) ? $this->getModelName().'_' : $prefix;
 
+        // We need this for first time schema creation
         if($this->config['use_column_prefix']) // replace the prefix if its enabled globally
         {
             $fileContent = str_replace("'$prefix", "'", $fileContent);
@@ -216,10 +228,15 @@ Class Schema {
                 <pre>+ app\n+ <b>schemas</b>\n\t*.php\n+ public</pre>");
             }
 
+            /*
             if(file_exists($this->getPath())) // remove current file if it exists.
             {
                 unlink($this->getPath());
             }
+            */
+           
+            // unlink($this->getPath());
+            
 
             $content = str_replace(
                 array('{schemaName}','{filename}','{content}','{colprefix}'),
@@ -228,7 +245,11 @@ Class Schema {
             );
 
             $content = "<?php \n".$content;
-        
+
+            // İlk once burada Memory ye yaz ilk Önce
+            file_put_contents($this->getPath(), $content);
+
+            /*
             if ($fp = fopen($this->getPath(), 'ab')) // Create New Schema If Not Exists.
             {
                 flock($fp, LOCK_EX);    
@@ -238,11 +259,37 @@ Class Schema {
 
                 chmod($this->getPath(), 0777);
 
-                logMe('debug', 'New Schema '.$this->getTableName().' Created');  
+                logMe('debug', 'New Schema '.$this->getTableName().' Created');
             }
+            */
+           
+           $this->redirect();
         }
     }
     
+    // --------------------------------------------------------------------
+
+    /**
+     * Get schema prefix
+     * 
+     * @return string
+     */
+    public function getPrefix()
+    {
+        $currentSchema = getSchema($this->tablename);
+        unset($currentSchema['*']);
+
+        $currentSchema = array_keys($currentSchema);
+        $prefix = $this->getModelName().'_';
+
+        if(isset($currentSchema[0]) AND strpos($currentSchema[0], $prefix) === 0)
+        {
+            return ''; // no prefix
+        }
+
+        return $prefix;
+    }
+
     // --------------------------------------------------------------------
 
     /**
@@ -433,6 +480,18 @@ Class Schema {
     }
 
     // --------------------------------------------------------------------
+
+    public function setOutput($ruleString)
+    {
+        $this->output = $ruleString;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getOutput()
+    {
+        return $this->output;
+    }
 
     /**
      * Debug On / Off to fix easily 

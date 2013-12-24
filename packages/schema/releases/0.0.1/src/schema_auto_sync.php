@@ -393,6 +393,13 @@ Abstract Class Schema_Auto_Sync {
 	 */
 	public function output()
 	{
+		$output = $this->schemaObject->getOutput(); // Sync diff ooutput
+
+		if( ! empty($output)) // write output to schema file
+		{
+			$this->schemaObject->writeToFile($this->schemaObject->getOutput(), $this->schemaObject->getPrefix());
+		}
+		
 		$sync_html = new Schema_Auto_Sync_Html($this, $this->schemaObject);
 		return $sync_html->writeOutput();
 	}

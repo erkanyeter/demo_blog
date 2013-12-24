@@ -101,7 +101,7 @@ Class Schema_Sql_Reader {
 
         		$schemaContent.= $this->_buildRow($col); // Output 'password' = array('rules' => 'required|_string(20)|minLen(6)');
         	}
-        	
+
         	return $schemaContent;
         }
 
@@ -325,7 +325,7 @@ Class Schema_Sql_Reader {
 
 		if(isset($col['Type']))  // Parse types and Build Schema Rules
 		{
-			$typeName = strtolower($col['Type']);
+			$typeName = $col['Type'];
 
 			if($this->_typeHasValue($typeName))  // e.g. varchar(60)
 			{

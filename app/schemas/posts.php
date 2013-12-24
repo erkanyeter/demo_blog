@@ -5,17 +5,17 @@ $posts = array(
 	
 	'id' => array(
 		'label' => 'Post Id',
-		'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
+		'types' => '_primary_key|_int(11)|_auto_increment',
 		'rules' => '',
 		),
 	'user_id' => array(
 		'label' => 'Post User Id',
-		'types' => '_null|_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)',
+		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null',
 		'rules' => '',
 		),
 	'title' => array(
 		'label' => 'Post Title',
-		'types' => '_not_null|_varchar(50)',
+		'types' => '_varchar(50)|_not_null',
 		'rules' => '',
 		),
 	'content' => array(
@@ -30,12 +30,12 @@ $posts = array(
 		),
 	'status' => array(
 		'label' => 'Post Status',
-		'types' => '_not_null|_enum',
 		'_enum' => array(
-			'draft',
-			'published',
-			'archived',
+			'Draft',
+			'Published',
+			'Archived',
 		),
+		'types' => '_not_null|_enum',
 		'rules' => '',
 		),
 	'creation_date' => array(

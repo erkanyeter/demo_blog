@@ -82,16 +82,19 @@ Class Schema_Mysql {
 	 */
 	public function sync()
 	{
+        echo __FUNCTION__.'<br>';
+
 		$schemaContent = $this->read();
 
 		if($schemaContent != false)
 		{
-			$sync = new Schema_Mysql\Src\Schema_Sync($schemaContent, $this->schemaObject);
-			$sync->run(); 
+			$sync_mysql = new Schema_Mysql\Src\Schema_Sync($schemaContent, $this->schemaObject);
+			$sync_mysql->run(); 
 
-			if($sync->collisionExists())
-			{
-				echo $sync->output(); // Display sync table to developer
+			if($sync_mysql->collisionExists())
+			{	
+				echo __FUNCTION__.'<br>';
+				echo $sync_mysql->output(); // Display sync table to developer
 				exit;  				  // die current process
 			}
 		}

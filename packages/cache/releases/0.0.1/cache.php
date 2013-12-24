@@ -97,7 +97,7 @@ Class Cache {
 
         $editDriverName  = str_replace('memcached','memcache',$driver); // Driver name is edited. Only for memcached.
         $className       = 'Cache\Src\Cache_'.ucfirst(mb_strtolower($editDriverName));
-        $this->_driver    = new $className();         // Drivers needed for the class are created.
+        $this->_driver   = new $className();         // Drivers needed for the class are created.
 
     	return true;
     }
