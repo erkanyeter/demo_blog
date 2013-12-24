@@ -192,6 +192,7 @@ Class Schema {
     public function writeToFile($fileContent, $prefix = '')
     {
         echo __FUNCTION__.'<br>';
+
         /*
         if(file_exists($this->getPath()))
         {
@@ -244,9 +245,13 @@ Class Schema {
                 file_get_contents(APP .'templates'. DS .'newschema.tpl')
             );
 
+            // İlk once burada Memory ye yaz ilk Önce
+             
+            $shmop = new \Shmop;
+            $shmop->set($this->tablename, serialize($content));
+
             $content = "<?php \n".$content;
 
-            // İlk once burada Memory ye yaz ilk Önce
             file_put_contents($this->getPath(), $content);
 
             /*
@@ -263,7 +268,7 @@ Class Schema {
             }
             */
            
-           $this->redirect();
+            $this->redirect();
         }
     }
     

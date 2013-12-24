@@ -69,6 +69,7 @@ $packages['dependencies']['schema_mysql'] = array('version' => '0.0.1');
 $packages['dependencies']['tag_cloud'] = array('version' => '0.0.1');
 $packages['dependencies']['view'] = array('version' => '0.0.1');
 $packages['dependencies']['string'] = array('version' => '0.0.1');
+$packages['dependencies']['shmop'] = array('version' => '0.0.1');
 $packages['dependencies']['text'] = array('version' => '0.0.1');
 $packages['dependencies']['task']  = array('version' => '0.0.1');
 $packages['dependencies']['validator'] = array('version' => '0.0.1');

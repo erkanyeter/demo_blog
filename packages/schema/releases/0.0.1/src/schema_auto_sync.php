@@ -26,8 +26,36 @@ Abstract Class Schema_Auto_Sync {
 	 */
 	public function __construct($schemaDBContent, \Schema $schemaObject)
 	{
-	    $fileSchema = getSchema(strtolower($schemaObject->getTableName())); // Get current schema
-	    						 
+		$this->tablename    = $schemaObject->getTableName(); // Set tablename
+		$this->modelName    = $schemaObject->getModelName(); // Set modelname
+		$this->schemaName   = strtolower($this->tablename);  // set schema name
+
+		//----------- Use Shmop Shared Memory ---------//
+		
+		// Look at the memory if memory schema exists 
+		// read from it to fast file read
+		
+		$shmop = new \Shmop;
+		$memSchema = $shmop->get($this->schemaName);
+		
+		if($memSchema !== null)
+		{
+            eval(unserialize($memSchema)); // Get current schema from memory to fast file write
+
+			$variableName = $this->schemaName;
+            $fileSchema   = $$variableName;
+
+            /// print_r($fileSchema);
+
+			$shmop->delete($this->schemaName);  	// Delete memory segment
+		} 
+		else 
+		{
+			$fileSchema = getSchema($this->schemaName); // Get current schema
+		}
+	    						
+		//----------- Use Shmop Shared Memory ---------//
+
 	    $colprefix = $fileSchema['*']['colprefix'];
 		unset($fileSchema['*']);  // Get only fields no settings
 
@@ -42,9 +70,6 @@ Abstract Class Schema_Auto_Sync {
 		eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
 		unset($databaseSchema['*']);
 
-		$this->tablename    = $schemaObject->getTableName(); // Set tablename
-		$this->modelName    = $schemaObject->getModelName(); // Set modelname
-		$this->schemaName   = strtolower($this->tablename);  // set schema name
 
 		$this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema);  // Render schema, fetch just types.
 		$this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema);  // Get just types 

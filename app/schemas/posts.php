@@ -5,7 +5,7 @@ $posts = array(
 	
 	'id' => array(
 		'label' => 'Post Id',
-		'types' => '_primary_key|_int(11)|_auto_increment',
+		'types' => '_primary_key|_int(11)|_auto_increment|_not_null',
 		'rules' => '',
 		),
 	'user_id' => array(
