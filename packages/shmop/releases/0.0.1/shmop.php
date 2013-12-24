@@ -1,34 +1,55 @@
 <?php
 
+/**
+ * Shmop Class
+ *
+ * Allow to use *nix shared memory
+ *
+ * @package       packages
+ * @subpackage    shmop
+ * @category      cache
+ * @link
+ */
+
 Class Shmop {
 
+    /**
+     * Read from shared memory, if segment key
+     * exists returns to "string"
+     * otherwise it returns to "null".
+     * 
+     * @param  string $storeKey segment key
+     * @return null | string
+     */
     public function get($storeKey)
     {
         $key    = crc32($storeKey);
-        $shm_id = shmop_open($key, "a", 0644, 0); 
+        $shm_id = shmop_open($key, 'a', 0644, 0); 
 
         if ($shm_id)
         {
             $size = shmop_size($shm_id);
-            $data = shmop_read($shm_id, 0, $size); // Now lets read the string back
+            $data = shmop_read($shm_id, 0, $size); // now lets read the string back
 
             if ( ! $data)
             {
                 shmop_delete($shm_id);
                 shmop_close($shm_id);
                 
-                return;
+                return null;  // returns to "null" if segment not found
             }
 
             shmop_close($shm_id);
 
-            return $data;
+            return $data;  // returns to "string" if segment found
         }
 
         if( $shm_id != 0)
         {
             shmop_close($shm_id);
         }
+
+        return null;  // returns to "null" if segment not found
     }
 
     // --------------------------------------------------------------------
@@ -43,23 +64,23 @@ Class Shmop {
     public function set($storeKey, $data)
     {
         $key    = crc32($storeKey);
-        $size   = mb_strlen($data, 'UTF-8');
-        $shm_id = shmop_open($key, "c", 0755, $size);     // Create shared memory block with system id
+        $size   = mb_strlen($data, config('charset'));
+        $shm_id = shmop_open($key, 'c', 0755, $size);    // Create shared memory block with system id
 
         if ( ! $shm_id)
         {
-            die("Couldn't create shared memory segment.");
+            throw new Exception('Couldn\'t create shared memory segment.');
         }
 
-        $shmop_size = shmop_size($shm_id); // Get shared memory block's size
-        $shm_bytes_written = shmop_write($shm_id, $data, 0);     // Lets write a test string into shared memory
+        $shmop_size = shmop_size($shm_id);                    // Get shared memory block's size
+        $shm_bytes_written = shmop_write($shm_id, $data, 0);  // Lets write a test string into shared memory
 
         if ($shm_bytes_written != $size)
         {
-            die("Couldn't write the entire length of data.");
+            throw new Exception('Couldn\'t write the entire length of data.');
         }
 
-        shmop_close($shm_id);
+        shmop_close($shm_id);  // close the connection
 
         return true;
     }
@@ -75,7 +96,7 @@ Class Shmop {
     public function delete($storeKey)
     {
         $key    = crc32($storeKey);
-        $shm_id = shmop_open($key, "a", 0644, 0); 
+        $shm_id = shmop_open($key, 'a', 0644, 0); 
 
         shmop_delete($shm_id);
         shmop_close($shm_id);
@@ -83,16 +104,5 @@ Class Shmop {
 
 }
 
-/*
-$shmop = new Shmop;
-
-$shmop->set('a', 'test');
-$shmop->delete('a');
-var_dump($shmop->get('a'));
-*/
-
-
-
-
-
-
+/* End of file Shmop.php */
+/* Location: ./packages/shmop/releases/0.0.1/shmop.php */

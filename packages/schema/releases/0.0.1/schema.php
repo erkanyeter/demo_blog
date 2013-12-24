@@ -229,32 +229,26 @@ Class Schema {
                 <pre>+ app\n+ <b>schemas</b>\n\t*.php\n+ public</pre>");
             }
 
-            /*
             if(file_exists($this->getPath())) // remove current file if it exists.
             {
                 unlink($this->getPath());
             }
-            */
            
             // unlink($this->getPath());
             
-
             $content = str_replace(
                 array('{schemaName}','{filename}','{content}','{colprefix}'),
                 array('$'.$this->getTableName(), $this->getTableName(). EXT, $fileContent, $colPrefix),
                 file_get_contents(APP .'templates'. DS .'newschema.tpl')
             );
 
-            // İlk once burada Memory ye yaz ilk Önce
+            // Write to Shared Memory for fast development
              
             $shmop = new \Shmop;
             $shmop->set($this->tablename, serialize($content));
 
             $content = "<?php \n".$content;
 
-            file_put_contents($this->getPath(), $content);
-
-            /*
             if ($fp = fopen($this->getPath(), 'ab')) // Create New Schema If Not Exists.
             {
                 flock($fp, LOCK_EX);    
@@ -266,9 +260,8 @@ Class Schema {
 
                 logMe('debug', 'New Schema '.$this->getTableName().' Created');
             }
-            */
            
-            $this->redirect();
+            $this->redirect(); // redirect to user current page
         }
     }
     
