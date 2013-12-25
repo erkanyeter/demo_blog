@@ -18,13 +18,14 @@ Class Schema {
     public $debugOutput;  // Debug output string
     public $config;     // Schema config
     public $output;     // Set schema content
+    public $requestUri;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param string $tablename
 	 */
-	public function __construct($tablename, $modelName, $dbObject = null)
+	public function __construct($tablename, $modelName, $dbObject = null, $requestUri)
 	{
         $this->tablename   = strtolower($tablename);
         $this->modelName   = strtolower($modelName);
@@ -32,6 +33,7 @@ Class Schema {
         $this->debug       = false;
         $this->debugOutput = '';
         $this->config      = getConfig('schema');
+        $this->requestUri  = $requestUri;
 
 		$schemaDriver = $this->getDriverName();
 
@@ -190,8 +192,6 @@ Class Schema {
      */
     public function writeToFile($fileContent, $prefix = '')
     {
-        clearstatcache();
-
         if(file_exists($this->getPath()))
         {
             $currentSchema = getSchema($this->tablename); // Get current schema
@@ -246,8 +246,6 @@ Class Schema {
                 logMe('debug', 'New Schema '.$this->getTableName().' Created');
             }
 
-            clearstatcache();
-           
             $this->redirect(); // redirect to user current page
         }
     }
@@ -353,16 +351,9 @@ Class Schema {
         {
             $currentPage = $_POST['lastCurrentPage'];   // Get encoded back url from hidden input
 
-            echo $url->anchor(urldecode($currentPage), 'refresh');
+            // echo $url->anchor(urldecode($currentPage), 'Refresh');
 
-            // echo $this->getOutput();
-            // 
-            // 
-            // $this->driver->diffArray
-
-            exit;
-
-            // $url->redirect(urldecode($currentPage),'refresh[2]');
+            $url->redirect(urldecode($currentPage));
         }
     }
 
@@ -473,6 +464,13 @@ Class Schema {
         }
 
         return '<div class="debug"><h1>Debug Output</h1><pre>'.$this->debugOutput.'</pre></div>';
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getRequestUri()
+    {
+        return $this->requestUri;
     }
 
     // --------------------------------------------------------------------

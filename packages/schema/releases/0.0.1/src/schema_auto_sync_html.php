@@ -32,7 +32,7 @@ Class Schema_Auto_Sync_Html {
 		$html.= '<body>';
 		$html.= '<h1>Synchronize the <i><u>'.strtolower($this->schemaObject->getTableName()).'</u></i> schema</h1>';
 
-		$html.= $this->form->open('/'.getInstance()->uri->requestUri(), array('method' => 'POST', 'name' => 'sync_table', 'id' => 'sync_table'));
+		$html.= $this->form->open('/'.$this->schemaObject->getRequestUri(), array('method' => 'POST', 'name' => 'sync_table', 'id' => 'sync_table'));
 
 		$html.= '<table class="modelTable" width="%100">';
 		$html.= '<tr>';
@@ -174,7 +174,7 @@ Class Schema_Auto_Sync_Html {
 		}
 		$html.= '</table>';
 
-		$html.= '<input type="hidden" name="lastCurrentPage" id="lastCurrentPage" value="'.getInstance()->uri->requestUri(true).'" style="width:500px;">';
+		$html.= '<input type="hidden" name="lastCurrentPage" id="lastCurrentPage" value="'.urlencode($this->schemaObject->getRequestUri()).'" style="width:500px;">';
 		$html.= '<input type="hidden" name="lastSyncCommand" id="lastSyncCommand" value="" style="width:500px;">';
 		$html.= '<input type="hidden" name="lastSyncFunc" id="lastSyncFunc" value="" style="width:500px;">'."\n";
 

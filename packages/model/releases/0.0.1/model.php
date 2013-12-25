@@ -64,40 +64,20 @@ Class Model {
 
             if(config('model_auto_sync')) // Create new schema if not exists.
             {
-                $schema     = new Schema($tablename, $modelName, $dbObject);
-                $schemaPath = $schema->getPath();
-
-                if( ! file_exists($schemaPath)) // If schema file exists ?
-                {
-                    $schema->writeToFile($schema->read(), null);  // Write content to schema file
-                } 
-                else 
-                {
-                    // Check any changes in the column prefix
-                    // If any changes exists in the colprefix remove the valid schema and create new one
-                    //---------------------------------------------
-
-                    $currentSchema = getSchema($tablename);
+                $requestUri = urlencode(getInstance()->uri->requestUri());
+                $postData   = base64_encode(serialize($_POST));
                 
-                    if(isset($currentSchema['*']['colprefix']) AND $schema->getPrefix() != $currentSchema['*']['colprefix'])
-                    {
-                        unlink($schema->getPath()); // remove current schema & then rebuild it with new prefix
+                $task = new Task;
+                $output = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
 
-                        $schema->writeToFile($schema->read(), $currentSchema['*']['colprefix']); // recreate it with new prefix
-                    } 
-                    else  // Check database table
-                    {
-                        if( ! $schema->tableExists())  // Check table exits.
-                        {
-                            $schema->createTable(); // Create sql query & run
-                        }
-                        else 
-                        {
-                            $schema->syncTable();  // Display sync table
-                        }
-                    }
+                if( ! empty($output))
+                {
+                    echo $output;
+                    exit;
                 }
-            
+
+                // /sync/index/posts/post/db/OB_TASK_REQUEST
+
                 logMe('info', 'Auto sync enabled on your config file you need to close it in production mode');
             }
 

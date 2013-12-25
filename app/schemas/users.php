@@ -9,19 +9,19 @@ $users = array(
 		'rules' => '',
 		),
 	'username' => array(
-		'label' => 'User Name',
+		'label' => 'User Username',
 		'types' => '_null|_varchar(50)',
-		'rules' => 'required|_string|callback_check_username',
+		'rules' => '',
 		),
 	'email' => array(
 		'label' => 'User Email',
-		'types' => '_not_null|_varchar(50)',
-		'rules' => 'required|_string|validEmail',
+		'types' => '_not_null|_varchar(60)',
+		'rules' => '',
 		),
 	'password' => array(
 		'label' => 'User Password',
 		'types' => '_not_null|_varchar(75)',
-		'rules' => 'required|_string|minLen(6)|maxLen(35)',
+		'rules' => '',
 		),
 	'creation_date' => array(
 		'label' => 'User Creation Date',

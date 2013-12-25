@@ -397,8 +397,8 @@ Abstract Class Schema_Auto_Sync {
 		$output = $this->schemaObject->getOutput(); // Sync diff ooutput
 
 		if( ! empty($output)) // write output to schema file
-		{
-			$this->schemaObject->writeToFile($this->schemaObject->getOutput(), $this->schemaObject->getPrefix());
+		{ 
+			$this->schemaObject->writeToFile($output, $this->schemaObject->getPrefix());
 		}
 		
 		$sync_html = new Schema_Auto_Sync_Html($this, $this->schemaObject);

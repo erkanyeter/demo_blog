@@ -20,12 +20,12 @@ $posts = array(
 		),
 	'content' => array(
 		'label' => 'Post Content',
-		'types' => '_not_null|_varchar(60)',
+		'types' => '_varchar(60)|_not_null',
 		'rules' => '',
 		),
 	'tags' => array(
 		'label' => 'Post Tags',
-		'types' => '_null|_varchar(256)',
+		'types' => '_varchar(256)|_null',
 		'rules' => '',
 		),
 	'status' => array(
