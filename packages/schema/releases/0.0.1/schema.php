@@ -201,10 +201,8 @@ Class Schema {
             
             if($memSchema !== null)
             {
-                eval(unserialize($memSchema)); // Get current schema from memory to fast file write
-
                 $variableName  = $this->tablename;
-                $currentSchema = $$variableName;
+                $currentSchema = unserialize($memSchema); // Get current schema from memory to fast file write
 
                 $shmop->delete($this->tablename);   // Delete memory segment
             } 
@@ -253,20 +251,6 @@ Class Schema {
             // Write to Shared Memory for fast development
              
             $shmop->set($this->tablename, serialize($content));
-
-            /*
-            $readSchema = $shmop->get($this->tablename);
-
-            if($readSchema == null)
-            {
-                $shmop->set($this->tablename, serialize($content));
-            } 
-            else // We need to first remove the key to prevent to "Couldn't create shared memory segment" error.
-            {
-                // $shmop->delete($this->tablename);
-                $shmop->set($this->tablename, serialize($content));
-            }
-            */
            
             $content = "<?php \n".$content;
 

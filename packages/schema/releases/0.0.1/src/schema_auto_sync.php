@@ -40,10 +40,8 @@ Abstract Class Schema_Auto_Sync {
 		
 		if($memSchema !== null)
 		{
-            eval(unserialize($memSchema)); // Get current schema from memory to fast file write
-
 			$variableName = $this->schemaName;
-            $fileSchema   = $$variableName;
+            $fileSchema   = unserialize($memSchema); // Get current schema from memory to fast file write
 
 			// $shmop->delete($this->schemaName);  	// Delete memory segment
 		} 

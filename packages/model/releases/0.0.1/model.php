@@ -82,23 +82,23 @@ Class Model {
                     
                     if($memSchema !== null)
                     {
-                        eval(unserialize($memSchema)); // Get current schema from memory to fast file write
+                        // eval('$'.$tablename.' = '.unserialize($memSchema)); // Get current schema from memory to fast file write
+
+                        $currentSchema = unserialize($memSchema);
 
                         $variableName  = $tablename;
-                        $currentSchema = $$variableName;
+                        // $currentSchema = $$variableName;
+                        $fileSchema    = getSchema($tablename);
 
-                        /*
-                        if(strlen(serialize($currentSchema)) == strlen(serialize($memorySchema)))
-                        {
-                            $currentSchema = $memorySchema;
-                        } 
-                        else 
+                        // Sync Memory schema with fileSchema
+                        
+                        if(strlen(serialize($currentSchema)) != strlen(serialize($fileSchema)))
                         {
                             $shmop->delete($tablename);
-                            $shmop->set($tablename, serialize($currentSchema));
-                        }
-                        */
-                        // $shmop->delete($this->schemaName);   // Delete memory segment
+                            $shmop->set($tablename, serialize($fileSchema));
+
+                            $currentSchema = $fileSchema;
+                        } 
                     } 
                     else 
                     {
