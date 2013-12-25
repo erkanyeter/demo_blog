@@ -66,17 +66,23 @@ Class Model {
             {
                 $requestUri = urlencode(getInstance()->uri->requestUri());
                 $postData   = base64_encode(serialize($_POST));
-                
+
                 $task = new Task;
                 $output = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
+
+                // print_r($_POST);
 
                 if( ! empty($output))
                 {
                     echo $output;
                     exit;
                 }
-
-                // /sync/index/posts/post/db/OB_TASK_REQUEST
+                
+                if(isset($_POST['lastCurrentPage']))
+                {
+                    $url = new Url;
+                    $url->redirect(urldecode($_POST['lastCurrentPage']));
+                }
 
                 logMe('info', 'Auto sync enabled on your config file you need to close it in production mode');
             }
