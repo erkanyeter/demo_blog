@@ -45,9 +45,7 @@ Abstract Class Schema_Auto_Sync {
 			$variableName = $this->schemaName;
             $fileSchema   = $$variableName;
 
-            /// print_r($fileSchema);
-
-			$shmop->delete($this->schemaName);  	// Delete memory segment
+			// $shmop->delete($this->schemaName);  	// Delete memory segment
 		} 
 		else 
 		{

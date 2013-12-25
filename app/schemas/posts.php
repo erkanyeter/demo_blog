@@ -5,12 +5,12 @@ $posts = array(
 	
 	'id' => array(
 		'label' => 'Post Id',
-		'types' => '_primary_key|_int(11)|_auto_increment|_not_null',
+		'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
 		'rules' => '',
 		),
 	'user_id' => array(
 		'label' => 'Post User Id',
-		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null',
+		'types' => '_null|_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)',
 		'rules' => '',
 		),
 	'title' => array(
@@ -20,12 +20,12 @@ $posts = array(
 		),
 	'content' => array(
 		'label' => 'Post Content',
-		'types' => '_not_null|_varchar(50)',
+		'types' => '_not_null|_varchar(60)',
 		'rules' => '',
 		),
 	'tags' => array(
 		'label' => 'Post Tags',
-		'types' => '_null|_varchar(255)',
+		'types' => '_null|_varchar(256)',
 		'rules' => '',
 		),
 	'status' => array(

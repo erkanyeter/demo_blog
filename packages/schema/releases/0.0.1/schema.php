@@ -193,19 +193,27 @@ Class Schema {
     {
         echo __FUNCTION__.'<br>';
 
-        /*
+        $shmop = new \Shmop;
+
         if(file_exists($this->getPath()))
         {
+            $memSchema = $shmop->get($this->tablename);
+            
+            if($memSchema !== null)
+            {
+                eval(unserialize($memSchema)); // Get current schema from memory to fast file write
 
-            // Memory de varsa memory de oku
-            // değişkene ata ve memory yi sil.
-            // SCEHAMA DAN okuma
+                $variableName  = $this->tablename;
+                $currentSchema = $$variableName;
 
-            $currentSchema = getSchema($this->tablename);            
+                $shmop->delete($this->tablename);   // Delete memory segment
+            } 
+            else 
+            {
+                $currentSchema = getSchema($this->tablename); // Get current schema
+            }
         }
-        */
 
-        $currentSchema = getSchema($this->tablename);  
         $prefix = (is_null($prefix)) ? $this->getModelName().'_' : $prefix;
 
         // We need this for first time schema creation
@@ -244,9 +252,22 @@ Class Schema {
 
             // Write to Shared Memory for fast development
              
-            $shmop = new \Shmop;
             $shmop->set($this->tablename, serialize($content));
 
+            /*
+            $readSchema = $shmop->get($this->tablename);
+
+            if($readSchema == null)
+            {
+                $shmop->set($this->tablename, serialize($content));
+            } 
+            else // We need to first remove the key to prevent to "Couldn't create shared memory segment" error.
+            {
+                // $shmop->delete($this->tablename);
+                $shmop->set($this->tablename, serialize($content));
+            }
+            */
+           
             $content = "<?php \n".$content;
 
             if ($fp = fopen($this->getPath(), 'ab')) // Create New Schema If Not Exists.
