@@ -82,8 +82,6 @@ Class Schema_Mysql {
 	 */
 	public function sync()
 	{
-        echo __FUNCTION__.'<br>';
-
 		$schemaContent = $this->read();
 
 		if($schemaContent != false)
@@ -93,7 +91,6 @@ Class Schema_Mysql {
 
 			if($sync_mysql->collisionExists())
 			{	
-				echo __FUNCTION__.'<br>';
 				echo $sync_mysql->output(); // Display sync table to developer
 				exit;  				  // die current process
 			}

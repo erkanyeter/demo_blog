@@ -176,7 +176,6 @@ Class Schema {
      */
     public function syncTable()
     {
-        echo __FUNCTION__.'<br>';
         $this->driver->sync();
     }
 
@@ -191,8 +190,6 @@ Class Schema {
      */
     public function writeToFile($fileContent, $prefix = '')
     {
-        echo __FUNCTION__.'<br>';
-
         $shmop = new \Shmop;
 
         if(file_exists($this->getPath()))
@@ -367,7 +364,18 @@ Class Schema {
 
         if($this->debug == false)
         {
-            $url->redirect(getInstance()->uri->uriString());
+            $currentPage = $_POST['lastCurrentPage'];   // Get encoded back url from hidden input
+
+            echo $url->anchor(urldecode($currentPage), 'refresh');
+
+            // echo $this->getOutput();
+            // 
+            // 
+            // $this->driver->diffArray
+
+            exit;
+
+            // $url->redirect(urldecode($currentPage),'refresh[2]');
         }
     }
 
@@ -482,6 +490,11 @@ Class Schema {
 
     // --------------------------------------------------------------------
 
+    /**
+     * Set output debugging string
+     * 
+     * @param string $ruleString
+     */
     public function setOutput($ruleString)
     {
         $this->output = $ruleString;
@@ -489,10 +502,17 @@ Class Schema {
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get html output
+     * 
+     * @return string
+     */
     public function getOutput()
     {
         return $this->output;
     }
+
+    // --------------------------------------------------------------------
 
     /**
      * Debug On / Off to fix easily 
