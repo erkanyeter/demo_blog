@@ -77,35 +77,8 @@ Class Model {
                     // If any changes exists in the colprefix remove the valid schema and create new one
                     //---------------------------------------------
 
-                    $shmop = new Shmop;  // Read from shared memory for fast development
-                    $memSchema = $shmop->get($tablename);
-                    
-                    if($memSchema !== null)
-                    {
-                        // eval('$'.$tablename.' = '.unserialize($memSchema)); // Get current schema from memory to fast file write
-
-                        $currentSchema = unserialize($memSchema);
-
-                        $variableName  = $tablename;
-                        // $currentSchema = $$variableName;
-
-                        $fileSchema    = getSchema($tablename);
-
-                        // Sync Memory schema with fileSchema
-                        
-                        if(strlen(serialize($currentSchema)) != strlen(serialize($fileSchema)))
-                        {
-                            $shmop->delete($tablename);
-                            $shmop->set($tablename, serialize($fileSchema));
-
-                            // $currentSchema = $fileSchema;
-                        } 
-                    } 
-                    else 
-                    {
-                        $currentSchema = getSchema($tablename);
-                    }
-
+                    $currentSchema = getSchema($tablename);
+                
                     if(isset($currentSchema['*']['colprefix']) AND $schema->getPrefix() != $currentSchema['*']['colprefix'])
                     {
                         unlink($schema->getPath()); // remove current schema & then rebuild it with new prefix

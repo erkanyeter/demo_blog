@@ -30,28 +30,8 @@ Abstract Class Schema_Auto_Sync {
 		$this->modelName    = $schemaObject->getModelName(); // Set modelname
 		$this->schemaName   = strtolower($this->tablename);  // set schema name
 
-		//----------- Use Shmop Shared Memory ---------//
-		
-		// Look at the memory if memory schema exists 
-		// read from it to fast file read
-		
-		$shmop = new \Shmop;
-		$memSchema = $shmop->get($this->schemaName);
-		
-		if($memSchema !== null)
-		{
-			$variableName = $this->schemaName;
-            $fileSchema   = unserialize($memSchema); // Get current schema from memory to fast file write
-
-			// $shmop->delete($this->schemaName);  	// Delete memory segment
-		} 
-		else 
-		{
-			$fileSchema = getSchema($this->schemaName); // Get current schema
-		}
-	    						
-		//----------- Use Shmop Shared Memory ---------//
-
+		$fileSchema = getSchema($this->schemaName); // Get current schema
+	    					
 	    $colprefix = $fileSchema['*']['colprefix'];
 		unset($fileSchema['*']);  // Get only fields no settings
 

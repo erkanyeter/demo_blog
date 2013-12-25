@@ -190,23 +190,11 @@ Class Schema {
      */
     public function writeToFile($fileContent, $prefix = '')
     {
-        $shmop = new \Shmop;
+        clearstatcache();
 
         if(file_exists($this->getPath()))
         {
-            $memSchema = $shmop->get($this->tablename);
-            
-            if($memSchema !== null)
-            {
-                $variableName  = $this->tablename;
-                $currentSchema = unserialize($memSchema); // Get current schema from memory to fast file write
-
-                $shmop->delete($this->tablename);   // Delete memory segment
-            } 
-            else 
-            {
-                $currentSchema = getSchema($this->tablename); // Get current schema
-            }
+            $currentSchema = getSchema($this->tablename); // Get current schema
         }
 
         $prefix = (is_null($prefix)) ? $this->getModelName().'_' : $prefix;
@@ -235,6 +223,7 @@ Class Schema {
             if(file_exists($this->getPath())) // remove current file if it exists.
             {
                 unlink($this->getPath());
+                clearstatcache();
             }
             
             $content = str_replace(
@@ -242,10 +231,6 @@ Class Schema {
                 array('$'.$this->getTableName(), $this->getTableName(). EXT, $fileContent, $colPrefix),
                 file_get_contents(APP .'templates'. DS .'newschema.tpl')
             );
-
-            $variableName = $this->getTableName();
-            eval($content);
-            $shmop->set($this->tablename, serialize($$variableName)); // Write to Shared Memory for fast development
            
             $content = "<?php \n".$content;
 
@@ -260,6 +245,8 @@ Class Schema {
 
                 logMe('debug', 'New Schema '.$this->getTableName().' Created');
             }
+
+            clearstatcache();
            
             $this->redirect(); // redirect to user current page
         }
