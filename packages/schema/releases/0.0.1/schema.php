@@ -351,8 +351,6 @@ Class Schema {
         {
             $currentPage = $_POST['lastCurrentPage'];   // Get encoded back url from hidden input
 
-            // echo $url->anchor(urldecode($currentPage), 'Refresh');
-
             $url->redirect(urldecode($currentPage));
         }
     }

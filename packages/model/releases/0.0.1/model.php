@@ -78,7 +78,7 @@ Class Model {
                     exit;
                 }
                 
-                if(isset($_POST['lastCurrentPage']))
+                if(isset($_POST['lastCurrentPage']))  // Do redirect while post end not post bug fixed in cli mode.
                 {
                     $url = new Url;
                     $url->redirect(urldecode($_POST['lastCurrentPage']));

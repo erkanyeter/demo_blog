@@ -16,7 +16,6 @@ if (isset($_SERVER['REMOTE_ADDR'])) die('Access denied');
 */
 unset($_SERVER['argv'][0]);
 
-
 /*
 |--------------------------------------------------------------------------
 | Define Local Ip Address

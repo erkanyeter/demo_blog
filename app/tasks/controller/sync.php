@@ -1,6 +1,12 @@
 <?php
 defined('STDIN') or die('Access Denied');
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// @
+// @ SYNC TASK RUN THE MODEL AUTO SYNC FEATURE
+// @
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 /**
  * $c sync
  * @var Controller
@@ -16,8 +22,7 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
 
       if( ! empty($postData))
       {
-          $_POST = unserialize(base64_decode($postData));
-
+          $_POST = unserialize(base64_decode($postData));  // Convert encoded raw post data to array format
           // print_r($_POST);
       }
 
