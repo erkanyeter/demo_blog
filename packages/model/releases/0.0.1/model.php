@@ -88,6 +88,7 @@ Class Model {
 
                         $variableName  = $tablename;
                         // $currentSchema = $$variableName;
+
                         $fileSchema    = getSchema($tablename);
 
                         // Sync Memory schema with fileSchema
@@ -97,7 +98,7 @@ Class Model {
                             $shmop->delete($tablename);
                             $shmop->set($tablename, serialize($fileSchema));
 
-                            $currentSchema = $fileSchema;
+                            // $currentSchema = $fileSchema;
                         } 
                     } 
                     else 

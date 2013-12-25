@@ -239,8 +239,6 @@ Class Schema {
             {
                 unlink($this->getPath());
             }
-           
-            // unlink($this->getPath());
             
             $content = str_replace(
                 array('{schemaName}','{filename}','{content}','{colprefix}'),
@@ -248,9 +246,9 @@ Class Schema {
                 file_get_contents(APP .'templates'. DS .'newschema.tpl')
             );
 
-            // Write to Shared Memory for fast development
-             
-            $shmop->set($this->tablename, serialize($content));
+            $variableName = $this->getTableName();
+            eval($content);
+            $shmop->set($this->tablename, serialize($$variableName)); // Write to Shared Memory for fast development
            
             $content = "<?php \n".$content;
 

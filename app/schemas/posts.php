@@ -10,7 +10,7 @@ $posts = array(
 		),
 	'user_id' => array(
 		'label' => 'Post User Id',
-		'types' => '_null|_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)',
+		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null',
 		'rules' => '',
 		),
 	'title' => array(
