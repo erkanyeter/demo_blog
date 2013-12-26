@@ -513,10 +513,12 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 								break;
 						}
 					}
+					
 					$this->fileSchema[$colName] = trim(implode('|',$schemaKeys),'|');
 					foreach($this->fileSchema as $k => $types)
 					{
-						$ruleString.= trim($this->buildSchemaField($k, $types),'|');
+						// $ruleString.= trim($this->buildSchemaField($k, $types),'|');
+						$ruleString.= $this->schemaObject->buildSchemaField($k, $types);
 					}
 					
 					$this->schemaObject->setDebugOutput($ruleString);
@@ -552,7 +554,8 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 
 						foreach($this->fileSchema as $k => $types)
 						{
-							$ruleString.= $this->buildSchemaField($k, $types);
+							//$ruleString.= $this->buildSchemaField($k, $types);
+							$ruleString.= $this->schemaObject->buildSchemaField($k, $types);
 						}
 
 						$this->schemaObject->setDebugOutput($ruleString);

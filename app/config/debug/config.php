@@ -48,8 +48,8 @@ $config = array(
 	// Hooks
 	'enable_hooks' => false, // If you would like to use the 'hooks' feature you must enable it by etting this variable to "true".
 
-	// Allowed URL Characters
-	'permitted_uri_chars'  => 'a-z 0-9~%.:_-=', // Do not remove the "=" character other wise model_auto_sync mode will not work.
+	// Allowed URL Characters if "enable_query_strings" == false
+	'permitted_uri_chars'  => 'a-z 0-9~%.:_-', // Do not remove the "=" character other wise model_auto_sync mode will not work.
 												// This lets you specify with a regular expression which characters are permitted within your URLs.
 											    // As a security measure you are STRONGLY encouraged to restrict URLs to as few characters as possible.
 											    // Leave blank to allow all characters -- but only if you are insane.

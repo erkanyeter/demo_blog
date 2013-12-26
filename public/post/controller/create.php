@@ -11,12 +11,9 @@ $c = new Controller(function(){
 	new Form;
 
 	new Model('post', 'posts');
-
 });
 
 $c->func('index', function() use($c){
-
-
 
 	$c->view('create', function(){
 
@@ -47,8 +44,6 @@ $c->func('index', function() use($c){
             }
 
     	}
-
-
 
 		$this->set('title', 'Create New Post');
 		$this->getScheme();

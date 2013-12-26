@@ -7,14 +7,36 @@ namespace Form\Src {
     * Drop-down Menu
     *
     * @access	public
-    * @param	string
-    * @param	array
-    * @param	string
-    * @param	string
+    * @param	string $name
+    * @param	mixed $options
+    * @param	array $selected
+    * @param	string extra data
+    * 
     * @return	string
     */
-    function dropdown($name = '', $options = array(), $selected = array(), $extra = '')
+    function dropdown($name = '', $options = 'getSchema(posts)[field][_enum]', $selected = array(), $extra = '')
     {
+        if(is_string($options)) // fetch options from schema
+        {            
+            preg_match('/^(.*?)\((.*?)\)\[(.*?)\]\[(.*?)\]$/', $options, $matches); 
+
+            // Array
+            // (
+            //     [0] => getSchema(posts)[status][_enum]
+            //     [1] => getSchema
+            //     [2] => posts
+            //     [3] => status
+            //     [4] => _enum
+            // )
+
+            $schemaName = $matches[2];
+            $fieldName  = $matches[3];
+            $enumName   = $matches[4];
+
+            $schema  = getSchema($schemaName);
+            $options = $schema[$fieldName][$enumName];
+        } 
+
         if($selected === false)   // False == "0" bug fix, false is not an Integer.
         {
             $selected_option = array_keys($options);
@@ -39,7 +61,7 @@ namespace Form\Src {
             $extra = ' '.$extra;
         }
 
-        $multiple = (count($selected) > 1 && strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
+        $multiple = (sizeof($selected) > 1 AND strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
         $selectTag = '<select name="'.$name.'"'.$extra.$multiple.">\n";
 
         foreach ($options as $key => $val)

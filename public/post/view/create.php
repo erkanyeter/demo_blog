@@ -84,8 +84,10 @@
 			                            	'Published' => 'Published',
 			                            	'Archived' => 'Archived',
 			                            );
+										
+										// getSchema(posts)[status][_enum]
 
-			                            echo $this->form->dropdown('status', $enum_status, $this->form->setValue('status'), " ");
+			                            echo $this->form->dropdown('status',$enum_status, $this->form->setValue('status'), " ");
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>

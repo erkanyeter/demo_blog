@@ -13,7 +13,7 @@ Class Schema_Auto_Sync_Html {
 	public function __construct($syncObject, $schemaObject)
 	{
 		$this->syncObject 	= &$syncObject;
-		$this->schemaObject = $schemaObject;
+		$this->schemaObject = &$schemaObject;
 
 		$this->form = new \Form;
 	}

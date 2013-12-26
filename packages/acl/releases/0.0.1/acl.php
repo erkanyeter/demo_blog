@@ -13,7 +13,7 @@
  */
 
 Class Acl {
-   
+
     public $groups      = array();
     public $members     = array();
     public $access_list = array();

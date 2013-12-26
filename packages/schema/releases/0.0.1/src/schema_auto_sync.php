@@ -13,7 +13,7 @@ Abstract Class Schema_Auto_Sync {
 	public $schemaName = null;			// lowercase schema name
 	public $dbSchema   = array();		// database schema array
 	public $fileSchema = array();		// stored file schema array
-	public $currentFileSchema = array();// current ( pure ) fileschema array
+	// public $currentFileSchema = array();// current ( pure ) fileschema array
 	public $schemaDiff = array();		// last schema output after that the sync
 
 	// --------------------------------------------------------------------
@@ -41,7 +41,7 @@ Abstract Class Schema_Auto_Sync {
 			$newFileSchema[$colprefix.$k] = $v;
 		}
 
-	    $this->currentFileSchema = $fileSchema; // Backup Current Schema
+	    // $this->currentFileSchema = $fileSchema; // Backup Current Schema
 
 		eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
 		unset($databaseSchema['*']);
@@ -240,84 +240,6 @@ Abstract Class Schema_Auto_Sync {
 				
 			}
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Build schema string
-	 * 
-	 * @param  fieldname $key
-	 * @param  database types $types
-	 * @param  string $newType
-	 * @return string
-	 */
-	public function buildSchemaField($key, $types, $newType = '')
-	{
-		$label = (isset($this->currentFileSchema[$key]['label'])) ? $this->currentFileSchema[$key]['label'] : $this->_createLabel($key);
-		$rules = (isset($this->currentFileSchema[$key]['rules'])) ? $this->currentFileSchema[$key]['rules'] : '';
-
-		$ruleString = "\n\t'$key' => array(";
-		$ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
-
-		if(empty($newType))
-		{
-			if (preg_match('/(_enum)(\(.*?\))/',$types, $match)) // if type is enum create enum field as an array
-			{
-			 	$enumStr  = $match[0];  // _enum("","")
-				$enum 	  = $match[1];  // _enum
-				$enumData = $match[2];  // ("","")
-
-				$types = preg_replace('/'.preg_quote($enumStr).'/', '_enum', $types);
-				
-				$ruleString .= "\n\t\t'_enum' => array(";	// render enum types
-			 	foreach(explode(',', trim(trim($enumData, ')'),'(')) as $v)
-			 	{
-			 		$ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
-			 	}
-				$ruleString .= "\n\t\t),";
-			}
-
-			$ruleString.= "\n\t\t'types' => '".$types."',";
-		}
-		else 
-		{
-			$typeStr 	= (is_array($types)) ? $newType : $types.'|'.$newType; // new field comes as array data we need to prevent it.
-			$ruleString.= "\n\t\t'types' => '".$typeStr."',";
-		}
-
-		$ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the rules from current schema
-		$ruleString.= "\n\t\t),";
-
-		return $ruleString;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create column label automatically
-	 * 
-	 * @param  string $field field name
-	 * @return string column label
-	 */
-	private function _createLabel($field)
-	{
-		$exp = explode('_', $field); // explode underscores ..
-
-		if($exp)
-		{
-			$label = '';
-			foreach($exp as $val)
-			{
-				$label.= ucfirst($val).' ';
-			}
-		} 
-		else 
-		{
-			$label = ucfirst($field);
-		}
-
-		return trim($label);
 	}
 
 	// --------------------------------------------------------------------

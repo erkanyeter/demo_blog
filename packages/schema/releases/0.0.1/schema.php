@@ -30,7 +30,7 @@ Class Schema {
         $this->tablename   = strtolower($tablename);
         $this->modelName   = strtolower($modelName);
         $this->dbObject    = $dbObject;
-        $this->debug       = false;
+        $this->debug       = false;  // debug for developers
         $this->debugOutput = '';
         $this->config      = getConfig('schema');
         $this->requestUri  = $requestUri;
@@ -121,26 +121,25 @@ Class Schema {
     {
         $sql = str_replace('"', "'", $sql);
 
+        $form = new \Form;
+
         $html = '<h1>Run sql query for <i><u>'.strtolower($this->getTableName()).'</u></i> table</h1>';
-        $html.= '<form action="'.$_SERVER['PHP_SELF'].'" method="POST" name="query_form" id="query_form" />';
+
+        $html.= $form->open('/'.$this->getRequestUri(), array('method' => 'POST', 'name' => 'query_form', 'id' => 'query_form'));
+
             $html.= '<div id="query"><pre><textarea id="query" name="query" rows="8" cols="90">'.$sql.'</textarea></pre></div>';
             
-            $value = 'Are you sure of this action ?';
+            $value = (empty($queryWarning)) ? 'Are you sure of this action ?' : $queryWarning; 
 
-            if( ! empty($queryWarning))
-            {
-                $value = $queryWarning;
-            }
-
-            $html.= '<input type="hidden" id="sure" name="sure" value="'.$value.'">';
+            $html.= '<input type="hidden" id="sure" name="sure" value="'.base64_encode($value).'">';
             $html.= '<input type="hidden" id="confirm" name="confirm" value="no">';
+            $html.= '<input type="hidden" id="lastCurrentPage" name="lastCurrentPage" value="'.urlencode($this->getRequestUri()).'">';
 
             $disabledText = ($disabled) ? ' disabled="disabled" ' : '';
 
             $html.= '<input type="button" onclick="runQuery();" value="Run Query" '.$disabledText.' >';
-
             
-        $html.= '</form>';
+        $html.= $form->close();
 
         return $html;
     }
@@ -349,9 +348,16 @@ Class Schema {
 
         if($this->debug == false)
         {
-            $currentPage = $_POST['lastCurrentPage'];   // Get encoded back url from hidden input
+            if(isset($_POST['lastCurrentPage']))
+            {
+                $currentPage = $_POST['lastCurrentPage'];   // Get encoded back url from hidden input
 
-            $url->redirect(urldecode($currentPage));
+                $url->redirect(urldecode($currentPage));
+            } 
+            else 
+            {
+                $url->redirect(getInstance()->uri->requestUri());
+            }
         }
     }
 
@@ -406,12 +412,58 @@ Class Schema {
             return false;
         }
         function runQuery(){
-            var conf = confirm(document.getElementById('sure').value);
+            var conf = confirm(decode64(document.getElementById('sure').value));
             if (conf == true) {
                 var query = document.getElementById('query').innerHTML;
                 document.forms['query_form'].submit();
             }   
         }
+        function decode64(input) {
+             var keyStr = 'ABCDEFGHIJKLMNOP' +
+               'QRSTUVWXYZabcdef' +
+               'ghijklmnopqrstuv' +
+               'wxyz0123456789+/' +
+               '=';
+
+             var output = '';
+             var chr1, chr2, chr3 = '';
+             var enc1, enc2, enc3, enc4 = '';
+             var i = 0;
+
+             // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+             var base64test = /[^A-Za-z0-9\+\/\=]/g;
+             if (base64test.exec(input)) {
+                alert('There were invalid base64 characters in the input text, valid base64 characters are A-Z, a-z, 0-9, +, /,and = expect errors in decoding.');
+                return;
+             }
+             input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+
+             do {
+                enc1 = keyStr.indexOf(input.charAt(i++));
+                enc2 = keyStr.indexOf(input.charAt(i++));
+                enc3 = keyStr.indexOf(input.charAt(i++));
+                enc4 = keyStr.indexOf(input.charAt(i++));
+
+                chr1 = (enc1 << 2) | (enc2 >> 4);
+                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                chr3 = ((enc3 & 3) << 6) | enc4;
+
+                output = output + String.fromCharCode(chr1);
+
+                if (enc3 != 64) {
+                   output = output + String.fromCharCode(chr2);
+                }
+                if (enc4 != 64) {
+                   output = output + String.fromCharCode(chr3);
+                }
+
+                chr1 = chr2 = chr3 = '';
+                enc1 = enc2 = enc3 = enc4 = '';
+
+             } while (i < input.length);
+
+             return unescape(output);
+          }
         </script>";
     }
 
@@ -507,6 +559,126 @@ Class Schema {
     {
         $this->debug = true;
     }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Build schema string
+     * 
+     * @param  fieldname $key
+     * @param  database types $types
+     * @param  string $newType
+     * @return string
+     */
+    public function buildSchemaField($key, $types, $newType = '')
+    {
+        $fileSchema = getSchema($this->tablename);
+        $this->currentFileSchema = $fileSchema;
+        unset($fileSchema['*']);  // Get only fields no settings
+
+        $colprefix = $this->getPrefix();
+
+        if( ! empty($colprefix))  // replace prefix and rewrite no prefix fields into schema
+        {
+            $key = str_replace($colprefix, '', $key);
+        }
+
+        $currentPrefix = $this->currentFileSchema['*']['colprefix'];
+        $newKey = $key;
+        if(empty($currentPrefix))
+        {
+            $newKey = $this->getPrefix().$key;
+        }
+
+        $label = (isset($this->currentFileSchema[$key]['label'])) ? $this->currentFileSchema[$key]['label'] : $this->_createLabel($key);
+        $rules = (isset($this->currentFileSchema[$key]['rules'])) ? $this->currentFileSchema[$key]['rules'] : '';
+        $func  = (isset($this->currentFileSchema[$key]['func'])) ? $this->currentFileSchema[$key]['func'] : '';
+
+        $ruleString = "\n\t'$newKey' => array(";
+        $ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
+
+        if( ! empty($func))
+        {
+            $ruleString.= "\n\t\t'func' => '$func',";  // fetch _func from current schema
+        }
+
+        if(empty($newType))
+        {
+            if(isset($this->currentFileSchema[$key]['_enum']))  // if _enum exists convert it to string for array rendering.
+            {
+                $enumData = '(';
+                foreach($this->currentFileSchema[$key]['_enum'] as $v)
+                {
+                    $enumData.= '"'.$v.'",';
+                }
+
+                $enumData = rtrim($enumData,',');
+                $enumData .= ')';
+                $types = str_replace('_enum', '_enum'.$enumData, $types);
+            }
+
+            if (preg_match('/(_enum)(\(.*?\))/',$types, $match) ) // if type is enum create enum field as an array
+            {
+                $enumStr  = $match[0];  // _enum("","")
+                $enum     = $match[1];  // _enum
+                $enumData = $match[2];  // ("","")
+
+                $types = preg_replace('/'.preg_quote($enumStr).'/', '_enum', $types);
+                
+                $ruleString .= "\n\t\t'_enum' => array(";   // render enum types
+                foreach(explode(',', trim(trim($enumData, ')'),'(')) as $v)
+                {
+                    $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
+                }
+
+                $ruleString .= "\n\t\t),";
+
+                $types = str_replace($enumData, '', $types);
+            }
+
+            $ruleString.= "\n\t\t'types' => '".$types."',";
+        }
+        else 
+        {
+            $typeStr    = (is_array($types)) ? $newType : $types.'|'.$newType; // new field comes as array data we need to prevent it.
+            $ruleString.= "\n\t\t'types' => '".$typeStr."',";
+        }
+
+        $ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the rules from current schema
+        $ruleString.= "\n\t\t),";
+
+        return $ruleString;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Create column label automatically
+     * 
+     * @param  string $field field name
+     * @return string column label
+     */
+    private function _createLabel($field)
+    {
+        $exp = explode('_', $field); // explode underscores ..
+
+        if($exp)
+        {
+            $label = '';
+            foreach($exp as $val)
+            {
+                $label.= ucfirst($val).' ';
+            }
+        } 
+        else 
+        {
+            $label = ucfirst($field);
+        }
+
+        return trim($label);
+    }
+
+
 }
 
 // END Schema class

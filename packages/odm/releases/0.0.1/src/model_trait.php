@@ -4,7 +4,7 @@ namespace Odm\Src {
     trait Model_Trait
     {
         private $_modelMethods = array();
-        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','put');
+        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','put','read');
 
         /**
          * Create the function.
@@ -19,6 +19,12 @@ namespace Odm\Src {
     	    {
                 // @todo throw new InvalidArgumentException
                 throw new \Exception('Model '.get_class().' error: Second param must be callable.');
+            }
+
+            if( ! in_array($methodName, $_modelDefinedMethods, true)) // check method is defined & check the type is it string ?
+            {
+                throw new Exception("method not supported. We don't support custom model method names allowed model methods listed below.
+                <pre>save\nupdate\ndelete\nremove\ninsert\nreplace\nput\nread\n</pre>");
             }
 
             $this->_modelMethods[$methodName] = \Closure::bind($methodCallable, $this, get_class());
@@ -66,7 +72,7 @@ namespace Odm\Src {
 
                     // $this->clear();  
                     // This occurs an error in callback data , no need clear the validator Object.
-                    // User manually do it.
+                    // User have to manually do it.
                 }
 
                 return $return;

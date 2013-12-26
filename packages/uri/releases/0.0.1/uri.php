@@ -265,7 +265,7 @@ Class Uri
      */
     public function _filterUri($str)
     {
-    	if ($str != '' && config('permitted_uri_chars') != '' && config('enable_query_strings') == false)
+    	if ($str != '' && config('permitted_uri_chars') != '' && config('enable_query_strings') == false  &&  ! defined('STDIN'))
         {
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
