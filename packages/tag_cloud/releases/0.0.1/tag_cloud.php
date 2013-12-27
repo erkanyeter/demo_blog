@@ -88,23 +88,24 @@ Class Tag_Cloud {
 	// --------------------------------------------------------------------
 
 	/**
-	 * _addTags
+	 * _getTags
 	 */
-	private function _addTags()
+	private function _getTags()
 	{
-		$i=0;
+		$i = 0;
 		$values = array();
+
 		foreach($this->_Arr as $key => $val)
 		{
 			$tag = $this->_formatTag($val['tag']);
 			$val['tag'] = $tag;
+
 			if(empty($val['url']) OR $val['url'] === null OR $val['url'] === false)
 			{
 				$val['url'] = $this->_createUrl($val['tag']);
 			}
 
 			$values[]= $val;
-
 		}
 
 		return $this->_tagsArr = $values; 
@@ -120,9 +121,17 @@ Class Tag_Cloud {
 	 * @param  boolean $shuffle [description]
 	 * @return [type]           [description]
 	 */
-	public function render($type = 'array', $shuffle = true)
+	public function render($type = 'array', $tags = array(), $shuffle = true)
 	{
-		$tagArr = $this->_addTags(); // Hazır hale getirip $this->_tagsArr değişkenine atıyoruz. _htmlizeTag() içinde gerekli
+		if(sizeof($tags) > 1)
+		{
+			foreach($tags as $tag)
+			{
+				$this->addTag($tag);
+			}
+		}
+
+		$tagArr = $this->_getTags(); // Hazır hale getirip $this->_tagsArr değişkenine atıyoruz. _htmlizeTag() içinde gerekli
 
 		switch($type)
 		{

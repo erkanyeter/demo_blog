@@ -46,7 +46,6 @@
 										$content_data = array(
 										              'name'        => 'content',
 										              'value'       => $this->form->setValue('content'),
-										              'maxlength'   => '100',
 										              'size'        => '50',
 										              'style'       => 'width:50%',
 										            );
@@ -74,18 +73,8 @@
 			                        <?php 
 			                            echo $this->form->error('status');
 
-			                            $posts = getSchema('posts');
-			                            print_r($posts['status']['_enum']);
-
-			                            $enum_status = array(
-			                            	'Draft' => 'Draft',
-			                            	'Published' => 'Published',
-			                            	'Archived' => 'Archived',
-			                            );
-										
-										// getSchema(posts)[status][_enum]
-
-			                            echo $this->form->dropdown('status',$enum_status, $this->form->setValue('status'), " ");
+	echo $this->form->dropdown('status','getSchema(posts)[status][_enum]', $this->form->setValue('status'), " ");
+	
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>

@@ -15,18 +15,18 @@ $posts = array(
 		),
 	'title' => array(
 		'label' => 'Post Title',
-		'types' => '_not_null|_varchar(60)',
-		'rules' => '',
+		'types' => '_not_null|_varchar(255)',
+		'rules' => 'required|maxLen(255)',
 		),
 	'content' => array(
 		'label' => 'Post Content',
-		'types' => '_not_null|_varchar(60)',
-		'rules' => '',
+		'types' => '_not_null|_text',
+		'rules' => 'required',
 		),
 	'tags' => array(
 		'label' => 'Post Tags',
-		'types' => '_null|_varchar(256)',
-		'rules' => '',
+		'types' => '_null|_varchar(255)',
+		'rules' => 'maxLen(255)',
 		),
 	'status' => array(
 		'label' => 'Post Status',
@@ -36,7 +36,7 @@ $posts = array(
 			'Published',
 			'Archived',
 		),
-		'rules' => '',
+		'rules' => 'required',
 		),
 	'creation_date' => array(
 		'label' => 'Post Creation Date',

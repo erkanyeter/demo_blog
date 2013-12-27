@@ -29,9 +29,8 @@
 	 	</div>
 
 	 	<div class="tags_a">
-	 	<a href="tag.php">Graphics</a>
-	 	<a href="tag.php">Blog</a>
-	 	<a href="tag.php">Test</a>
+		 	<?php echo $this->url->anchor('tag/blog', 'blog') ?>
+		 	<?php echo $this->url->anchor('tag/test', 'test') ?>
 	 	</div>
 	 </div>
 </div>

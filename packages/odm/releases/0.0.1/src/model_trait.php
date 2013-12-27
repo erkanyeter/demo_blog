@@ -21,7 +21,7 @@ namespace Odm\Src {
                 throw new \Exception('Model '.get_class().' error: Second param must be callable.');
             }
 
-            if( ! in_array($methodName, $_modelDefinedMethods, true)) // check method is defined & check the type is it string ?
+            if( ! in_array($methodName, $this->_modelDefinedMethods, true)) // check method is defined & check the type is it string ?
             {
                 throw new Exception("method not supported. We don't support custom model method names allowed model methods listed below.
                 <pre>save\nupdate\ndelete\nremove\ninsert\nreplace\nput\nread\n</pre>");

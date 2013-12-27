@@ -26,23 +26,18 @@ $c->func('index', function() use($c){
             $this->post->status  = $this->get->post('status');
             $this->post->creation_date = date('Y-m-d H:i:s');
             
-            $this->user->func('save', function() {
+            $this->post->func('save', function() {
                 if ($this->isValid()){
-                	$bcrypt = new Bcrypt; // use bcrypt
-
-                    $this->password = $bcrypt->hashPassword($this->getValue('password'), 8);
-
-                    return $this->db->insert('users', $this);
+                    return $this->db->insert('posts', $this);
                 }
                 return false;
             });
 
-            if($this->user->save())  // save user
+            if($this->post->save())  // save post
             {        
-                $this->form->setNotice('User saved successfully.');
-                $this->url->redirect('/login?success=true');
+                $this->form->setNotice('Post saved successfully.');
+                $this->url->redirect('/home');
             }
-
     	}
 
 		$this->set('title', 'Create New Post');

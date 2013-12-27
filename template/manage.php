@@ -19,12 +19,14 @@
 		<div id="clear"> </div>
 		<div id="containerbox">
 			<div id="content">
+			
 				<div id="navigation">
 					<a href="index.php" >Home</a> » <b> Manage Posts </b>
 				</div>
 				<h1 class="h1 left">Manage Posts </h1>
 				<i class="right result">Displaying 1-4 of 4 result(s).</i>
 				<div id="clear"></div>
+
 				<div id="manageposts">
 						<table>
 							<th class="table_head x">Title</th>

@@ -11,11 +11,10 @@ $c = new Controller(function(){
 	new Html;
 	new Form;
 	new Get;
+    new Model('user', 'users');
 });
 
 $c->func('index', function() use($c){
-
-	new Model('user', 'users');
 
     $c->view('signup_form', function() use($c) {
         

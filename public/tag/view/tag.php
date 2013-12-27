@@ -14,6 +14,8 @@
 		<div id="containerbox">
 			 
 			<div id="content">
+			<h1 class="post_tag">Post Tagged With <?php echo $this->uri->segment(1)?></h1>
+
 				<?php 
 				if(count($posts) > 0)
 				{
@@ -33,9 +35,7 @@
 
 							<b>Tags:</b> <?php echo $this->tag_cloud->render('html', explode(',',$row['post_tags']), false) ?><br><br>
 
-						<?php 
-						echo $this->url->anchor('/post/detail/'.$row['post_id'], 'Comments ('.$row['total_comment'].')') ?>
-							 | Last Updated On December 15,2013
+							<a href="post.php#commentcontainer">Comments (2)</a> | Last Updated On December 15,2013
 						</div>
 					</div>
 

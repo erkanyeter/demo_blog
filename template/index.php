@@ -21,6 +21,7 @@
 		<div id="containerbox">
 			 
 			 <div id="content">
+			 
 				<div id="post">
 					<div id="title"><h2><a href="post.php">Title</a></h2></div>
 					<div id="author"><small>posted by demo on December 16,2013</small></div>

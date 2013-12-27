@@ -1,7 +1,7 @@
 <?php
 namespace Form\Src {
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
     * Drop-down Menu
@@ -16,26 +16,32 @@ namespace Form\Src {
     */
     function dropdown($name = '', $options = 'getSchema(posts)[field][_enum]', $selected = array(), $extra = '')
     {
+        // --------- PARSE SCHEMA ---------- //
+        
         if(is_string($options)) // fetch options from schema
-        {            
-            preg_match('/^(.*?)\((.*?)\)\[(.*?)\]\[(.*?)\]$/', $options, $matches); 
-
-            // Array
-            // (
-            //     [0] => getSchema(posts)[status][_enum]
-            //     [1] => getSchema
-            //     [2] => posts
-            //     [3] => status
-            //     [4] => _enum
-            // )
-
-            $schemaName = $matches[2];
-            $fieldName  = $matches[3];
-            $enumName   = $matches[4];
-
-            $schema  = getSchema($schemaName);
-            $options = $schema[$fieldName][$enumName];
+        {
+            $options = _parseSchemaOptions($options);
         } 
+
+        if(is_array($options) AND (is_string($options[0]) AND strpos($options[0], 'getSchema') === 0))
+        {
+            if(isset($options[1])) // custom options
+            { 
+                $customOption = $options[1];
+                $options = _parseSchemaOptions($options[0]);
+                $options = array_merge($options,$customOption);
+            }
+
+        } elseif(is_array($options) 
+            AND isset($options[1]) 
+            AND strpos($options[1], 'getSchema') === 0)
+        {
+            $customOption = $options[0];
+            $options = _parseSchemaOptions($options[1]);
+            $options = array_merge($customOption,$options);
+        }
+
+        // --------- PARSE SCHEMA END ---------- //
 
         if($selected === false)   // False == "0" bug fix, false is not an Integer.
         {
@@ -95,5 +101,40 @@ namespace Form\Src {
 
         return sprintf($form['templates'][\Form::$template]['dropdown'], $selectTag);
     }
+
+    //--------------------------------------------------------------------
     
+    /**
+     * Parse Schema Options
+     * 
+     * @param  array $options
+     * @return array
+     */
+    function _parseSchemaOptions($options)
+    {
+        preg_match('/^(.*?)\((.*?)\)\[(.*?)\]\[(.*?)\]$/', $options, $matches); 
+
+        // Array
+        // (
+        //     [0] => getSchema(posts)[status][_enum]
+        //     [1] => getSchema
+        //     [2] => posts
+        //     [3] => status
+        //     [4] => _enum
+        // );
+
+        $schemaName = $matches[2];
+        $fieldName  = $matches[3];
+        $enumName   = $matches[4];
+
+        $schema  = getSchema($schemaName);
+        $options = array();
+        foreach($schema[$fieldName][$enumName] as $v)
+        {
+            $options[$v] = $v;
+        }
+
+        return $options;
+    }
+
 }

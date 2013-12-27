@@ -10,11 +10,20 @@
 	<div id="menu">
 		<ul>
 			<?php 
+			$hasIdentity = $this->auth->hasIdentity();
+
 			foreach ($menu as $key => $value)
 			{
 				$active = ($currentPage == $key) ? ' id="active" ' : '';
 
-				echo '<li>'.$this->url->anchor($key, $value, " $active ").'</li>';
+				if(($key == 'login' OR $key == 'signup') AND $hasIdentity)
+				{
+					// don't show login
+				} 
+				else 
+				{
+					echo '<li>'.$this->url->anchor($key, $value, " $active ").'</li>';
+				}
 			}
 			?>
 		</ul>

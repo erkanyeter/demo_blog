@@ -22,6 +22,9 @@
 |
 */
 $routes = array(
+
+	'tag/(:any)' => 'tag/index/$1',
+	'post/detail/(:num)' => 'post/detail/index/$1',
 	
 	// Default Controller 
 	'default_controller' => 'welcome/index', // This is the default controller, application call it as default
