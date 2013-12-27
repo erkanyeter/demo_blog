@@ -78,7 +78,7 @@ Class Model {
                     exit;
                 }
                 
-                if(isset($_POST['lastCurrentPage']))  // Do redirect while post end not post bug fixed in cli mode.
+                if(isset($_POST['lastCurrentPage']))  // Do redirect while post array is empty, in cli mode we need do redirect to current page.
                 {
                     $url = new Url;
                     $url->redirect(urldecode($_POST['lastCurrentPage']));

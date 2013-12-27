@@ -56,12 +56,12 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 	 */
 	public function _isPostCommand()
 	{
-		if(isset($_POST['lastSyncCommand']))
+		if(isset($_POST['lastSyncCommand'])) // If we have post action with post command
 		{
 			$lastCommand = explode('|', $_POST['lastSyncCommand']);
 			$lastFunc 	 = $_POST['lastSyncFunc'];
 
-			if($lastFunc == 'addKey' OR $lastFunc == 'removeKey')
+			if($lastFunc == 'addKey' OR $lastFunc == 'removeKey') // add / remove attribute
 			{
 				$count 	  = count($lastCommand);
 				$colName  = $lastCommand[0]; // column name
@@ -83,10 +83,10 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 		
 			$startArray = '$'.$this->schemaName.' = array(';
 			$endArray   = ');';
-			$disabled = false;
+			$disabled 	= false;
 			switch ($command)
 			{
-				case 'drop':   ## Drop Type from Database
+				case 'drop':   // Drop Type from Database
 					
 					$colTypeArray = explode('|', $colType);
 					
@@ -96,10 +96,10 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					}
 					elseif($isNew == true AND count($colTypeArray) == 1) // If this field is not exist in FileSchema and coltype number is one
 					{
-						$unbracketsColType   = preg_replace('/(\(.*?\))/','', $colType);//post data column types
+						$unbracketsColType   = preg_replace('/(\(.*?\))/','', $colType); // Post data column types
 						$explodedColType     = explode('|',$unbracketsColType);
 						
-						$unbracketsDbColType = preg_replace('/(\(.*?\))/','', $this->dbSchema[$colName]);//db schema column types
+						$unbracketsDbColType = preg_replace('/(\(.*?\))/','', $this->dbSchema[$colName]); // Db schema column types
 						$explodedDbColTypes  = explode('|',$unbracketsDbColType);
 
 						$dbcolKeys           = preg_grep('/'.$unbracketsDbColType.'/',$this->dataTypes); // check data type exists in DbSchema+
@@ -107,15 +107,15 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						$colkey              = array_search($dbColKeyValue,$explodedDbColTypes);  // Array Position 
 
 						$dbArray             = explode('|',$this->dbSchema[$colName]);
-						$dbCommand           = 'ALTER TABLE '.$this->quoteValue($this->schemaName);	// default sql command prefix
+						$dbCommand           = 'ALTER TABLE '.$this->quoteValue($this->schemaName);	// Default sql command prefix
 
-						$dbArray[$colkey]    = $this->removeUnderscore($dbArray[$colkey]);// Remove Underscores from datatypes
+						$dbArray[$colkey]    = $this->removeUnderscore($dbArray[$colkey]); // Remove Underscores from datatypes
 
-						$dbArray[$colkey]    = preg_replace_callback('/([a_-z]+(\())/', function($match) {  // Dont uppercase data inside brackets
+						$dbArray[$colkey]    = preg_replace_callback('/([a_-z]+(\())/', function($match) {  // Don't uppercase data inside brackets
 					        return strtoupper($match[0]); 
 					    }, $dbArray[$colkey]);
 
-							switch ($explodedColType[0])	// types
+							switch ($explodedColType[0]) // Types
 							{
 								case '_null':
 									$dbCommand .= ' MODIFY COLUMN '.$this->quoteValue($colName).' '.$dbArray[$colkey].' NOT NULL';
@@ -155,49 +155,48 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 									break;
 							}
 					}
-					else // // If this field exists in FileSchema
+					else // If this field exists in FileSchema
 					{
-						// $colType; // field data type
-						// $colName; // field name
-						$unbracketsColType     = preg_replace('/(\(.*?\))/','', $colType);//post data column types
+						$unbracketsColType     = preg_replace('/(\(.*?\))/','', $colType); // Post data column types
 						$explodedColType       = explode('|',$unbracketsColType);
 						
-						$unbracketsFileColType = preg_replace('/(\(.*?\))/','', $this->fileSchema[$colName]);//File schema column types
+						$unbracketsFileColType = preg_replace('/(\(.*?\))/','', $this->fileSchema[$colName]); // File schema column types
 						$explodedFileColTypes  = explode('|',$unbracketsFileColType);
 					
-						$dbcolKeys             = preg_grep('/'.$unbracketsFileColType.'/',$this->dataTypes);// check data type exists in FileSchema
+						$dbcolKeys             = preg_grep('/'.$unbracketsFileColType.'/',$this->dataTypes); // Check data type exists in FileSchema
 
-						if (count($dbcolKeys) > 0) // datatype exist in schema
+						if (count($dbcolKeys) > 0) // Datatype exist in schema
 						{
 							$fileSchemaArray = explode('|',$this->fileSchema[$colName]);
 							$colkey          = array_search(array_values($dbcolKeys)[0],$explodedFileColTypes);// ColType array position in file schema
 
-							if ($colKeys = preg_grep('/'.$explodedColType[0].'/',$this->dataTypes)) // if datatype
+							if ($colKeys = preg_grep('/'.$explodedColType[0].'/',$this->dataTypes)) // If datatype
 							{
 								$dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' ';
-								$fileSchemaArray[$colkey] = $this->removeUnderscore($fileSchemaArray[$colkey]);// Remove Underscores from datatypes
+								$fileSchemaArray[$colkey] = $this->removeUnderscore($fileSchemaArray[$colkey]); // Remove Underscores from datatypes
 								
-								$fileSchemaArray[$colkey] = preg_replace_callback('/([a_-z]+(\())/', function($match) {  // Dont uppercase data inside brackets
+								$fileSchemaArray[$colkey] = preg_replace_callback('/([a_-z]+(\())/', function($match) {  // Don't uppercase data inside brackets
 								return strtoupper($match[0]); 
 								}, $fileSchemaArray[$colkey]);
+
 								$dbCommand.= 'MODIFY COLUMN '.$this->quoteValue($colName).$fileSchemaArray[$colkey];
 							}
 							else
 							{
-								$unbracketsDbColType = preg_replace('/(\(.*?\))/','', $this->dbSchema[$colName]);//db schema column types without brackets
-								$explodedDbColTypes  = explode('|',$unbracketsDbColType);//Get column types from DBSchema to array 
+								$unbracketsDbColType = preg_replace('/(\(.*?\))/','', $this->dbSchema[$colName]); // Db schema column types without brackets
+								$explodedDbColTypes  = explode('|',$unbracketsDbColType); // Get column types from DBSchema to array 
 
-								// $test 	   = implode('|',$explodedFileColTypes[0]);
 								$dbcolKeys        = preg_grep('/'.$unbracketsFileColType.'/',$this->dataTypes);
 								$dbArray          = explode('|',$this->dbSchema[$colName]);
 								$dbColKeyValue 	  = array_values($dbcolKeys)[0];
 								$colkey           = array_search($dbColKeyValue,$explodedDbColTypes);
-								$dbArray[$colkey] = $this->removeUnderscore($dbArray[$colkey]);// Remove Underscores from datatypes
+								$dbArray[$colkey] = $this->removeUnderscore($dbArray[$colkey]); // Remove Underscores from datatypes
 								
 								$dbArray[$colkey] = preg_replace_callback('/([a_-z]+(\())/', function($match) {  // Dont uppercase data inside brackets
-								return strtoupper($match[0]); 
+									return strtoupper($match[0]); 
 								}, $dbArray[$colkey]);
-								$dbCommand        = 'ALTER TABLE '.$this->quoteValue($this->schemaName);	// default sql command prefix
+
+								$dbCommand        = 'ALTER TABLE '.$this->quoteValue($this->schemaName);  // Default sql command prefix
 
 								switch ($explodedColType[0])	// types
 								{
@@ -246,7 +245,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 
 					break;
 
-				case 'add-to-db': 	## Add Type to Database
+				case 'add-to-db': 	//  Add Type to Database
 					
 					$schemaKeys = explode('|',$colType);
 
@@ -273,6 +272,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						    $schemaKeys[$colkey] = preg_replace_callback('/([a_-z]+(\())/', function($match) {  // Change Datatypes 
 						        return strtoupper($match[0]); 
 						    }, $schemaKeys[$colkey]);
+
 							$dbCommand .= $schemaKeys[$colkey];
 						}
 						else
@@ -328,7 +328,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 							}
 						}
 					}
-					else 	// new 
+					else 	// New 
 					{
 						$unbracketsColType = preg_replace('/(\(.*?\))/','', $colType);// Get pure column type withouth brackets
 						$unbracketsColTypes = explode('|',$unbracketsColType);
@@ -341,10 +341,10 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						else
 						{
 							$colKeyValue = array_values($columnType)[0];
-							$colkey 	= array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
-							$columnType = $this->removeUnderscore($schemaKeys[$colkey]);
-							$dbCommand  = 'ALTER TABLE '.$this->schemaName;
-							$schemaKeys = explode('|', $colType);
+							$colkey 	 = array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
+							$columnType  = $this->removeUnderscore($schemaKeys[$colkey]);
+							$dbCommand   = 'ALTER TABLE '.$this->schemaName;
+							$schemaKeys  = explode('|', $colType);
 
 							unset($schemaKeys[$colkey]);
 							unset($unbracketsColTypes[$colkey]);
@@ -433,25 +433,26 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					{
 						$schemaKeys = explode('|', $this->fileSchema[$colName]);
 
-						$unbracketsFileColType = preg_replace('/(\(.*?\))/','', $this->fileSchema[$colName]);// Get pure column type withouth brackets
-						$unbracketsFileColTypes = explode('|',$unbracketsFileColType); // array of unbracketsFileColType
+						$unbracketsFileColType 	= preg_replace('/(\(.*?\))/','', $this->fileSchema[$colName]); // Get pure column type withouth brackets
+						$unbracketsFileColTypes = explode('|',$unbracketsFileColType); // Array of unbracketsFileColType
 
-						if ($key = preg_grep('/'.$unbracketsFileColType.'/',$this->dataTypes)) // search into datatypes with matches
+						if ($key = preg_grep('/'.$unbracketsFileColType.'/',$this->dataTypes)) // Search into datatypes with matches
 						{
 							$colFileKeyValue = array_values($key)[0];
-							$colkey  = array_search($colFileKeyValue,$unbracketsFileColTypes);// find datatype location in matches 
+							$colkey  = array_search($colFileKeyValue,$unbracketsFileColTypes); // Find datatype location in matches 
 						}
-						$unbracketsColType = preg_replace('/(\(.*?\))/','', $colType);// Get pure column type withouth brackets
-						$unbracketsColTypes = explode('|',$unbracketsColType);// create pure Column Types without brackets and variables 
+
+						$unbracketsColType 	= preg_replace('/(\(.*?\))/','', $colType);// Get pure column type withouth brackets
+						$unbracketsColTypes = explode('|',$unbracketsColType); // Create pure column types without brackets and variables 
 						
 						switch ($unbracketsColTypes[0])	// types
 						{
 							case '_null':
-									if (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) //if not null exists change it
+									if (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) // if not null exists change it
 									{
 										$schemaKeys[$key] = '_null' ;
 									}
-									elseif (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) //if null exists change it
+									elseif (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) // if null exists change it
 									{
 										$schemaKeys[$key] = '_null' ;
 									}
@@ -463,11 +464,11 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 								break;
 
 							case '_not_null':
-									if (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) //if null exists change it
+									if (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) // if null exists change it
 									{
 										$schemaKeys[$key] = '_not_null' ;
 									}
-									elseif (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) //if _not_null exists change it
+									elseif (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) // if _not_null exists change it
 									{
 										$schemaKeys[$key] = '_not_null' ;
 									}
@@ -517,8 +518,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					$this->fileSchema[$colName] = trim(implode('|',$schemaKeys),'|');
 					foreach($this->fileSchema as $k => $types)
 					{
-						// $ruleString.= trim($this->buildSchemaField($k, $types),'|');
-						$ruleString.= $this->schemaObject->buildSchemaField($k, $types);
+						$ruleString.= $this->schemaObject->driver->buildSchemaField($k, $types);
 					}
 					
 					$this->schemaObject->setDebugOutput($ruleString);
@@ -554,8 +554,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 
 						foreach($this->fileSchema as $k => $types)
 						{
-							//$ruleString.= $this->buildSchemaField($k, $types);
-							$ruleString.= $this->schemaObject->buildSchemaField($k, $types);
+							$ruleString.= $this->schemaObject->driver->buildSchemaField($k, $types);
 						}
 
 						$this->schemaObject->setDebugOutput($ruleString);

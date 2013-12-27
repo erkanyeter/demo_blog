@@ -13,7 +13,6 @@ Abstract Class Schema_Auto_Sync {
 	public $schemaName = null;			// lowercase schema name
 	public $dbSchema   = array();		// database schema array
 	public $fileSchema = array();		// stored file schema array
-	// public $currentFileSchema = array();// current ( pure ) fileschema array
 	public $schemaDiff = array();		// last schema output after that the sync
 
 	// --------------------------------------------------------------------
@@ -41,11 +40,8 @@ Abstract Class Schema_Auto_Sync {
 			$newFileSchema[$colprefix.$k] = $v;
 		}
 
-	    // $this->currentFileSchema = $fileSchema; // Backup Current Schema
-
 		eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
 		unset($databaseSchema['*']);
-
 
 		$this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema);  // Render schema, fetch just types.
 		$this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema);  // Get just types 

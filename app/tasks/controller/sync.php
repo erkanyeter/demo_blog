@@ -32,8 +32,8 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
 
     if( ! empty($postData))
     {
-        // print_r(base64_decode($postData)); 
-        // exit; 
+        // print_r(base64_decode($postData));  exit;
+        
         $_POST = unserialize(base64_decode($postData));  // Convert encoded raw post data to array format
     }
 
@@ -51,59 +51,16 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
 
         if(isset($currentSchema['*']['colprefix']) AND $schema->getPrefix() != $currentSchema['*']['colprefix'])
         {
-/*
-            $colprefix = $currentSchema['*']['colprefix'];
-            unset($currentSchema['*']);
-            
-            $currentSchema;
-
-            $startArray = "array(\n\t\t'label' => '$label',\n\t\t'types' => ";
-            $rulesArray = "\n\t\t'rules' => '',\n\t\t";
-            $endArray   = "),";
-
-
-            $content = file_get_contents($schema->getPath());
-
-            unlink($schema->getPath()); // remove current schema & then rebuild it with new prefix
-
-            if(empty($colprefix))
-            {
-                
-
-                foreach($currentSchema as $k => $v) // prefix foreach key
-                {
-                    $oldKey = "'".$k."'";
-                    $newKey = "'".$schema->getPrefix().$k."'";
-
-                    $content = str_replace($oldKey, $newKey, $content);
-                }
-            }            
-
-            $schema->writeToFile($content, $colprefix); // recreate it with new prefix
-*/
-            /*
-            $colprefix = $currentSchema['*']['colprefix'];
-            $content = file_get_contents($schema->getPath());
-            if(empty($colprefix))
-            {
-                $content = str_replace("'$colprefix", "'", $content);
-            }
-            */
-            // $content = $schema->read();
-
             $colprefix = $currentSchema['*']['colprefix'];
             unset($currentSchema['*']);
 
             $ruleString = '';
             foreach($currentSchema as $key => $val)
             {
-                $ruleString.= $schema->buildSchemaField($key, $val['types']); 
+                $ruleString.= $schema->driver->buildSchemaField($key, $val['types']); 
             }
 
-            // unlink($schema->getPath()); // remove current schema & then rebuild it with new prefix
-
             $schema->writeToFile($ruleString, $colprefix); // recreate it with new prefix
-            
         } 
         else  // Check database table
         {

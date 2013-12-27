@@ -11,32 +11,31 @@ $posts = array(
 	'user_id' => array(
 		'label' => 'Post User Id',
 		'types' => '_null|_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)',
-		'rules' => 'required',
+		'rules' => '',
 		),
 	'title' => array(
 		'label' => 'Post Title',
-		'types' => '_varchar(60)|_not_null',
+		'types' => '_not_null|_varchar(60)',
 		'rules' => '',
 		),
 	'content' => array(
 		'label' => 'Post Content',
-		'types' => '_varchar(60)|_not_null',
+		'types' => '_not_null|_varchar(60)',
 		'rules' => '',
 		),
 	'tags' => array(
 		'label' => 'Post Tags',
-		'types' => '_varchar(256)|_null',
+		'types' => '_null|_varchar(256)',
 		'rules' => '',
 		),
 	'status' => array(
 		'label' => 'Post Status',
-		'func' => 'function(){}',
+		'types' => '_not_null|_enum',
 		'_enum' => array(
 			'Draft',
 			'Published',
 			'Archived',
 		),
-		'types' => '_not_null|_enum',
 		'rules' => '',
 		),
 	'creation_date' => array(

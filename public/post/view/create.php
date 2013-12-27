@@ -55,8 +55,6 @@
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
-
-
 			                    <tr>
 			                        <td><?php echo $this->form->label('Tags', 'tags') ?></td>
 			                        <td>

@@ -350,9 +350,7 @@ Class Schema {
         {
             if(isset($_POST['lastCurrentPage']))
             {
-                $currentPage = $_POST['lastCurrentPage'];   // Get encoded back url from hidden input
-
-                $url->redirect(urldecode($currentPage));
+                $url->redirect(urldecode($_POST['lastCurrentPage'])); // Get encoded redirect url from hidden input
             } 
             else 
             {
@@ -558,96 +556,6 @@ Class Schema {
     public function debug()
     {
         $this->debug = true;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Build schema string
-     * 
-     * @param  fieldname $key
-     * @param  database types $types
-     * @param  string $newType
-     * @return string
-     */
-    public function buildSchemaField($key, $types, $newType = '')
-    {
-        $fileSchema = getSchema($this->tablename);
-        $this->currentFileSchema = $fileSchema;
-        unset($fileSchema['*']);  // Get only fields no settings
-
-        $colprefix = $this->getPrefix();
-
-        if( ! empty($colprefix))  // replace prefix and rewrite no prefix fields into schema
-        {
-            $key = str_replace($colprefix, '', $key);
-        }
-
-        $currentPrefix = $this->currentFileSchema['*']['colprefix'];
-        $newKey = $key;
-        if(empty($currentPrefix))
-        {
-            $newKey = $this->getPrefix().$key;
-        }
-
-        $label = (isset($this->currentFileSchema[$key]['label'])) ? $this->currentFileSchema[$key]['label'] : $this->_createLabel($key);
-        $rules = (isset($this->currentFileSchema[$key]['rules'])) ? $this->currentFileSchema[$key]['rules'] : '';
-        $func  = (isset($this->currentFileSchema[$key]['func'])) ? $this->currentFileSchema[$key]['func'] : '';
-
-        $ruleString = "\n\t'$newKey' => array(";
-        $ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
-
-        if( ! empty($func))
-        {
-            $ruleString.= "\n\t\t'func' => '$func',";  // fetch _func from current schema
-        }
-
-        if(empty($newType))
-        {
-            if(isset($this->currentFileSchema[$key]['_enum']))  // if _enum exists convert it to string for array rendering.
-            {
-                $enumData = '(';
-                foreach($this->currentFileSchema[$key]['_enum'] as $v)
-                {
-                    $enumData.= '"'.$v.'",';
-                }
-
-                $enumData = rtrim($enumData,',');
-                $enumData .= ')';
-                $types = str_replace('_enum', '_enum'.$enumData, $types);
-            }
-
-            if (preg_match('/(_enum)(\(.*?\))/',$types, $match) ) // if type is enum create enum field as an array
-            {
-                $enumStr  = $match[0];  // _enum("","")
-                $enum     = $match[1];  // _enum
-                $enumData = $match[2];  // ("","")
-
-                $types = preg_replace('/'.preg_quote($enumStr).'/', '_enum', $types);
-                
-                $ruleString .= "\n\t\t'_enum' => array(";   // render enum types
-                foreach(explode(',', trim(trim($enumData, ')'),'(')) as $v)
-                {
-                    $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
-                }
-
-                $ruleString .= "\n\t\t),";
-
-                $types = str_replace($enumData, '', $types);
-            }
-
-            $ruleString.= "\n\t\t'types' => '".$types."',";
-        }
-        else 
-        {
-            $typeStr    = (is_array($types)) ? $newType : $types.'|'.$newType; // new field comes as array data we need to prevent it.
-            $ruleString.= "\n\t\t'types' => '".$typeStr."',";
-        }
-
-        $ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the rules from current schema
-        $ruleString.= "\n\t\t),";
-
-        return $ruleString;
     }
 
     // --------------------------------------------------------------------
