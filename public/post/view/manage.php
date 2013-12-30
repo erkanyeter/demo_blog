@@ -12,7 +12,13 @@
 
 		<div id="clear"></div>
 		<div id="containerbox">
-			 
+			
+			<section>
+				<?php 
+					echo $this->form->getNotice();
+				?>
+			</section>
+
 			<div id="content">
 
 				<div id="navigation">
@@ -32,44 +38,56 @@
 						<th class="table_head x">Create Time</th>
 						<th class="table_head"> </th>
 
-						<tr >
-							<td><input type="text" name="title" onkeypress="keyPress();"></td>
+						<tr>
 							<td>
-			
-<?php 
-
-$customOptions = array('' => '');
-echo $this->form->dropdown('status',array('getSchema(posts)[status][_enum]', $customOptions), $this->form->setValue('status'), ' onchange="submitPage();" '); 
+							<?php echo $this->form->input('title', $this->form->setValue('title'), " onkeypress='keyPress();' ")  ?>
+							</td>
+							<td>
+							<?php 
+							$customOptions = array('' => '');
+echo $this->form->dropdown('status',array($customOptions,'getSchema(posts)[status][func]'), $this->form->setValue('status'),' onchange="submitPage();" '); 
 							?>
 							</td>
 							<td>  </td>
 							<td>  </td>
 						</tr>
 
-				<?php 
-				$i = 0;
-				foreach($posts as $post) {
-				$i++; 
-				$mod = ($i%2) == 0 ? 'datacolor1' : 'datacolor2';
-				 ?>
-						<tr id="<?php echo $mod ?>">
-							<td><?php echo $post->post_title ?></td>
-							<td><?php echo $post->post_status ?></td>
-							<td><?php echo $post->post_creation_date ?></td>
-							<td class="options">
-							<?php echo $this->url->anchor('post/manage_detail/'.$post->post_id,
-								$this->html->img('view.png')
-							) ?>
-							<?php echo $this->url->anchor('post/manage_update/'.$post->post_id,
-								$this->html->img('update.png')
-							) ?>
-							<?php echo $this->url->anchor('post/manage_delete/'.$post->post_id,
-								$this->html->img('delete.png')
-							) ?>
-							</td>
-						</tr>
-				 <?php } ?>
-					</table>
+				<?php if(count($posts) > 0) { ?>
+
+				<?php $i = 0;
+					foreach($posts as $post) {
+					$i++; 
+					$mod = ($i%2) == 0 ? 'datacolor1' : 'datacolor2';
+					 ?>
+							<tr id="<?php echo $mod ?>">
+								<td><?php echo $post->post_title ?></td>
+								<td><?php echo $post->post_status ?></td>
+								<td><?php echo $post->post_creation_date ?></td>
+								<td class="options">
+								<?php echo $this->url->anchor('post/preview/'.$post->post_id,
+									$this->html->img('view.png')
+								) ?>
+								<?php echo $this->url->anchor('post/update/'.$post->post_id,
+									$this->html->img('update.png')
+								) ?>
+
+<?php echo $this->url->anchor('post/delete/'.$post->post_id,
+									$this->html->img('delete.png'),
+								' onclick="return confirm(\'Are you sure from this action ?\');"  ') ?>
+
+								</td>
+							</tr>
+					 <?php } ?>
+
+				<?php } else { ?> 
+
+				<tr>
+					<td colspan="4">Record not found</td>
+				</tr>
+
+				<? } ?>
+
+				</table>
 
 				<?php echo $this->form->close() ?>
 

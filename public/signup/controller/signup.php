@@ -57,8 +57,8 @@ $c->func('index', function() use($c){
 
             if($this->user->save())  // save user
             {        
-                $this->form->setNotice('User saved successfully.');
-                $this->url->redirect('/login?success=true');
+                $this->form->setNotice('User saved successfully.','success');
+                $this->url->redirect('/login');
             }
 
     	}

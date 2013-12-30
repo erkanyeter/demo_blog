@@ -14,7 +14,7 @@ namespace Form\Src {
     * 
     * @return	string
     */
-    function dropdown($name = '', $options = 'getSchema(posts)[field][_enum]', $selected = array(), $extra = '')
+    function dropdown($name = '', $options = 'getSchema(posts)[field]', $selected = array(), $extra = '')
     {
         // --------- PARSE SCHEMA ---------- //
         
@@ -23,22 +23,23 @@ namespace Form\Src {
             $options = _parseSchemaOptions($options);
         } 
 
-        if(is_array($options) AND (is_string($options[0]) AND strpos($options[0], 'getSchema') === 0))
+        if(is_array($options))
         {
-            if(isset($options[1])) // custom options
-            { 
-                $customOption = $options[1];
-                $options = _parseSchemaOptions($options[0]);
-                $options = array_merge($options,$customOption);
-            }
+            if(isset($options[0]) AND is_string($options[0]) AND strpos($options[0], 'getSchema') === 0)
+            {
+                if(isset($options[1])) // custom options
+                { 
+                    $customOption = $options[1];
+                    $options = _parseSchemaOptions($options[0]);
+                    $options = array_merge($options,$customOption);
+                }
 
-        } elseif(is_array($options) 
-            AND isset($options[1]) 
-            AND strpos($options[1], 'getSchema') === 0)
-        {
-            $customOption = $options[0];
-            $options = _parseSchemaOptions($options[1]);
-            $options = array_merge($customOption,$options);
+            } elseif(isset($options[1]) AND strpos($options[1], 'getSchema') === 0)
+            {
+                $customOption = $options[0];
+                $options = _parseSchemaOptions($options[1]);
+                $options = array_merge($customOption,$options);
+            }
         }
 
         // --------- PARSE SCHEMA END ---------- //
@@ -125,13 +126,25 @@ namespace Form\Src {
 
         $schemaName = $matches[2];
         $fieldName  = $matches[3];
-        $enumName   = $matches[4];
+        $enumName   = $matches[4]; // _enum / func
 
         $schema  = getSchema($schemaName);
-        $options = array();
-        foreach($schema[$fieldName][$enumName] as $v)
+
+        if($enumName == 'func')
         {
-            $options[$v] = $v;
+            $closure = $schema[$fieldName][$enumName];
+            if(is_callable($closure))
+            {
+                $options = call_user_func_array(\Closure::bind($closure,getInstance(), 'Controller'), array());
+            }
+        } 
+        else 
+        {
+            $options = array();
+            foreach($schema[$fieldName][$enumName] as $v)
+            {
+                $options[$v] = $v;
+            }
         }
 
         return $options;

@@ -128,16 +128,28 @@ Class Schema_Mysql {
         }
 
         $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->_createLabel($key);
+        
         $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
-        $func  = (isset($currentFileSchema[$key]['func'])) ? $currentFileSchema[$key]['func'] : '';
 
         $ruleString = "\n\t'$newKey' => array(";
         $ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
 
-        if( ! empty($func))
+        // --------- RENDER FUNC ----------//
+        
+        if(isset($currentFileSchema[$key]['func']))
         {
-            $ruleString.= "\n\t\t'func' => '$func',";  // fetch _func from current schema
+	    	$schemaFile = file_get_contents($this->schemaObject->getPath());
+	    	$schemaFile = str_replace('<?php','',$schemaFile);
+
+	    	preg_match("/'$key'(.*?)'func'(\s*)(=>)(\s*)(.*?)\},/s",$schemaFile, $matches);
+
+	        if( isset($matches[5]))
+	        {
+	            $ruleString.= "\n\t\t'func' => $matches[5]},";  // fetch _func from current schema
+	        }
         }
+
+        // --------- RENDER FUNC ----------//
 
         if(empty($newType))
         {

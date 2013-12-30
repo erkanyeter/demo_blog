@@ -25,14 +25,7 @@
 
 			        <section>
 			            <?php 
-			            if($this->get->get('success'))
-			            {
-							echo $this->form->getNotice('success');
-			            } 
-			            else 
-			            {
-			            	echo $this->form->getNotice(); // error
-			            }
+			            	echo $this->form->getNotice();
 			            ?>
 			        </section>
 

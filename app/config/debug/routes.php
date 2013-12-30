@@ -25,6 +25,9 @@ $routes = array(
 
 	'tag/(:any)' => 'tag/index/$1',
 	'post/detail/(:num)' => 'post/detail/index/$1',
+	'post/preview/(:num)' => 'post/preview/index/$1',
+	'post/update/(:num)' => 'post/update/index/$1',
+	'post/delete/(:num)' => 'post/delete/index/$1',
 	
 	// Default Controller 
 	'default_controller' => 'welcome/index', // This is the default controller, application call it as default

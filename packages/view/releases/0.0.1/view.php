@@ -71,10 +71,10 @@ Class View {
             extract($this->_string, EXTR_SKIP); 
         }
 
-        if(count($this->_array) > 0)
-        {
+        if(sizeof($this->_array) > 0)
+        {   
             extract($this->_array, EXTR_SKIP); 
-        }
+        } 
 
         if(count($this->_object) > 0)
         {
@@ -118,9 +118,16 @@ Class View {
 
         if(is_array($val))
         {
-            foreach($val as $value)
+            if(count($val) == 0)
             {
-                $this->_array[$key][] = $value;
+                $this->_array[$key] = array();
+            } 
+            else 
+            {
+                foreach($val as $value)
+                {
+                    $this->_array[$key][] = $value;
+                }
             }
         }
 

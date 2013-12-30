@@ -21,7 +21,7 @@ namespace Form\Src {
 
         if(config('enable_query_strings') AND isset($_GET['errors'][$field])) // GET Support
         {
-            return sprintf($form['errors']['error'], $_GET['errors'][$field]);
+            return sprintf($form['notifications']['error'], $_GET['errors'][$field]);
         }
         
         if (false === ($OBJ = getInstance()->form->_getValidatorObject()))
@@ -31,7 +31,7 @@ namespace Form\Src {
 
         if($prefix == '' AND $suffix == '')
         {
-            return sprintf($form['errors']['error'], $OBJ->errors($field, '', ''));
+            return sprintf($form['notifications']['error'], $OBJ->errors($field, '', ''));
         }
 
         return $OBJ->errors($field, $prefix, $suffix);

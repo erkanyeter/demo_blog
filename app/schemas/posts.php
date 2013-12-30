@@ -10,7 +10,7 @@ $posts = array(
 		),
 	'user_id' => array(
 		'label' => 'Post User Id',
-		'types' => '_null|_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)',
+		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null',
 		'rules' => '',
 		),
 	'title' => array(
@@ -25,17 +25,25 @@ $posts = array(
 		),
 	'tags' => array(
 		'label' => 'Post Tags',
-		'types' => '_null|_varchar(255)',
+		'types' => '_varchar(255)|_null',
 		'rules' => 'maxLen(255)',
 		),
 	'status' => array(
 		'label' => 'Post Status',
-		'types' => '_not_null|_enum',
+		'func' => function(){
+			$options = array();
+			foreach($this->db->get('users')->result() as $row)
+			{
+				$options[$row->user_username] = $row->user_username;
+			}
+			return $options;
+		},
 		'_enum' => array(
 			'Draft',
 			'Published',
 			'Archived',
 		),
+		'types' => '_not_null|_enum',
 		'rules' => 'required',
 		),
 	'creation_date' => array(

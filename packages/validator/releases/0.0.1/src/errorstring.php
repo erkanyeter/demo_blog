@@ -18,19 +18,19 @@ namespace Validator\Src {
         $form      = \Form::getFormConfig();
         $validator = getInstance()->validator;
         
-        if (sizeof($validator->_error_array) === 0)         // No errrors, validation passes!
+        if (sizeof($validator->_error_array) === 0)         // No errrors, validation passes !
         {
             return '';
         }
 
-        $str = '';         
+        $str = '';        
         foreach ($validator->_error_array as $val)  // Generate the error string
         {
             if ($val != '')
             {
                 if($prefix == '' AND $suffix == '')
                 {
-                    $str .= sprintf($form['errors']['error'], $val);
+                    $str .= sprintf($form['notifications']['error'], $val);
                 } 
                 else 
                 {

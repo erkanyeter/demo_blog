@@ -300,10 +300,10 @@ Class Odm {
 
         if(isset($this->_odmErrors[$table]['messages'][$key]))
         {
-            if(in_array($key, array('error','errorMessage','success')))
+            if(in_array($key, array('error','errorMessage','successMessage')))
             {
                 $form     = Form::getFormConfig();
-                $template = empty($prefix) ? $form['errors'][$key] : $prefix.'%s'.$suffix;
+                $template = empty($prefix) ? $form['notifications'][$key] : $prefix.'%s'.$suffix;
 
                 return sprintf($template, $this->_odmErrors[$table]['messages'][$key]);
             }
@@ -378,12 +378,10 @@ Class Odm {
      * 
      * @param string $message set notification message.
      */
-    public function setNotice($message)
+    public function setNotice($message, $errorKey = 'error')
     {
-        $Class = getComponent('sess');
-        $sess  = (isset(getInstance()->sess)) ? getInstance()->sess : new $Class;
-
-        $sess->setFlash('_odmNotice_'.$this->_odmTable, $message);
+        $form = new Form;
+        $form->setNotice($message, $errorKey, $this->_odmTable);
     }
 
     // --------------------------------------------------------------------
@@ -393,21 +391,16 @@ Class Odm {
      * 
      * @return string notification
      */
-    public function getNotice()
+    public function getNotice($errorKey = '')
     {
-        $Class = getComponent('sess');
-        $sess  = (isset(getInstance()->sess)) ? getInstance()->sess : new $Class;
+        $form = new Form;
 
-        $form     = Form::getFormConfig();
-        $errorKey = ($this->messages('success') == 1) ? 'success' : 'errorMessage';
-        $notice   = $sess->getFlash('_odmNotice_'.$this->_odmTable);
-
-        if( ! empty($notice))
+        if(empty($errorKey))
         {
-            return sprintf($form['errors'][$errorKey], $notice);
+            $errorKey = ($this->messages('success') == 1) ? 'successMessage' : 'errorMessage';
         }
 
-        return;
+        return $form->getNotice($errorKey, $this->_odmTable);
     }
 
     // --------------------------------------------------------------------

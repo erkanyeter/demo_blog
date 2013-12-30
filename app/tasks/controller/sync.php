@@ -31,9 +31,7 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
     $schemaPath = $schema->getPath();
 
     if( ! empty($postData))
-    {
-        // print_r(base64_decode($postData));  exit;
-        
+    {        
         $_POST = unserialize(base64_decode($postData));  // Convert encoded raw post data to array format
     }
 

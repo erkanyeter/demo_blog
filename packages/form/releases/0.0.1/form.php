@@ -55,10 +55,10 @@ Class Form {
     *
     * Helper function used by some of the form helpers
     *
-    * @access	private
-    * @param	array
-    * @param	array
-    * @return	string
+    * @access   private
+    * @param    array
+    * @param    array
+    * @return   string
     */
     public static function _parseFormAttributes($attributes, $default)
     {
@@ -100,10 +100,10 @@ Class Form {
     *
     * Helper function used by some of the form helpers
     *
-    * @access	private
-    * @param	mixed
-    * @param	bool
-    * @return	string
+    * @access   private
+    * @param    mixed
+    * @param    bool
+    * @return   string
     */
     public static function _attributesToString($attributes, $formtag = false)
     {
@@ -124,16 +124,16 @@ Class Form {
             }
 
             // Search class attribute
-            $class = preg_match('/(class)(\s(=)|(=))(\s(")|("))(.*?)(")/', $attributes, $matches);
+            $class = preg_match('/(class)(\s*(=))(\s*("))(.*?)(")/', $attributes, $matches);
 
             if ($formtag == true AND $class == false)
             {
                 $attributes.= sprintf(' class="%s"', $form['templates'][self::$template]['formClass']);
             } 
-            elseif($formtag == true AND isset($matches[8]))
+            elseif($formtag == true AND isset($matches[6]))
             {
                 $attributes = str_replace($matches[0], '', $attributes);
-                $attributes.= sprintf(' class="%s %s"', $matches[8], $form['templates'][self::$template]['formClass']);   
+                $attributes.= sprintf(' class="%s %s"', $matches[6], $form['templates'][self::$template]['formClass']);   
             }
 
             return ' '.$attributes;
@@ -199,8 +199,8 @@ Class Form {
     * Determines what the form validation class was instantiated as, fetches
     * the object and returns it.
     *
-    * @access	public
-    * @return	mixed
+    * @access   public
+    * @return   mixed
     */
     public function _getValidatorObject()
     {
@@ -226,7 +226,7 @@ Class Form {
         if($form['use_template'] == false)
         {
             $array['templates'][self::$template] = array_map('strip_tags', $form['templates'][self::$template]);
-            $array['errors'] = $form['errors'];
+            $array['notifications'] = $form['notifications'];
 
             return $array;   
         }

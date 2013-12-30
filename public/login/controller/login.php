@@ -43,7 +43,7 @@ $c->func('index', function() use($c){
 				} 
 
 				$this->form->setNotice('Wrong username / password combination.');
-				$this->url->redirect($this->auth->item('login_url'));
+				$this->url->redirect('/login');
             }
     	}
 
