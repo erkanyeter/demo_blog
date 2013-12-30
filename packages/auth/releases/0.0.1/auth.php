@@ -35,6 +35,7 @@ Class Auth {
     public $xss_clean          = true;   // Whether to enable the xss clean features.
     public $regenerate_sess_id = false;  // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
     public $row                = false;  // SQL Query result as row
+    private $isValid           = false;  // Auth validation variable
 
     public $username;
     protected $password;
@@ -99,15 +100,18 @@ Class Auth {
         $password = ($this->password_salt_str != '') ? ($this->password_salt_str.trim($password)) : trim($password);
 
         $this->username = trim($username);
-        $this->password = $this->hashPassword($password);
+        $this->password = $password;
 
         // Get query function.
         $this->row = call_user_func_array(Closure::bind($this->query, $this, get_class()), array($this->username));
 
-        if(is_object($this->row) AND isset($this->row->password_col))
+        $password_col = $this->password_col;
+
+        if(is_object($this->row) AND isset($this->row->{$password_col}))
         {
-            if($this->verifyPassword($this->password))
+            if($this->verifyPassword($this->password, $this->row->{$password_col}))
             {
+                $this->isValid = true;
                 return $this->row;
             }
         }
@@ -154,12 +158,12 @@ Class Auth {
      * @param  string $password
      * @return string $hash
      */
-    public function verifyPassword($password)
+    public function verifyPassword($password, $dbPassword)
     {
         switch($this->algorithm)
         {
             case 'bcrypt':{
-                return $this->bcrypt->verifyPassword($password, $this->row->password_col);
+                return $this->bcrypt->verifyPassword($password,$dbPassword);
                 break;
             }
             case 'md5':
@@ -167,7 +171,7 @@ Class Auth {
             case 'sha256':
             case 'sha512':{
                 $hash = hash($this->algorithm, $password);
-                return ($password === $hash);
+                return ($dbPassword === $hash);
                 break;
             }
         }
@@ -186,7 +190,7 @@ Class Auth {
     {
         $row = $this->getRow();
 
-        if(is_object($row) AND isset($row->{$this->username_col}))
+        if(is_object($row) AND $this->isValid === true)
         {
             return TRUE;
         }

@@ -13,11 +13,6 @@ $c = new Controller(function(){
 	new Tag_Cloud;
     new Form;
     new Get;
-
-    if( ! $this->auth->hasIdentity())
-    {
-        $this->url->redirect('/login');
-    }
 });
 
 $c->func('index', function($id) use($c){
@@ -33,7 +28,7 @@ $c->func('index', function($id) use($c){
 
         // get comments
         $this->db->where('comment_post_id',$id);
-        $this->db->where('comment_status', 1);
+        $this->db->where('comment_status', '1');
         $this->db->get('comments'); // reset query
 
         $this->set('comments', $this->db->result());

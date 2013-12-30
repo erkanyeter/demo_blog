@@ -1,7 +1,7 @@
 
 <div id="sidebar">
 
-	<?php if($this->auth->hasIdentity()) { // check is auth ok. ?>
+	<?php if($this->auth->hasIdentity()) { ?>
 
 	 <div id="sidepaneluser">
 
@@ -13,7 +13,12 @@
 	 	<div class="tags_panel">
 		 	<?php echo $this->url->anchor('/post/create', 'Create New Post') ?> <br>
 		 	<?php echo $this->url->anchor('/post/manage', 'Manage Posts') ?> <br>
-		 	<?php echo $this->url->anchor('/post/approve', 'Approve Comments') ?> <span class="approve_comments">(3)</span> <br>
+		 	<?php echo $this->url->anchor('/post/approve', 'Approve Comments') ?> <span class="approve_comments">
+		 		( <?php
+		 		$this->db->where('comment_status','0');
+        		echo $this->db->get('comments')->count();
+		 		?> )
+		 	</span> <br>
 		 	<?php echo $this->url->anchor('/logout', 'Logout') ?> <br>
 	 	</div>
 

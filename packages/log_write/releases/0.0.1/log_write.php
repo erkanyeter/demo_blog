@@ -34,7 +34,7 @@ Class Log_Write {
         $levels    = array('ERROR' => '1', 'DEBUG' => '2',  'INFO' => '3', 'BENCH' => '4', 'ALL' => '5');
         $level     = strtoupper($level);
 
-        $logPath         = APP .'logs'. DS;
+        $logPath         = DATA .'logs'. DS;
         $log_threshold   = config('log_threshold');
         $log_date_format = config('log_date_format');
 
@@ -87,7 +87,7 @@ Class Log_Write {
 
         $message .= $level.' '.(($level == 'INFO') ? ' -' : '-').' '.date($date_fmt). ' --> '.$msg."\n";  
 
-        if(is_writable($logPath))
+        if( ! is_writable($logPath))
         {
             throw new Exception("The log path is not writable. Please give write permission to this folder.
                         <pre>+ app\n+ data\n - <b>logs</b>\n+public</pre>");
@@ -103,8 +103,8 @@ Class Log_Write {
         flock($fp, LOCK_UN);
         fclose($fp);
 
-        chmod($filepath, 0666);
-        
+        chmod($filePath, 0666);
+
         return true;
     }    
     

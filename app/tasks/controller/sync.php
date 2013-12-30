@@ -27,7 +27,18 @@ $c = new Controller(function(){
  */
 $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postData = '')
 {
-    $schema     = new Schema($tablename, $modelName, getInstance()->{$dbVar}, urldecode($requestUri));
+
+    if( ! isset(getInstance()->{$dbVar}))
+    {
+        $database = new Db($dbVar);
+        $dbObject = $database->connect();
+    } 
+    else 
+    {
+        $dbObject = getInstance()->{$dbVar};
+    }
+
+    $schema     = new Schema($tablename, $modelName, $dbObject, urldecode($requestUri));
     $schemaPath = $schema->getPath();
 
     if( ! empty($postData))

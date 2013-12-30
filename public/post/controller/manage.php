@@ -10,11 +10,6 @@ $c = new Controller(function(){
 	new Html;
 	new Form;
     new Get;
-
-    if( ! $this->auth->hasIdentity())
-    {
-        $this->url->redirect('/login');
-    }
 });
 
 $c->func('index', function() use($c){

@@ -18,21 +18,59 @@
 | -------------------------------------------------------------------
 | Prototype
 | -------------------------------------------------------------------
-| $autorun = array(
-|	'controller' => function(){
-|		$this->lingo->load('spanish');
-|	}
+| 
+|$autorun['controller'] = array('init');
+|
+*/
+
+$autorun['controller'] = array('init','menu');
+
+/*
+|--------------------------------------------------------------------------
+| Run for defined routes
+|--------------------------------------------------------------------------
+| 
+| Prototype
+| 
+| $autorun['routes'] = array(
+|	'directory/class/method' => array('function_name')
+| )
+|
+*/
+
+$autorun['routes'] = array(
+	'post/create/index' => array('auth'),
+	'post/update/index' => array('auth'),
+	'post/delete/index' => array('auth'),
+	'post/preview/index' => array('auth'),
+);
+
+/*
+|--------------------------------------------------------------------------
+| Defined functions for autorun
+|--------------------------------------------------------------------------
+| 
+| Prototype
+| 
+| $autorun['func'] = array(
+|    'function_name' => function(){},
 | );
 |
 */
-$autorun = array(
-	'controller' => function(){
 
-		new Auth;
+$autorun['func'] = array(
+	'init' => function(){
 		new Sess;
-
-		$this->config->load('menu');
-
+		new Auth;
+	},
+	'auth' => function(){
+	    if( ! $this->auth->hasIdentity())
+	    {
+	        $this->url->redirect('/login');
+	    }
+	},
+    'menu' => function(){
+		$this->config->load('menu');  // load menu config
 	}
 );
 

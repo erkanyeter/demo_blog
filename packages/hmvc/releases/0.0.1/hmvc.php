@@ -21,6 +21,7 @@ Class Hmvc
     public $request_keys     = array();
     public $request_method   = 'GET';
     public $process_done     = false;
+    public $no_loop          = false;
 
     private $class;
     private $method;
@@ -296,6 +297,20 @@ Class Hmvc
     {
         static $storage = array();  // store called classes.
 
+        if($this->no_loop)
+        {
+            $conn_id = $this->_getId();
+
+            if( isset(self::$_conn_id[$conn_id]) )   // We need that to prevent HMVC loops if someone use hmvc request
+            {                                        // in Application or Module Controller.
+                $this->_resetRouter(TRUE);
+
+                return $this->_response();
+            }
+
+            self::$_conn_id[$conn_id] = $conn_id;    // store connection id.
+        }
+
         $URI    = getInstance()->uri;
         $router = getInstance()->router;
 
@@ -445,18 +460,40 @@ Class Hmvc
         
         ######################################
 
-        ++self::$request_count;
+        //---------- End Query Timer -----------//        
 
-        //---------- End Query Timer -----------//
+        if($no_loop == FALSE)
+        {
+            ++self::$request_count; // store total requests
 
-        list($em, $es) = explode(' ', microtime());
-        $end_time = ($em + $es); 
+            list($em, $es) = explode(' ', microtime());
+            $end_time = ($em + $es); 
 
-        logMe('info', 'Hmvc request: '.getInstance()->uri->uriString().' time: '.number_format($end_time - self::$start_time, 4));
-        
+            logMe('info', 'Hmvc request: '.getInstance()->uri->uriString().' time: '.number_format($end_time - self::$start_time, 4));
+
+        }
+
         $this->process_done = true;  // This means hmvc process done without any errors.
                                      // If process_done == false we say to destruct method "reset the router" variables 
                                      // and return to original variables of the Framework's before we clone them.
+    }
+
+    // --------------------------------------------------------------------
+    
+    /**
+    * Warning !!!
+    * When we use HMVC in Main Controller
+    * HMVC request will be in a unlimited loop, noLoop() function
+    * will prevent this loop and any possible http server crashes (ersin).
+    *
+    * @param  bool $default
+    * @return void
+    */
+    public function noLoop($default = TRUE)
+    {
+        $this->no_loop = $default;
+
+        return $this;
     }
 
     // --------------------------------------------------------------------

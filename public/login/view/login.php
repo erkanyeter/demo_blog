@@ -31,7 +31,7 @@
 
 						<p>Please fill out the following form with your login credentials: </p>
 
-						<?php echo $this->form->open('/login', array('method' => 'POST')) ?>
+						<?php echo $this->form->open('/login/index', array('method' => 'POST')) ?>
 
 			                <table width="100%">
 			                    <tr>

@@ -45,7 +45,7 @@
 							<td>
 							<?php 
 							$customOptions = array('' => '');
-echo $this->form->dropdown('status',array($customOptions,'getSchema(posts)[status][func]'), $this->form->setValue('status'),' onchange="submitPage();" '); 
+echo $this->form->dropdown('status',array($customOptions,'getSchema(posts)[status][_enum]'), $this->form->setValue('status'),' onchange="submitPage();" '); 
 							?>
 							</td>
 							<td>  </td>

@@ -75,6 +75,7 @@ Class Request {
             {   
                 $hmvc = new Hmvc();  // Every hmvc request must create new instance.
                 $hmvc->clear();               // Clear variables for each request.
+                $hmvc->noLoop();
                 $hmvc->request($method);
                 
                 return $hmvc->exec();
@@ -85,7 +86,8 @@ Class Request {
         }
 
         $hmvc = new Hmvc();
-        $hmvc->clear();                       
+        $hmvc->clear();
+        $hmvc->noLoop();                 
         $hmvc->request($request_uri, $cache_time_or_config);
         $hmvc->setMethod($method, $params);
     

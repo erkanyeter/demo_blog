@@ -23,7 +23,7 @@ Class Model {
         global $packages;
 
         //------------------- Connect to Database -----------------------//
-        
+
         new Db($dbVar);
         $dbObject = getInstance()->{$dbVar};
 

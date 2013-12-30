@@ -15,7 +15,7 @@ $posts = array(
 		),
 	'title' => array(
 		'label' => 'Post Title',
-		'types' => '_not_null|_varchar(255)',
+		'types' => '_varchar(255)|_not_null',
 		'rules' => 'required|maxLen(255)',
 		),
 	'content' => array(
@@ -30,14 +30,6 @@ $posts = array(
 		),
 	'status' => array(
 		'label' => 'Post Status',
-		'func' => function(){
-			$options = array();
-			foreach($this->db->get('users')->result() as $row)
-			{
-				$options[$row->user_username] = $row->user_username;
-			}
-			return $options;
-		},
 		'_enum' => array(
 			'Draft',
 			'Published',
