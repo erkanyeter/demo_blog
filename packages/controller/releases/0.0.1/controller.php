@@ -37,14 +37,6 @@ Class Controller {
         $this->uri    = getComponentInstance('uri');
         $this->output = getComponentInstance('output');
         $this->lingo  = getComponentInstance('lingo');
-
-        // Run Construct Method
-        // ------------------------------------
-
-        if (is_callable($constructClosure))
-        {
-            call_user_func_array(Closure::bind($constructClosure, $this, get_class()), array());
-        }
         
         $currentRoute = $this->router->fetchDirectory().'/'.$this->router->fetchClass().'/'.$this->router->fetchMethod();
 
@@ -76,6 +68,14 @@ Class Controller {
                     }
                 }
             }
+        }
+
+        // Run Construct Method
+        // ------------------------------------
+
+        if (is_callable($constructClosure))
+        {
+            call_user_func_array(Closure::bind($constructClosure, $this, get_class()), array());
         }
     }
 

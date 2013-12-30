@@ -64,8 +64,11 @@ $autorun['func'] = array(
 		new Auth;
 	},
 	'auth' => function(){
+
 	    if( ! $this->auth->hasIdentity())
 	    {
+	    	new Url;
+	    	
 	        $this->url->redirect('/login');
 	    }
 	},
