@@ -30,7 +30,7 @@ $routes = array(
 	'post/delete/(:num)' => 'post/delete/index/$1',
 	
 	// Default Controller 
-	'default_controller' => 'welcome/index', // This is the default controller, application call it as default
+	'default_controller' => 'home/index', // This is the default controller, application call it as default
 	
 	// 404 Override
 	'404_override' => '',  					 // You can redirect 404 errors to specify controller

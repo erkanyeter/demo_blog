@@ -49,6 +49,14 @@ define('PACKAGES',  ROOT .'packages'. DS);
 define('PUBLIC_DIR', (defined('STDIN')) ? APP : ROOT .'public'. DS);
 define('TASK_FILE', 'task');
 
+/*
+|---------------------------------------------------------------
+| NOTIFICATION CONSTANTS
+|---------------------------------------------------------------
+*/
+define('SUCCESS', 'success');
+define('ERROR', 'error');
+define('INFO', 'info');
 
 /* End of file constants */
 /* Location: .constants */
