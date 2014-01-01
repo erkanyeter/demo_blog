@@ -19,8 +19,10 @@ Class Odm {
     public $_odmValues       = array();   // Filtered safe values
     public $_odmValidation   = false;     // If form validation success we set it to true
     public $_odmValidator;
-    public $_odmFormTemplate = 'default'; // default form template defined in app/config/form.php
-    public $_odmGet;                      // Get package object
+    public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
+
+    public $get;                          // Get package object
+    public $form;                         // Form package object
     
     // --------------------------------------------------------------------
 
@@ -37,11 +39,12 @@ Class Odm {
         $this->clear();          // Clear the validator.
 
         $this->_odmTable = strtolower($schemaArray['*']['_tablename']);
-        $this->_odmGet   = $odm['get']; // Get "Get" object
-
         unset($schemaArray['*']);  // Remove settings
 
         $this->_odmSchema = $schemaArray;
+        
+        $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
+        $this->get  = (isset(getInstance()->get)) ? getInstance()->get : $odm['get'];
 
         getInstance()->lingo->load('odm');  // Odm language file.
 
@@ -91,7 +94,7 @@ Class Odm {
             {
                 if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->_properties[$key])) 
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->_odmGet->post($key));
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->get->post($key));
                 }
             }
             
@@ -133,7 +136,7 @@ Class Odm {
                
                 if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->_properties[$key]))  // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->_odmGet->post($key)); 
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->get->post($key)); 
                 }
             }
             
@@ -147,19 +150,6 @@ Class Odm {
 
             //----------------------------
         }
-    }
-    
-    // --------------------------------------------------------------------
-
-    /**
-     * Sets custom validation rule into validator object.
-     * 
-     * @param string $key field
-     * @param array $val validation rules
-     */
-    public function setRules($key, $label, $rules = '')
-    {
-        $this->_odmValidator->setRules($key, $label, $rules);
     }
 
     // --------------------------------------------------------------------
@@ -374,38 +364,6 @@ Class Odm {
     // --------------------------------------------------------------------
 
     /**
-     * Set flash notice.
-     * 
-     * @param string $message set notification message.
-     */
-    public function setNotice($message, $errorKey = 'error')
-    {
-        $form = new Form;
-        $form->setNotice($message, $errorKey, $this->_odmTable);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get notification message you set it before.
-     * 
-     * @return string notification
-     */
-    public function getNotice($errorKey = '')
-    {
-        $form = new Form;
-
-        if(empty($errorKey))
-        {
-            $errorKey = ($this->messages('success') == 1) ? 'successMessage' : 'errorMessage';
-        }
-
-        return $form->getNotice($errorKey, $this->_odmTable);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
     * Set value for field.
     *
     * @param string $key or $field
@@ -479,6 +437,17 @@ Class Odm {
         'errorString' => $message,
         'errorMessage' => $errorMessage,
         );
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get tablename
+     * @return string
+     */
+    public function getTableName()
+    {
+        return $this->_odmTable;
     }
 
 }

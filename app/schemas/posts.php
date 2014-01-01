@@ -26,7 +26,7 @@ $posts = array(
 	'tags' => array(
 		'label' => 'Post Tags',
 		'types' => '_varchar(255)|_null',
-		'rules' => 'maxLen(255)',
+		'rules' => 'required|maxLen(255)',
 		),
 	'status' => array(
 		'label' => 'Post Status',

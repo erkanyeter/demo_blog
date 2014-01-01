@@ -1,7 +1,6 @@
 <?php
 namespace Form\Src {
 
-
     // ------------------------------------------------------------------------
 
     /**
@@ -15,6 +14,8 @@ namespace Form\Src {
     */
     function input($data = '', $value = '', $extra = '')
     {
+        $value = getInstance()->form->_getSchemaPost($value, $data);  // $_REQUEST & Db value sync with schema
+
         $defaults = array('type' => 'text', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
 
         $form = \Form::getFormConfig();

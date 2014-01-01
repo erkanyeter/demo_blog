@@ -10,21 +10,7 @@
 <body>
 
 <?php
-$value  = array();
-$schema = getSchema('posts');
-unset($schema['*']);
-
-foreach($schema as $field => $val)
-{
-	if(isset($_POST[$field]))
-	{
-		$value[$field] = $this->form->setValue($field);
-	}
-	else
-	{
-		$value[$field] = $row->{'post_'.$field};
-	}
-}
+$this->form->setSchema('posts');
 ?>
 
 		<?php echo $header ?>
@@ -32,6 +18,13 @@ foreach($schema as $field => $val)
 		<div id="clear"></div>
 		<div id="containerbox">
 			 
+			<section>
+				<?php 
+					echo $this->form->getNotice();
+				?>
+			</section>
+
+
 			<div id="content">
 				
 				<div id="navigation">
@@ -40,20 +33,19 @@ foreach($schema as $field => $val)
 
 				<h1 class="h1">Update Post </h1>
 
-
 				<div id="createpost">
 					<i>Fields with * are required.</i>
 
 					<p></p>
 
-					<?php echo $this->form->open('/post/update/index/'.$row->post_id, array('method' => 'POST', " id='createform' ")) ?>
+					<?php echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST', " id='createform' ")) ?>
 
 			                <table>
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Title', 'title') ?></td>
 			                        <td><?php 
 			                            echo $this->form->error('title');
-			                            echo $this->form->input('title', $value['title'], " ");
+			                            echo $this->form->input('title', $row, " ");
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
@@ -61,15 +53,7 @@ foreach($schema as $field => $val)
 			                        <td><?php echo $this->form->label('Content', 'content') ?></td>
 			                        <td><?php 
 			                            echo $this->form->error('content');
-
-										$content_data = array(
-										              'name'        => 'content',
-										              'value'       => $value['content'],
-										              'size'        => '50',
-										              'style'       => 'width:50%',
-										            );
-
-			                            echo $this->form->textarea($content_data);
+			                            echo $this->form->textarea('content', $row, ' rows="15" cols="80" size="50" style="width:50%" ');
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
@@ -78,7 +62,7 @@ foreach($schema as $field => $val)
 			                        <td>
 			                        <?php 
 			                            echo $this->form->error('tags');
-			                            echo $this->form->input('tags', $value['tags'], " ");
+			                            echo $this->form->input('tags', $row, " ");
 			                            ?><span class="color_red">*</span>
 									
 									<p class="cp">Please separate different tags with commas.</p>
@@ -91,9 +75,7 @@ foreach($schema as $field => $val)
 			                        <td>
 			                        <?php 
 			                            echo $this->form->error('status');
-
-	echo $this->form->dropdown('status','getSchema(posts)[status][_enum]', $value['status'], " ");
-	
+										echo $this->form->dropdown('status','getSchema(posts)[status][_enum]', $row, " ");
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>
@@ -107,8 +89,6 @@ foreach($schema as $field => $val)
 			                        <td colspan="2">&nbsp;</td>
 			                    </tr>
 			                </table>
-
-						 
 					
 					<?php echo $this->form->close() ?>
 

@@ -35,7 +35,7 @@ $c->func('index', function() use($c){
 
             if($this->post->save())  // save post
             {        
-                $this->form->setNotice('Post saved successfully.');
+                $this->form->setNotice('Post saved successfully.',SUCCESS);
                 $this->url->redirect('/home');
             }
     	}

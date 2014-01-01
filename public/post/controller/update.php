@@ -17,38 +17,40 @@ $c->func('index', function($id) use($c){
 
 	$c->view('update', function() use($id){
 
-		if($this->get->post('dopost')) // if do post click
-    	{
-    		$this->post->user_id = $this->auth->getIdentity('user_id');
-    		$this->post->title 	 = $this->get->post('title');
-    		$this->post->content = $this->get->post('content');
-            $this->post->tags 	 = $this->get->post('tags');
+        if($this->get->post('dopost')) // if do post click
+        {
+            $this->post->user_id = $this->auth->getIdentity('user_id');
+            $this->post->title   = $this->get->post('title');
+            $this->post->content = $this->get->post('content');
+            $this->post->tags    = $this->get->post('tags');
             $this->post->status  = $this->get->post('status');
             $this->post->modification_date = date('Y-m-d H:i:s');
             
             $this->post->func('save', function() use($id) {
                 if ($this->isValid()){
                     $this->db->where('post_id', $id);
-                    return $this->db->update('posts', $this);
+                    if($this->db->update('posts', $this)){
+                        return true;
+                    }
                 }
                 return false;
             });
-
+            
             if($this->post->save())  // save post
             {        
                 $this->form->setNotice('Post saved successfully.',SUCCESS);
-                $this->url->redirect('/post/manage');
+                $this->url->redirect('/post/update/index/3');
             }
-    	} 
+        } 
         else // get exist data from db
         {
             $this->db->where('post_id', $id);
             $this->db->get('posts');
-
-            $this->set('row',$this->db->row());
+            $this->set('row', $this->db->row());
         }
 
 		$this->set('title', 'Update Post');
+        $this->set('post_id', $id);
 		$this->getScheme();
 	});
 

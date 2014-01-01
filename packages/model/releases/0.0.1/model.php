@@ -109,11 +109,11 @@ Class Model {
                     parent::__construct($schemaArray, $dbObject); 
                 } 
                 function __set($k, $v){   // Don\'t Db store object into properties variable.
-                    if($k == "_schemaArray"){
+                    if($k == \'_schemaArray\'){
                         $this->_schemaArray = $v;
                     }
                     if(is_object($v) AND ! isset($this->$k)){
-                        $this->$k = $v;  // getInstance object variables  db,config,router,uri,output,lingo ...
+                        $this->$k = $v;  // getInstance object variables  db,config,router,uri,output,lingo,form,validator so on ..
                     } elseif(isset($this->_schemaArray[$k])) {
                         $this->_properties[$k] = $v;
                     }

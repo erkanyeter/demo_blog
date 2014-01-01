@@ -26,19 +26,18 @@ $c->func('index', function() use($c){
             $this->user->creation_date = date('Y-m-d H:i:s');
 
             //--------------------- set non schema rules
-            
-            $this->user->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
-            $this->user->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
+
+            $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
+            $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
             
             //---------------------
             
             $this->user->func('check_username', function(){
             	$this->db->where('user_username', $this->get->post('username', true));
             	$this->db->get('users');
-
             	if($this->db->count() > 0) // unique control
             	{
-            		$this->setMessage('check_username', 'This username is already used');
+            		$this->form->setMessage('check_username', 'This username is already used');
             		return false;
             	}
             	return true;
@@ -47,7 +46,6 @@ $c->func('index', function() use($c){
             $this->user->func('save', function() {
                 if ($this->isValid()){
                 	$bcrypt = new Bcrypt; // use bcrypt
-
                     $this->password = $bcrypt->hashPassword($this->getValue('password'), 8);
 
                     return $this->db->insert('users', $this);
@@ -57,7 +55,7 @@ $c->func('index', function() use($c){
 
             if($this->user->save())  // save user
             {        
-                $this->form->setNotice('User saved successfully.','success');
+                $this->form->setNotice('User saved successfully.',SUCCESS);
                 $this->url->redirect('/login');
             }
 

@@ -108,7 +108,7 @@ Class Cookie {
             $prefix = config('cookie_prefix');
         }
 
-        return Get::_fetchFromArray($_COOKIE, $prefix.$index, $xss_clean);
+        return Get::fetchFromArray($_COOKIE, $prefix.$index, $xss_clean);
     }
 
     // --------------------------------------------------------------------

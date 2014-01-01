@@ -24,7 +24,7 @@
 					<div id="container">
 					
 			        <section>
-			            <?php echo $this->user->getNotice() ?>
+			            <?php echo $this->form->getNotice() ?>
 			        </section>
 
 						<p>Please fill out the following form with your login credentials: </p>

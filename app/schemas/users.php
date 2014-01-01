@@ -11,17 +11,17 @@ $users = array(
 	'username' => array(
 		'label' => 'User Username',
 		'types' => '_null|_varchar(50)',
-		'rules' => '',
+		'rules' => 'required|callback_check_username',
 		),
 	'email' => array(
 		'label' => 'User Email',
 		'types' => '_not_null|_varchar(60)',
-		'rules' => '',
+		'rules' => 'required|validEmail',
 		),
 	'password' => array(
 		'label' => 'User Password',
 		'types' => '_not_null|_varchar(75)',
-		'rules' => '',
+		'rules' => 'required',
 		),
 	'creation_date' => array(
 		'label' => 'User Creation Date',
