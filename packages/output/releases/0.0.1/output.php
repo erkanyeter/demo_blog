@@ -213,20 +213,18 @@ Class Output {
         }
         
         logMe('debug', "Final output sent to browser");
-                
-        if (config('log_benchmark')) // Do we need to generate benchmark data ? If so, enable and run it.  
+
+        if (config('log_benchmark')) // Do we need to generate benchmark data ? If so, enable and run it.
         {
+            $memory_usage = "memory_get_usage() function not found on your php configuration.";
+
             if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
             {
                 $memory_usage = number_format($usage)." bytes";
             }
-            else
-            {
-                $memory_usage = "memory_get_usage() function not found on your php configuration.";
-            }
-
+            
             logMe('bench', "Memory Usage: ". $memory_usage); 
-        } 
+        }           
     }
 }
 

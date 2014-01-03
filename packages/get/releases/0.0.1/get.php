@@ -24,7 +24,7 @@ Class Get
             getInstance()->get = $this; // Make available it in the controller $this->get->method();
         }
 
-        logMe('debug', 'Get Helper Initialized');
+        logMe('debug', 'Get Class Initialized');
     }
 
     // --------------------------------------------------------------------

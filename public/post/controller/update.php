@@ -29,9 +29,7 @@ $c->func('index', function($id) use($c){
             $this->post->func('save', function() use($id) {
                 if ($this->isValid()){
                     $this->db->where('post_id', $id);
-                    if($this->db->update('posts', $this)){
-                        return true;
-                    }
+                    return $this->db->update('posts', $this);
                 }
                 return false;
             });
@@ -42,15 +40,14 @@ $c->func('index', function($id) use($c){
                 $this->url->redirect('/post/update/index/3');
             }
         } 
-        else // get exist data from db
-        {
-            $this->db->where('post_id', $id);
-            $this->db->get('posts');
-            $this->set('row', $this->db->row());
-        }
 
+        $this->db->where('post_id', $id); // get db data
+        $this->db->get('posts');
+    
 		$this->set('title', 'Update Post');
         $this->set('post_id', $id);
+        $this->set('row', $this->db->row());
+
 		$this->getScheme();
 	});
 

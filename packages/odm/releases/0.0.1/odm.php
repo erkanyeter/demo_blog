@@ -133,7 +133,7 @@ Class Odm {
                     );
 
                 //----------------------------
-               
+
                 if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->_properties[$key]))  // Set filtered values.
                 {
                     $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->get->post($key)); 

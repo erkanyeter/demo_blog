@@ -44,12 +44,14 @@ $c->func('index', function() use($c){
             });
 
             $this->user->func('save', function() {
+
                 if ($this->isValid()){
                 	$bcrypt = new Bcrypt; // use bcrypt
                     $this->password = $bcrypt->hashPassword($this->getValue('password'), 8);
 
                     return $this->db->insert('users', $this);
                 }
+
                 return false;
             });
 
@@ -58,7 +60,6 @@ $c->func('index', function() use($c){
                 $this->form->setNotice('User saved successfully.',SUCCESS);
                 $this->url->redirect('/login');
             }
-
     	}
 
         $this->set('title', 'Signup to my blog');

@@ -340,7 +340,7 @@ Class Auth {
     public function clearIdentity()
     {
         $this->sess->remove('identity', $this->session_prefix);
-        $this->sess->remove($this->getAllIdentityData(), $this->session_prefix);
+        $this->sess->remove($this->getAllIdentityData());
     }
     
     // ------------------------------------------------------------------------
@@ -355,7 +355,7 @@ Class Auth {
         $identityData = array();
         foreach($this->sess->getAllData() as $key => $val)
         {
-            if(strpos($val, $this->session_prefix) === 0)
+            if(strpos($key, $this->session_prefix) === 0) // if key == auth_
             {
                 $identityData[$key] = $val;
             }

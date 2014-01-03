@@ -27,7 +27,6 @@ $c = new Controller(function(){
  */
 $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postData = '')
 {
-
     if( ! isset(getInstance()->{$dbVar}))
     {
         $database = new Db($dbVar);

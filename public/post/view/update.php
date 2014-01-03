@@ -9,9 +9,7 @@
 
 <body>
 
-<?php
-$this->form->setSchema('posts');
-?>
+<?php $this->form->setSchema('posts')  // set schema for form ?>
 
 		<?php echo $header ?>
 
@@ -23,7 +21,6 @@ $this->form->setSchema('posts');
 					echo $this->form->getNotice();
 				?>
 			</section>
-
 
 			<div id="content">
 				

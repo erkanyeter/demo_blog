@@ -34,7 +34,7 @@ $c->func('_clear', function(){
     # delete app directory log files.
     # help https://help.ubuntu.com/community/find
     find \$APP_LOG_DIR -name 'log-*.php' -exec rm -rf {} \;
-    echo \"\33[0m\33[0;32mLog files deleted.\33[0m\";";
+    echo \"\33[0m\33[1;36mAll log files removed log folder is empty.\33[0m\";";
     
     echo shell_exec($clear_sh);
 

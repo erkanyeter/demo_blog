@@ -18,7 +18,7 @@ $c->func('index', function(){
        | |__| || |_||| |_| || || || |_||
        |______||____||_____||_||_||____|
 
-        Welcome to Task Manager (c) 2013
+        Welcome to Task Manager (c) 2014
 Please run [$php task start help] You are in [ app / tasks ] folder.'."\n\033[0m";
 });
 

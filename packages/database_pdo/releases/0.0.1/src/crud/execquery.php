@@ -35,6 +35,10 @@ namespace Database_Pdo\Src\Crud {
             if(sizeof($crud->prep_queries) > 0)
             {
                 logMe('debug', 'SQL: '.trim(preg_replace('/\n/', ' ', end($crud->prep_queries)), "\n").' ( Exec Query ) time: '.number_format($end_time - $start_time, 4));
+            } 
+            else 
+            {
+                logMe('debug', 'SQL: '.trim(preg_replace('/\n/', ' ', $sql), "\n").' time: '.number_format($end_time - $start_time, 4));   
             }
         }
 

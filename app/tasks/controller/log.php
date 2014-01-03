@@ -10,29 +10,28 @@ $c = new Controller(function(){
 });
 
 $c->func('index', function($level = ''){
-
     if($level == '')
     {
         $this->_displayLogo();
-        $this->_follow(APP .'logs'. DS .'log-'.date('Y-m-d').'.php'); // Display the debugging.
+        $this->_follow(DATA .'logs'. DS .'log-'.date('Y-m-d').'.php'); // Display the debugging.
     } 
     else 
     {
-        $this->_follow(APP .'logs'. DS .'log-'.date('Y-m-d').'.php', $level);
+        $this->_follow(DATA .'logs'. DS .'log-'.date('Y-m-d').'.php', $level);
     }
 });
     
 // ------------------------------------------------------------------------
 
 $c->func('_displayLogo', function(){
-echo "\33[0;36m".'
+echo "\33[1;36m".'
         ______  _            _  _
        |  __  || |__  _   _ | || | ____
        | |  | ||  _ || | | || || ||  _ |
        | |__| || |_||| |_| || || || |_||
        |______||____||_____||_||_||____|
 
-        Welcome to Log Manager (c) 2013
+        Welcome to Log Manager v2.0 (c) 2014
 Display logs [$php task log], to filter logs [$php task log $level]'."\n\033[0m";
 });
 
@@ -54,7 +53,9 @@ $c->func('level', function($level = 'all'){
  * @param  $file
  */ 
 $c->func('_follow', function($file, $level = ''){
-    
+ 
+    static $lines = array();
+
     $size = 0;
     while (true)
     {
@@ -63,20 +64,24 @@ $c->func('_follow', function($file, $level = ''){
         {  
             continue;
         }
+
         $currentSize = filesize($file); // continue the process when file size change.
-        if ($size == $currentSize)
-        {
-            usleep(100);
+        if ($size == $currentSize){
+            usleep(50);
             continue;
         }
 
-        $fh = fopen($file, "r");
+        $fh = fopen($file, 'r'); // Open file
         fseek($fh, $size);
 
-        $i=0;
+        $i = 0;
         while ($line = fgets($fh))
         {
-            if($i == 0) $line = str_replace("\n",'',$line);
+            if($i == 0) 
+            {
+                $line = str_replace("\n",'',$line);
+            }
+
             $line = str_replace('<?php defined(\'ROOT\') or die(\'Access Denied\') ?>','',$line);
             
             // remove all newlines
@@ -91,109 +96,92 @@ $c->func('_follow', function($file, $level = ''){
                     if(strpos($out[5], '[') !== false)  // colorful logs.
                     {
                         $line = "\033[0;33m".$line."\033[0m";
-                    }               
-                    if(strpos($out[5],'SQL') !== false)
-                    {
-                        $line = "\033[0;32m".$line."\033[0m";
                     }
+                    if(strpos($out[5],'SQL') !== false)  // remove unnecessary spaces from sql output
+                    {
+                        $line = str_replace('SQL: ','', "\033[1;32m".preg_replace('/\s+/', ' ', $line)."\033[0m");
+                    }
+                    if(strpos($out[5],'$_') !== false)
+                    {
+                        $line = preg_replace('/\s+/', ' ', $line);
+                        $line = preg_replace('/\[/', "\n[", $line);
+
+                        if(strpos($out[5],'$_REQUEST_URI') !== false)
+                        {
+                            $break = "\n------------------------------------------------------------------------------------------";
+                            $line = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
+                        } 
+                        else 
+                        {
+                            $line = "\033[1;35m".$line."\033[0m";
+                        }
+
+                    }                  
                     if(strpos($out[5], 'Task') !== false)
                     {
-                        $line = "\033[0;36m".$line."\033[0m";
+                        $line = "\033[0;35m".$line."\033[0m";
+                    }
+                    if(isset($out[7]) AND strpos($out[7], 'loaded:') !== false)
+                    {
+                        $line = "\033[0;35m".$line."\033[0m";
                     }
                 }
             }
  
-            if(strpos($line, 'DEBUG') !== false)
+            if(strpos($line, 'DEBUG') !== false)  // Do not write two times
             {
                 if($level == '' OR $level == 'debug')
                 {
                     $line = "\033[0;35m".$line."\033[0m";
-                    echo $line."\n";
+                    if( ! isset($lines[$line]))
+                    {
+                        echo $line."\n";
+                    }
                 }
             }
+
             if(strpos($line, 'ERROR') !== false)
             {
                 if($level == '' OR $level == 'error')
                 {
-                    $line = "\033[0;31m".$line."\033[0m";
-                    echo $line."\n";
+                    $line = "\033[1;31m".$line."\033[0m";
+                    if( ! isset($lines[$line]))
+                    {
+                        echo $line."\n";
+                    }
                 }
             }
+
             if(strpos($line, 'INFO') !== false)
             {
                 if($level == '' OR $level == 'info')
                 {
-                    $line = "\033[0;34m".$line."\033[0m";
-                    echo $line."\n";
+                    $line = "\033[1;35m".$line."\033[0m";
+                    if( ! isset($lines[$line]))
+                    {
+                        echo $line."\n";
+                    }
                 }
             }
+
             if(strpos($line, 'BENCH') !== false)
             {
                 if($level == '' OR $level == 'bench')
                 {
-                    $line = "\033[0;36m".$line."\033[0m";
-                    echo $line."\n";
+                    $line = "\033[1;36m".$line."\033[0m";
+                    if( ! isset($lines[$line]))
+                    {
+                        echo $line."\n";
+                    }
                 }
             }
-
             $i++;
+            $lines[$line] = $line;
         }
         
         fclose($fh);
+        clearstatcache();
         $size = $currentSize;
-        
-        static $logged = array();
-        
-        $date = date('Y-m-d H:i:s');
-        
-        if( ! isset($logged[$date]))
-        {
-            $this->_compileFiles();
-        }
-        
-        $logged[$date] = 1;
-    }
-});
-
-// ------------------------------------------------------------------------
-    
-$c->func('_compileFiles', function(){
-
-    $error = new Error;
-    
-    $configs = array();
-    foreach(getComponentInstance('config')->is_loaded as $cfg)
-    {
-        $configs[] = $error->getSecurePath($cfg);
-    }
-    
-    $locales = array();
-    foreach(getComponentInstance('lingo')->is_loaded as $lcl)
-    { 
-        $locales[] = $error->getSecurePath($lcl); 
-    }
-    
-    if(count($configs) > 0 || count($locales) > 0)
-    {
-        $output  = "\33[0;36m________LOADED FILES______________________________________________________";
-        $output .= "\n";
-        
-        if(count($configs) > 0)
-        {
-            $output .= "\nConfigs   --> ".implode(', ',$configs);
-        }
-        
-        if(count($locales) > 0)
-        {
-            $output .= "\nLingo   --> ".implode(', ',$locales);    
-        }
-
-        $output .= "\n";
-        $output .= "__________________________________________________________________________";
-        $output .= "\n\n";
-        $output .= "\033[0m";
-        
-        echo $output;
     }
 });
 

@@ -32,6 +32,15 @@ Class Sess {
         }
 
         logMe('debug', "Sess Class Initialized");
+
+        static $logged = null;
+
+        if($logged == null AND config('log_threshold') > 0)
+        {
+            logMe('debug', '$_SESSION: '.preg_replace('/\n/', '', print_r(self::$driver->getAllData(), true)));
+        }
+
+        $logged = true;
     }
 
     // --------------------------------------------------------------------
@@ -82,7 +91,7 @@ Class Sess {
 
         return call_user_func_array(array(self::$driver, $method), $arguments);
     }
-
+    
 }
 
 /* End of file sess.php */

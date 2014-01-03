@@ -342,7 +342,7 @@ Class Sess_Native {
     */
     function getAllData()
     {
-        return ( ! isset($_SESSION)) ? false : $_SESSION;
+        return (isset($_SESSION)) ? $_SESSION : false;
     }
     
     // --------------------------------------------------------------------
@@ -362,7 +362,7 @@ Class Sess_Native {
             $newdata = array($newdata => $newval);
         }
 
-        if (count($newdata) > 0)
+        if (sizeof($newdata) > 0)
         {
             foreach ($newdata as $key => $val)
             {
@@ -386,7 +386,7 @@ Class Sess_Native {
             $newdata = array($newdata => '');
         }
 
-        if (count($newdata) > 0)
+        if (sizeof($newdata) > 0)
         {
             foreach ($newdata as $key => $val)
             {
@@ -437,7 +437,7 @@ Class Sess_Native {
             $newdata = array($newdata => $newval);
         }
         
-        if (count($newdata) > 0)
+        if (sizeof($newdata) > 0)
         {
             foreach ($newdata as $key => $val)
             {

@@ -11,7 +11,7 @@ $c = new Controller(function(){
 
 $c->func('index', function() use($c){
 
-	$this->auth->clearIdentity();
+	$this->auth->clearIdentity();  // remove auth data
 	$this->url->redirect('/login');
 
 });

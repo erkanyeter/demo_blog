@@ -17,8 +17,8 @@ $c->func('index', function() use($c){
 
     $c->view('home', function() use($c) {
 
-        $this->db->select("*, IFNULL((SELECT count(*) FROM comments WHERE posts.post_id = comment_post_id 
-            AND comment_status = '1'
+        $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
+            WHERE posts.post_id = comment_post_id AND comment_status = '1' 
             GROUP BY posts.post_id LIMIT 1),0) as total_comment", false);
 
     	$this->db->where('post_status', 'Published');

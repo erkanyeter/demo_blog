@@ -97,7 +97,7 @@ Class Model {
         $schemaArray['*']['_tablename'] = $tablename;  // Set tablename to schemaArray settings, we need it the user's model class.
 
         //---------------------- Build Model Class -----------------------//
-        
+
         if( ! class_exists($modelName, false))  // Create the Model file on the fly with magic methods.
         {
             eval('Class '.$modelName.' extends Odm { 
@@ -108,17 +108,23 @@ Class Model {
                     $this->_schemaArray = $schemaArray;
                     parent::__construct($schemaArray, $dbObject); 
                 } 
-                function __set($k, $v){   // Don\'t Db store object into properties variable.
+                function __set($k, $v){   // Don\'t store Db object into properties variable.
+                    global $packages;
                     if($k == \'_schemaArray\'){
                         $this->_schemaArray = $v;
                     }
-                    if(is_object($v) AND ! isset($this->$k)){
-                        $this->$k = $v;  // getInstance object variables  db,config,router,uri,output,lingo,form,validator so on ..
-                    } elseif(isset($this->_schemaArray[$k])) {
-                        $this->_properties[$k] = $v;
+                    if(is_object($v) AND isset($packages[\'dependencies\'][$k])){  // check packagename.
+                        $this->$k = $v;  // getInstance object variables  db,config,router,uri,output,lingo ...
+                    } 
+                    elseif(isset($this->_schemaArray[$k])) {
+                        if( ! isset($this->$k)){
+                            $this->_properties[$k] = $v;
+                        }
+                    } elseif(strpos($k, "_") !== 0) {  // Do not catch private methods.
+                        logMe("error", "Your schema has not got a \"$k\" column but you use \"\$this->'.$modelName.'->$k\" variable.");
                     }
                 }
-                function __get($k){
+                function __get($k){ // If we have a collisions with package name overwrite to package object.
                     if(isset($this->_properties[$k])){
                         return $this->_properties[$k];
                     }
@@ -130,21 +136,6 @@ Class Model {
 
         $modelKey = strtolower($modelName);
         getInstance()->{$modelKey} = new $modelName($schemaArray, $dbObject); // Model always must create new instance.
-
-        //--------------- Assign all libraries to model  -----------------------//
-
-        /**
-         * So we can use $this->config->method() in model classes.
-         * 
-         * @var object
-         */
-        foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
-        {
-            if($k != '_controllerAppMethods' AND $k != $modelKey AND $k != Db::$var) // Do not assign again reserved variables
-            {
-                getInstance()->$modelKey->{$k} = getInstance()->$k;
-            }
-        }
        
         logMe('debug', "Model $modelName Initialized");
     }

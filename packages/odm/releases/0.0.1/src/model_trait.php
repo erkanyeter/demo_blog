@@ -15,6 +15,8 @@ namespace Odm\Src {
          */
         public function func($methodName, $methodCallable)
         {
+            $this->assignObjects();
+
             if ( ! is_callable($methodCallable))
     	    {
                 // @todo throw new InvalidArgumentException
@@ -86,6 +88,27 @@ namespace Odm\Src {
         public function getAllMethods()
         {
             return array_keys($this->_modelMethods);
+        }
+
+        // --------------------------------------------------------------------
+
+        /**
+         * Assign all objects to current
+         * Model.
+         * 
+         * @return void
+         */
+        public function assignObjects()
+        {
+            $modelKey = strtolower(get_class());
+
+            foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
+            {
+                if($k != '_controllerAppMethods' AND $k != $modelKey AND $k != \Db::$var) // Do not assign again reserved variables
+                {
+                    getInstance()->$modelKey->{$k} = getInstance()->$k;
+                }
+            }
         }
 
     }

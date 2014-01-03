@@ -16,6 +16,9 @@
         global $packages;
 
         $router = getComponentInstance('router');
+        $uri    = getComponentInstance('uri');
+
+        logMe('debug', '$_REQUEST_URI: '.$uri->requestUri());
 
         /*
          * ------------------------------------------------------
@@ -32,7 +35,7 @@
              * ------------------------------------------------------
              */
             $hooks->_callHook('pre_system');
-        }
+        }      
 
         /*
          * ------------------------------------------------------
@@ -69,6 +72,22 @@
         $_COOKIE = cleanInputData($_COOKIE);
 
         logMe('debug', "Global POST and COOKIE data sanitized");
+
+        /*
+         * ------------------------------------------------------
+         *  Log inputs
+         * ------------------------------------------------------
+         */
+        if(config('log_threshold') > 0)
+        {
+            logMe('debug', '$_COOKIE: '.preg_replace('/\n/', '', print_r($_COOKIE, true)));
+
+            if(sizeof($_REQUEST) > 0)
+            {
+                logMe('debug', '$_POST: '.preg_replace('/\n/', '', print_r($_POST, true)));
+                logMe('debug', '$_GET: '.preg_replace('/\n/', '', print_r($_GET, true)));
+            }
+        }
 
         /*
          * ------------------------------------------------------
@@ -293,7 +312,7 @@
 
             if ( ! isset($$var) OR ! is_array($$var))
             {
-                die('The static file '. $folder. DS .$filename. $ext.' file does not appear to be formatted as an array.');
+                die('The configuration file '.$folder. DS .$filename. $ext.' variable name must be same with filename.');
             }
 
             $variables[$key] =& $$var;
