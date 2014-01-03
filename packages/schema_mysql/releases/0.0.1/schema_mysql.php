@@ -127,7 +127,7 @@ Class Schema_Mysql {
             $newKey = $this->schemaObject->getPrefix().$key;
         }
 
-        $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->_createLabel($key);
+        $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->schemaObject->_createLabel($key);
         
         $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
 

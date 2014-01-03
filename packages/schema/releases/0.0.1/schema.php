@@ -566,7 +566,7 @@ Class Schema {
      * @param  string $field field name
      * @return string column label
      */
-    private function _createLabel($field)
+    public function _createLabel($field)
     {
         $exp = explode('_', $field); // explode underscores ..
 
