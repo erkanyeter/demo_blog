@@ -57,8 +57,8 @@ Class Schema_Auto_Sync_Html {
 							$html.= '<div class="columnNewRow">';
 						    	$add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
 								$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
-								$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.$this->_stripQuotes($val['new_types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
-								$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addKey(\''.$this->_stripQuotes($key).'\',\''.$this->_stripQuotes($val['new_types']).'\',\''.$val['options'][1].'\');">'.$add.'</a></kbd>';
+								$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['new_types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
+								$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['new_types']).'\',\''.$val['options'][1].'\');">'.$add.'</a></kbd>';
 							$html.= '</div>';
 						$html.= '</div>';
 					}
@@ -103,12 +103,12 @@ Class Schema_Auto_Sync_Html {
 
 													if (! empty($remove)) 
 													{	
-														$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.$this->_stripQuotes($mapVal['update_types']).'\', \''.$mapVal['options'][0].'\');">'.$remove.'</a></kbd>';
+														$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($mapVal['update_types']).'\', \''.$mapVal['options'][0].'\');">'.$remove.'</a></kbd>';
 													}
 
 													if( ! empty($add))
 													{
-														$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addType(\''.$this->_stripQuotes($key).'\', \''.$this->_stripQuotes($mapVal['update_types']).'\', \''.$mapVal['options'][1].'\');">'.$add.'</a></kbd>';
+														$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($mapVal['update_types']).'\', \''.$mapVal['options'][1].'\');">'.$add.'</a></kbd>';
 													}
 
 												$html.= '</div>';
@@ -155,8 +155,8 @@ Class Schema_Auto_Sync_Html {
 									    $add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
 										$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
 
-										$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.$this->_stripQuotes($type).'\', \''.$val['options'][0].'\', \'new\');">'.$remove.'</a></kbd>';
-										$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addType(\''.$this->_stripQuotes($key).'\', \''.$this->_stripQuotes($type).'\', \''.$val['options'][1].'\', \'new\');">'.$add.'</a></kbd>';
+										$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($type).'\', \''.$val['options'][0].'\', \'new\');">'.$remove.'</a></kbd>';
+										$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($type).'\', \''.$val['options'][1].'\', \'new\');">'.$add.'</a></kbd>';
 
 										$html.= '</div>';
 									}

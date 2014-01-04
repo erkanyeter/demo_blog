@@ -371,6 +371,8 @@ Class Schema {
         return "<script type=\"text/javascript\" />
         function removeKey(columnKey, columnType, method){
             var command;
+            columnType = decode64(columnType);
+            
             command = columnKey + '|' + columnType + '|' + method;
             <!-- alert(command); -->
             document.getElementById('lastSyncCommand').value = command;
@@ -379,6 +381,8 @@ Class Schema {
         }
         function addKey(columnKey, columnType, method){
             var command;
+            columnType = decode64(columnType);
+
             command = columnKey + '|' + columnType + '|' + method;
             <!-- alert(command); -->
             document.getElementById('lastSyncCommand').value = command;
@@ -387,6 +391,8 @@ Class Schema {
         }
         function removeType(columnKey, columnType, method, isNew){
             var command;
+            columnType = decode64(columnType);
+
             if(typeof isNew == \"undefined\"){
                 command = columnKey + '|' + columnType + '|' + method;
             } else {
@@ -399,6 +405,8 @@ Class Schema {
         }
         function addType(columnKey, columnType, method, isNew){
             var command;
+            columnType = decode64(columnType);
+
             if(typeof isNew == \"undefined\"){
                 command = columnKey + '|' + columnType + '|' + method;
             } else {
@@ -432,7 +440,7 @@ Class Schema {
              var base64test = /[^A-Za-z0-9\+\/\=]/g;
              if (base64test.exec(input)) {
                 alert('There were invalid base64 characters in the input text, valid base64 characters are A-Z, a-z, 0-9, +, /,and = expect errors in decoding.');
-                return;
+                return false;
              }
              input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
@@ -462,6 +470,7 @@ Class Schema {
 
              return unescape(output);
           }
+
         </script>";
     }
 

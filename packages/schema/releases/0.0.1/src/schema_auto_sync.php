@@ -223,9 +223,7 @@ Abstract Class Schema_Auto_Sync {
 				{
 					foreach ($diffMatches as $diffVal)
 					{
-						$diffType = substr($diffVal, 1);
-
-    					if (in_array($diffType, $this->dataTypes)) // check is it datatype.
+    					if (substr($diffVal, 0,1) === '_') // check is it datatype.
                         {
                             $this->schemaDiff[$k][] = array(
                             'update_types' => $diffVal,

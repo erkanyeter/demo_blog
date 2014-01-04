@@ -98,7 +98,7 @@ Class Schema_Mysql {
 	}
  
 	// --------------------------------------------------------------------
-
+	
     /**
      * Build schema string
      * 
@@ -137,15 +137,15 @@ Class Schema_Mysql {
         
         if(isset($currentFileSchema[$key]['func']))
         {
-	    	$schemaFile = file_get_contents($this->schemaObject->getPath());
-	    	$schemaFile = str_replace('<?php','',$schemaFile);
+            $schemaFile = file_get_contents($this->schemaObject->getPath());
+            $schemaFile = str_replace('<?php','',$schemaFile);
 
-	    	preg_match("#'$key'(.*?)'func'(\s*)(=>)(\s*)(.*?)\},#s",$schemaFile, $matches);
+            preg_match("#'$key'(.*?)'func'(\s*)(=>)(\s*)(.*?)\},#s",$schemaFile, $matches);
 
-	        if( isset($matches[5]))
-	        {
-	            $ruleString.= "\n\t\t'func' => $matches[5]},";  // fetch _func from current schema
-	        }
+            if( isset($matches[5]))
+            {
+                $ruleString.= "\n\t\t'func' => $matches[5]},";  // fetch _func from current schema
+            }
         }
 
         // --------- RENDER FUNC ----------//
@@ -162,10 +162,20 @@ Class Schema_Mysql {
 
                 $enumData = rtrim($enumData,',');
                 $enumData .= ')';
-                $types = str_replace('_enum', '_enum'.$enumData, $types);
+
+                preg_match('#(_enum)(\(.*?\))#s',$types, $match);
+
+                if (isset($match[2])) 
+                {
+                    $types = preg_replace('#'.preg_quote($match[0]).'#', '_enum'.$match[2], $types);
+                }
+                else
+                {
+                    $types = str_replace('_enum', '_enum'.$enumData, $types);    
+                }
             }
 
-            if (preg_match('#(_enum)(\(.*?\))#',$types, $match) ) // if type is enum create enum field as an array
+            if (preg_match('#(_enum)(\(.*?\))#s',$types, $match) ) // if type is enum create enum field as an array
             {
                 $enumStr  = $match[0];  // _enum("","")
                 $enum     = $match[1];  // _enum
@@ -174,8 +184,14 @@ Class Schema_Mysql {
                 $types = preg_replace('#'.preg_quote($enumStr).'#', '_enum', $types);
                 
                 $ruleString .= "\n\t\t'_enum' => array(";   // render enum types
-                foreach(explode(',', trim(trim($enumData, ')'),'(')) as $v)
+
+                // sanitize comma.
+                $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData);
+
+
+                foreach(explode(',', trim(trim($enumData,')'),'(')) as $v)
                 {
+                    $v = str_replace('__TEMP_COMMA__',',',$v);
                     $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
                 }
 

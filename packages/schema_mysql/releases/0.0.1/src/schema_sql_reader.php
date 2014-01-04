@@ -148,11 +148,18 @@ Class Schema_Sql_Reader {
 		$setArray  = '';
 		if(isset($this->enumData[$col['Field']]))
 		{
+			$enumString = $this->enumData[$col['Field']];
+
+			// sanitize comma.
+			$enumString = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumString); // Thanks to Obullo Team ( ali ihsan çağlayan & burak abir)
+
 		 	$enumArray = "\n\t\t'_enum' => array(";	// render enum types
-		 	foreach(explode(',', trim(trim($this->enumData[$col['Field']], ')'),'(')) as $v)
+		 	foreach(explode(',', trim(trim($enumString, ')'),'(')) as $v)
 		 	{
+				$v = str_replace('__TEMP_COMMA__',',',$v);
 		 		$enumArray.= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
 		 	}
+
 		 	$enumArray.= "\n\t\t),";
 		}
 		elseif(isset($this->setData[$col['Field']]))

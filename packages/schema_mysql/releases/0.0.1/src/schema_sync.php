@@ -253,18 +253,18 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					{
 						$dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($colName);
 
-						$unbracketsColType = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
+						$unbracketsColType = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets coming from $_POST
 						$unbracketsColTypes = explode('|',$unbracketsColType);
 
 						$schemaKeys = explode('|',$this->dbSchema[$colName]);
 						
-						$unbracketsDBColType = preg_replace('#(\(.*?\))#','', $this->dbSchema[$colName]);// Get pure DB column type withouth brackets
+						$unbracketsDBColType = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$colName]);// Get pure DB column type withouth brackets
 						$unbracketsDBColTypes = explode('|',$unbracketsDBColType);
 
 						$dbcolKeys = preg_grep('#'.$unbracketsDBColType.'#',$this->dataTypes); // Data Type Confirmation
 
 						$dbColKeyValue = array_values($dbcolKeys)[0];
-						$colkey        = array_search($dbColKeyValue,$unbracketsDBColTypes);// Find the location of columnType  in array of dbSchema
+						$colkey        = array_search($dbColKeyValue,$unbracketsDBColTypes); // Find the location of columnType  in array of dbSchema
 
 						if ($columnType = preg_grep('#'.$unbracketsColType.'#',$this->dataTypes))  // If colname exists and has a datatype in DBSchema Change Datatypes 
 						{
