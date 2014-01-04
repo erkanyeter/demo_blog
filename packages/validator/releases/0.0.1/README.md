@@ -126,9 +126,7 @@ Class Form_Example extends Controller {
     
     public function index()
     {
-        $this->form = $this->form->validatorGetInstance();   
-
-        if ($this->form->run() == false)
+        if ($this->form->isValid() == false)
         {
             view('myform');
         }
@@ -206,14 +204,12 @@ Class Form_Example extends Controller {
     
     public function index()
     {
-        $this->form = $this->form->validatorGetInstance();
-        
         $this->form->setRules('username', 'Username', 'required');
         $this->form->setRules('password', 'Password', 'required');
         $this->form->setRules('passconf', 'Password Confirmation', 'required');
         $this->form->setRules('email', 'Email', 'required');
                 
-        if ($this->form->run() == false)
+        if ($this->form->isValid() == false)
         {
              view('myform');
         }
@@ -372,14 +368,12 @@ Class Form_Example extends Controller {
     
     public function index()
     {
-        $this->form = $this->form->validatorGetInstance();
-        
         $this->form->setRules('username', 'Username', 'required|callback_usernameCheck');
         $this->form->setRules('password', 'Password', 'required');
         $this->form->setRules('passconf', 'Password Confirmation', 'required');
         $this->form->setRules('email', 'Email', 'required');
                 
-        if ($this->form->run() == false)
+        if ($this->form->isValid() == false)
         {
             view('myform');
         }
@@ -391,8 +385,6 @@ Class Form_Example extends Controller {
 
     public function usernameCheck($str)
     {     
-        $this->form = $this->form->validatorGetInstance();
-        
         if ($str == 'test')
         {
             $this->form->setMessage('usernameCheck', 'The %s field can not be the word "test"');
@@ -915,7 +907,7 @@ The following is a list of all the native rules that are available to use:
 
 </tbody>
 </table>
-		
+    
 **Note:** These rules can also be called as discrete functions. For example:
 
 ```php
@@ -966,7 +958,7 @@ The following is a list of all the prepping functions that are available to use:
             </tr>
     </tbody>
 </table>
-	
+  
 **Note:** You can also use any native PHP functions that permit one parameter, like <samp>trim, htmlspecialchars, urldecode,</samp> etc.
 
 ### Function Reference <a name="function-reference"></a>

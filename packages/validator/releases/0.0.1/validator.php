@@ -213,7 +213,7 @@ Class Validator {
      * @access    public
      * @return    bool
      */        
-    public function run($group = '')
+    public function isValid($group = '')
     {
         if (count($_REQUEST) == 0)  // Do we even have any data to process?  Mm?
         {
@@ -506,7 +506,7 @@ Class Validator {
             $callback = false;
             if (substr($rule, 0, 9) == 'callback_')  // Is the rule a callback? 
             {
-                $rule = substr($rule, 9);
+                // $rule = substr($rule, 9);
                 $callback = true;
             }
         
@@ -667,6 +667,31 @@ Class Validator {
         }
 
         return $fieldname;
+    }
+
+    // --------------------------------------------------------------------
+    
+    /**
+     * Set Error Message
+     *
+     * Lets users set their own error messages on the fly.  Note:  The key
+     * name has to match the  function name that it corresponds to.
+     *
+     * @access   public
+     * @param    string
+     * @param    string
+     * @return   string
+     */
+    public function setMessage($lang, $val = '')
+    {
+        $validator = getInstance()->validator;
+        
+        if ( ! is_array($lang))
+        {
+            $lang = array($lang => $val);
+        }
+    
+        $validator->_error_messages = array_merge($validator->_error_messages, $lang);
     }
 
 }

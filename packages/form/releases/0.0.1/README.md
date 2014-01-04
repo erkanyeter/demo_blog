@@ -13,6 +13,32 @@ $this->form->method();
 
 The following functions are available:
 
+#### $this->form->setSchema($schemaName);
+
+Sets a database schema for update operations.
+
+```php
+<?php
+$this->db->where('post_id', $post_id); // get db data
+$this->db->get('posts');
+$row = $this->db->row();  // get one post
+
+$this->form->setSchema('posts')  // set schema for form
+
+echo $this->form->getNotice();
+echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST'));
+
+echo $this->form->label('Title');
+echo $this->form->error('title');
+echo $this->form->input('title', $row, " "); // Set a row object for schema sync.
+
+echo $this->form->label('Content');
+echo $this->form->error('content');
+echo $this->form->textarea('content', $row, ' rows="15" cols="80" size="50" style="width:50%" ');
+
+echo $this->form->close();
+```
+
 #### $this->form->open()
 
 Creates an opening form tag with a base URL <b>built from your config preferences</b>. It will optionally let you add form attributes and hidden input fields.
@@ -191,10 +217,6 @@ echo $this->form->dropdown('shirts', $options, 'large', $js);
 ```
 
 If the array passed as $options is a multidimensional array, $this->form->dropdown() will produce an with the array key as the label.
-
-#### $this->form->multiSelect()
-
-Lets you create a standard multiselect field. The first parameter will contain the name of the field, the second parameter will contain an associative array of options, and the third parameter will contain the value or values you wish to be selected. The parameter usage is identical to using <kbd>$this->form->dropdown()</kbd> above, except of course that the name of the field will need to use POST array syntax, e.g. <kbd>foo[]</kbd>.
 
 #### $this->form->fieldset()
 
@@ -732,16 +754,6 @@ Return to all validation errors of Validator Class. Using prefix and suffix para
 echo $this->form->errorString($prefix = '<div class="notification">' , $suffix = '</div>');
 ```
 
-#### $this->form->message($model, $formMsg = '')
-
-Return a heading message at top of the current form using the <b>Odm object</b>.
-
-```php
-echo $this->form->message($model, $formMsg = '')
-
-// Output <div class="notification error">There are some errors in the form fields !</div>
-```
-
 Using optional second parameter you can provide custom errors or success messages otherwise it returns to validation errors of Validator Class.
 
 #### $this->form->prep()
@@ -814,6 +826,14 @@ Add html (break) using your default form template.
 #### $this->form->validatorGetInstance()
 
 Get the Validator Class instance.
+
+#### $this->form->setRules($field, $rules = '');
+
+Set form validation rules.
+
+#### $this->form->isValid();
+
+Run the form validation.
 
 #### $this->form->setNotice($message, ERROR);
 

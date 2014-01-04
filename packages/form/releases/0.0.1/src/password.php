@@ -16,6 +16,11 @@ namespace Form\Src {
     */
     function password($data = '', $value = '', $extra = '')
     {
+        if(is_object($value)) // $_POST & Db value schema sync
+        {
+            $value = getInstance()->form->_getSchemaPost($value, $data); 
+        }
+        
         if ( ! is_array($data))
         {
             $data = array('name' => $data);

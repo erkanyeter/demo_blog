@@ -10,13 +10,13 @@ $users = array(
 		),
 	'email' => array(
 		'label' => 'User Email',
-		'types' => '_null|_varchar(60)',
-		'rules' => '',
+		'types' => '_varchar(60)|_not_null',
+		'rules' => 'required|validEmail',
 		),
 	'password' => array(
 		'label' => 'User Password',
 		'types' => '_not_null|_varchar(75)',
-		'rules' => '',
+		'rules' => 'required|minLen(6)',
 		),
 	'creation_date' => array(
 		'label' => 'User Creation Date',
@@ -25,18 +25,13 @@ $users = array(
 		),
 	'modification_date' => array(
 		'label' => 'User Modification Date',
-		'types' => '_null|_datetime',
+		'types' => '_datetime|_null',
 		'rules' => '',
 		),
 	'username' => array(
 		'label' => 'User Username',
 		'types' => '_null|_varchar(50)',
-		'rules' => '',
-		),
-	'name' => array(
-		'label' => 'Name',
-		'types' => '_null|_varbinary(50)',
-		'rules' => '',
+		'rules' => 'required|callback_username',
 		),
 );
  

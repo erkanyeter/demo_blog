@@ -22,8 +22,7 @@ $c->func('index', function($id) use($c){
 
     if($this->post->delete())  // save post
     {        
-        // keep notice in sessions.
-        $this->form->setNotice('Post deleted successfully.','success');
+        $this->form->setNotice('Post deleted successfully.',SUCCESS); // set flash notice
         $this->url->redirect('/post/manage');
     } 
 });

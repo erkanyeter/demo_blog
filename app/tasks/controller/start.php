@@ -11,7 +11,7 @@ $c = new Controller(function(){
 
 $c->func('index', function(){
 
-    echo "\33[0;36m".'
+    echo "\33[1;36m".'
         ______  _            _  _
        |  __  || |__  _   _ | || | ____
        | |  | ||  _ || | | || || ||  _ |

@@ -18,8 +18,6 @@
         $router = getComponentInstance('router');
         $uri    = getComponentInstance('uri');
 
-        logMe('debug', '$_REQUEST_URI: '.$uri->requestUri());
-
         /*
          * ------------------------------------------------------
          *  Instantiate the hooks class
@@ -80,6 +78,7 @@
          */
         if(config('log_threshold') > 0)
         {
+            logMe('debug', '$_REQUEST_URI: '.$uri->requestUri());
             logMe('debug', '$_COOKIE: '.preg_replace('/\n/', '', print_r($_COOKIE, true)));
 
             if(sizeof($_REQUEST) > 0)

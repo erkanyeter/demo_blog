@@ -17,6 +17,11 @@ namespace Form\Src {
     {
         $form = \Form::getFormConfig();
 
+        if(is_object($value))  // $_POST & Db value schema sync
+        {
+            $value = getInstance()->form->_getSchemaPost($selected, $data); 
+        }
+
         $defaults = array('type' => 'checkbox', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
 
         if (is_array($data) AND array_key_exists('checked', $data))

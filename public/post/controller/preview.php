@@ -17,25 +17,29 @@ $c = new Controller(function(){
 
 $c->func('index', function($id) use($c){
 
-    $c->view('preview', function() use($c, $id) {
+    $this->db->where('post_id', $id);  // get post detail
+    $this->db->join('users', 'user_id = post_user_id');
+    $this->db->get('posts'); // reset query
+    $post = $this->db->row();
 
-        // get post detail
-        $this->db->where('post_id', $id);
-    	$this->db->join('users', 'user_id = post_user_id');
-    	$this->db->get('posts'); // reset query
+    if($post == false)
+    {
+        new Response();  // send 404 response 
+        $this->response->show404();
+    }
 
-        $this->set('post', $this->db->row());
+    // get comments
+    $this->db->where('comment_post_id',$id);
+    $this->db->where('comment_status', '1');
+    $this->db->get('comments'); // reset query
+    $comments = $this->db->result();
 
-        // get comments
-        $this->db->where('comment_post_id',$id);
-        $this->db->where('comment_status', '1');
-        $this->db->get('comments'); // reset query
+    $c->view('preview', function() use($post, $comments) {
 
-        $this->set('comments', $this->db->result());
+        $this->set('post', $post);
+        $this->set('comments', $comments);
         $this->set('title', 'Welcome to home');
-
         $this->getScheme();
-        
     });
     
 });

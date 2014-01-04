@@ -88,7 +88,7 @@ Class Odm {
             }
         }
         
-        if($validator->run())   // Run the validation
+        if($validator->isValid())   // Run the validation
         {
             foreach($fields as $key => $val)  // Set filtered values
             {
@@ -346,11 +346,11 @@ Class Odm {
     // --------------------------------------------------------------------
 
     /**
-    * Set Custom Odm error for field.
+    * Set Custom Odm error for valid field.
     *
     * @param string $key or $field
     */
-    public function setError($key, $error)
+    public function setMessage($key, $error)
     {
         $this->_odmErrors[$this->_odmTable]['errors'][$key] = $error;
 
@@ -371,24 +371,6 @@ Class Odm {
     public function setValue($key, $value)
     {
         $this->_odmValues[$this->_odmTable][$key] = $value;
-    }
-
-    // --------------------------------------------------------------------
-    
-     /**
-     * Set Error Message
-     *
-     * Lets users set their own error messages on the fly.  Note:  The key
-     * name has to match the  function name that it corresponds to.
-     *
-     * @access   public
-     * @param    string $methodName callback function name
-     * @param    string $message value
-     * @return   string
-     */
-    public function setMessage($methodName, $message)
-    {
-        $this->_odmValidator->setMessage($methodName, $message);
     }
 
     // --------------------------------------------------------------------

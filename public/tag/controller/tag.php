@@ -15,20 +15,21 @@ $c = new Controller(function(){
 
 $c->func('index', function($tag) use($c){
 
-    $c->view('tag', function() use($c, $tag) {
-	   
-        $this->db->like('post_tags', $tag);
-    	$this->db->where('post_status', 'Published');
-    	$this->db->join('users', 'user_id = post_user_id');
-    	$this->db->get('posts');
+    $this->db->like('post_tags', $tag);
+    $this->db->where('post_status', 'Published');
+    $this->db->join('users', 'user_id = post_user_id');
+    $this->db->get('posts');
 
+    $posts = $this->db->resultArray();
+
+    $c->view('tag', function() use($posts) {
+	   
         $this->set('title', 'Welcome to home');
-        $this->set('posts', $this->db->resultArray());
-        $this->getScheme();
-        
+        $this->set('posts', $posts);
+        $this->getScheme(); 
     });
     
 });
 
-/* End of file home.php */
-/* Location: .public/home/controller/home.php */
+/* End of file tag.php */
+/* Location: .public/tag/controller/tag.php */

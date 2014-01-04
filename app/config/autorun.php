@@ -39,10 +39,14 @@ $autorun['controller'] = array('init','menu');
 */
 
 $autorun['routes'] = array(
+	'post/manage/index' => array('auth'),
 	'post/create/index' => array('auth'),
 	'post/update/index' => array('auth'),
 	'post/delete/index' => array('auth'),
 	'post/preview/index' => array('auth'),
+	'post/approve/index' => array('auth'),
+	'post/approve/update' => array('auth'),
+	'post/approve/delete' => array('auth'),
 );
 
 /*

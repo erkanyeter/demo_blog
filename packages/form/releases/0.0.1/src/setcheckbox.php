@@ -19,6 +19,11 @@ namespace Form\Src {
     {
         $OBJ = getInstance()->form->_getValidatorObject();
 
+        if(is_object($value)) // $_POST & Db value schema sync
+        {
+            $value = getInstance()->form->_getSchemaPost($value, $field); 
+        }
+
         if ($OBJ === false)
         { 
             if ( ! isset($_REQUEST[$field]))

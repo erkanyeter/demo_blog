@@ -14,7 +14,10 @@ namespace Form\Src {
     */
     function textarea($data = '', $value = '', $extra = '')
     {
-        $value = getInstance()->form->_getSchemaPost($value, $data);  // $_REQUEST & Db value sync with schema
+        if(is_object($value))  // $_REQUEST & Db value sync with schema
+        {
+            $value = getInstance()->form->_getSchemaPost($value, $data); 
+        }
         
         $defaults = array('name' => (( ! is_array($data)) ? $data : ''), 'cols' => '90', 'rows' => '12');
 

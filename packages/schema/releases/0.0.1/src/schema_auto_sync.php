@@ -142,8 +142,8 @@ Abstract Class Schema_Auto_Sync {
 
 				/* Search data types and remove unecessary buttons. ( REMOVE DROP  BUTTON )*/
 
-				$result 	= preg_replace('/(\(.*?\))/','', $this->fileSchema[$k]);  // Remove data type brackets from file schema
-				$grep_array = preg_grep('/'.$result.'/',$this->dataTypes); // Search data type exists
+				$result 	= preg_replace('#(\(.*?\))#','', $this->fileSchema[$k]);  // Remove data type brackets from file schema
+				$grep_array = preg_grep('#'.$result.'#',$this->dataTypes); // Search data type exists
 
 				// If at least one data type not exists in the schema file
 				// don't show "drop" button to users
@@ -183,9 +183,9 @@ Abstract Class Schema_Auto_Sync {
 		{
 			if( ! isset($this->dbSchema[$k]))	// Sync column names
 			{
-				$result = preg_replace('/(\(.*?\))/','', $v); // Remove data type brackets from file schema
+				$result = preg_replace('#(\(.*?\))#','', $v); // Remove data type brackets from file schema
 
-				if ( ! preg_grep('/'.$result.'/',$this->dataTypes))  // Search data type exists
+				if ( ! preg_grep('#'.$result.'#',$this->dataTypes))  // Search data type exists
 				{
 					$this->schemaDiff[$k] = array(
 					'new_types' => $v,
@@ -223,13 +223,27 @@ Abstract Class Schema_Auto_Sync {
 				{
 					foreach ($diffMatches as $diffVal)
 					{
-						$this->schemaDiff[$k][] = array(
-						'update_types' => $diffVal,
-						'options' => array(
-							'remove-from-file',
-							'add-to-db'
-							),
-						);
+						$diffType = substr($diffVal, 1);
+
+    					if (in_array($diffType, $this->dataTypes)) // check is it datatype.
+                        {
+                            $this->schemaDiff[$k][] = array(
+                            'update_types' => $diffVal,
+                            'options' => array(
+                                'remove-from-file',
+                                'add-to-db'
+                                ),
+                            );
+                        }
+                        else  // if not show just remove file option
+                        {
+                            $this->schemaDiff[$k][] = array(
+                            'update_types' => $diffVal,
+                            'options' => array(
+                                'remove-from-file'
+                                ),
+                            );
+                        }
 					}
 
 				}
@@ -280,7 +294,7 @@ Abstract Class Schema_Auto_Sync {
 				}
 				
 				$enum = trim($enum, ',');
-				$schema[$key] = preg_replace('/_enum/', "_enum($enum)", $val['types']);
+				$schema[$key] = preg_replace('#_enum#', "_enum($enum)", $val['types']);
 			}
 			elseif(isset($schemaArray[$key]['_set']))
 			{
@@ -291,7 +305,7 @@ Abstract Class Schema_Auto_Sync {
 				}
 
 				$set = trim($set, ',');
-				$schema[$key] = preg_replace('/_set/', "_set($set)", $val['types']);
+				$schema[$key] = preg_replace('#_set#', "_set($set)", $val['types']);
 			}
 			else 
 			{

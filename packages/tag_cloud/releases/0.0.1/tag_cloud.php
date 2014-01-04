@@ -22,7 +22,7 @@ Class Tag_Cloud {
             getInstance()->tag_cloud = $this; // Make available it in the controller $this->tag_cloud->method();
         }
 
-        logMe('debug', "Tag Class Initialized");
+        logMe('debug', "Tag Cloud Class Initialized");
 	}
 
 	// --------------------------------------------------------------------

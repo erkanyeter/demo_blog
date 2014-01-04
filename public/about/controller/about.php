@@ -12,11 +12,10 @@ $c = new Controller(function(){
 
 $c->func('index', function() use($c){
 
-    $c->view('about', function() use($c) {
+    $c->view('about', function() {
 
         $this->set('title', 'About');
         $this->getScheme();
-        
     });
     
 });

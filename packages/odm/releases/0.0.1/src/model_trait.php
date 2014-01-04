@@ -4,10 +4,10 @@ namespace Odm\Src {
     trait Model_Trait
     {
         private $_modelMethods = array();
-        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','put','read');
+        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','put');
 
         /**
-         * Create the function.
+         * Create the model function.
          * 
          * @param  string $methodName  
          * @param  closure $methodCallable
@@ -15,11 +15,16 @@ namespace Odm\Src {
          */
         public function func($methodName, $methodCallable)
         {
+            if( strpos($methodName, 'callback_') !== 0 AND ! in_array($methodName, $this->_modelDefinedMethods))
+            {
+                throw new \Exception('Method "'.$methodName.'()" not allowed in the model, available methods listed below 
+                    <pre>'.implode("\n", $this->_modelDefinedMethods).'</pre>');
+            }
+
             $this->assignObjects();
 
-            if ( ! is_callable($methodCallable))
+            if ( ! is_callable($methodCallable)) // @todo throw new InvalidArgumentException
     	    {
-                // @todo throw new InvalidArgumentException
                 throw new \Exception('Model '.get_class().' error: Second param must be callable.');
             }
             
@@ -116,5 +121,5 @@ namespace Odm\Src {
 
 // END Trait
 
-/* End of file trait.php */
-/* Location: ./packages/odm/releases/0.0.1/trait.php */
+/* End of file model_trait.php */
+/* Location: ./packages/odm/releases/0.0.1/src/model_trait.php */

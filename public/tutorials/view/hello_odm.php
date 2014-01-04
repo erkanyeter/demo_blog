@@ -24,7 +24,7 @@
         </section>
 
         <section>
-            <?php echo $this->user->getNotice() ?>
+            <?php echo $this->form->getNotice() ?>
         </section>
         
         <section>

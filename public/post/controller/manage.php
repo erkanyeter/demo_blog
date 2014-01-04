@@ -14,23 +14,23 @@ $c = new Controller(function(){
 
 $c->func('index', function() use($c){
 
-	$c->view('manage', function(){
+    if($this->get->post('title'))
+    {
+        $this->db->like('post_title', $this->get->post('title'));
+    }
 
-        if($this->get->post('title'))
-        {
-            $this->db->like('post_title', $this->get->post('title'));
-        }
+    if($this->get->post('status'))
+    {
+        $this->db->like('post_status', $this->get->post('status'));
+    }
 
-        if($this->get->post('status'))
-        {
-            $this->db->like('post_status', $this->get->post('status'));
-        }
+    $this->db->get('posts');
+    $posts = $this->db->result();
 
-        $this->db->get('posts');
-
+	$c->view('manage', function() use($posts) {
+        
         $this->set('title', 'Manage Posts');
-		$this->set('posts', $this->db->result());
-
+		$this->set('posts', $posts);
 		$this->getScheme();
 	});
 

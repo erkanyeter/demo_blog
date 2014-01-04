@@ -128,7 +128,6 @@ Class Schema_Mysql {
         }
 
         $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->schemaObject->_createLabel($key);
-        
         $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
 
         $ruleString = "\n\t'$newKey' => array(";
@@ -141,7 +140,7 @@ Class Schema_Mysql {
 	    	$schemaFile = file_get_contents($this->schemaObject->getPath());
 	    	$schemaFile = str_replace('<?php','',$schemaFile);
 
-	    	preg_match("/'$key'(.*?)'func'(\s*)(=>)(\s*)(.*?)\},/s",$schemaFile, $matches);
+	    	preg_match("#'$key'(.*?)'func'(\s*)(=>)(\s*)(.*?)\},#s",$schemaFile, $matches);
 
 	        if( isset($matches[5]))
 	        {
@@ -166,13 +165,13 @@ Class Schema_Mysql {
                 $types = str_replace('_enum', '_enum'.$enumData, $types);
             }
 
-            if (preg_match('/(_enum)(\(.*?\))/',$types, $match) ) // if type is enum create enum field as an array
+            if (preg_match('#(_enum)(\(.*?\))#',$types, $match) ) // if type is enum create enum field as an array
             {
                 $enumStr  = $match[0];  // _enum("","")
                 $enum     = $match[1];  // _enum
                 $enumData = $match[2];  // ("","")
 
-                $types = preg_replace('/'.preg_quote($enumStr).'/', '_enum', $types);
+                $types = preg_replace('#'.preg_quote($enumStr).'#', '_enum', $types);
                 
                 $ruleString .= "\n\t\t'_enum' => array(";   // render enum types
                 foreach(explode(',', trim(trim($enumData, ')'),'(')) as $v)

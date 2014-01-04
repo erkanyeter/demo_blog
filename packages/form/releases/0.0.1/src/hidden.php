@@ -18,6 +18,11 @@ namespace Form\Src {
     {
         static $hiddenTag;
 
+        if(is_object($value)) // $_POST & Db value schema sync
+        {
+            $value = getInstance()->form->_getSchemaPost($value, $name); 
+        }
+
         if ($recursing === false)
         {
             $hiddenTag = "\n";

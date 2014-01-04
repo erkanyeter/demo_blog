@@ -87,7 +87,7 @@ Class Exceptions {
 
         ob_start();
         
-        include (PACKAGES .$core. DS .'releases'. DS .$packages['dependencies'][$core]['version']. DS .'src'. DS .'exception'. EXT);
+        include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
         
         $error_msg = ob_get_clean();
         

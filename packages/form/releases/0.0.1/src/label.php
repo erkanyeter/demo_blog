@@ -4,7 +4,7 @@ namespace Form\Src {
     // ------------------------------------------------------------------------
 
     /**
-    * Form Label Tag
+    * Form Label
     *
     * @access	public
     * @param	string	The text to appear onscreen
@@ -16,10 +16,12 @@ namespace Form\Src {
     {
         $label = '<label';
 
-        if ($id != '')
+        if(empty($id))
         {
-            $label .= " for=\"$id\"";
+            $id = strtolower($label_text);
         }
+
+        $label .= " for=\"$id\"";
 
         if (is_array($attributes) AND count($attributes) > 0)
         {

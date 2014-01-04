@@ -158,7 +158,7 @@ $this->user->delete();
 ?>
 ```
 
-Available <b>CRUD operations</b> that we are recommend listed below. You can define any of these methods.
+Available <b>CRUD operations</b> that we are support listed below. You can define any of these methods.
 
 * save
 * insert
@@ -167,6 +167,7 @@ Available <b>CRUD operations</b> that we are recommend listed below. You can def
 * delete
 * remove
 * read
+* callback_ ( form validation callback function prefix )
 
 
 ### Saving Data
@@ -543,7 +544,7 @@ new Model('user', 'users');
 $this->user->username = $this->get->post('username');
 $this->user->password = $this->get->post('password');
 
-$this->user->func('checkuser', function($username){
+$this->user->func('callback_checkuser', function($username){
     if(strlen($username) > 10)
     {
         $this->setMessage('checkuser', 'Username must be less than 10 characters.');
@@ -968,62 +969,54 @@ The following is a list of all the prepping functions that are available to use:
 
 ------
 
-#### $this->model->createTable();
-
-Creates database table using your database schema.
-
 #### $this->model->func('functionName', function(){});
 
 Defines crud functions for your model.
 
-#### $this->model->output();
-
-Returns all output of the model.
-
-#### $this->model->errors($field = '');
-
-Returns all errors in array format if you provide any fieldname it gives it's error.
-
-#### $this->model->values($field = '');
-
-Returns the <b>filtered secure</b> value(s) of the inputs. 
-
-#### $this->model->messages($key = '');
-
-Returns error codes, success and failure message strings.
-
 #### $this->model->isValid();
 
-Validate the schema and custom validation rules.
+Validate the schema using schema rules.
 
 #### $this->model->getValidation();
 
 Returns true if the model's schema validation success.
 
+#### $this->model->messages();
+
+Returns error codes, success and failure messages strings.
+
+#### $this->model->getMessage($key = '');
+
+Returns error codes, success and failure message strings.
+
+#### $this->model->errors();
+
+Returns all errors in array format.
+
+#### $this->model->getError($field);
+
+if you provide any fieldname it gives it's error
+
+#### $this->model->values();
+
+Returns the <b>filtered secure</b> values of the inputs. 
+
+#### $this->model->getValue($field = '');
+
+Returns the <b>filtered secure</b> value of the inputs. 
+
 #### $this->model->buildQueryErrors();
 
 Builds Httpd GET friendly errors using query strings.
 
-#### $this->model->setError($field, $error);
+#### $this->model->setMessage($field, $error);
 
 Sets custom error for the provided field.
-
-#### $this->model->setRule($key, array $rule);
-
-Sets session flashdata notice using current odm error status.
-
-#### $this->model->setNotice($message);
-
-Gets current odm flashdata notice.
-
-#### $this->model->getNotice();
-
-Sets custom validation rule in the validator object.
 
 #### $this->model->setFailure($message);
 
 Sets custom failure messages, use it when your operation goes to failure.
 
-#### $this->model->setMessage('callback_functionname', $message);
+#### $this->model->output();
 
-Sets the custom error message to validator object for user defined callback functions.
+Returns all outputs of the model for debugging.

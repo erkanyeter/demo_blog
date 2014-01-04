@@ -15,7 +15,7 @@
 
 			<div id="content">
 				<div id="navigation">
-					<a href="index.php" >Home</a> » <b> Post </b>
+					<?php echo $this->url->anchor('/home', 'Home') ?> » <b> Post </b>
 				</div>
 
 				<div id="post">

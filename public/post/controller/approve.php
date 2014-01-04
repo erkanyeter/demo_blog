@@ -16,15 +16,15 @@ $c = new Controller(function(){
 
 $c->func('index', function() use($c){
 
-	$c->view('approve', function(){
+    $this->db->join('posts', 'post_id = comment_post_id');  // Get all comments
+    $this->db->orderBy('comment_status', 'ASC');
+    $this->db->get('comments'); // reset query
+    $result = $this->db->result();
 
-        // Get all comments
-        $this->db->join('posts', 'post_id = comment_post_id');
-        $this->db->orderBy('comment_status', 'ASC');
-        $this->db->get('comments'); // reset query
-
+	$c->view('approve', function() use($result){
+        
 		$this->set('title', 'Approve Comments');
-        $this->set('comments', $this->db->result());
+        $this->set('comments', $result);
 		$this->getScheme();
 	});
 });

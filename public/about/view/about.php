@@ -15,7 +15,7 @@
 			 
 			<div id="content" class="x mt">
 				<div id="navigation">
-					<a href="index.php" >Home</a> » <b> About </b>
+					<?php echo $this->url->anchor('/home', 'Home') ?></a> » <b> About </b>
 				</div>
 				<h1>About</h1>
 				<div id="abouttext">

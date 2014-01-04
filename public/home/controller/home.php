@@ -15,21 +15,21 @@ $c = new Controller(function(){
 
 $c->func('index', function() use($c){
 
-    $c->view('home', function() use($c) {
+    $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
+        WHERE posts.post_id = comment_post_id AND comment_status = '1' 
+        GROUP BY posts.post_id LIMIT 1),0) as total_comment", false);
+    
+    $this->db->where('post_status', 'Published');
+    $this->db->join('users', 'user_id = post_user_id');
+    $this->db->get('posts');
 
-        $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
-            WHERE posts.post_id = comment_post_id AND comment_status = '1' 
-            GROUP BY posts.post_id LIMIT 1),0) as total_comment", false);
+    $posts = $this->db->resultArray();
 
-    	$this->db->where('post_status', 'Published');
-    	$this->db->join('users', 'user_id = post_user_id');
-    	$this->db->get('posts');
+    $c->view('home', function() use($posts) {
 
         $this->set('title', 'Welcome to home');
-        $this->set('posts', $this->db->resultArray());
-
+        $this->set('posts', $posts);
         $this->getScheme();
-        
     });
     
 });

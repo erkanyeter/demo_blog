@@ -22,7 +22,7 @@
 			<div id="content">
 
 				<div id="navigation">
-					<a href="index.php" >Home</a> » <b> Manage Posts </b>
+					<?php echo $this->url->anchor('/home', 'Home') ?> » <b> Manage Posts </b>
 				</div>
 
 				<h1 class="h1 left">Manage Posts </h1>

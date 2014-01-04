@@ -18,6 +18,11 @@ namespace Form\Src {
     {
         // --------- PARSE SCHEMA ---------- //
         
+        if(is_object($selected))  // $_POST & Db value schema sync
+        {
+            $selected = getInstance()->form->_getSchemaPost($selected, $name); 
+        }
+
         if(is_string($options)) // fetch options from schema
         {
             $options = _parseSchemaOptions($options);
@@ -55,7 +60,7 @@ namespace Form\Src {
             $selected = array($selected);
         }
 
-        if (count($selected) === 0) // If no selected state was submitted we will attempt to set it automatically
+        if (sizeof($selected) === 0) // If no selected state was submitted we will attempt to set it automatically
         {
             if (isset($_POST[$name]))  // If the form name appears in the $_POST array we have a winner !
             {

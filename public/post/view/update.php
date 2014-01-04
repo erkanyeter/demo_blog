@@ -9,7 +9,7 @@
 
 <body>
 
-<?php $this->form->setSchema('posts')  // set schema for form ?>
+<?php $this->form->setSchema('posts')  // set schema for form  ?>
 
 		<?php echo $header ?>
 
@@ -39,7 +39,7 @@
 
 			                <table>
 			                    <tr>
-			                        <td style="width:15%;"><?php echo $this->form->label('Title', 'title') ?></td>
+			                        <td style="width:15%;"><?php echo $this->form->label('Title') ?></td>
 			                        <td><?php 
 			                            echo $this->form->error('title');
 			                            echo $this->form->input('title', $row, " ");
@@ -47,7 +47,7 @@
 			                    </tr>
 
 			                    <tr>
-			                        <td><?php echo $this->form->label('Content', 'content') ?></td>
+			                        <td><?php echo $this->form->label('Content') ?></td>
 			                        <td><?php 
 			                            echo $this->form->error('content');
 			                            echo $this->form->textarea('content', $row, ' rows="15" cols="80" size="50" style="width:50%" ');
@@ -55,7 +55,7 @@
 			                    </tr>
 
 			                    <tr>
-			                        <td><?php echo $this->form->label('Tags', 'tags') ?></td>
+			                        <td><?php echo $this->form->label('Tags') ?></td>
 			                        <td>
 			                        <?php 
 			                            echo $this->form->error('tags');
@@ -68,7 +68,7 @@
 			                    </tr>
 
 			                    <tr>
-			                        <td><?php echo $this->form->label('Status', 'status') ?></td>
+			                        <td><?php echo $this->form->label('Status') ?></td>
 			                        <td>
 			                        <?php 
 			                            echo $this->form->error('status');
@@ -90,9 +90,7 @@
 					<?php echo $this->form->close() ?>
 
 				</div>
-	
 			</div>
-
 
 			<?php echo $sidebar ?>
 			<?php echo $footer ?>

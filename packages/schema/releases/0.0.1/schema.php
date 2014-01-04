@@ -516,9 +516,23 @@ Class Schema {
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get current uri
+     * 
+     * @return string
+     */
     public function getRequestUri()
     {
-        return $this->requestUri;
+        $index_page = config('index_page');
+
+        if(empty($index_page))
+        {
+            return $this->requestUri;
+        } 
+        else 
+        {
+            return substr($this->requestUri, strlen($index_page) + 1);
+        }
     }
 
     // --------------------------------------------------------------------
