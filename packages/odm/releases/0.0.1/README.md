@@ -338,11 +338,11 @@ $this->user->messages('success'); // gives you value of the success.
 
 #### Description Of Keys
 
-* <b>succes</b> : If crud process success it returns to <b>1</b> otherwise <b>0</b>.
+* <b>success</b> : If crud process success it returns to <b>1</b> otherwise <b>0</b>.
 * <b>errorKey</b> : Every error has a related error string for readability of them.
 * <b>errorCode</b> : Same as error keys you can use the error codes if you want.
 * <b>errorString</b> : Gives the error message as string.
-* <b>errorMessage</b> : Gives the translated error message using lingo() function. ( lingo package )
+* <b>errorMessage</b> : Gives the translated error message using lingo() function. ( uses lingo package )
 
 #### Description of Messages
 
@@ -360,7 +360,7 @@ $this->user->messages('success'); // gives you value of the success.
 </tr>
 <tr>
 <td>failure</td>
-<td>User customized failure message produced by $this->mode->setFailure(); method.</td>
+<td>User customized failure message produced by $this->model->setFailure(); method.</td>
 </tr>
 <tr>
 <td>saveSuccess</td>

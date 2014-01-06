@@ -35,6 +35,18 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 		'_longtext',
 		'_enum',
 		'_set');
+	public $attributeTypes = array(
+		'_null',
+		'_not_null',
+		'_default',
+		'_unsigned',
+		'_unsigned_zerofill',
+		'_key',
+		'_foreign_key',
+		'_unique_key',
+		'_primary_key',
+		'_auto_increment',
+		);
 
 	/**
 	 * Constructor
@@ -248,7 +260,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 				case 'add-to-db': 	//  Add Type to Database
 					
 					$schemaKeys = explode('|',$colType);
-
+					
 					if (isset($this->dbSchema[$colName])) // Already exists 
 					{
 						$dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($colName);
@@ -340,15 +352,14 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						}
 						else
 						{
+
 							$colKeyValue = array_values($columnType)[0];
 							$colkey 	 = array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
 							$columnType  = $this->removeUnderscore($schemaKeys[$colkey]);
 							$dbCommand   = 'ALTER TABLE '.$this->schemaName;
 							$schemaKeys  = explode('|', $colType);
-
 							unset($schemaKeys[$colkey]);
 							unset($unbracketsColTypes[$colkey]);
-
 							foreach ($unbracketsColTypes as $key => $value)
 							{
 								switch ($value) 
@@ -396,12 +407,12 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 								}
 							}
-
 						    $columnType = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
 						        return strtoupper($match[0]); 
 						    }, $columnType);
 							
 							$dbCommand .= ' ADD COLUMN '.$this->quoteValue($colName).$columnType;
+
 						}	
 					}
 

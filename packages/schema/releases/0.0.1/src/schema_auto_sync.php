@@ -111,13 +111,24 @@ Abstract Class Schema_Auto_Sync {
 		{
 			if( ! isset($this->fileSchema[$k])) // Sync column names
 			{
-				$this->schemaDiff[$k] = array(
-					'new_types' => $v,
+				$dbTypes 	 = explode('|', trim($this->dbSchema[$k], '|'));
+				foreach ($dbTypes as $type) 
+				{
+					$this->schemaDiff[$k]['options'] = array(
+						'types' => $v,
+						'drop',
+						'add-to-file'
+						);
+					$this->schemaDiff[$k]['new_types'][] = array(
+					'type' => $type,
+					'types' => $v,
 					'options' => array(
 						'drop',
 						'add-to-file'
 						),
 					);
+				}
+				
 			}
 
 			if(array_key_exists($k, $this->fileSchema)) // Sync column types
@@ -143,6 +154,7 @@ Abstract Class Schema_Auto_Sync {
 				/* Search data types and remove unecessary buttons. ( REMOVE DROP  BUTTON )*/
 
 				$result 	= preg_replace('#(\(.*?\))#','', $this->fileSchema[$k]);  // Remove data type brackets from file schema
+				
 				$grep_array = preg_grep('#'.$result.'#',$this->dataTypes); // Search data type exists
 
 				// If at least one data type not exists in the schema file
@@ -185,26 +197,84 @@ Abstract Class Schema_Auto_Sync {
 			{
 				$result = preg_replace('#(\(.*?\))#','', $v); // Remove data type brackets from file schema
 
-				if ( ! preg_grep('#'.$result.'#',$this->dataTypes))  // Search data type exists
+				$dataTypeArray = $this->getDataTypeArray($result,$this->dataTypes);
+				$dataTypeCount = sizeof($dataTypeArray);
+
+				$dataTypeArray = array_values($dataTypeArray);
+				$newAttributes = explode('|', trim($result, '|'));		
+
+				$v = explode('|', trim($v, '|'));
+
+				if ($dataTypeCount == 0)  // Datatype must be unique and valid
 				{
-					$this->schemaDiff[$k] = array(
-					'new_types' => $v,
-					'options' => array(
-						'remove-from-file',
-						'add-to-db'
-						),
-					'errors' => "	<span style='color:red;font-size:12px'>You have to define a datatype in your file schema.</span>"
-					);
-				}
-				else
-				{
-					$this->schemaDiff[$k] = array(
-						'new_types' => $v,
+					$i = 0;
+					foreach($newAttributes as $types)
+					{
+						$this->schemaDiff[$k][] = array(
+						'new_types' => $v[$i],
 						'options' => array(
-							'remove-from-file',
-							'add-to-db'
+							'remove-from-file'
 							),
+						'errors' => "	<span style='color:red;font-size:12px'>You have to define a valid datatype in your file schema.</span>"
 						);
+						$i++;
+					}
+				}
+				elseif ($dataTypeCount > 1) 
+				{
+					$i = 0;
+					foreach($newAttributes as $types)
+					{
+						$this->schemaDiff[$k][] = array(
+							'new_types' => $v[$i],
+							'options' => array(
+								'remove-from-file',
+								),
+							'errors' => "	<span style='color:red;font-size:12px'>You can't define more than one datatype in your file schema.</span>"
+							);
+						$i++;
+					}
+				}
+				else //
+				{
+					// $newAttributes = preg_replace('#\b'..'\b#', '', $newAttributes);
+					$i = 0;
+					foreach($newAttributes as $type)
+					{
+						// $dataTypeArray[0]; attribute control
+						if (in_array($type,$this->attributeTypes) || in_array($type, $this->dataTypes))
+						{
+							$this->schemaDiff[$k]['options'] = array(
+								'types' => implode('|', $v),
+								'remove-from-file',
+								'add-to-db'
+								);
+							$this->schemaDiff[$k]['new_types'][] = array(
+							'type' => $v[$i],
+							'types' => implode('|', $v),
+							'options' => array(
+								'remove-from-file',
+								'add-to-db'
+								),
+							);
+						}
+						else
+						{
+							$this->schemaDiff[$k]['options'] = array(
+								'types' => implode('|', $v),
+								'remove-from-file',
+								'add-to-db'
+								);
+							$this->schemaDiff[$k]['new_types'][] = array(
+							'type' => $v[$i],
+							'types' => implode('|', $v),
+							'options' => array(
+								'remove-from-file',
+								),
+							);
+						}
+						$i++;
+					}
 				}
 			}
 			else 
@@ -361,6 +431,18 @@ Abstract Class Schema_Auto_Sync {
 		return str_replace('_',' ',$str);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get number of data type count.
+	 * 
+	 * @param  string  $typeString
+	 * @return int
+	 */
+	function getDataTypeArray($typeString,$dataTypes)
+	{
+		return array_intersect(explode('|', $typeString),$dataTypes);
+	}
 }
 
 /* End of file schema_auto_sync.php */

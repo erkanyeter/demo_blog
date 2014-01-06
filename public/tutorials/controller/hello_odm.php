@@ -24,12 +24,13 @@ $c->func('index', function() use($c){
 
             //--------------------- set non schema rules
             
-            $this->user->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
-            $this->user->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
+            $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
+            $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
             
             //---------------------
             
             $this->user->func('save', function() {
+                
                 if ($this->isValid()){
                     $this->password = md5($this->getValue('password'));
                     return $this->db->insert('users', $this);
@@ -38,9 +39,8 @@ $c->func('index', function() use($c){
             });
 
             if($this->user->save())
-            {        
-                $this->user->setNotice('User saved successfully.');
-                
+            {   
+                $this->form->setNotice('User saved successfully.',SUCCESS);
                 $this->url->redirect('tutorials/hello_odm');
             }
         }

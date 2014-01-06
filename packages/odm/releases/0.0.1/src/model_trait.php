@@ -18,7 +18,7 @@ namespace Odm\Src {
             if( strpos($methodName, 'callback_') !== 0 AND ! in_array($methodName, $this->_modelDefinedMethods))
             {
                 throw new \Exception('Method "'.$methodName.'()" not allowed in the model, available methods listed below 
-                    <pre>'.implode("\n", $this->_modelDefinedMethods).'</pre>');
+                    <pre>'.implode("\n", $this->_modelDefinedMethods)."\n".'callback_</pre>');
             }
 
             $this->assignObjects();

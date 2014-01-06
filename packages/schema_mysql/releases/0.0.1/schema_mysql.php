@@ -152,28 +152,21 @@ Class Schema_Mysql {
 
         if(empty($newType))
         {
+            //------------ PARSE _ENUM -----------//
+
             if(isset($currentFileSchema[$key]['_enum']))  // if _enum exists convert it to string for array rendering.
             {
-                $enumData = '(';
-                foreach($currentFileSchema[$key]['_enum'] as $v)
-                {
-                    $enumData.= '"'.$v.'",';
-                }
-
-                $enumData = rtrim($enumData,',');
-                $enumData .= ')';
-
-                preg_match('#(_enum)(\(.*?\))#s',$types, $match);
-
-                if (isset($match[2])) 
-                {
-                    $types = preg_replace('#'.preg_quote($match[0]).'#', '_enum'.$match[2], $types);
-                }
-                else
-                {
-                    $types = str_replace('_enum', '_enum'.$enumData, $types);    
-                }
+                $types = $this->_parseType('_enum', $types, $currentFileSchema[$key]['_enum']);
             }
+
+            //------------ PARSE _SET -----------//
+            
+            if(isset($currentFileSchema[$key]['_set']))  // if _set exists convert it to string for array rendering.
+            {
+                $types = $this->_parseType('_set', $types, $currentFileSchema[$key]['_set']);
+            }
+
+            //------------ RENDER ENUM -----------//
 
             if (preg_match('#(_enum)(\(.*?\))#s',$types, $match) ) // if type is enum create enum field as an array
             {
@@ -184,20 +177,37 @@ Class Schema_Mysql {
                 $types = preg_replace('#'.preg_quote($enumStr).'#', '_enum', $types);
                 
                 $ruleString .= "\n\t\t'_enum' => array(";   // render enum types
-
-                // sanitize comma.
-                $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData);
-
+                $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData); // sanitize comma.
 
                 foreach(explode(',', trim(trim($enumData,')'),'(')) as $v)
                 {
                     $v = str_replace('__TEMP_COMMA__',',',$v);
                     $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
                 }
-
                 $ruleString .= "\n\t\t),";
-
                 $types = str_replace($enumData, '', $types);
+            }
+
+            //------------ RENDER SET -----------//
+
+            if (preg_match('#(_set)(\(.*?\))#s',$types, $match) ) // if type is enum create enum field as an array
+            {
+                $setStr  = $match[0];  // _set("","")
+                $set     = $match[1];  // _set
+                $setData = $match[2];  // ("","")
+
+                $types = preg_replace('#'.preg_quote($setStr).'#', '_set', $types);
+                
+                $ruleString .= "\n\t\t'_set' => array(";   // render enum types
+                $setData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $setData); // sanitize comma.
+
+                foreach(explode(',', trim(trim($setData,')'),'(')) as $v)
+                {
+                    $v = str_replace('__TEMP_COMMA__',',',$v);
+                    $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
+                }
+                $ruleString .= "\n\t\t),";
+                $types = str_replace($setData, '', $types);
             }
 
             $ruleString.= "\n\t\t'types' => '".$types."',";
@@ -208,13 +218,46 @@ Class Schema_Mysql {
             $ruleString.= "\n\t\t'types' => '".$typeStr."',";
         }
 
-        $ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the rules from current schema
+        $ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the validation rules from current schema
         $ruleString.= "\n\t\t),";
 
         return $ruleString;
     }
 
 	// --------------------------------------------------------------------
+
+    /**
+     * Parse _enum & _set
+     * 
+     * @param  string $type
+     * @param  string $types
+     * @return string 
+     */
+    public function _parseType($type = '_enum', $types, $data)
+    {
+        $setData = '(';
+        foreach($data as $v)
+        {
+            $setData.= '"'.$v.'",';
+        }
+        $setData = rtrim($setData,',');
+        $setData.= ')';
+
+        preg_match('#('.$type.')(\(.*?\))#s',$types, $match);
+
+        if (isset($match[2])) 
+        {
+            $types = preg_replace('#'.preg_quote($match[0]).'#', $type.$match[2], $types);
+        }
+        else
+        {
+            $types = str_replace($type, $type.$setData, $types);  // $types = str_replace('_enum', '_enum'.$setData, $types);    
+        }
+
+        return $types;
+    }
+
+    // --------------------------------------------------------------------
 
 	/**
 	 * Check table exists

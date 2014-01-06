@@ -45,9 +45,9 @@ Class Schema_Auto_Sync_Html {
 			$html.= '<tr>';
 
 			$class = ''; 
-			if( ! isset($val['types']) AND count($val) > 1) { $class = 'newColumn'; } // New Column
+			if( ! isset($val['types']) ) { $class = 'newColumn'; } // New Column
 
-				if(isset($val['new_types']))
+				if(isset($val['new_types']))  // LEFT COLUMN
 				{
 					$html.= '<td class="'.$class.'">'.$key;
 
@@ -55,10 +55,20 @@ Class Schema_Auto_Sync_Html {
 					{
 						$html.= '<div class="columnUpdateWrapper">';
 							$html.= '<div class="columnNewRow">';
-						    	$add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
+
+								$add 	= (isset($val['options'][1])) ? '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]) : '' ;
+						    	
+								// $this->syncObject->$attributeTypes;
+						    	// $add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
+								
 								$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
-								$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['new_types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
-								$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['new_types']).'\',\''.$val['options'][1].'\');">'.$add.'</a></kbd>';
+								$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
+								
+								if( ! empty($add))
+								{
+									$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][1].'\');">'.$add.'</a></kbd>';
+								}
+
 							$html.= '</div>';
 						$html.= '</div>';
 					}
@@ -70,7 +80,9 @@ Class Schema_Auto_Sync_Html {
 					$html.= '<td class="'.$class.'">'.$key.'</td>';
 				}
 
-				if(isset($val['types']))
+				//-------------------------------------------------------------------
+
+				if(isset($val['types']))	// RIGHT COLUMN
 				{
 					$html.= '<td>'.$val['types'];
 
@@ -101,7 +113,7 @@ Class Schema_Auto_Sync_Html {
 													$add 	= (isset($mapVal['options'][1])) ? '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $mapVal['options'][1]) : '';
 													$remove = (isset($mapVal['options'][0])) ? '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $mapVal['options'][0]) : '';
 
-													if (! empty($remove)) 
+													if ( ! empty($remove)) 
 													{	
 														$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($mapVal['update_types']).'\', \''.$mapVal['options'][0].'\');">'.$remove.'</a></kbd>';
 													}
@@ -127,43 +139,45 @@ Class Schema_Auto_Sync_Html {
 				} 
 				elseif(isset($val['new_types']))
 				{
-					$html.= '<td class="'.$class.'">'.$val['new_types'];
+					$html.= '<td class="'.$class.'">'.$val['new_types'][0]['types'];
 					
 					if (isset($val['errors'])) { $html.= $val['errors']; }
 					
 					$html.= '<div class="columnUpdateWrapper">';
 
-						foreach(explode('|', trim($val['new_types'], '|')) as $type)
+						foreach($val['new_types'] as $val)
 						{
 							$errorClass = '';
-							if(strpos($type, '_') !== 0) // error in rule, rule must be start with '_' prefix.
+							if(strpos($val['type'], '_') !== 0) // error in rule, rule must be start with '_' prefix.
 							{
 								$errorClass = 'columnTypeError';
 							}
 
-							if($type != '_') // don't show empty keys
-							{
-								$html.= '<div class="columnNewRow">';
+							$html.= '<div class="columnNewRow">';
 
-									$html.= '<div style="clear:left;"></div>';
-									$html.= '<div class="columnNewType '.$errorClass.'">'.$type.'</div>';
-
-									if(isset($val['options'])) // parse options
-									{
-										$html.= '<div style="float:left;">';
-
-									    $add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
-										$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
-
-										$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($type).'\', \''.$val['options'][0].'\', \'new\');">'.$remove.'</a></kbd>';
-										$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($type).'\', \''.$val['options'][1].'\', \'new\');">'.$add.'</a></kbd>';
-
-										$html.= '</div>';
-									}
-									
 								$html.= '<div style="clear:left;"></div>';
-								$html.= '</div>';
-							}
+								$html.= '<div class="columnNewType '.$errorClass.'">'.$val['type'].'</div>';
+
+								if(isset($val['options'])) // parse options
+								{
+									$html.= '<div style="float:left;">';
+									$add 	= (isset($val['options'][1])) ? '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]) : '' ;
+								    // $add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
+									$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
+
+									$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($val['type']).'\', \''.$val['options'][0].'\', \'new\');">'.$remove.'</a></kbd>';
+									
+									if( ! empty($add))
+									{
+										$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addType(\''.$this->_stripQuotes($key).'\', \''.base64_encode($val['type']).'\', \''.$val['options'][1].'\', \'new\');">'.$add.'</a></kbd>';
+									}
+
+									$html.= '</div>';
+								}
+								
+							$html.= '<div style="clear:left;"></div>';
+							$html.= '</div>';
+							
 						}
 
 					$html.= '</div>';
