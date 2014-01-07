@@ -568,29 +568,17 @@ Class Schema_Sql_Reader {
 				}
 			}
 
-			if($typeName == 'integer')
-			{				
-				if(isset($typeValue))
-				{
-					$rules.= '_int('.$typeValue.')|';
-				} 
-				else 
-				{
-					$rules.= '_int(11)|';
-				}
-			}
-
 			//------------- TINYINT -------------//
 
 			if($typeName == 'tinyint')
 			{				
 				if(isset($typeValue))
 				{
-					$rules.= '_int('.$typeValue.')|';
+					$rules.= '_tinyint('.$typeValue.')|';
 				} 
 				else 
 				{
-					$rules.= '_int(4)|';
+					$rules.= '_tinyint(4)|';
 				}
 			}
 
@@ -600,11 +588,11 @@ Class Schema_Sql_Reader {
 			{				
 				if(isset($typeValue))
 				{
-					$rules.= '_int('.$typeValue.')|';
+					$rules.= '_smallint('.$typeValue.')|';
 				} 
 				else 
 				{
-					$rules.= '_int(5)|';
+					$rules.= '_smallint(5)|';
 				}
 			}
 
@@ -614,11 +602,11 @@ Class Schema_Sql_Reader {
 			{				
 				if(isset($typeValue))
 				{
-					$rules.= '_int('.$typeValue.')|';
+					$rules.= '_mediumint('.$typeValue.')|';
 				} 
 				else 
 				{
-					$rules.= '_int(9)|';
+					$rules.= '_mediumint(9)|';
 				}
 			}
 
@@ -628,11 +616,11 @@ Class Schema_Sql_Reader {
 			{				
 				if(isset($typeValue))
 				{
-					$rules.= '_int('.$typeValue.')|';
+					$rules.= '_bigint('.$typeValue.')|';
 				} 
 				else 
 				{
-					$rules.= '_int(20)|';
+					$rules.= '_bigint(20)|';
 				}
 			}
 

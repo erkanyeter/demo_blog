@@ -25,7 +25,7 @@ $users = array(
 		),
 	'modification_date' => array(
 		'label' => 'User Modification Date',
-		'types' => '_datetime|_null',
+		'types' => '_datetime||_null',
 		'rules' => '',
 		),
 	'test' => array(
