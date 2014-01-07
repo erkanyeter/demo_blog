@@ -12,6 +12,7 @@ $c = new Controller(function(){
 $c->func('index', function() use($c){
 	
     $c->view('hello_world', function() use($c) {
+    	
         $this->set('name', 'Obullo');
         $this->set('footer', $c->tpl('footer', false));
     });

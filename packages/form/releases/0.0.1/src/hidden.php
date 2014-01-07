@@ -18,6 +18,8 @@ namespace Form\Src {
     {
         static $hiddenTag;
 
+        $form = \Form::getFormConfig();
+
         if(is_object($value)) // $_POST & Db value schema sync
         {
             $value = getInstance()->form->_getSchemaPost($value, $name); 
@@ -51,8 +53,6 @@ namespace Form\Src {
                 getInstance()->form->hidden($name.'['.$k.']', $v, '', true);
             }
         }
-
-        $form = \Form::getFormConfig();
 
         return sprintf($form['templates'][\Form::$template]['hidden'], $hiddenTag);
     }

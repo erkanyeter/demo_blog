@@ -1227,16 +1227,16 @@ Class Mongo_Db {
         if(is_object($key))  // Model Object
         {
             $setSchemaArray = array();
-            $schemaArray = getSchema($key->_odmTable); // Get tablename from model
+            $schemaArray = getSchema($key->getTableName()); // Get tablename from model
             $colprefix   = (isset($schemaArray['*']['colprefix'])) ? $schemaArray['*']['colprefix'] : '';
 
             unset($schemaArray['*']); // Grab just the fields.
 
             foreach(array_keys($schemaArray) as $field)
             {
-                if(isset($key->_properties[$field])) // Is schema field selected ? // Is schema field selected ?
+                if(isset($key->data[$field])) // Is schema field selected ? // Is schema field selected ?
                 {
-                    $setSchemaArray[$colprefix.$field] = $key->_properties[$field]; // Let's build insert data.
+                    $setSchemaArray[$colprefix.$field] = $key->data[$field]; // Let's build insert data.
                 }
             }
             

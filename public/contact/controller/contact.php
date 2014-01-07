@@ -17,11 +17,11 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        $this->contact->name          = $this->get->post('name');
-        $this->contact->email         = $this->get->post('email');
-        $this->contact->subject       = $this->get->post('subject');
-        $this->contact->body          = $this->get->post('body');
-        $this->contact->creation_date = date('Y-m-d H:i:s');
+        $this->contact->data['name']          = $this->get->post('name');
+        $this->contact->data['email']         = $this->get->post('email');
+        $this->contact->data['subject']       = $this->get->post('subject');
+        $this->contact->data['body']          = $this->get->post('body');
+        $this->contact->data['creation_date'] = date('Y-m-d H:i:s');
         
         $this->contact->func('save', function() {
             if ($this->isValid()){

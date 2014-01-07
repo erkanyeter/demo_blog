@@ -79,7 +79,7 @@ Class Odm {
             {
                 if(isset($val['rules']) AND $val['rules'] != '')
                 {
-                    if(isset($this->_properties[$key])) // Set selected key to REQUEST.
+                    if(isset($this->data[$key])) // Set selected key to REQUEST.
                     {
                         $label = (isset($val['label'])) ? $val['label'] : '';   // $_REQUEST[$key] = $this->{$key};
                         $validator->setRules($key, $label, $val['rules']);
@@ -92,9 +92,9 @@ Class Odm {
         {
             foreach($fields as $key => $val)  // Set filtered values
             {
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->_properties[$key])) 
+                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key])) 
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->get->post($key));
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key));
                 }
             }
             
@@ -134,9 +134,9 @@ Class Odm {
 
                 //----------------------------
 
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->_properties[$key]))  // Set filtered values.
+                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key]))  // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->_properties[$key])) ? $this->_properties[$key] : $this->get->post($key)); 
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key)); 
                 }
             }
             

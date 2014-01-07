@@ -19,8 +19,8 @@ $c->func('index', function() use($c){
 
         if($this->get->post('dopost'))
         {
-            $this->user->email    = $this->get->post('email');
-            $this->user->password = $this->get->post('password');
+            $this->user->data['email']    = $this->get->post('email');
+            $this->user->data['password'] = $this->get->post('password');
 
             //--------------------- set non schema rules
             

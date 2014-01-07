@@ -42,7 +42,6 @@ namespace Odm\Src {
          */
         public function __call($methodName, array $args)
         {
-            $db = $this->_odmDbVar;
             $method = strtolower($methodName);
 
             if (isset($this->_modelMethods[$methodName]))

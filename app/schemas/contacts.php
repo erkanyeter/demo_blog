@@ -15,7 +15,7 @@ $contacts = array(
 		),
 	'email' => array(
 		'label' => 'Contact Email',
-		'types' => '_null|_varchar(50)|_unique_key(contact_name)(contact_email,contact_id)',
+		'types' => '_null|_varchar(50)',
 		'rules' => 'required|validEmail',
 		),
 	'subject' => array(
@@ -25,7 +25,7 @@ $contacts = array(
 		),
 	'body' => array(
 		'label' => 'Contact Body',
-		'types' => '_null|_text||_unique_key(body)(body)',
+		'types' => '_null|_text|',
 		'rules' => 'required|xssClean',
 		),
 	'creation_date' => array(

@@ -18,10 +18,10 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        $this->user->username      = $this->get->post('username');
-        $this->user->email         = $this->get->post('email');
-        $this->user->password      = $this->get->post('password');
-        $this->user->creation_date = date('Y-m-d H:i:s');
+        $this->user->data['username']      = $this->get->post('username');
+        $this->user->data['email']         = $this->get->post('email');
+        $this->user->data['password']      = $this->get->post('password');
+        $this->user->data['creation_date'] = date('Y-m-d H:i:s');
 
         //--------------------- set non schema rules
 
