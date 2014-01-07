@@ -14,7 +14,7 @@ Abstract Class Schema_Auto_Sync {
     public $dbSchema   = array();        // database schema array
     public $fileSchema = array();        // stored file schema array
     public $schemaDiff = array();        // last schema output after that the sync
-
+    
     // --------------------------------------------------------------------
 
     /**

@@ -10,7 +10,7 @@ namespace Database_Pdo\Src\Crud {
     * @param    string
     * @return   object
     */
-    function groupBy($crud, $by)
+    function groupBy($by)
     {
         $crud = getInstance()->{\Db::$var};
 
