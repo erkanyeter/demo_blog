@@ -43,8 +43,9 @@ Abstract Class Schema_Auto_Sync {
         eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
         unset($databaseSchema['*']);
 
-        $this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema);  // Render schema, fetch just types.
+        $this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema); // Render schema, fetch just types.
         $this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema);  // Get just types 
+
         $this->db           = $schemaObject->dbObject;     // Database Object
         $this->schemaObject = $schemaObject; // Schema Object
         $this->debug        = false;
@@ -126,14 +127,14 @@ Abstract Class Schema_Auto_Sync {
                         'drop',
                         'add-to-file'
                         ),
-                    );
+                    );   
                 }
                 
             }
 
             if(array_key_exists($k, $this->fileSchema)) // Sync column types
             {
-                $dbTypes      = explode('|', trim($this->dbSchema[$k], '|'));
+                $dbTypes     = explode('|', trim($this->dbSchema[$k], '|'));
                 $schemaTypes = explode('|', trim($this->fileSchema[$k], '|'));
                 $diffMatches = array_diff($dbTypes, $schemaTypes);
                 
@@ -154,7 +155,6 @@ Abstract Class Schema_Auto_Sync {
                 /* Search data types and remove unecessary buttons. ( REMOVE DROP  BUTTON )*/
 
                 $result     = preg_replace('#(\(.*?\))#','', $this->fileSchema[$k]);  // Remove data type brackets from file schema
-                
                 $grep_array = preg_grep('#'.$result.'#',$this->dataTypes); // Search data type exists
 
                 // If at least one data type not exists in the schema file
@@ -284,7 +284,7 @@ Abstract Class Schema_Auto_Sync {
 
             if(array_key_exists($k, $this->dbSchema)) // Sync column types
             {
-                $dbTypes      = explode('|', trim($this->dbSchema[$k], '|'));
+                $dbTypes     = explode('|', trim($this->dbSchema[$k], '|'));
                 $schemaTypes = explode('|', trim($this->fileSchema[$k], '|'));
 
                 $diffMatches = array_diff($schemaTypes, $dbTypes);
@@ -295,6 +295,7 @@ Abstract Class Schema_Auto_Sync {
                     $unbreacketsDiffMatches = explode('|', $result); 
                     $i = 0;
                     $diffMatches = array_values($diffMatches);
+
                     foreach ($diffMatches as $diffVal)
                     {
                         if (in_array($unbreacketsDiffMatches[$i],$this->dataTypes) OR in_array($unbreacketsDiffMatches[$i], $this->attributeTypes)) // check is it datatype.
@@ -340,7 +341,8 @@ Abstract Class Schema_Auto_Sync {
     // --------------------------------------------------------------------
 
     /**
-    * Convert output
+    * Convert output && remove unnecessary pipes ..
+    * 
     *   Array
     *  (
     *    [id] => _not_null|_primary_key|_unsigned|_int(11)|_auto_increment
@@ -357,7 +359,8 @@ Abstract Class Schema_Auto_Sync {
         foreach($schemaArray as $key => $val)
         {
             $val['types'] = (isset($val['types'])) ? $val['types'] : '';
-    
+            $val['types'] = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $val['types']);  // remove unnecessary pipes ..
+
             if(isset($schemaArray[$key]['_enum']))
             {
                 $enum = '';

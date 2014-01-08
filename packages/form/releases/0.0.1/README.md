@@ -30,7 +30,7 @@ echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST')
 
 echo $this->form->label('Title');
 echo $this->form->error('title');
-echo $this->form->input('title', $row, " "); // Set a row object for schema sync.
+echo $this->form->input('title', $row); // Set a row object for schema sync.
 
 echo $this->form->label('Content');
 echo $this->form->error('content');
@@ -217,6 +217,103 @@ echo $this->form->dropdown('shirts', $options, 'large', $js);
 ```
 
 If the array passed as $options is a multidimensional array, $this->form->dropdown() will produce an with the array key as the label.
+
+#### Using Your Schema for Dropwdowns
+
+```php
+<?php 
+
+$users = array(
+  '*' => array('colprefix' => 'user_'),
+  
+  'id' => array(
+    'label' => 'User Id',
+    'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
+    'rules' => '',
+    ),
+  'email' => array(
+    'label' => 'User Email',
+    'types' => '_varchar(60)|_not_null',
+    'rules' => 'required|validEmail',
+    ),
+  'business_size' => array(
+        'label' => 'User Business Size',
+        '_enum' => array(
+            'small',
+            'medium',
+            'large',
+            'xlarge',
+            'xxlarge',
+        ),
+        'types' => '_null|_enum',
+        'rules' => '',
+        ),
+);
+ 
+/* End of file users.php */
+/* Location: .app/schemas/users.php */
+```
+
+Let's write a schema function for enum type.
+
+```php
+<?php 
+$users = array(
+  '*' => array('colprefix' => 'user_'),
+  
+  'id' => array(
+    'label' => 'User Id',
+    'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
+    'rules' => '',
+    ),
+  'email' => array(
+    'label' => 'User Email',
+    'types' => '_varchar(60)|_not_null',
+    'rules' => 'required|validEmail',
+    ),
+  'business_size' => array(
+        'label' => 'User Business Size',
+        '_enum' => array(
+            'small',
+            'medium',
+            'large',
+            'xlarge',
+            'xxlarge',
+        ),
+        'types' => '_null|_enum',
+        'rules' => '',
+        ),
+      'func' => function() {
+            $myOptions = array(
+                'small'   => '1 employee',
+                'medium'  => '2 - 10 employees',
+                'large'   => '11 - 25 employees',
+                'xlarge'  => '26 - 75 employees',
+                'xxlarge' => 'More than 75 employees',
+            );
+            $users   = getSchema('users');
+            $options = array();
+            foreach($users['business_size']['_enum'] as $val)
+            {
+                $options[$val] = $myOptions[$val];
+            }
+            return $options;
+        },
+);
+```
+
+```php
+<?php
+echo $this->form->dropdown('business_size', 'getSchema(users)[business_size][func]', 'small');
+```
+
+Adding custom options.
+
+```php
+<?php
+echo $this->form->dropdown('business_size', array(array('' => 'Please specify a field .. '), 'getSchema(users)[business_size][func]'));
+```
+
 
 #### $this->form->fieldset()
 

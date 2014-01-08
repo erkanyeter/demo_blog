@@ -18,7 +18,11 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
+        $this->user->join('posts', array('title', 'content'));
+
         $this->user->data['username']      = $this->get->post('username');
+        $this->user->data['title']         = 'test';
+        $this->user->data['content']       = 'contentesdsa sad';
         $this->user->data['email']         = $this->get->post('email');
         $this->user->data['password']      = $this->get->post('password');
         $this->user->data['creation_date'] = date('Y-m-d H:i:s');
@@ -31,8 +35,10 @@ $c->func('index', function() use($c){
         //---------------------
         
         $this->user->func('callback_username', function(){
+
             $this->db->where('user_username', $this->get->post('username', true));
             $this->db->get('users');
+            
             if($this->db->count() > 0) // unique control
             {
                 $this->form->setMessage('callback_username', 'This username is already used');
@@ -46,7 +52,8 @@ $c->func('index', function() use($c){
                 $bcrypt = new Bcrypt; // use bcrypt
                 $this->password = $bcrypt->hashPassword($this->getValue('password'), 8);
 
-                return $this->db->insert('users', $this);
+                $this->db->insert('users', $this);
+                $this->db->insert('posts', $this);
             }
 
             return false;

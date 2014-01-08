@@ -28,8 +28,13 @@ $users = array(
 		'types' => '_datetime|_null',
 		'rules' => '',
 		),
-	'test' => array(
+	'username' => array(
 		'label' => 'User Username',
+		'types' => '_null|_varchar(50)',
+		'rules' => 'required|callback_username',
+		),
+	'test' => array(
+		'label' => 'Test',
 		'_enum' => array(
 			'Business and Finance',
 			'Creative Services/Agency',
@@ -48,12 +53,7 @@ $users = array(
 			'Market',
 		),
 		'types' => '_null|_enum',
-		'rules' => 'required',
-		),
-	'username' => array(
-		'label' => 'User Username',
-		'types' => '_null|_varchar(50)',
-		'rules' => 'required|callback_username',
+		'rules' => '',
 		),
 );
  

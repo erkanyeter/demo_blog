@@ -425,11 +425,46 @@ Class Odm {
 
     /**
      * Get tablename
+     * 
      * @return string
      */
     public function getTableName()
     {
         return $this->_odmTable;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Join valid table schema to another
+     * 
+     * @param  string $tablename
+     * @param  array  $fields
+     * @return void
+     */
+    public function join($tablename, $fields = array())
+    {
+        $joinSchemaArray = getSchema($tablename);
+        unset($joinSchemaArray['*']);
+
+        if(sizeof($fields) > 0)
+        {
+
+        }
+
+        $this->_odmSchema = array_merge($this->_odmSchema, $joinSchemaArray);
+    }   
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get valid schema array
+     * 
+     * @return array
+     */
+    public function getSchema()
+    {
+        return $this->_odmSchema;
     }
 
 }
