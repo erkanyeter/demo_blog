@@ -48,8 +48,6 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 		'_auto_increment',
 		);
 
-	public $colprefix;
-
 	/**
 	 * Constructor
 	 * 
@@ -59,8 +57,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 	public function __construct($schemaDBContent, \Schema $schemaObject)
 	{
 		parent::__construct($schemaDBContent, $schemaObject);
-		
-		$this->colprefix = $schemaObject->getPrefix();
+
 	}
 
 	// --------------------------------------------------------------------
@@ -213,7 +210,8 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 								}, $dbArray[$colkey]);
 
 								$dbCommand        = 'ALTER TABLE '.$this->quoteValue($this->schemaName);  // Default sql command prefix
-
+								preg_match('#_key\((.*?)\)#',$colType,$matches);
+								$indexName = $matches[1];
 								switch ($explodedColType[0])	// types
 								{
 									case '_null':
@@ -225,7 +223,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_key':
-										$dbCommand .= ' DROP INDEX '.$this->quoteValue($colName);
+										$dbCommand .= ' DROP INDEX '.$this->quoteValue($indexName);
 										break;
 
 									case '_unsigned':
@@ -233,7 +231,8 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_unique_key' : 
-										$dbCommand .= ' DROP INDEX '.$this->quoteValue($colName);
+									
+										$dbCommand .= ' DROP INDEX '.$this->quoteValue($indexName);
 										break;
 
 									case '_primary_key':
@@ -315,7 +314,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 									break;
 
 								case '_key':
-									$dbCommands[6] = ',ADD INDEX ('.$this->quoteValue($colName).')';
+									$dbCommands[6] = ',ADD INDEX ('.$this->quoteValue($indexName).')';
 									break;
 
 								case '_unsigned':
@@ -323,9 +322,11 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 									break;
 
 								case '_unique_key' : 
-									$colType = $this->removeUnderscore($colType);
+									$colType = trim($colType,"_");
 									if (strpos($colType, ')(') > 0) 
 									{
+										preg_match('#_key\((.*?)\)#',$colType,$matches);
+										$indexName = $matches[1];
 										$colType = trim($colType,")");
 										$exp = explode(')(', $colType);
 										$keyIndex  = $exp[0];
@@ -337,16 +338,16 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 											{
 												foreach (explode(',', $item) as $k => $v)
 												{
-													$implodeKeys[] = $this->quoteValue($this->colprefix.$v);
+													$implodeKeys[] = $this->quoteValue($v);
 												}
 
 											} else 
 											{
-												$implodeKeys = array($this->quoteValue($this->colprefix.$item));
+												$implodeKeys = array($this->quoteValue($item));
 											}
 										}
 									}
-									$dbCommands[5] = ',ADD UNIQUE INDEX ('.$this->quoteValue($colName).') ('.implode($implodeKeys, ",").')';
+									$dbCommands[5] = ',ADD UNIQUE INDEX '.$this->quoteValue($indexName).' ('.implode($implodeKeys, ",").')';
 									break;
 
 								case '_primary_key':

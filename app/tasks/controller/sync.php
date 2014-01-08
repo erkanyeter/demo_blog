@@ -47,40 +47,23 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
 
     if( ! file_exists($schemaPath)) // If schema file exists ?
     {
-        $schema->writeToFile($schema->read(), null);  // Write content to schema file
+        $schema->writeToFile($schema->read());  // Write content to schema file
     } 
     else 
     {
-      // Check any changes in the column prefix
-      // If any changes exists in the colprefix remove the valid schema and create new one
-      //---------------------------------------------
+        // Check any changes in the column prefix
+        // If any changes exists in the colprefix remove the valid schema and create new one
+        //---------------------------------------------
 
-        $currentSchema = getSchema($tablename);
-
-        if(isset($currentSchema['*']['colprefix']) AND $schema->getPrefix() != $currentSchema['*']['colprefix'])
+        if( ! $schema->tableExists())  // Check table exits.
         {
-            $colprefix = $currentSchema['*']['colprefix'];
-            unset($currentSchema['*']);
-
-            $ruleString = '';
-            foreach($currentSchema as $key => $val)
-            {
-                $ruleString.= $schema->driver->buildSchemaField($key, $val['types']); 
-            }
-
-            $schema->writeToFile($ruleString, $colprefix); // recreate it with new prefix
-        } 
-        else  // Check database table
-        {
-            if( ! $schema->tableExists())  // Check table exits.
-            {
-              $schema->createTable(); // Create sql query & run
-            }
-            else 
-            {
-              $schema->syncTable();  // Display sync table
-            }
+          $schema->createTable(); // Create sql query & run
         }
+        else 
+        {
+          $schema->syncTable();  // Display sync table
+        }
+
     }        
 
 });

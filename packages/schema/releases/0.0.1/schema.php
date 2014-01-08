@@ -186,30 +186,15 @@ Class Schema {
      * Write schema content to file
      * 
      * @param  string $fileContent schema file content
-     * @param  string $prefix schema column prefix
      * @return void
      */
-    public function writeToFile($fileContent, $prefix = '')
+    public function writeToFile($fileContent)
     {
         if(file_exists($this->getPath()))
         {
             $currentSchema = getSchema($this->tablename); // Get current schema
         }
-
-        $prefix = (is_null($prefix)) ? $this->getModelName().'_' : $prefix;
-
         // We need this for first time schema creation
-        if($this->config['use_column_prefix']) // replace the prefix if its enabled globally
-        {
-            $fileContent = str_replace("'$prefix", "'", $fileContent);
-        }
-
-        $colPrefix = "'colprefix' => '".$prefix."'";     // Add coll prefix automatically.
-
-        if(isset($currentSchema['*']['colprefix']) AND empty($currentSchema['*']['colprefix'])) // if not exists colprefix in current schema do not add.
-        {
-            $colPrefix = "'colprefix' => ''"; // set to empty
-        }
 
         if($fileContent != false AND ! empty($fileContent)) // Write schema content.
         {
@@ -226,8 +211,8 @@ Class Schema {
             }
             
             $content = str_replace(
-                array('{schemaName}','{filename}','{content}','{colprefix}'),
-                array('$'.$this->getTableName(), $this->getTableName(). EXT, $fileContent, $colPrefix),
+                array('{schemaName}','{filename}','{content}'),
+                array('$'.$this->getTableName(), $this->getTableName(). EXT, $fileContent),
                 file_get_contents(APP .'templates'. DS .'newschema.tpl')
             );
            
@@ -258,18 +243,7 @@ Class Schema {
      */
     public function getPrefix()
     {
-        $currentSchema = getSchema($this->tablename);
-        unset($currentSchema['*']);
-
-        $currentSchema = array_keys($currentSchema);
-        $prefix = $this->getModelName().'_';
-
-        if(isset($currentSchema[0]) AND strpos($currentSchema[0], $prefix) === 0)
-        {
-            return ''; // no prefix
-        }
-
-        return $prefix;
+        return;
     }
 
     // --------------------------------------------------------------------

@@ -30,14 +30,13 @@ Abstract Class Schema_Auto_Sync {
         $this->schemaName   = strtolower($this->tablename);  // set schema name
 
         $fileSchema = getSchema($this->schemaName); // Get current schema
-                            
-        $colprefix = $fileSchema['*']['colprefix'];
+        
         unset($fileSchema['*']);  // Get only fields no settings
 
         $newFileSchema = array();
         foreach($fileSchema as $k => $v)
         {
-            $newFileSchema[$colprefix.$k] = $v;
+            $newFileSchema[$k] = $v;
         }
 
         eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
@@ -406,7 +405,7 @@ Abstract Class Schema_Auto_Sync {
 
         if( ! empty($output)) // write output to schema file
         { 
-            $this->schemaObject->writeToFile($output, $this->schemaObject->getPrefix());
+            $this->schemaObject->writeToFile($output);
         }
         
         $sync_html = new Schema_Auto_Sync_Html($this, $this->schemaObject);
