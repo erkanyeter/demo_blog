@@ -131,7 +131,7 @@ namespace Form\Src {
 
         $schemaName = $matches[2];
         $fieldName  = $matches[3];
-        $enumName   = $matches[4]; // _enum / func
+        $enumName   = $matches[4]; // _enum / _set / func
 
         $schema  = getSchema($schemaName);
 

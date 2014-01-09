@@ -18,15 +18,14 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        $this->user->setPrefix('user_');
-        // $this->user->tableJoin('posts', 'post_');
+        // $this->user->modelJoin('posts');
 
-        $this->user->data['username']      = $this->get->post('username');
+        $this->user->data['user_username']      = $this->get->post('user_username');
         // $this->user->data['title']         = 'test';
         // $this->user->data['content']       = 'contentesdsa sad';
-        $this->user->data['email']         = $this->get->post('email');
-        $this->user->data['password']      = $this->get->post('password');
-        $this->user->data['creation_date'] = date('Y-m-d H:i:s');
+        $this->user->data['user_email']         = $this->get->post('user_email');
+        $this->user->data['user_password']      = $this->get->post('password');
+        $this->user->data['user_creation_date'] = date('Y-m-d H:i:s');
 
         //--------------------- set non schema rules
 
@@ -37,7 +36,7 @@ $c->func('index', function() use($c){
         
         $this->user->func('callback_username', function(){
 
-            $this->db->where('user_username', $this->get->post('username', true));
+            $this->db->where('user_username', $this->get->post('user_username', true));
             $this->db->get('users');
             
             if($this->db->count() > 0) // unique control

@@ -66,21 +66,13 @@ Class Odm {
     {
         $validator = $this->_odmValidator;
         $table     = $this->_odmTable;
-
-        $fields = $this->_odmSchema;
-        unset($fields['*']); // Remove settings to getting only fields.
-
-        $fields = array_merge($fields, $validator->_field_data); // Merge "Odm" and "Validator fields"
+        
+        $fields = array_merge($this->getSchema(), $validator->_field_data); // Merge "Odm" and "Validator fields"
 
         $validator->set('_callback_object', $this);
 
         foreach($fields as $key => $val)
         {
-            if($this->getPrefix() != '') // if prefix used 
-            {
-                $key = substr($key, strlen($this->getPrefix())); // remove them for each field
-            }
-
             if(is_array($val))
             {
                 if(isset($val['rules']) AND $val['rules'] != '')
@@ -445,12 +437,21 @@ Class Odm {
      * Join valid table schema to another
      * 
      * @param  string $tablename
+     * @param  array  $fields
      * @return void
      */
-    public function tableJoin($tablename)
+    public function join($tablename, $fields = array())
     {
         $joinSchemaArray = getSchema($tablename);
         unset($joinSchemaArray['*']);
+
+        if(sizeof($fields) > 0)
+        {
+            foreach($fields as $key)
+            {
+                $joinSchemaArray[$key];
+            }
+        }
 
         $this->_odmSchema = array_merge($this->_odmSchema, $joinSchemaArray);
     }   

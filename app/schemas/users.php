@@ -10,7 +10,7 @@ $users = array(
 		),
 	'user_email' => array(
 		'label' => 'User Email',
-		'types' => '_varchar(60)|_null',
+		'types' => '_varchar(60)|_not_null',
 		'rules' => 'required|validEmail',
 		),
 	'user_password' => array(
@@ -28,12 +28,6 @@ $users = array(
 		'types' => '_datetime|_null',
 		'rules' => '',
 		),
-<<<<<<< HEAD
-	'username' => array(
-		'label' => 'User Username',
-		'types' => '_null|_varchar(50)',
-		'rules' => 'required|callback_username',
-=======
 	'user_username' => array(
 		'label' => 'User Username',
 		'types' => '_null|_varchar(50)',
@@ -59,12 +53,6 @@ $users = array(
 			'Market',
 		),
 		'types' => '_null|_enum',
-		'rules' => '',
->>>>>>> 14bf39df8a101530a20fd6d26cfe3645e03ca64a
-		),
-	'name' => array(
-		'label' => 'Name',
-		'types' => '_null|_varbinary(50)',
 		'rules' => '',
 		),
 );

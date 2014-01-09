@@ -14,14 +14,14 @@ $c = new Controller(function(){
 
 $c->func('index', function() use($c){
 
-    if($this->get->post('title'))
+    if($this->get->post('post_title'))
     {
-        $this->db->like('post_title', $this->get->post('title'));
+        $this->db->like('post_title', $this->get->post('post_title'));
     }
 
-    if($this->get->post('status'))
+    if($this->get->post('post_status'))
     {
-        $this->db->like('post_status', $this->get->post('status'));
+        $this->db->like('post_status', $this->get->post('post_status'));
     }
 
     $this->db->get('posts');

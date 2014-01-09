@@ -23,20 +23,11 @@ namespace Database_Pdo\Src\Crud {
             $setSchemaArray = array();
             $schemaArray    = $key->getSchema(); // Get tablename from model
 
-            $colprefix = '';
-
-            if($key->getPrefix() != '')
-            {
-                $colprefix = $key->getPrefix();
-            }
-
             foreach(array_keys($schemaArray) as $field)
             {
-                $field = substr($field, strlen($colprefix)); // remove prefixes for each field
-
                 if(isset($key->data[$field])) // Is schema field selected ?
                 {
-                    $setSchemaArray[$colprefix.$field] = $key->data[$field]; // Let's build insert data.
+                    $setSchemaArray[$field] = $key->data[$field]; // Let's build insert data.
                 }
             }
             

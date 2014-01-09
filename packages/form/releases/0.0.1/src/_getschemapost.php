@@ -25,18 +25,17 @@ namespace Form\Src {
         if($schemaName != '')
         {
             $schema = getSchema($schemaName);
-            $colprefix = $schema['*']['colprefix'];
             unset($schema['*']);
 
             if(isset($schema[$field]) AND ! isset($_REQUEST[$field]))
             {
                 if(is_object($row))
                 {
-                    $value = $row->{$colprefix.$field};
+                    $value = $row->{$field};
                 }
                 elseif(is_array($row))
                 {
-                    $value = $row[$colprefix.$field];   
+                    $value = $row[$field];   
                 } 
             }
         }

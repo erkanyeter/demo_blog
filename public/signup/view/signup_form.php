@@ -36,29 +36,29 @@
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Username') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('username');
-			                            echo $this->form->input('username', $this->form->setValue('username'), " id='username' ");
+			                            echo $this->form->error('user_username');
+			                            echo $this->form->input('user_username', $this->form->setValue('user_username'), " id='user_username' ");
 			                            ?></td>
 			                    </tr>
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Email') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('email');
-			                            echo $this->form->input('email', $this->form->setValue('email'), " id='email' ");
+			                            echo $this->form->error('user_email');
+			                            echo $this->form->input('user_email', $this->form->setValue('user_email'), " id='user_email' ");
 			                            ?></td>
 			                    </tr>
 			                    <tr>
 			                        <td><?php echo $this->form->label('Password') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('password');
-			                            echo $this->form->password('password', '', " id='password' ");
+			                            echo $this->form->error('user_password');
+			                            echo $this->form->password('user_password', '', " id='user_password' ");
 			                            ?></td>
 			                    </tr>
 			                    <tr>
 			                        <td><?php echo $this->form->label('Confirm Password') ?></td>
 			                        <td><?php 
 			                            echo $this->form->error('confirm_password');
-			                            echo $this->form->password('confirm_password', '', " id='confirm' ");
+			                            echo $this->form->password('confirm_password', '', " id='confirm_password' ");
 			                            ?></td>
 			                    </tr>
 

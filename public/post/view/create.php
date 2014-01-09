@@ -31,35 +31,27 @@
 
 			                <table>
 			                    <tr>
-			                        <td style="width:15%;"><?php echo $this->form->label('Title', 'title') ?></td>
+			                        <td style="width:15%;"><?php echo $this->form->label('Title') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('title');
-			                            echo $this->form->input('title', $this->form->setValue('title'), " ");
+			                            echo $this->form->error('post_title');
+			                            echo $this->form->input('post_title', $this->form->setValue('post_title'), " ");
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
 			                    <tr>
-			                        <td><?php echo $this->form->label('Content', 'content') ?></td>
+			                        <td><?php echo $this->form->label('Content') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('content');
-
-										$content_data = array(
-										              'name'        => 'content',
-										              'value'       => $this->form->setValue('content'),
-										              'size'        => '50',
-										              'style'       => 'width:50%',
-										            );
-
-			                            echo $this->form->textarea($content_data);
+			                            echo $this->form->error('post_content');
+			                            echo $this->form->textarea('post_content', $this->form->setValue('post_content'), ' cols="50" rows="10" width:"50%" ');
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
 			                    <tr>
-			                        <td><?php echo $this->form->label('Tags', 'tags') ?></td>
+			                        <td><?php echo $this->form->label('Tags') ?></td>
 			                        <td>
 			                        <?php 
-			                            echo $this->form->error('tags');
-			                            echo $this->form->input('tags', $this->form->setValue('tags'), " ");
+			                            echo $this->form->error('post_tags');
+			                            echo $this->form->input('post_tags', $this->form->setValue('post_tags'), " ");
 			                            ?><span class="color_red">*</span>
 									
 									<p class="cp">Please separate different tags with commas.</p>
@@ -71,10 +63,8 @@
 			                        <td><?php echo $this->form->label('Status', 'status') ?></td>
 			                        <td>
 			                        <?php 
-			                            echo $this->form->error('status');
-
-	echo $this->form->dropdown('status','getSchema(posts)[status][_enum]', $this->form->setValue('status'), " ");
-	
+			                            echo $this->form->error('post_status');
+										echo $this->form->dropdown('post_status','getSchema(posts)[post_status][_enum]', $this->form->setValue('post_status'), " ");
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>

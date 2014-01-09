@@ -35,40 +35,32 @@
 
 			                <table>
 			                    <tr>
-			                        <td style="width:15%;"><?php echo $this->form->label('Name', 'name') ?></td>
+			                        <td style="width:15%;"><?php echo $this->form->label('Name') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('name');
-			                            echo $this->form->input('name', $this->form->setValue('name'), " ");
+			                            echo $this->form->error('contact_name');
+			                            echo $this->form->input('contact_name', $this->form->setValue('contact_name'), " ");
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 			                    <tr>
 			                        <td><?php echo $this->form->label('Email', 'email') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('email');
-			                            echo $this->form->input('email', $this->form->setValue('email'), " ");
+			                            echo $this->form->error('contact_email');
+			                            echo $this->form->input('contact_email', $this->form->setValue('contact_email'), " ");
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 			                    <tr>
 			                        <td><?php echo $this->form->label('Subject', 'subject') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('subject');
-			                            echo $this->form->input('subject', $this->form->setValue('subject'), " ");
+			                            echo $this->form->error('contact_subject');
+			                            echo $this->form->input('contact_subject', $this->form->setValue('contact_subject'), " ");
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
 			                    <tr>
 			                        <td><?php echo $this->form->label('Body', 'body') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('body');
-
-										$content_data = array(
-										              'name'        => 'body',
-										              'value'       => $this->form->setValue('body'),
-										              'size'        => '50',
-										              'style'       => 'width:50%',
-										            );
-
-			                            echo $this->form->textarea($content_data);
+			                            echo $this->form->error('contact_body');
+			                            echo $this->form->textarea('contact_body', $this->form->setValue('contact_body'), ' size="50" style="width:50%" ');
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 			                    <tr>

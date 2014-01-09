@@ -28,7 +28,7 @@ $comments = array(
 		'types' => '_null|_varchar(255)',
 		'rules' => 'required',
 		),
-	'comment_comment' => array(
+	'comment_body' => array(
 		'label' => 'Comment',
 		'types' => '_not_null|_text',
 		'rules' => 'required|xssClean',
@@ -45,11 +45,11 @@ $comments = array(
 		),
 	'comment_status' => array(
 		'label' => 'Comment Status',
-		'types' => '_null|_default("0")|_enum',
 		'_enum' => array(
 			'0',
 			'1',
 		),
+		'types' => '_null|_default("0")|_enum',
 		'rules' => '',
 		),
 );

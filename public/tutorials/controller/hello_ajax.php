@@ -22,6 +22,8 @@ $c->func('dopost', function(){
     new Get;
     new Model('user', 'users');
 
+    $this->user->setPrefix('user_');
+
     $this->user->data['email']    = $this->get->post('email');
     $this->user->data['password'] = $this->get->post('password');
 
