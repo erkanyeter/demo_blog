@@ -10,7 +10,7 @@ $users = array(
 		),
 	'email' => array(
 		'label' => 'User Email',
-		'types' => '_varchar(60)|_not_null',
+		'types' => '_varchar(60)|_null',
 		'rules' => 'required|validEmail',
 		),
 	'password' => array(
@@ -28,32 +28,15 @@ $users = array(
 		'types' => '_datetime|_null',
 		'rules' => '',
 		),
-	'test' => array(
-		'label' => 'User Username',
-		'_enum' => array(
-			'Business and Finance',
-			'Creative Services/Agency',
-			'eCommerce',
-			'Education and Training',
-			'Entertainment and Events',
-			'Health and Fitness',
-			'Marketing and Advertising',
-			'Politics',
-			'Professional Services',
-			'Real Estate',
-			'Retail',
-			'Social Networks and Online Communities',
-			'Software and Web Ap',
-			'Other, sdasd',
-			'Market',
-		),
-		'types' => '_null|_enum',
-		'rules' => 'required',
-		),
 	'username' => array(
 		'label' => 'User Username',
 		'types' => '_null|_varchar(50)',
 		'rules' => 'required|callback_username',
+		),
+	'name' => array(
+		'label' => 'Name',
+		'types' => '_null|_varbinary(50)',
+		'rules' => '',
 		),
 );
  

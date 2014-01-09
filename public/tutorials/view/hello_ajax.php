@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
 var ajax = {
-   post : function(url, closure, params) {
+    post : function(url, closure, params){
         var xmlhttp,response;
         if (window.XMLHttpRequest){
             xmlhttp = new XMLHttpRequest(); // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -16,16 +16,16 @@ var ajax = {
             xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); // code for IE6, IE5
         }
         xmlhttp.onreadystatechange=function(){
-            /**
-             * onreadystatechange will fire five times as 
-             * your specified page is requested.
-             * 
-             *  0: uninitialized
-             *  1: loading
-             *  2: loaded
-             *  3: interactive
-             *  4: complete
-             */
+        /**
+         * onreadystatechange will fire five times as 
+         * your specified page is requested.
+         * 
+         *  0: uninitialized
+         *  1: loading
+         *  2: loaded
+         *  3: interactive
+         *  4: complete
+         */
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
                 if( typeof closure === 'function'){
                     closure(xmlhttp.responseText);   
@@ -34,49 +34,55 @@ var ajax = {
         }
         xmlhttp.open("POST",url);
         xmlhttp.send(params);
-   },
-   get : function() {
+    },
+    get : function() {
         // paste here
-   }
-}
-
-window.onload = function(){
-    var myform = document.getElementById('odm_tutorial');  // Form ID
-    myform.onsubmit = function(){
-        var elements = myform.getElementsByTagName('input');
-        var elementsClass = document.getElementsByClassName('_inputError');
-        
-        ajax.post(myform.getAttribute('action'), function(json){
-            var obj = JSON.parse(json);
-                for(var i=0; i < elements.length; i++){
-                    e = document.createElement('div');
-                    e.className = '_inputError';
-                    if(elements[i].type == 'checkbox'){
-                        parseNode(obj, elements[i], 5);
-                    } else if(elements[i].type != 'submit') {
-                        parseNode(obj, elements[i], 3);
-                    }
-                }
-            },
-            new FormData(myform)
-            );
-        return false;  // Do not do form submit;
     }
 }
-
-function parseNode(obj, element, child){
+function parseNode(obj, element, i){
     var name = element.name;
-    if(typeof obj.errors[name] !== 'undefined'){
-        if(typeof element.parentNode.childNodes[child] !== 'undefined'){
-            element.parentNode.childNodes[child].innerHTML = obj.errors[name];
+    var inputError = document.getElementById(i+'_inputError');
+     if(typeof obj.errors[name] !== 'undefined'){
+        if(inputError){
+            document.getElementById(i+'_inputError').innerHTML = obj.errors[name];
         } else {
             e.innerHTML = obj.errors[name];
             element.parentNode.appendChild(e);
         }
     } else {
-        if(typeof element.parentNode.childNodes[child] !== 'undefined'){
-            element.parentNode.childNodes[child].remove(); 
+        if(inputError){
+            document.getElementById(i+'_inputError').remove(); 
         }
+    }
+}
+function submitAjax(formId){
+    var myform = document.getElementById(formId);
+    myform.onsubmit = function()
+    {
+        var elements = new Array();
+        elements['0'] = myform.getElementsByTagName('input');
+        elements['1'] = myform.getElementsByTagName('select');
+        elements['2'] = myform.getElementsByTagName('textarea');
+
+        var elementsClass = document.getElementsByClassName('_inputError');
+
+        ajax.post(myform.getAttribute('action'), function(json){
+            var obj = JSON.parse(json);
+            for (var i = 0; i < elements.length; i++){
+                for(var ii = 0; ii < elements[i].length; ii++){
+                    e = document.createElement('div');
+                    e.className = '_inputError';
+                    e.id =ii + '_inputError';
+                   
+                    if (elements[i][ii].type != 'submit'){
+                        parseNode(obj, elements[i][ii], ii);
+                    }
+                }
+            }
+        },
+        new FormData(myform)
+        );
+        return false; // Do not do form submit;
     }
 }
 </script>
@@ -121,7 +127,7 @@ function parseNode(obj, element, child){
                     <tr>
                         <td></td>
                         <td>
-                            <?php echo $this->form->submit('dopost', 'Do Post', ' ') ?>
+                            <?php echo $this->form->submit('dopost', 'Do Post', ' onclick="submitAjax(\'odm_tutorial\')" ') ?>
                         </td>
                     </tr>
                     <tr>

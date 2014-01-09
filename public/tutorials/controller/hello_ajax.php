@@ -27,8 +27,8 @@ $c->func('dopost', function(){
 
     //--------------------- set non schema rules
     
-    $this->user->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
-    $this->user->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
+    $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
+    $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
     
     //---------------------
 
