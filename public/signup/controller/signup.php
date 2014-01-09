@@ -18,11 +18,12 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        $this->user->join('posts', array('title', 'content'));
+        $this->user->setPrefix('user_');
+        // $this->user->tableJoin('posts', 'post_');
 
         $this->user->data['username']      = $this->get->post('username');
-        $this->user->data['title']         = 'test';
-        $this->user->data['content']       = 'contentesdsa sad';
+        // $this->user->data['title']         = 'test';
+        // $this->user->data['content']       = 'contentesdsa sad';
         $this->user->data['email']         = $this->get->post('email');
         $this->user->data['password']      = $this->get->post('password');
         $this->user->data['creation_date'] = date('Y-m-d H:i:s');
@@ -50,12 +51,11 @@ $c->func('index', function() use($c){
         $this->user->func('save', function() {
             if ($this->isValid()){
                 $bcrypt = new Bcrypt; // use bcrypt
-                $this->password = $bcrypt->hashPassword($this->getValue('password'), 8);
+                $this->data['password'] = $bcrypt->hashPassword($this->getValue('password'), 8);
 
-                $this->db->insert('users', $this);
-                $this->db->insert('posts', $this);
+                return $this->db->insert('users', $this);
+                // $this->db->insert('posts', $this);
             }
-
             return false;
         });
 

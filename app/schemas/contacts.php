@@ -11,36 +11,26 @@ $contacts = array(
 	'contact_name' => array(
 		'label' => 'Contact Name',
 		'types' => '_null|_varchar(50)',
-		'rules' => '',
+		'rules' => 'required',
 		),
 	'contact_email' => array(
 		'label' => 'Contact Email',
-		'types' => '_null|_varchar(50)|_unique_key(contact_email)(contact_email,contact_id)',
+		'types' => '_null|_varchar(50)',
 		'rules' => 'required|minVal(10)',
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
 		'types' => '_null|_varchar(255)',
-		'rules' => '',
+		'rules' => 'required',
 		),
 	'contact_body' => array(
 		'label' => 'Contact Body',
 		'types' => '_null|_text',
-		'rules' => '',
+		'rules' => 'required',
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
 		'types' => '_null|_datetime',
-		'rules' => '',
-		),
-	'test' => array(
-		'label' => 'Test',
-		'types' => '_not_null|_int(11)',
-		'rules' => '',
-		),
-	'test2' => array(
-		'label' => 'Test',
-		'types' => '_not_null|_int(11)',
 		'rules' => '',
 		),
 );

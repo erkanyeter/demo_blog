@@ -20,6 +20,7 @@ Class Odm {
     public $_odmValidation   = false;     // If form validation success we set it to true
     public $_odmValidator;
     public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
+    public $_odmColprefix;
 
     public $get;                          // Get package object
     public $form;                         // Form package object
@@ -61,20 +62,25 @@ Class Odm {
     * @param fields schema fields.
     * @return boolean
     */
-    public function isValid($fields = array())
+    public function isValid()
     {
         $validator = $this->_odmValidator;
+        $table     = $this->_odmTable;
 
-        $table  = $this->_odmTable;
-        $fields = (sizeof($fields) == 0) ? $this->_odmSchema : $fields;
-        $fields = array_merge($fields, $validator->_field_data); // Merge "Odm" and "Validator fields"
-
+        $fields = $this->_odmSchema;
         unset($fields['*']); // Remove settings to getting only fields.
+
+        $fields = array_merge($fields, $validator->_field_data); // Merge "Odm" and "Validator fields"
 
         $validator->set('_callback_object', $this);
 
         foreach($fields as $key => $val)
         {
+            if($this->getPrefix() != '') // if prefix used 
+            {
+                $key = substr($key, strlen($this->getPrefix())); // remove them for each field
+            }
+
             if(is_array($val))
             {
                 if(isset($val['rules']) AND $val['rules'] != '')
@@ -439,18 +445,12 @@ Class Odm {
      * Join valid table schema to another
      * 
      * @param  string $tablename
-     * @param  array  $fields
      * @return void
      */
-    public function join($tablename, $fields = array())
+    public function tableJoin($tablename)
     {
         $joinSchemaArray = getSchema($tablename);
         unset($joinSchemaArray['*']);
-
-        if(sizeof($fields) > 0)
-        {
-
-        }
 
         $this->_odmSchema = array_merge($this->_odmSchema, $joinSchemaArray);
     }   
@@ -465,6 +465,30 @@ Class Odm {
     public function getSchema()
     {
         return $this->_odmSchema;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set column prefix 
+     * 
+     * @param string $prefix
+     */
+    public function setPrefix($prefix = '')
+    {
+        $this->_odmColprefix = $prefix;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get colum prefix
+     * 
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->_odmColprefix;
     }
 
 }

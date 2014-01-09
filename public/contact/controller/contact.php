@@ -17,6 +17,8 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
+        $this->contact->setPrefix('contact_');
+
         $this->contact->data['name']          = $this->get->post('name');
         $this->contact->data['email']         = $this->get->post('email');
         $this->contact->data['subject']       = $this->get->post('subject');

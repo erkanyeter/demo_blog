@@ -124,7 +124,7 @@ Class View {
             } 
             else 
             {
-                foreach($val as $value)
+                foreach($val as $key => $value)
                 {
                     $this->_array[$key][] = $value;
                 }
