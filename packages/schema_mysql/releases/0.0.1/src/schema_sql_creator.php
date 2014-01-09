@@ -40,6 +40,7 @@ namespace Schema_Mysql\Src;
 Class Schema_Sql_Creator {
 
 	public $sqlOutput;   // Sql output
+	public $colprefix;
 	public $schemaArray  = array(); // Schema Data
 	public $_escape_char = '`%s`';	// Escape character
 	public $_tableSuffix = ' ENGINE=InnoDB DEFAULT CHARSET=utf8;'; // Sql table suffix
@@ -101,6 +102,7 @@ Class Schema_Sql_Creator {
 	public function createSQL($tablename)
 	{
 		$this->schemaArray = getSchema($tablename); // Get schema configuration.;
+		$this->colprefix   = isset($this->schemaArray['*']['colprefix']) ? $this->schemaArray['*']['colprefix'] : '';
 		unset($this->schemaArray['*']); // Get only fields no settings
 
 		// print_r($this->schemaArray);
@@ -238,6 +240,8 @@ Class Schema_Sql_Creator {
 					}
 				}
 
+
+
 				$sqlLine = trim($this->quoteValue($fieldKey).' '.$fieldType.$fieldAttribute).",\n";
 
 				if(preg_match('/(#_foreign_key)\((.*?)\)\((.*?)\)(#)/', $sqlLine, $_fk_matches)) // Detect keys forign keys
@@ -369,7 +373,7 @@ Class Schema_Sql_Creator {
 		if(strpos($sql, '#'.$_key) > 0)  // Detect keys and multiple keys
 		{
 			preg_match_all('/(#'.$_key.')\((.*?)\)(#)/', $sql, $_keyMatches, PREG_SET_ORDER);
-
+			
 			$KEYS = '';
 			$keyImplode = '';
 			foreach ($_keyMatches as $kmValue)
@@ -429,7 +433,7 @@ Class Schema_Sql_Creator {
 	 */
 	private function quoteValue($val)
 	{
-		return sprintf($this->_escape_char, $val);
+		return sprintf($this->_escape_char, $this->colprefix.$val);
 	}
 
 	// --------------------------------------------------------------------

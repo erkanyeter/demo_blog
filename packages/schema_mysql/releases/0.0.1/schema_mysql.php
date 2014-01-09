@@ -113,24 +113,13 @@ Class Schema_Mysql {
         $currentFileSchema = $fileSchema;
         unset($fileSchema['*']);  // Get only fields no settings
 
-        $colprefix = $this->schemaObject->getPrefix();
-
-        if( ! empty($colprefix))  // replace prefix and rewrite no prefix fields into schema
-        {
-            $key = str_replace($colprefix, '', $key);
-        }
-
-        $currentPrefix = $currentFileSchema['*']['colprefix'];
-        $newKey = $key;
-        if(empty($currentPrefix))
-        {
-            $newKey = $this->schemaObject->getPrefix().$key;
-        }
+ 
+        
 
         $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->schemaObject->_createLabel($key);
         $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
 
-        $ruleString = "\n\t'$newKey' => array(";
+        $ruleString = "\n\t'$key' => array(";
         $ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
 
         // --------- RENDER FUNC ----------//
@@ -209,8 +198,9 @@ Class Schema_Mysql {
                 $ruleString .= "\n\t\t),";
                 $types = str_replace($setData, '', $types);
             }
-
+            $types = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $types); 
             $ruleString.= "\n\t\t'types' => '".$types."',";
+
         }
         else 
         {

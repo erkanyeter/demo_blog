@@ -1,5 +1,4 @@
 <?php
-
 namespace Database_Pdo\Src\Crud {
 
     // --------------------------------------------------------------------
@@ -22,23 +21,29 @@ namespace Database_Pdo\Src\Crud {
         if(is_object($key))  // Model Object ( Schema Support )
         {
             $setSchemaArray = array();
-            $schemaArray = getSchema($key->_odmTable); // Get tablename from model
-            $colprefix   = (isset($schemaArray['*']['colprefix'])) ? $schemaArray['*']['colprefix'] : '';
+            $schemaArray    = $key->getSchema(); // Get tablename from model
 
-            unset($schemaArray['*']); // Grab just the fields.
+            $colprefix = '';
+
+            if($key->getPrefix() != '')
+            {
+                $colprefix = $key->getPrefix();
+            }
 
             foreach(array_keys($schemaArray) as $field)
             {
-                if(isset($key->_properties[$field])) // Is schema field selected ?
+                $field = substr($field, strlen($colprefix)); // remove prefixes for each field
+
+                if(isset($key->data[$field])) // Is schema field selected ?
                 {
-                    $setSchemaArray[$colprefix.$field] = $key->_properties[$field]; // Let's build insert data.
+                    $setSchemaArray[$colprefix.$field] = $key->data[$field]; // Let's build insert data.
                 }
             }
             
             unset($key);
             $key = $setSchemaArray;
         }
-        
+
         //-------------- Schema Support End -----------------//
         
         if ( ! is_array($key))

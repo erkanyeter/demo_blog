@@ -57,6 +57,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 	public function __construct($schemaDBContent, \Schema $schemaObject)
 	{
 		parent::__construct($schemaDBContent, $schemaObject);
+
 	}
 
 	// --------------------------------------------------------------------
@@ -209,7 +210,8 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 								}, $dbArray[$colkey]);
 
 								$dbCommand        = 'ALTER TABLE '.$this->quoteValue($this->schemaName);  // Default sql command prefix
-
+								preg_match('#_key\((.*?)\)#',$colType,$matches);
+								$indexName = $matches[1];
 								switch ($explodedColType[0])	// types
 								{
 									case '_null':
@@ -221,7 +223,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_key':
-										$dbCommand .= ' DROP INDEX '.$this->quoteValue($colName);
+										$dbCommand .= ' DROP INDEX '.$this->quoteValue($indexName);
 										break;
 
 									case '_unsigned':
@@ -229,7 +231,8 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_unique_key' : 
-										$dbCommand .= ' DROP INDEX '.$this->quoteValue($colName);
+									
+										$dbCommand .= ' DROP INDEX '.$this->quoteValue($indexName);
 										break;
 
 									case '_primary_key':
@@ -267,7 +270,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 
 						$unbracketsColType = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets coming from $_POST
 						$unbracketsColTypes = explode('|',$unbracketsColType);
-
+						
 						$schemaKeys = explode('|',$this->dbSchema[$colName]);
 						
 						$unbracketsDBColType = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$colName]);// Get pure DB column type withouth brackets
@@ -281,6 +284,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						if ($columnType = preg_grep('#'.$unbracketsColType.'#',$this->dataTypes))  // If colname exists and has a datatype in DBSchema Change Datatypes 
 						{
 							$schemaKeys[$colkey] = $this->removeUnderscore($colType);
+
 						    $schemaKeys[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {  // Change Datatypes 
 						        return strtoupper($match[0]); 
 						    }, $schemaKeys[$colkey]);
@@ -310,7 +314,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 									break;
 
 								case '_key':
-									$dbCommands[6] = ',ADD INDEX ('.$this->quoteValue($colName).')';
+									$dbCommands[6] = ',ADD INDEX ('.$this->quoteValue($indexName).')';
 									break;
 
 								case '_unsigned':
@@ -318,7 +322,32 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 									break;
 
 								case '_unique_key' : 
-									$dbCommands[5] = ',ADD UNIQUE INDEX ('.$this->quoteValue($colName).')';
+									$colType = trim($colType,"_");
+									if (strpos($colType, ')(') > 0) 
+									{
+										preg_match('#_key\((.*?)\)#',$colType,$matches);
+										$indexName = $matches[1];
+										$colType = trim($colType,")");
+										$exp = explode(')(', $colType);
+										$keyIndex  = $exp[0];
+										unset($exp[0]);
+										$implodeKeys = array();
+										foreach($exp as $item)
+										{
+											if(strpos($item, ',') !== false)
+											{
+												foreach (explode(',', $item) as $k => $v)
+												{
+													$implodeKeys[] = $this->quoteValue($v);
+												}
+
+											} else 
+											{
+												$implodeKeys = array($this->quoteValue($item));
+											}
+										}
+									}
+									$dbCommands[5] = ',ADD UNIQUE INDEX '.$this->quoteValue($indexName).' ('.implode($implodeKeys, ",").')';
 									break;
 
 								case '_primary_key':

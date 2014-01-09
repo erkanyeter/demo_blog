@@ -17,12 +17,12 @@ $c->func('index', function($id) use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        $this->post->user_id           = $this->auth->getIdentity('user_id');
-        $this->post->title             = $this->get->post('title');
-        $this->post->content           = $this->get->post('content');
-        $this->post->tags              = $this->get->post('tags');
-        $this->post->status            = $this->get->post('status');
-        $this->post->modification_date = date('Y-m-d H:i:s');
+        $this->post->data['user_id']           = $this->auth->getIdentity('user_id');
+        $this->post->data['title']             = $this->get->post('title');
+        $this->post->data['content']           = $this->get->post('content');
+        $this->post->data['tags']              = $this->get->post('tags');
+        $this->post->data['status']            = $this->get->post('status');
+        $this->post->data['modification_date'] = date('Y-m-d H:i:s');
         
         $this->post->func('save', function() use($id) {
             if ($this->isValid()){

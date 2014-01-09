@@ -114,27 +114,29 @@ Class Form {
         {
             $attributes = str_replace('\'', '"',$attributes); // convert to double quotes.
 
-            if ($formtag == true AND strpos($attributes, 'method=') === false)
+            if (strpos($attributes, 'method=') === false)
             {
                 $attributes.= ' method="post"';
             }
 
-            if ($formtag == true AND strpos($attributes, 'accept-charset=') === FALSE)
+            if (strpos($attributes, 'accept-charset=') === FALSE)
             {
                 $attributes.= ' accept-charset="'.strtolower(config('charset')).'"';
             }
 
-            // Search class attribute
-            $class = preg_match('/(class)(\s*(=))(\s*("))(.*?)(")/', $attributes, $matches);
+            if($formtag)
+            {
+                $class = preg_match('/(class)(\s*(=))(\s*("))(.*?)(")/', $attributes, $matches); // Search class attribute
 
-            if ($formtag == true AND $class == false)
-            {
-                $attributes.= sprintf(' class="%s"', $form['templates'][self::$template]['formClass']);
-            } 
-            elseif($formtag == true AND isset($matches[6]))
-            {
-                $attributes = str_replace($matches[0], '', $attributes);
-                $attributes.= sprintf(' class="%s %s"', $matches[6], $form['templates'][self::$template]['formClass']);   
+                if ($class == false)
+                {
+                    $attributes.= sprintf(' class="%s"', $form['templates'][self::$template]['formClass']);
+                } 
+                elseif(isset($matches[6]))
+                {
+                    $attributes = str_replace($matches[0], '', $attributes);
+                    $attributes.= sprintf(' class="%s %s"', $matches[6], $form['templates'][self::$template]['formClass']);   
+                }
             }
 
             return ' '.$attributes;
@@ -149,31 +151,31 @@ Class Form {
         {
             $atts = '';
 
-            if ( ! isset($attributes['method']) AND $formtag === true)
+            if ( ! isset($attributes['method']) AND $formtag == true)
             {
                 $atts.= ' method="post"';
             }
 
-            if ( ! isset($attributes['accept-charset']) AND $formtag === true)
+            if ( ! isset($attributes['accept-charset']) AND $formtag == true)
             {
                 $atts.= ' accept-charset="'.strtolower(config('charset')).'"';
             }
 
+            if(isset($attributes['class']))
+            {
+                $templateElement = isset($form['use_template']) ? $form['templates'][self::$template]['formClass'].' ' : '';
+                $atts.= ' class="'.$templateElement.$attributes['class'].'"';
+                unset($attributes['class']);
+            } 
+            else 
+            {
+                $templateElement = isset($form['use_template']) ? $form['templates'][self::$template]['formClass'] : '';
+                $atts.= ' class="'.$templateElement.'"';
+            }
+
             foreach ($attributes as $key => $val)
             {
-                if($formtag == true AND $key == 'class')
-                {
-                    $atts.= ' '.$key.'="'.$form['templates'][self::$template]['formClass'].' '.$val.'"';
-                } 
-                elseif($formtag)
-                {
-                    $atts.= ' '.$key.'="'.$val.'"';
-                    $atts.= ' '.'class="'.$form['templates'][self::$template]['formClass'].'"';
-                }
-                else 
-                {
-                    $atts.= ' '.$key.'="'.$val.'"';
-                }
+                $atts.= ' '.$key.'="'.$val.'"';
             }
 
             return $atts;

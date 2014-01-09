@@ -102,33 +102,11 @@ Class Model {
         {
             eval('Class '.$modelName.' extends Odm { 
                 use Odm\Src\Model_Trait; 
-                public $_properties = array();
-
+                public $data;
                 function __construct($schemaArray, $dbObject) { 
                     $this->_schemaArray = $schemaArray;
                     parent::__construct($schemaArray, $dbObject); 
                 } 
-                function __set($k, $v){   // Don\'t store Db object into properties variable.
-                    global $packages;
-                    if($k == \'_schemaArray\'){
-                        $this->_schemaArray = $v;
-                    }
-                    if(is_object($v) AND isset($packages[\'dependencies\'][$k])){  // check packagename.
-                        $this->$k = $v;  // getInstance object variables  db,config,router,uri,output,lingo ...
-                    } 
-                    elseif(isset($this->_schemaArray[$k])) {
-                        if( ! isset($this->$k)){
-                            $this->_properties[$k] = $v;
-                        }
-                    } elseif(strpos($k, "_") !== 0) {  // Do not catch private methods.
-                        logMe("error", "Your schema has not got a \"$k\" column but you use \"\$this->'.$modelName.'->$k\" variable.");
-                    }
-                }
-                function __get($k){ // If we have a collisions with package name overwrite to package object.
-                    if(isset($this->_properties[$k])){
-                        return $this->_properties[$k];
-                    }
-                }
             }');
         }
 

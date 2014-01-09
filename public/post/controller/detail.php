@@ -21,12 +21,12 @@ $c->func('index', function($id) use($c){
     {
         new Model('comment', 'comments');
 
-        $this->comment->post_id       = $this->get->post('post_id');
-        $this->comment->name          = $this->get->post('name');
-        $this->comment->email         = $this->get->post('email');
-        $this->comment->website       = $this->get->post('website');
-        $this->comment->comment       = $this->get->post('comment');
-        $this->comment->creation_date = date('Y-m-d H:i:s');
+        $this->comment->data['post_id']       = $this->get->post('post_id');
+        $this->comment->data['name']          = $this->get->post('name');
+        $this->comment->data['email']         = $this->get->post('email');
+        $this->comment->data['website']       = $this->get->post('website');
+        $this->comment->data['comment']       = $this->get->post('comment');
+        $this->comment->data['creation_date'] = date('Y-m-d H:i:s');
         
         $this->comment->func('save', function() {
             if ($this->isValid()){
@@ -59,6 +59,7 @@ $c->func('index', function($id) use($c){
     $this->db->where('comment_post_id',$id);
     $this->db->where('comment_status', '1');
     $this->db->get('comments'); // reset query
+    
     $comments = $this->db->result();
 
     $c->view('detail', function() use($post, $comments) {

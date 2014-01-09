@@ -1,34 +1,34 @@
 <?php 
 
 $posts = array(
-	'*' => array('colprefix' => 'post_'),
+	'*' => array(),
 	
-	'id' => array(
+	'post_id' => array(
 		'label' => 'Post Id',
 		'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
 		'rules' => '',
 		),
-	'user_id' => array(
+	'post_user_id' => array(
 		'label' => 'Post User Id',
 		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null',
 		'rules' => '',
 		),
-	'title' => array(
+	'post_title' => array(
 		'label' => 'Post Title',
 		'types' => '_varchar(255)|_not_null',
 		'rules' => 'required|maxLen(255)',
 		),
-	'content' => array(
+	'post_content' => array(
 		'label' => 'Post Content',
 		'types' => '_not_null|_text',
 		'rules' => 'required',
 		),
-	'tags' => array(
+	'post_tags' => array(
 		'label' => 'Post Tags',
 		'types' => '_varchar(255)|_null',
 		'rules' => 'required|maxLen(255)',
 		),
-	'status' => array(
+	'post_status' => array(
 		'label' => 'Post Status',
 		'_enum' => array(
 			'Draft',
@@ -38,12 +38,12 @@ $posts = array(
 		'types' => '_not_null|_enum',
 		'rules' => 'required',
 		),
-	'creation_date' => array(
+	'post_creation_date' => array(
 		'label' => 'Post Creation Date',
 		'types' => '_null|_datetime',
 		'rules' => '',
 		),
-	'modification_date' => array(
+	'post_modification_date' => array(
 		'label' => 'Post Modification Date',
 		'types' => '_null|_datetime',
 		'rules' => '',
