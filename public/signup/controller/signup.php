@@ -20,7 +20,6 @@ $c->func('index', function() use($c){
     {
         $this->user->modelJoin('posts');
 
-
         $this->user->data['user_username']      = $this->get->post('user_username');
         $this->user->data['post_title']         = $this->get->post('post_title');
         // $this->user->data['content']       = 'contentesdsa sad';

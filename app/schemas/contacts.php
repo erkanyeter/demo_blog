@@ -27,15 +27,10 @@ $contacts = array(
 		'label' => 'Contact Body',
 		'types' => '_null|text',
 		'rules' => '',
-
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
-		'_enum' => array(
-			'data',
-			'ersin\'s',
-		),
-		'types' => '_null|_enum',
+		'types' => '_null',
 		'rules' => '',
 		),
 );
