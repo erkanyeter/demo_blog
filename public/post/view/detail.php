@@ -53,7 +53,7 @@ Last Updated On <?php echo $post->user_username ?> on <?php echo $this->date_get
 
 								<div id="detail"><?php echo $this->date_get->mDate("%F %d,%Y %H:%i:%s", strtotime($comment->comment_creation_date)) ?></div>
 
-								<div id="commentext"><?php echo $comment->comment_comment ?></div>
+								<div id="commentext"><?php echo $comment->comment_body ?></div>
 							</div>
 
 						<?php } ?>
@@ -62,46 +62,39 @@ Last Updated On <?php echo $post->user_username ?> on <?php echo $this->date_get
 					<i class="required-t">Fields with * are required.</i>
 
 			<?php echo $this->form->open('post/detail/'.$post->post_id, array('method' => 'POST', 'id' => 'commentform')) ?>
-			<?php echo $this->form->hidden('post_id', $post->post_id) ?>
+			<?php echo $this->form->hidden('comment_post_id', $post->post_id) ?>
 
             <table width="100%">
 
                 <tr>
                     <td style="width:15%;"><?php echo $this->form->label('Name','name') ?><span class="color_red">*</span></td>
                     <td><?php 
-                        echo $this->form->error('name');
-                        echo $this->form->input('name', $this->form->setValue('name'), " id='name' ");
+                        echo $this->form->error('comment_name');
+                        echo $this->form->input('comment_name', $this->form->setValue('comment_name'), " id='comment_name' ");
                         ?></td>
                 </tr>
 
                 <tr>
                     <td><?php echo $this->form->label('Email','email') ?><span class="color_red">*</span></td>
                     <td><?php 
-                        echo $this->form->error('email');
-                        echo $this->form->input('email', $this->form->setValue('email'), " id='email' ");
+                        echo $this->form->error('comment_email');
+                        echo $this->form->input('comment_email', $this->form->setValue('comment_email'), " id='comment_email' ");
                         ?></td>
                 </tr>
 
                 <tr>
                     <td><?php echo $this->form->label('Website','website') ?><span class="color_red">*</span></td>
                     <td><?php 
-                        echo $this->form->error('website');
-                        echo $this->form->input('website', $this->form->setValue('website'), " id='website' ");
+                        echo $this->form->error('comment_website');
+                        echo $this->form->input('comment_website', $this->form->setValue('comment_website'), " id='comment_website' ");
                         ?></td>
                 </tr>
 
                 <tr>
                     <td><?php echo $this->form->label('Comment','comment') ?><span class="color_red">*</span></td>
                     <td><?php 
-                        echo $this->form->error('comment');
-						$comment_data = array(
-						              'name'        => 'comment',
-						              'value'       => $this->form->setValue('comment'),
-						              'size'        => '50',
-						              'style'       => 'width:50%',
-						            );
-
-                        echo $this->form->textarea($comment_data);
+                        echo $this->form->error('comment_body');
+                        echo $this->form->textarea('comment_body', $this->form->setValue('comment_body'), ' style="width:50%" ');
                         ?></td>
                 </tr>
 

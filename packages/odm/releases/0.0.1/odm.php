@@ -20,6 +20,7 @@ Class Odm {
     public $_odmValidation   = false;     // If form validation success we set it to true
     public $_odmValidator;
     public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
+    public $_odmColprefix;
 
     public $get;                          // Get package object
     public $form;                         // Form package object
@@ -61,15 +62,12 @@ Class Odm {
     * @param fields schema fields.
     * @return boolean
     */
-    public function isValid($fields = array())
+    public function isValid()
     {
         $validator = $this->_odmValidator;
-
-        $table  = $this->_odmTable;
-        $fields = (sizeof($fields) == 0) ? $this->_odmSchema : $fields;
-        $fields = array_merge($fields, $validator->_field_data); // Merge "Odm" and "Validator fields"
-
-        unset($fields['*']); // Remove settings to getting only fields.
+        $table     = $this->_odmTable;
+        
+        $fields = array_merge($this->getSchema(), $validator->_field_data); // Merge "Odm" and "Validator fields"
 
         $validator->set('_callback_object', $this);
 
@@ -449,7 +447,10 @@ Class Odm {
 
         if(sizeof($fields) > 0)
         {
-
+            foreach($fields as $key)
+            {
+                $joinSchemaArray[$key];
+            }
         }
 
         $this->_odmSchema = array_merge($this->_odmSchema, $joinSchemaArray);
@@ -465,6 +466,30 @@ Class Odm {
     public function getSchema()
     {
         return $this->_odmSchema;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set column prefix 
+     * 
+     * @param string $prefix
+     */
+    public function setPrefix($prefix = '')
+    {
+        $this->_odmColprefix = $prefix;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get colum prefix
+     * 
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->_odmColprefix;
     }
 
 }

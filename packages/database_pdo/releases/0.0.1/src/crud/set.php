@@ -21,23 +21,20 @@ namespace Database_Pdo\Src\Crud {
         if(is_object($key))  // Model Object ( Schema Support )
         {
             $setSchemaArray = array();
-            $schemaArray = getSchema($key->getTableName()); // Get tablename from model
-            $colprefix   = (isset($schemaArray['*']['colprefix'])) ? $schemaArray['*']['colprefix'] : '';
-
-            unset($schemaArray['*']); // Grab just the fields.
+            $schemaArray    = $key->getSchema(); // Get tablename from model
 
             foreach(array_keys($schemaArray) as $field)
             {
                 if(isset($key->data[$field])) // Is schema field selected ?
                 {
-                    $setSchemaArray[$colprefix.$field] = $key->data[$field]; // Let's build insert data.
+                    $setSchemaArray[$field] = $key->data[$field]; // Let's build insert data.
                 }
             }
             
             unset($key);
             $key = $setSchemaArray;
         }
-        
+
         //-------------- Schema Support End -----------------//
         
         if ( ! is_array($key))

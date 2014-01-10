@@ -9,13 +9,18 @@
 
 <body>
 
-<?php $this->form->setSchema('posts')  // set schema for form  ?>
+<?php 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-		<?php echo $header ?>
+$this->form->setSchema('posts');  // use schema for update operation.
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+?>
+
+<?php echo $header ?>
 
 		<div id="clear"></div>
 		<div id="containerbox">
-			 
 			<section>
 				<?php 
 					echo $this->form->getNotice();
@@ -41,16 +46,16 @@
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Title') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('title');
-			                            echo $this->form->input('title', $row, " ");
+			                            echo $this->form->error('post_title');
+			                            echo $this->form->input('post_title', $row, " ");
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
 			                    <tr>
 			                        <td><?php echo $this->form->label('Content') ?></td>
 			                        <td><?php 
-			                            echo $this->form->error('content');
-			                            echo $this->form->textarea('content', $row, ' rows="15" cols="80" size="50" style="width:50%" ');
+			                            echo $this->form->error('post_content');
+			                            echo $this->form->textarea('post_content', $row, ' rows="15" cols="80" size="50" style="width:50%" ');
 			                            ?><span class="color_red">*</span></td>
 			                    </tr>
 
@@ -58,8 +63,8 @@
 			                        <td><?php echo $this->form->label('Tags') ?></td>
 			                        <td>
 			                        <?php 
-			                            echo $this->form->error('tags');
-			                            echo $this->form->input('tags', $row, " ");
+			                            echo $this->form->error('post_tags');
+			                            echo $this->form->input('post_tags', $row, " ");
 			                            ?><span class="color_red">*</span>
 									
 									<p class="cp">Please separate different tags with commas.</p>
@@ -71,8 +76,8 @@
 			                        <td><?php echo $this->form->label('Status') ?></td>
 			                        <td>
 			                        <?php 
-			                            echo $this->form->error('status');
-										echo $this->form->dropdown('status','getSchema(posts)[status][_enum]', $row, " ");
+			                            echo $this->form->error('post_status');
+										echo $this->form->dropdown('post_status','getSchema(posts)[post_status][_enum]', $row, " ");
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>

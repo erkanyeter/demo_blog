@@ -40,12 +40,12 @@
 
 						<tr>
 							<td>
-							<?php echo $this->form->input('title', $this->form->setValue('title'), " onkeypress='keyPress();' ")  ?>
+							<?php echo $this->form->input('post_title', $this->form->setValue('post_title'), " onkeypress='keyPress();' ")  ?>
 							</td>
 							<td>
 							<?php 
-							$customOptions = array('' => '');
-echo $this->form->dropdown('status',array($customOptions,'getSchema(posts)[status][_enum]'), $this->form->setValue('status'),' onchange="submitPage();" '); 
+							echo $this->form->dropdown('post_status',array(array('' => 'All'),
+								'getSchema(posts)[post_status][_enum]'), $this->form->setValue('post_status'),' onchange="submitPage();" '); 
 							?>
 							</td>
 							<td>  </td>
@@ -113,5 +113,4 @@ function submitPage(){
 </script>
 
 </body>
-
 </html>

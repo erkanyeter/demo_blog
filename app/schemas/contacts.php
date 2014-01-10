@@ -27,6 +27,7 @@ $contacts = array(
 		'label' => 'Contact Body',
 		'types' => '_null|text',
 		'rules' => '',
+
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
@@ -35,26 +36,6 @@ $contacts = array(
 			'ersin\'s',
 		),
 		'types' => '_null|_enum',
-		'rules' => '',
-		),
-	'test' => array(
-		'label' => 'Test',
-		'types' => '_not_null|_int(11)',
-		'rules' => '',
-		),
-	'test2' => array(
-		'label' => 'Test2',
-		'types' => '_null|_int(11)|_key(test34)(test2)|_unique_key(test4)(test2)',
-		'rules' => '',
-		),
-	'test3' => array(
-		'label' => 'Test3',
-		'types' => '_not_null',
-		'rules' => '',
-		),
-	'test6' => array(
-		'label' => 'Test5',
-		'types' => '_not_null|_varchar',
 		'rules' => '',
 		),
 );

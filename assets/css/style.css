@@ -568,3 +568,7 @@ color:red;
 
 	background-position:0 -7055px;
 }
+.displaynone
+{
+	display: none;
+}

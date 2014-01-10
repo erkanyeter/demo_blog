@@ -14,7 +14,7 @@ namespace Database_Pdo\Src\Crud {
     {
         $crud = getInstance()->{\Db::$var};
 
-        if($prepared == true AND $crud->isAssocArray($crud->last_values)) // let's make sure, is it prepared query ?
+        if($prepared == true AND $crud->isAssocArray($crud->last_values) AND isset($crud->last_values[$crud->exec_count])) // let's make sure, is it prepared query ?
         {
             $bind_keys = array();
             foreach(array_keys($crud->last_values[$crud->exec_count]) as $k)

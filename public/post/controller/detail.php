@@ -13,20 +13,20 @@ $c = new Controller(function(){
 	new Tag_Cloud;
     new Form;
     new Get;
+    
+    new Model('comment', 'comments');
 });
 
 $c->func('index', function($id) use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        new Model('comment', 'comments');
-
-        $this->comment->data['post_id']       = $this->get->post('post_id');
-        $this->comment->data['name']          = $this->get->post('name');
-        $this->comment->data['email']         = $this->get->post('email');
-        $this->comment->data['website']       = $this->get->post('website');
-        $this->comment->data['comment']       = $this->get->post('comment');
-        $this->comment->data['creation_date'] = date('Y-m-d H:i:s');
+        $this->comment->data['comment_post_id']       = $this->get->post('comment_post_id');
+        $this->comment->data['comment_name']          = $this->get->post('comment_name');
+        $this->comment->data['comment_email']         = $this->get->post('comment_email');
+        $this->comment->data['comment_website']       = $this->get->post('comment_website');
+        $this->comment->data['comment_body']          = $this->get->post('comment_body');
+        $this->comment->data['comment_creation_date'] = date('Y-m-d H:i:s');
         
         $this->comment->func('save', function() {
             if ($this->isValid()){
@@ -42,8 +42,7 @@ $c->func('index', function($id) use($c){
         }
     }
 
-    // get post detail
-    $this->db->where('post_id', $id);
+    $this->db->where('post_id', $id);     // get post detail
     $this->db->where('post_status', 'Published');
     $this->db->join('users', 'user_id = post_user_id');
     $this->db->get('posts');

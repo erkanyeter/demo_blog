@@ -53,7 +53,7 @@ Last Updated On <?php echo $post->user_username ?> on <?php echo $this->date_get
 
 								<div id="detail"><?php echo $this->date_get->mDate("%F %d,%Y %H:%i:%s", strtotime($comment->comment_creation_date)) ?></div>
 
-								<div id="commentext"><?php echo $comment->comment_comment ?></div>
+								<div id="commentext"><?php echo $comment->comment_body ?></div>
 							</div>
 
 						<?php } ?>

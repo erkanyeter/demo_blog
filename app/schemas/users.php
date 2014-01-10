@@ -31,12 +31,6 @@ $users = array(
 	'user_username' => array(
 		'label' => 'User Username',
 		'types' => '_null|_varchar(50)',
-		'rules' => '',
-		),
-	'user_test' => array(
-		'label' => 'User Test',
-		'types' => '_null|_int(11)',
-		'rules' => '',
 		),
 );
  
