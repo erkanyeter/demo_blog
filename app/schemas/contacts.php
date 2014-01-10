@@ -27,7 +27,6 @@ $contacts = array(
 		'label' => 'Contact Body',
 		'types' => '_null|text',
 		'rules' => '',
-
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
