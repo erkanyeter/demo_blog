@@ -39,11 +39,21 @@ Abstract Class Schema_Auto_Sync {
             $newFileSchema[$k] = $v;
         }
 
+        // exit($schemaDBContent);
+
         eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
         unset($databaseSchema['*']);
 
         $this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema); // Render schema, fetch just types.
-        $this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema);  // Get just types 
+        $this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema, true);  // Get just types 
+
+        // print_r($this->dbSchema);
+
+        // echo '<br>';
+        // echo '<br>';
+
+        // print_r($this->fileSchema);
+
 
         $this->db           = $schemaObject->dbObject;     // Database Object
         $this->schemaObject = $schemaObject; // Schema Object
@@ -299,6 +309,7 @@ Abstract Class Schema_Auto_Sync {
                     {
                         if (in_array($unbreacketsDiffMatches[$i],$this->dataTypes) OR in_array($unbreacketsDiffMatches[$i], $this->attributeTypes)) // check is it datatype.
                         {
+
                             $this->schemaDiff[$k][] = array(
                             'update_types' => $diffMatches[$i],
                             'options' => array(
@@ -309,6 +320,7 @@ Abstract Class Schema_Auto_Sync {
                         }
                         else  // if not show just remove file option
                         {
+
                             $this->schemaDiff[$k][] = array(
                             'update_types' => $diffMatches[$i],
                             'options' => array(
@@ -352,23 +364,31 @@ Abstract Class Schema_Auto_Sync {
     * @param  array  $schemaArray
     * @return array              
     */
-    public function _reformatSchemaTypes($schemaArray = array())
+    public function _reformatSchemaTypes($schemaArray = array(), $quote = false)
     {
         $schema = array();
         foreach($schemaArray as $key => $val)
         {
             $val['types'] = (isset($val['types'])) ? $val['types'] : '';
+
             $val['types'] = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $val['types']);  // remove unnecessary pipes ..
+            $val['types'] = preg_replace('#["]+#', '', $val['types']); // remove double " " quotes ...
 
             if(isset($schemaArray[$key]['_enum']))
             {
                 $enum = '';
                 foreach($schemaArray[$key]['_enum'] as $enumVal)
                 {
-                    $enum.= '"'.$enumVal.'",';
+                    if($quote)
+                    {
+                        $enumVal = addslashes($enumVal);  // add slashes for ' quote
+                    }
+
+                    $enum.= "'".$enumVal."',";
                 }
                 
                 $enum = trim($enum, ',');
+
                 $schema[$key] = preg_replace('#_enum#', "_enum($enum)", $val['types']);
             }
             elseif(isset($schemaArray[$key]['_set']))
@@ -376,7 +396,12 @@ Abstract Class Schema_Auto_Sync {
                 $set = '';
                 foreach($schemaArray[$key]['_set'] as $enumVal)
                 {
-                    $set.= '"'.$enumVal.'",';
+                    if($quote)
+                    {
+                        $enumVal = addslashes($enumVal); // add slashes for ' quote
+                    }
+
+                    $set.= "'".$enumVal."',";
                 }
 
                 $set = trim($set, ',');
@@ -387,7 +412,6 @@ Abstract Class Schema_Auto_Sync {
                 $schema[$key] = $val['types'];
             }
         }
-
         return $schema;
     }
 
@@ -446,10 +470,12 @@ Abstract Class Schema_Auto_Sync {
      * @param  string  $typeString
      * @return int
      */
-    function getDataTypeArray($typeString,$dataTypes)
+    public function getDataTypeArray($typeString,$dataTypes)
     {
         return array_intersect(explode('|', $typeString),$dataTypes);
     }
+
+    
 }
 
 /* End of file schema_auto_sync.php */

@@ -74,28 +74,29 @@ Class Schema_Sql_Reader {
 		$tempUkArray  = $this->_buildUniqueKeys($keyData);
 		$tempKeyArray = $this->_buildKeys($keyData);
 
-		$columns = $this->db->query('SHOW COLUMNS FROM '.$tablename)->resultArray();
 
+		$columns = $this->db->query('SHOW COLUMNS FROM '.$tablename)->resultArray();
         if(count($columns) > 0)
         {	
         	$schemaContent = '';
         	foreach($columns as $col)
         	{
-        		if (isset(array_keys($tempFkArray)[0]) AND in_array(array_keys($tempFkArray)[0],$col)) 
+		    		
+        		if (isset($tempFkArray[$col['Field']])) 
         		{
-        			$col['_foreign_keys'] = $tempFkArray[$col['Field']];
+        			$col['_foreign_keys'][] = $tempFkArray[$col['Field']];
         			unset($tempFkArray[$col['Field']]);
         		}
 
-        		if (isset(array_keys($tempUkArray)[0]) AND in_array(array_keys($tempUkArray)[0],$col)) 
+        		if (isset($tempUkArray[$col['Field']])) 
         		{
-        			$col['_unique_keys'] = $tempUkArray[$col['Field']];
+        			$col['_unique_keys'][] = $tempUkArray[$col['Field']];
         			unset($tempUkArray[$col['Field']]);
         		}
 
-        		if (isset(array_keys($tempKeyArray)[0]) AND in_array(array_keys($tempKeyArray)[0],$col)) 
+        		if (isset($tempKeyArray[$col['Field']])) 
         		{
-        			$col['_keys'] = $tempKeyArray[$col['Field']];
+        			$col['_keys'][] = $tempKeyArray[$col['Field']];
         			unset($tempKeyArray[$col['Field']]);
         		}
 
@@ -192,7 +193,7 @@ Class Schema_Sql_Reader {
 		{
 			foreach ($sql as $key) 
 			{
-				if(preg_match_all('/UNIQUE KEY\s+([^\(^\s]+)\s*\(([^\)]+)\)/mi', $key, $matches, PREG_SET_ORDER))
+				if(preg_match_all('#UNIQUE KEY\s+([^\(^\s]+)\s*\(([^\)]+)\)#mi', $key, $matches, PREG_SET_ORDER))
 				{
 					break;
 				}
@@ -317,11 +318,12 @@ Class Schema_Sql_Reader {
 		{
 			if($col['Default'] == 'CURRENT_TIMESTAMP' OR $col['Default'] == 'NULL')
 			{
-				$rules.= '_default('.$this->removeQuotes($col['Default']).')|';	
+
+				$rules.= '_default('.addslashes($col['Default']).')|';	
 			} 
 			else 
 			{
-				$rules.= '_default("'.$this->removeQuotes($col['Default']).'")|';
+				$rules.= '_default('.addslashes($col['Default']).')|';
 			}
 		}
 
@@ -438,7 +440,7 @@ Class Schema_Sql_Reader {
 			{
 				if(isset($typeValue))
 				{
-					$this->enumData[$col['Field']] = str_replace('"', "'", $typeValue);
+					$this->enumData[$col['Field']] = $this->sanitizeEnum($typeValue);
 				}
 
 				$rules.= '_enum|';
@@ -450,7 +452,7 @@ Class Schema_Sql_Reader {
 			{
 				if(isset($typeValue))
 				{
-					$this->setData[$col['Field']] = str_replace('"', "'", $typeValue);
+					$this->setData[$col['Field']] = $this->sanitizeEnum($typeValue);
 				}
 
 				$rules.= '_set|';
@@ -729,14 +731,21 @@ Class Schema_Sql_Reader {
 
 		if(isset($col['_keys']))  // Add Index 
 		{
-			$temp = array_keys($col['_keys'][0]);
-			$rules.= '_key('.$temp[0].')('.$col['_keys'][0][$temp[0]].')|';
+			for ($i=0; $i < sizeof($col['_keys'][0]) ; $i++) // get all keys for field
+			{ 
+				$temp = array_keys($col['_keys'][0][$i]); 
+				$rules.= '_key('.$temp[0].')('.$col['_keys'][0][$i][$temp[0]].')|';
+			}
 		}
 
-		if(isset($col['_unique_keys']))  // Add Index 
+		if(isset($col['_unique_keys']))  // Add Unique Key  
 		{
-			$temp = array_keys($col['_unique_keys'][0]);
-			$rules.= '_unique_key('.$temp[0].')('.$col['_unique_keys'][0][$temp[0]].')|';
+			for ($i=0; $i < sizeof($col['_unique_keys'][0]) ; $i++)  // get all unique keys for field
+			{ 
+				$temp = array_keys($col['_unique_keys'][0][$i]);
+				$rules.= '_unique_key('.$temp[0].')('.$col['_unique_keys'][0][$i][$temp[0]].')|';
+			}
+		
 		}
 
 		return trim($rules,'|');
@@ -834,6 +843,25 @@ Class Schema_Sql_Reader {
 	function removeQuotes($str)
 	{
 		return trim(trim($str, '"'), "'");
+	}
+
+	// --------------------------------------------------------------------
+
+	function sanitizeEnum($enumData)
+	{
+        $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData); // sanitize comma.
+
+        $enumArray = array();
+        foreach(explode(',', trim(trim($enumData,')'),'(')) as $v)
+        {
+            $v = str_replace('__TEMP_COMMA__',',',$v);
+            $v = trim(trim($v,"'"),'"');
+            $v = preg_replace("#[']+#", "'", $v);  // remove mysql escaped quotes \''
+            $v = "'".addslashes(addslashes($v))."'";
+            $enumArray[] = $v;
+        }
+
+        return implode(',', $enumArray);
 	}
 
 }
