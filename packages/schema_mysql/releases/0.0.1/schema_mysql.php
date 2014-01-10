@@ -45,7 +45,7 @@ Class Schema_Mysql {
 		{		
 			$tableReader   = new Schema_Mysql\Src\Schema_Sql_Reader($this->db); // Read column information from table
 	        $schemaContent = $tableReader->readSQL($this->tablename);
-
+            
 	        if($schemaContent == false)
 	        {
 	        	return false;
@@ -113,9 +113,6 @@ Class Schema_Mysql {
         $currentFileSchema = $fileSchema;
         unset($fileSchema['*']);  // Get only fields no settings
 
- 
-        
-
         $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->schemaObject->_createLabel($key);
         $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
 
@@ -166,12 +163,16 @@ Class Schema_Mysql {
                 $types = preg_replace('#'.preg_quote($enumStr).'#', '_enum', $types);
                 
                 $ruleString .= "\n\t\t'_enum' => array(";   // render enum types
-                $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData); // sanitize comma.
 
+                $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData); // sanitize comma.
                 foreach(explode(',', trim(trim($enumData,')'),'(')) as $v)
                 {
                     $v = str_replace('__TEMP_COMMA__',',',$v);
-                    $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
+                    // exit($v);
+
+                    // $v = trim(trim($v,"'"),'"');
+                    // $v = addslashes($v);
+                    $ruleString .= "\n\t\t\t".$v.","; // add new line after that for each comma
                 }
                 $ruleString .= "\n\t\t),";
                 $types = str_replace($enumData, '', $types);
@@ -193,11 +194,13 @@ Class Schema_Mysql {
                 foreach(explode(',', trim(trim($setData,')'),'(')) as $v)
                 {
                     $v = str_replace('__TEMP_COMMA__',',',$v);
-                    $ruleString .= "\n\t\t\t".str_replace('"',"'",$v).","; // add new line after that for each comma
+                    // $v = addslashes($v);
+                    $ruleString .= "\n\t\t\t".$v.","; // add new line after that for each comma
                 }
                 $ruleString .= "\n\t\t),";
                 $types = str_replace($setData, '', $types);
             }
+
             $types = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $types); 
             $ruleString.= "\n\t\t'types' => '".$types."',";
 

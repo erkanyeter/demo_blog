@@ -40,7 +40,6 @@ namespace Schema_Mysql\Src;
 Class Schema_Sql_Creator {
 
 	public $sqlOutput;   // Sql output
-	public $colprefix;
 	public $schemaArray  = array(); // Schema Data
 	public $_escape_char = '`%s`';	// Escape character
 	public $_tableSuffix = ' ENGINE=InnoDB DEFAULT CHARSET=utf8;'; // Sql table suffix
@@ -102,7 +101,6 @@ Class Schema_Sql_Creator {
 	public function createSQL($tablename)
 	{
 		$this->schemaArray = getSchema($tablename); // Get schema configuration.;
-		$this->colprefix   = isset($this->schemaArray['*']['colprefix']) ? $this->schemaArray['*']['colprefix'] : '';
 		unset($this->schemaArray['*']); // Get only fields no settings
 
 		// print_r($this->schemaArray);
@@ -240,8 +238,6 @@ Class Schema_Sql_Creator {
 					}
 				}
 
-
-
 				$sqlLine = trim($this->quoteValue($fieldKey).' '.$fieldType.$fieldAttribute).",\n";
 
 				if(preg_match('/(#_foreign_key)\((.*?)\)\((.*?)\)(#)/', $sqlLine, $_fk_matches)) // Detect keys forign keys
@@ -373,44 +369,44 @@ Class Schema_Sql_Creator {
 		if(strpos($sql, '#'.$_key) > 0)  // Detect keys and multiple keys
 		{
 			preg_match_all('/(#'.$_key.')\((.*?)\)(#)/', $sql, $_keyMatches, PREG_SET_ORDER);
-			
+			$keyIndexArray = array();
 			$KEYS = '';
 			$keyImplode = '';
 			foreach ($_keyMatches as $kmValue)
 			{
 				$keyImplode = $kmValue[2];
-
 				if(strpos($keyImplode, ')(') > 0)
 				{
 					$kVal = '';
 					$exp = explode(')(', $keyImplode);
 					$keyIndex  = $exp[0];
 					unset($exp[0]);
-
-					$implodeKeys = array();
-					foreach($exp as $item)
+					if (!in_array($keyIndex,$keyIndexArray))  // if index name exist in index array for DUPLICATE ERROR
 					{
-						if(strpos($item, ',') !== false)
+						$keyIndexArray[]=$keyIndex;
+						$implodeKeys = array();
+						foreach($exp as $item)
 						{
-							foreach (explode(',', $item) as $k => $v)
+							if(strpos($item, ',') !== false)
 							{
-								$implodeKeys[] = $this->quoteValue($v);
+								foreach (explode(',', $item) as $k => $v)
+								{
+									$implodeKeys[] = $this->quoteValue($v);
+								}
+							} else 
+							{
+								$implodeKeys = array($this->quoteValue($item));
 							}
-
-						} else 
+						}
+						if(isset($keyIndex))
 						{
-							$implodeKeys = array($this->quoteValue($item));
+							$KEYS.= ",\n$sqlKey ".$this->quoteValue($keyIndex).' ('.implode($implodeKeys, ',').')';
+						} 
+						else
+						{
+							$KEYS.= ",\n$sqlKey ".$this->quoteValue($kmValue[2]).' ('.$this->quoteValue($kmValue[2]).')';
 						}
 					}
-				}
-
-				if(isset($keyIndex))
-				{
-					$KEYS.= ",\n$sqlKey ".$this->quoteValue($keyIndex).' ('.implode($implodeKeys, ',').')';
-				} 
-				else
-				{
-					$KEYS.= ",\n$sqlKey ".$this->quoteValue($kmValue[2]).' ('.$this->quoteValue($kmValue[2]).')';
 				}
 			}
 
@@ -418,6 +414,7 @@ Class Schema_Sql_Creator {
 			$sql = preg_replace('/(#'.$_key.')(.*?)(#)/', '', $sql);  // REMOVE TEMPS
 
 			return $sql;
+
 		}
 
 		return $sql;
@@ -433,7 +430,7 @@ Class Schema_Sql_Creator {
 	 */
 	private function quoteValue($val)
 	{
-		return sprintf($this->_escape_char, $this->colprefix.$val);
+		return sprintf($this->_escape_char,$val);
 	}
 
 	// --------------------------------------------------------------------

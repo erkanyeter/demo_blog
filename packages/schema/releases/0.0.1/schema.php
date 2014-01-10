@@ -119,8 +119,26 @@ Class Schema {
      */
     public function displaySqlQueryForm($sql, $queryWarning = '',$disabled = false)
     {
-        $sql = str_replace('"', "'", $sql);
+        // $sql = str_replace('"', "'", $sql);
+        // $sql = addslashes($sql);
+        // preg_match_all("#(\"(.*?)\")|('(.*?)')#s",$sql,$sqlMatches,PREG_SET_ORDER);
+        // foreach ($sqlMatches as $val) {
+        //     $value = trim($val[2]);
+        //     if(!empty($value))
+        //     {
+        //         $test[] = "'".addslashes($value)."'";
+        //     }
+        // }
 
+
+        //  echo "<pre>";
+        // $test = "(".implode(',',$test).")";
+        // echo $test;
+        // $sql = preg_replace('#\((.*?)\)#',$test,$sql);
+        // echo "<br>";
+        // echo "</pre>";
+        
+        // $sql = preg_replace('#(\"(.*?)\")|(\'(.*?)\')#s',$test,$sql);
         $form = new \Form;
 
         $html = '<h1>Run sql query for <i><u>'.strtolower($this->getTableName()).'</u></i> table</h1>';
