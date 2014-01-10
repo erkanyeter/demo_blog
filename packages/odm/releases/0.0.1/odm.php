@@ -34,20 +34,18 @@ Class Odm {
     */
     public function __construct(array $schemaArray, $dbObject)
     {
-        $odm = getConfig('odm'); // Initialize to Validator Object.
+        $odm = getConfig('odm');   // Initialize to Validator Object.
         $this->_odmValidator = getInstance()->validator; 
 
-        $this->clear();          // Clear the validator.
-
+        $this->clear();            // Clear the validator.
         $this->_odmTable = strtolower($schemaArray['*']['_tablename']);
         unset($schemaArray['*']);  // Remove settings
 
         $this->_odmSchema = $schemaArray;
-        
         $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
         $this->get  = (isset(getInstance()->get)) ? getInstance()->get : $odm['get'];
 
-        getInstance()->lingo->load('odm');  // Odm language file.
+        getInstance()->lingo->load('odm');  // Load Odm package language file.
 
         $this->{Db::$var} = $dbObject; // Store database object
 
@@ -66,7 +64,7 @@ Class Odm {
     {
         $validator = $this->_odmValidator;
         $table     = $this->_odmTable;
-        
+
         $fields = array_merge($this->getSchema(), $validator->_field_data); // Merge "Odm" and "Validator fields"
 
         $validator->set('_callback_object', $this);
@@ -77,7 +75,7 @@ Class Odm {
             {
                 if(isset($val['rules']) AND $val['rules'] != '')
                 {
-                    if(isset($this->data[$key])) // Set selected key to REQUEST.
+                    if(isset($this->data->{$key})) // Set selected key to REQUEST.
                     {
                         $label = (isset($val['label'])) ? $val['label'] : '';   // $_REQUEST[$key] = $this->{$key};
                         $validator->setRules($key, $label, $val['rules']);
@@ -90,9 +88,9 @@ Class Odm {
         {
             foreach($fields as $key => $val)  // Set filtered values
             {
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key])) 
+                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data->{$key})) 
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key));
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data->{$key})) ? $this->data->{$key} : $this->get->post($key));
                 }
             }
             
@@ -132,9 +130,9 @@ Class Odm {
 
                 //----------------------------
 
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key]))  // Set filtered values.
+                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data->{$key}))  // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key)); 
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data->{$key})) ? $this->data->{$key} : $this->get->post($key)); 
                 }
             }
             
@@ -348,7 +346,7 @@ Class Odm {
     *
     * @param string $key or $field
     */
-    public function setMessage($key, $error)
+    public function setError($key, $error)
     {
         $this->_odmErrors[$this->_odmTable]['errors'][$key] = $error;
 
@@ -440,18 +438,10 @@ Class Odm {
      * @param  array  $fields
      * @return void
      */
-    public function join($tablename, $fields = array())
+    public function modelJoin($tablename)
     {
         $joinSchemaArray = getSchema($tablename);
-        unset($joinSchemaArray['*']);
-
-        if(sizeof($fields) > 0)
-        {
-            foreach($fields as $key)
-            {
-                $joinSchemaArray[$key];
-            }
-        }
+        unset($joinSchemaArray['*']);  // remove settings
 
         $this->_odmSchema = array_merge($this->_odmSchema, $joinSchemaArray);
     }   
@@ -466,30 +456,6 @@ Class Odm {
     public function getSchema()
     {
         return $this->_odmSchema;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Set column prefix 
-     * 
-     * @param string $prefix
-     */
-    public function setPrefix($prefix = '')
-    {
-        $this->_odmColprefix = $prefix;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get colum prefix
-     * 
-     * @return string
-     */
-    public function getPrefix()
-    {
-        return $this->_odmColprefix;
     }
 
 }

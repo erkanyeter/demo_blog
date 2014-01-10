@@ -40,6 +40,13 @@
 			                            echo $this->form->input('user_username', $this->form->setValue('user_username'), " id='user_username' ");
 			                            ?></td>
 			                    </tr>
+			               		<tr>
+			                        <td style="width:15%;"><?php echo $this->form->label('Post title') ?></td>
+			                        <td><?php 
+			                            echo $this->form->error('post_title');
+			                            echo $this->form->input('post_title', $this->form->setValue('post_title'), " id='post_title' ");
+			                            ?></td>
+			                    </tr>
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Email') ?></td>
 			                        <td><?php 

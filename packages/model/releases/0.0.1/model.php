@@ -101,12 +101,19 @@ Class Model {
         if( ! class_exists($modelName, false))  // Create the Model file on the fly with magic methods.
         {
             eval('Class '.$modelName.' extends Odm { 
-                use Odm\Src\Model_Trait; 
+                use Odm\Src\Model_Trait;
                 public $data;
-                function __construct($schemaArray, $dbObject) { 
-                    $this->_schemaArray = $schemaArray;
+                public $_tableProperties;
+                function __construct($schemaArray, $dbObject) {
                     parent::__construct($schemaArray, $dbObject); 
-                } 
+                }
+                function __assignToProperties(){
+                    if(sizeof($this->data) > 0){
+                        foreach($this->data as $k => $v){
+                            $this->_tableProperties[$this->getTableName()][$k] = $v;
+                        }
+                    }
+                }
             }');
         }
 

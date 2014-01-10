@@ -18,18 +18,19 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        // $this->user->modelJoin('posts');
+        $this->user->modelJoin('posts');
+
 
         $this->user->data['user_username']      = $this->get->post('user_username');
-        // $this->user->data['title']         = 'test';
+        $this->user->data['post_title']         = $this->get->post('post_title');
         // $this->user->data['content']       = 'contentesdsa sad';
         $this->user->data['user_email']         = $this->get->post('user_email');
-        $this->user->data['user_password']      = $this->get->post('password');
+        $this->user->data['user_password']      = $this->get->post('user_password');
         $this->user->data['user_creation_date'] = date('Y-m-d H:i:s');
 
         //--------------------- set non schema rules
 
-        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
+        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
         $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
         
         //---------------------
@@ -52,9 +53,13 @@ $c->func('index', function() use($c){
                 $bcrypt = new Bcrypt; // use bcrypt
                 $this->data['password'] = $bcrypt->hashPassword($this->getValue('password'), 8);
 
-                return $this->db->insert('users', $this);
-                // $this->db->insert('posts', $this);
+                $this->db->insert('users', $this);
+                $this->db->insert('posts', $this);
+
+                return true;
             }
+             exit;
+
             return false;
         });
 

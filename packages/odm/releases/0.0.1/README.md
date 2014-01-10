@@ -547,7 +547,7 @@ $this->user->password = $this->get->post('password');
 $this->user->func('callback_checkuser', function($username){
     if(strlen($username) > 10)
     {
-        $this->setMessage('checkuser', 'Username must be less than 10 characters.');
+        $this->setMessage('callback_checkuser', 'Username must be less than 10 characters.');
         return false;
     }
     return true;
@@ -997,25 +997,25 @@ Returns all errors in array format.
 
 if you provide any fieldname it gives it's error
 
+#### $this->model->setError($field, $error);
+
+Sets custom error for the provided field.
+
+#### $this->model->buildQueryErrors();
+
+Builds Httpd GET friendly errors using query strings.
+
+#### $this->model->setFailure($message);
+
+Sets custom failure messages, you can use it when your transaction is fail.
+
 #### $this->model->values();
 
 Returns the <b>filtered secure</b> values of the inputs. 
 
 #### $this->model->getValue($field = '');
 
-Returns the <b>filtered secure</b> value of the inputs. 
-
-#### $this->model->buildQueryErrors();
-
-Builds Httpd GET friendly errors using query strings.
-
-#### $this->model->setMessage($field, $error);
-
-Sets custom error for the provided field.
-
-#### $this->model->setFailure($message);
-
-Sets custom failure messages, use it when your operation goes to failure.
+Fetches the <b>filtered secure</b> value of the input. 
 
 #### $this->model->output();
 

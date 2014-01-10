@@ -21,7 +21,8 @@ namespace Odm\Src {
                     <pre>'.implode("\n", $this->_modelDefinedMethods)."\n".'callback_</pre>');
             }
 
-            $this->assignObjects();
+            $this->__assignObjects();
+            $this->__assignToProperties();
 
             if ( ! is_callable($methodCallable)) // @todo throw new InvalidArgumentException
     	    {
@@ -102,7 +103,7 @@ namespace Odm\Src {
          * 
          * @return void
          */
-        public function assignObjects()
+        public function __assignObjects()
         {
             $modelKey = strtolower(get_class());
 
