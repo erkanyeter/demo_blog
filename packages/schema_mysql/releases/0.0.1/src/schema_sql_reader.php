@@ -69,12 +69,10 @@ Class Schema_Sql_Reader {
 	public function readSQL($tablename)
 	{
 		$keyData = $this->db->query('SHOW CREATE TABLE '.$tablename)->resultArray();
-
 		$tempFkArray  = $this->_buildForeignKeys($keyData);
 		$tempUkArray  = $this->_buildUniqueKeys($keyData);
 		$tempKeyArray = $this->_buildKeys($keyData);
-
-
+		$tempPkArray  = $this->_buildPrimaryKeys($keyData);
 		$columns = $this->db->query('SHOW COLUMNS FROM '.$tablename)->resultArray();
         if(count($columns) > 0)
         {	
@@ -88,6 +86,12 @@ Class Schema_Sql_Reader {
         			unset($tempFkArray[$col['Field']]);
         		}
 
+        		if (isset($tempPkArray[$col['Field']])) 
+        		{
+        			$col['_primary_keys'][] = $tempPkArray[$col['Field']];
+        			unset($tempPkArray[$col['Field']]);
+        		}
+
         		if (isset($tempUkArray[$col['Field']])) 
         		{
         			$col['_unique_keys'][] = $tempUkArray[$col['Field']];
@@ -98,8 +102,8 @@ Class Schema_Sql_Reader {
         		{
         			$col['_keys'][] = $tempKeyArray[$col['Field']];
         			unset($tempKeyArray[$col['Field']]);
-        		}
 
+        		}
         		$schemaContent.= $this->_buildRow($col); // Output 'password' = array('rules' => 'required|_string(20)|minLen(6)');
         	}
 
@@ -199,7 +203,6 @@ Class Schema_Sql_Reader {
 				}
 			}
 		}
-
 		foreach($matches as $match)
 		{
 			$keys = array_map('trim', explode(',', str_replace(array('`','"'), '', $match[2])));
@@ -211,6 +214,51 @@ Class Schema_Sql_Reader {
 		}
 
 		return $uniqueKeys;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create PRIMARY KEY(s)
+	 * 
+	 * @param  array $row key data
+	 * @return string uniq key data
+	 */
+	private function _buildPrimaryKeys($row)
+	{
+		$matches 	= array();
+		$primaryKeys = array();
+
+		foreach($row as $key => $sql)
+		{
+			foreach ($sql as $key) 
+			{
+				if(preg_match_all('#PRIMARY KEY\s+\((.*?)\)#mi', $key, $matches, PREG_SET_ORDER))
+				{
+					break;
+				}
+			}
+		}
+
+		foreach($matches as $match)
+		{
+			$keys = array_map('trim', explode(',', str_replace(array('`','"'), '', $match[1])));
+
+			if (sizeof($keys) > 1) 
+			{
+				foreach($keys as $k => $name)
+				{
+					$primaryKeys[$name][] = array('pk' => str_replace(array('`','"') ,'', $match[1]));
+				}
+			}
+			else
+			{
+				$primaryKeys[$keys[0]] = array();
+			}
+
+		}
+
+		return $primaryKeys;
 	}
 
 	// --------------------------------------------------------------------
@@ -325,11 +373,6 @@ Class Schema_Sql_Reader {
 			{
 				$rules.= '_default('.addslashes($col['Default']).')|';
 			}
-		}
-
-		if(isset($col['Key']) AND $col['Key'] == 'PRI') // Add primary_key
-		{
-			$rules.= '_primary_key|';
 		}
 
 		if(isset($col['Type']))  // Parse types and Build Schema Rules
@@ -746,6 +789,27 @@ Class Schema_Sql_Reader {
 				$rules.= '_unique_key('.$temp[0].')('.$col['_unique_keys'][0][$i][$temp[0]].')|';
 			}
 		
+		}
+		
+
+		if(isset($col['_primary_keys']))  // Add Primary Key  
+		{
+			if (sizeof($col['_primary_keys'][0])>0) // this is for composite keys
+			{
+				for ($i=0; $i < sizeof($col['_primary_keys'][0]) ; $i++)  // get all unique keys for field
+				{ 
+
+					$temp = array_keys($col['_primary_keys'][0][$i]);
+
+					$rules.= '_primary_key('.$col['_primary_keys'][0][$i][$temp[0]].')|';
+				}
+			}
+			else
+			{
+				$rules.= '_primary_key|';
+			}
+			
+			
 		}
 
 		return trim($rules,'|');

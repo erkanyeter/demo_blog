@@ -61,7 +61,7 @@ table.modelTable td {
 	padding: 8px;
 	border-style: solid;
 	border-color: #ccc;
-	background-color: #ffffff;
+	/*background-color: #ffffff;*/
 }
 
 table.modelTable .newColumn {
@@ -91,7 +91,7 @@ table.modelTable .newColumn {
 }
 .columnNewType {
 	float: left;
-	color: #666;
+	/*color: #666;*/
 	font-size: 12px;
 	margin-right: 10px;
 	font-style: italic;
@@ -133,4 +133,9 @@ table.modelTable  kbd{
 	border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:0 4px;color:#666;
 	font-size:11px;
 	color: #069586;
+}
+.syncerror
+{
+	background-color: #F9E5E5 ;
+	color: #666;
 }

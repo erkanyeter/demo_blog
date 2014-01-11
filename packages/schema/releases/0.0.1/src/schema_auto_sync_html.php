@@ -47,8 +47,10 @@ Class Schema_Auto_Sync_Html {
 			$class = ''; 
 			if( ! isset($val['types']) ) { $class = 'newColumn'; } // New Column
 
+				$class = isset($val['options']['class']) ? $val['options']['class'] : $class ; 
 				if(isset($val['new_types']))  // LEFT COLUMN
 				{
+					
 					$html.= '<td class="'.$class.'">'.$key;
 
 					if(isset($val['options'])) // parse options
@@ -84,7 +86,7 @@ Class Schema_Auto_Sync_Html {
 
 				if(isset($val['types']))	// RIGHT COLUMN
 				{
-					$html.= '<td>'.$val['types'];
+					$html.= '<td class="'.$class.'">'.$val['types'];
 
 					if( isset($val['types']) AND count($val) > 1) // Column & attribute updates
 					{
