@@ -5,32 +5,37 @@ $contacts = array(
 	
 	'contact_id' => array(
 		'label' => 'Contact Id',
-		'types' => '_not_null|_primary_key|_unsigned|_int(11)|_auto_increment|_unique_key(test)(test,contact_id)|_unique_key(test3)(test,contact_id)',
+		'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
 		'rules' => '',
 		),
 	'contact_name' => array(
 		'label' => 'Contact Name',
-		'types' => '_not_null|_unsigned|_int(10)',
-		'rules' => '',
+		'types' => '_null|_varchar(50)',
+		'rules' => 'required',
 		),
 	'contact_email' => array(
 		'label' => 'Contact Email',
-		'types' => '_not_null|_default(0)|_int(10)',
+		'types' => '_null|_varchar(50)',
 		'rules' => '',
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
-		'types' => '_not_null|_varchar(255)|_default(\'trus\')',
+		'types' => '_not_null|_varchar(255)|_default(true)',
 		'rules' => '',
 		),
 	'contact_body' => array(
 		'label' => 'Contact Body',
-		'types' => '_null|text',
+		'_enum' => array(
+			'data',
+			'ersin\'s',
+			'bob, Store',
+		),
+		'types' => '_enum|_null',
 		'rules' => '',
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
-		'types' => '_null',
+		'types' => '_null|_datetime',
 		'rules' => '',
 		),
 );

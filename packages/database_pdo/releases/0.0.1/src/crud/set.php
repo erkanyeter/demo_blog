@@ -18,12 +18,18 @@ namespace Database_Pdo\Src\Crud {
 
         //-------------- Schema Support Begin -----------------//
 
-        if(is_object($key))  // Model Object ( Schema Support )
+        if(is_object($key) AND isset($crud->ar_from[0]))  // Model Object ( Schema Support )
         {
+            $tablename      = $crud->ar_from[0];
             $setSchemaArray = array();
-            $schemaArray    = $key->getSchema(); // Get tablename from model
+            $schemaArray    = $key->getMultiSchema();  // Get current multi schema array
 
-            foreach(array_keys($schemaArray) as $field)
+            if( ! isset($schemaArray[$tablename]))   // Get schemas using tablenames
+            {
+                throw new Exception('Schema '.$tablename.' file not found for crud operation.');
+            }
+
+            foreach(array_keys($schemaArray[$tablename] as $field)
             {
                 if(isset($key->data[$field])) // Is schema field selected ?
                 {

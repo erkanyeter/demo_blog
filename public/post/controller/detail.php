@@ -13,7 +13,7 @@ $c = new Controller(function(){
 	new Tag_Cloud;
     new Form;
     new Get;
-    
+
     new Model('comment', 'comments');
 });
 

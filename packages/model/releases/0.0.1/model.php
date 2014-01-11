@@ -103,14 +103,20 @@ Class Model {
             eval('Class '.$modelName.' extends Odm { 
                 use Odm\Src\Model_Trait;
                 public $data;
-                public $_tableProperties;
                 function __construct($schemaArray, $dbObject) {
                     parent::__construct($schemaArray, $dbObject); 
                 }
-                function __assignToProperties(){
+                function __assignColumns(){
                     if(sizeof($this->data) > 0){
                         foreach($this->data as $k => $v){
-                            $this->_tableProperties[$this->getTableName()][$k] = $v;
+                            if(strpos($k, ".") > 0){
+                                unset($this->data[$k]);  // remove join "." data
+                                $exp    = explode(".", $k);
+                                $table  = $exp[0];
+                                $k      = $exp[1]; // pure column name
+                                $this->_odmColumnJoins[$table][] = $k; // keep joins in our mind
+                            }
+                            $this->data[$k] = $v;  // rebuild data
                         }
                     }
                 }

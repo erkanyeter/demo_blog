@@ -168,10 +168,6 @@ Class Schema_Mysql {
                 foreach(explode(',', trim(trim($enumData,')'),'(')) as $v)
                 {
                     $v = str_replace('__TEMP_COMMA__',',',$v);
-                    // exit($v);
-
-                    // $v = trim(trim($v,"'"),'"');
-                    // $v = addslashes($v);
                     $ruleString .= "\n\t\t\t".$v.","; // add new line after that for each comma
                 }
                 $ruleString .= "\n\t\t),";
@@ -189,21 +185,19 @@ Class Schema_Mysql {
                 $types = preg_replace('#'.preg_quote($setStr).'#', '_set', $types);
                 
                 $ruleString .= "\n\t\t'_set' => array(";   // render enum types
-                $setData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $setData); // sanitize comma.
 
+                $setData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $setData); // sanitize comma.
                 foreach(explode(',', trim(trim($setData,')'),'(')) as $v)
                 {
                     $v = str_replace('__TEMP_COMMA__',',',$v);
-                    // $v = addslashes($v);
                     $ruleString .= "\n\t\t\t".$v.","; // add new line after that for each comma
                 }
                 $ruleString .= "\n\t\t),";
                 $types = str_replace($setData, '', $types);
             }
 
-            $types = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $types); 
-            $ruleString.= "\n\t\t'types' => '".$types."',";
-
+            $types = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $types); // remove unecessary pipes "||" ... prevent pipe repeats
+            $ruleString.= "\n\t\t'types' => '".addslashes($types)."',";  // add adslashes for "'" quotes e.g.  _varchar(255)|_default('\true\')|
         }
         else 
         {

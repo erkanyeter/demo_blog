@@ -21,8 +21,8 @@ namespace Odm\Src {
                     <pre>'.implode("\n", $this->_modelDefinedMethods)."\n".'callback_</pre>');
             }
 
-            $this->__assignObjects();
-            $this->__assignToProperties();
+            $this->__assignObjects(); // Assign all objects of Contoller into the Model.
+            $this->__assignColumns(); // Render column names & detect the column joins to another schema.
 
             if ( ! is_callable($methodCallable)) // @todo throw new InvalidArgumentException
     	    {

@@ -239,7 +239,6 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					
 					if (isset($this->dbSchema[$colName])) // Already exists 
 					{
-
 						$dbCommand            = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($colName);
 						$unbracketsColType    = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets coming from $_POST
 						$unbracketsColTypes   = explode('|',$unbracketsColType);
@@ -261,23 +260,23 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						    $schemaKeys[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {  // Change Datatypes 
 						        return strtoupper($match[0]); 
 						    }, $schemaKeys[$colkey]);
-							$dbCommand .= $schemaKeys[$colkey];
 
+							$dbCommand .= $schemaKeys[$colkey];
 						}
 						else
 						{	
 							$schemaKeys[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
 						        return strtoupper($match[0]); 
 						    }, $this->removeUnderscore($schemaKeys[$colkey]));
-							$schemaKeys[]=$unbracketsColTypes[0];
+
+							$schemaKeys[] = $unbracketsColTypes[0];
 
 							 // get index name of KEYS 
 							$unbracketsSchemaKeys = preg_replace('#(\(.*?\))#','', $schemaKeys);// we'r using unbracketSchemaKeys to get unbracket field names  for don't lose previous changes in db  
 
 							for ($i=0; $i < sizeof($unbracketsSchemaKeys); $i++) // for don't lose previous changes in db  
 							{ 
-
-								if (in_array('_primary_key',$unbracketsSchemaKeys) && $colType != '_primary_key') //if primary key defined in fileschema and request is not primary key
+								if (in_array('_primary_key',$unbracketsSchemaKeys) AND $colType != '_primary_key') //if primary key defined in fileschema and request is not primary key
 
 								{
 									$locationPK = array_search('_primary_key',$unbracketsSchemaKeys); //find location primary key in schemaArray
@@ -315,13 +314,12 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 
 											$indexName = $matches[1];
 
-											$colType = trim($colType,"_");
+											$colType = trim($colType, '_');
 
 											if (strpos($colType, ')(') > 0) 
 											{
-												$colType = trim($colType,")");
-
-												$exp = explode(')(', $colType);
+												$colType = trim($colType,')');
+												$exp 	 = explode(')(', $colType);
 
 												$keyIndex  = $exp[0];
 												unset($exp[0]);
@@ -395,15 +393,20 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 						{
 							$colKeyValue = array_values($columnType)[0];
 							$colkey 	 = array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
+							
 							$columnType  = $this->removeUnderscore($schemaKeys[$colkey]);
+							
 							$dbCommand   = 'ALTER TABLE '.$this->schemaName;
 							$schemaKeys  = explode('|', $colType);
 							unset($schemaKeys[$colkey]);
+
 							$schemaKeys  = array_values($schemaKeys);
 							unset($unbracketsColTypes[$colkey]);
-							$unbracketsColTypes  = array_values($unbracketsColTypes);
-							$dbCommands[5]=""; // for multiple indexes we should define here
-							$i=0;
+
+							$unbracketsColTypes = array_values($unbracketsColTypes);
+							$dbCommands[5] = ''; // for multiple indexes we should define here
+
+							$i = 0;
 							foreach ($unbracketsColTypes as $key => $value)
 							{
 								switch ($value) 
@@ -428,8 +431,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										preg_match('#_key\((.*?)\)#',$schemaKeys[$i],$matches);
 
 										$indexName = $matches[1];
-										
-										$schemaKeys[$i] = trim($schemaKeys[$i],"_");
+										$schemaKeys[$i] = trim($schemaKeys[$i],'_');
 
 										if (strpos($schemaKeys[$i], ')(') > 0) //
 										{
@@ -447,7 +449,6 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 													{
 														$implodeKeys[] = $this->quoteValue($v);
 													}
-
 												} 
 												else 
 												{
@@ -473,7 +474,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										preg_match('#\((([^\]])*)\)#',$schemaKeys[$key],$matches);
 
 										$dbCommands[1] = ' NOT NULL';
-										$dbCommands[3] = ' DEFAULT '.$matches[1];
+										$dbCommands[3] = ' DEFAULT '.addslashes($matches[1]);
 										break;
 								}
 								$i++;
@@ -486,7 +487,6 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 
 						}	
 					}
-					
 
 					for ($i = 0; $i < 7; $i++) 
 					{ 
@@ -579,7 +579,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 								break;
 
 							case '_default':
-								is_numeric(($key = array_search('_default',$unbracketsFileColTypes))) ? $schemaKeys[$key] = addslashes($colType) : $schemaKeys[] = addslashes($colType); 
+								is_numeric(($key = array_search('_default',$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType; 
 								break;
 
 							case '_auto_increment':
@@ -600,6 +600,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					}
 					
 					$this->fileSchema[$colName] = trim(implode('|',$schemaKeys),'|');
+
 					foreach($this->fileSchema as $k => $types)
 					{
 						$ruleString.= $this->schemaObject->driver->buildSchemaField($k, $types);

@@ -100,10 +100,8 @@ Class Database_Crud {
         $this->_mergeCache();   // Combine any cached components with the current statements
 
         // ----------------------------------------------------------------
-        
-        // Write the "select" portion of the query
 
-        if ($select_override !== false)
+        if ($select_override !== false)  // Write the "select" portion of the query
         {
             $sql = $select_override;
         }

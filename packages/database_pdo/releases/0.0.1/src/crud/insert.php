@@ -36,7 +36,7 @@ namespace Database_Pdo\Src\Crud {
         {
             if ( ! isset($crud->ar_from[0]))
             {
-                throw new \Exception('Please set values for insert operation.');
+                throw new \Exception('Please set tablename for insert operation.');
                 
                 return false;
             }

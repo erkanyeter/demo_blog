@@ -20,7 +20,7 @@ Class Odm {
     public $_odmValidation   = false;     // If form validation success we set it to true
     public $_odmValidator;
     public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
-    public $_odmColprefix;
+    public $_odmColumnJoins  = array();   // Do join foreach columns with related schema
 
     public $get;                          // Get package object
     public $form;                         // Form package object
@@ -67,6 +67,21 @@ Class Odm {
 
         $fields = array_merge($this->getSchema(), $validator->_field_data); // Merge "Odm" and "Validator fields"
 
+        //----------------
+        // COLUMN JOIN
+        //---------------
+
+        if(isset($this->_odmColumnJoins[$table])) // if column join exists merge schemas
+        {
+            foreach($this->_odmColumnJoins as $joinTable)
+            {
+                if(strpos())
+                {
+                    
+                }
+            }
+        }
+        
         $validator->set('_callback_object', $this);
 
         foreach($fields as $key => $val)
@@ -75,7 +90,8 @@ Class Odm {
             {
                 if(isset($val['rules']) AND $val['rules'] != '')
                 {
-                    if(isset($this->data->{$key})) // Set selected key to REQUEST.
+                    echo $key."<br>";
+                    if(isset($this->data[$key])) // Set selected key to REQUEST.
                     {
                         $label = (isset($val['label'])) ? $val['label'] : '';   // $_REQUEST[$key] = $this->{$key};
                         $validator->setRules($key, $label, $val['rules']);
@@ -88,9 +104,9 @@ Class Odm {
         {
             foreach($fields as $key => $val)  // Set filtered values
             {
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data->{$key})) 
+                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key])) 
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data->{$key})) ? $this->data->{$key} : $this->get->post($key));
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key));
                 }
             }
             
@@ -130,9 +146,9 @@ Class Odm {
 
                 //----------------------------
 
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data->{$key}))  // Set filtered values.
+                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key]))  // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data->{$key})) ? $this->data->{$key} : $this->get->post($key)); 
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key)); 
                 }
             }
             
@@ -202,7 +218,7 @@ Class Odm {
     * @param string $field return to filtered one item's value.
     * @return array
     */
-    public function values()
+    public function getValues()
     {
         $table = $this->_odmTable;
 
@@ -241,7 +257,7 @@ Class Odm {
      * 
      * @return array
      */
-    public function output()
+    public function getOutput()
     {
         if(isset($this->_odmErrors[$this->_odmTable]))
         {
@@ -258,7 +274,7 @@ Class Odm {
      * 
      * @return array
      */
-    public function messages()
+    public function getMessages()
     {
         $table = $this->_odmTable;
 
@@ -307,7 +323,7 @@ Class Odm {
     *
     * @return array
     */
-    public function errors()
+    public function getErrors()
     {
         $table = $this->_odmTable;
         
@@ -432,30 +448,38 @@ Class Odm {
     // --------------------------------------------------------------------
 
     /**
-     * Join valid table schema to another
-     * 
-     * @param  string $tablename
-     * @param  array  $fields
-     * @return void
-     */
-    public function modelJoin($tablename)
-    {
-        $joinSchemaArray = getSchema($tablename);
-        unset($joinSchemaArray['*']);  // remove settings
-
-        $this->_odmSchema = array_merge($this->_odmSchema, $joinSchemaArray);
-    }   
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get valid schema array
+     * Get current schema array
      * 
      * @return array
      */
     public function getSchema()
     {
         return $this->_odmSchema;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get multiple schemas
+     * if user did join to another table
+     * We use this function in database crud 
+     * set() method.
+     * 
+     * @return array
+     */
+    public function getMultiSchema()
+    {
+        $schemas[$this->getTableName()] = $this->getSchema();  // get current schema
+
+        if(sizeof($this->_odmColumnJoins) > 0)
+        {
+            foreach($this->_odmColumnJoins as $tablename => $column)
+            {
+                $schemas[$tablename] = getSchema($tablename);
+            }
+        }
+
+        return $schemas;
     }
 
 }

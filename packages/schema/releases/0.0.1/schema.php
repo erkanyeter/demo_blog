@@ -255,18 +255,6 @@ Class Schema {
     // --------------------------------------------------------------------
 
     /**
-     * Get schema prefix
-     * 
-     * @return string
-     */
-    public function getPrefix()
-    {
-        return;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
      * Get path of the schema
      * 
      * @return string

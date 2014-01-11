@@ -121,7 +121,7 @@ Abstract Class Schema_Auto_Sync {
         {
             if( ! isset($this->fileSchema[$k])) // Sync column names
             {
-                $dbTypes = explode('|', trim($this->dbSchema[$k], '|'));
+                $dbTypes      = explode('|', trim($this->dbSchema[$k], '|'));
                 foreach ($dbTypes as $type) 
                 {
                     $this->schemaDiff[$k]['options'] = array(

@@ -18,10 +18,8 @@ $c->func('index', function() use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
-        $this->user->modelJoin('posts');
-
         $this->user->data['user_username']      = $this->get->post('user_username');
-        $this->user->data['post_title']         = $this->get->post('post_title');
+        $this->user->data['posts.post_title']   = $this->get->post('post_title');
         // $this->user->data['content']       = 'contentesdsa sad';
         $this->user->data['user_email']         = $this->get->post('user_email');
         $this->user->data['user_password']      = $this->get->post('user_password');
@@ -30,17 +28,15 @@ $c->func('index', function() use($c){
         //--------------------- set non schema rules
 
         $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
-        $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
+        $this->form->setRules('agreement', 'User Agreement', 'required|exactLen(1)');
         
         //---------------------
         
         $this->user->func('callback_username', function(){
-
             $this->db->where('user_username', $this->get->post('user_username', true));
             $this->db->get('users');
             
-            if($this->db->count() > 0) // unique control
-            {
+            if($this->db->count() > 0) {  // unique control
                 $this->form->setMessage('callback_username', 'This username is already used');
                 return false;
             }
@@ -48,31 +44,29 @@ $c->func('index', function() use($c){
         });
 
         $this->user->func('save', function() {
+
             if ($this->isValid()){
                 $bcrypt = new Bcrypt; // use bcrypt
-                $this->data['password'] = $bcrypt->hashPassword($this->getValue('password'), 8);
+                $this->data['user_password'] = $bcrypt->hashPassword($this->getValue('user_password'), 8);
 
                 $this->db->insert('users', $this);
                 $this->db->insert('posts', $this);
-
                 return true;
             }
-             exit;
-
             return false;
         });
 
-        if($this->user->save())  // save user
-        {        
+        if($this->user->save()) {  // save user        
             $this->form->setNotice('User saved successfully.',SUCCESS);
             $this->url->redirect('/login');
         }
+
+        print_r($this->user->getOutput());
+
     }
 
     $c->view('signup_form', function() {
-
         $this->set('title', 'Signup to my blog');
         $this->getScheme();
     });
-    
 });
