@@ -47,6 +47,13 @@
 			                            echo $this->form->input('post_title', $this->form->setValue('post_title'), " id='post_title' ");
 			                            ?></td>
 			                    </tr>
+			               		<tr>
+			                        <td style="width:15%;"><?php echo $this->form->label('Post content') ?></td>
+			                        <td><?php 
+			                            echo $this->form->error('post_content');
+			                            echo $this->form->input('post_content', $this->form->setValue('post_content'), " id='post_content' ");
+			                            ?></td>
+			                    </tr>
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Email') ?></td>
 			                        <td><?php 

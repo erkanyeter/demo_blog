@@ -19,8 +19,8 @@ $c->func('index', function() use($c){
     if($this->get->post('dopost')) // if do post click
     {
         $this->user->data['user_username']      = $this->get->post('user_username');
-        $this->user->data['posts.post_title']   = $this->get->post('post_title');
-        // $this->user->data['content']       = 'contentesdsa sad';
+        $this->user->data['posts.post_title']   = $this->get->post('post_title',true);
+        $this->user->data['posts.post_content'] = $this->get->post('post_content',true);
         $this->user->data['user_email']         = $this->get->post('user_email');
         $this->user->data['user_password']      = $this->get->post('user_password');
         $this->user->data['user_creation_date'] = date('Y-m-d H:i:s');
@@ -50,6 +50,9 @@ $c->func('index', function() use($c){
                 $this->data['user_password'] = $bcrypt->hashPassword($this->getValue('user_password'), 8);
 
                 $this->db->insert('users', $this);
+
+                $this->data['posts.post_user_id'] = '3';
+
                 $this->db->insert('posts', $this);
                 return true;
             }
@@ -60,12 +63,12 @@ $c->func('index', function() use($c){
             $this->form->setNotice('User saved successfully.',SUCCESS);
             $this->url->redirect('/login');
         }
-
-        print_r($this->user->getOutput());
-
+        
+        // echo '<pre>'.print_r($this->user->getOutput(), true).'</pre>';
     }
 
     $c->view('signup_form', function() {
+
         $this->set('title', 'Signup to my blog');
         $this->getScheme();
     });

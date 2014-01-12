@@ -20,7 +20,7 @@ namespace Database_Pdo\Src\Crud {
                     
                     if ($crud->ar_caching === true)
                     {
-                        $crud->ar_cache_from[] = $v;
+                        $crud->ar_cache_from[]   = $v;
                         $crud->ar_cache_exists[] = 'from';
                     }                
                 }
@@ -37,7 +37,7 @@ namespace Database_Pdo\Src\Crud {
                 
                 if ($crud->ar_caching === true)
                 {
-                    $crud->ar_cache_from[] = $crud->_protectIdentifiers($val, true, null, false);
+                    $crud->ar_cache_from[]   = $crud->_protectIdentifiers($val, true, null, false);
                     $crud->ar_cache_exists[] = 'from';
                 }
                 

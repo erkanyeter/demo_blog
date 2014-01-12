@@ -33,28 +33,6 @@ $users = array(
 		'types' => '_null|_datetime',
 		'rules' => '',
 		),
-	'user_test' => array(
-		'label' => 'User Test',
-		'_enum' => array(
-			'Business and Finance',
-			'Creative Services/Agency',
-			'eCommerce',
-			'Education and Training',
-			'Entertainment and Events',
-			'Health and Fitness',
-			'Marketing and Advertising',
-			'Politics',
-			'Professional Services',
-			'Real Estate',
-			'Retail',
-			'Social Networks and Online Communities',
-			'Software and Web Ap',
-			'Other, sdasd',
-			'Market',
-		),
-		'types' => '_null|_enum',
-		'rules' => '',
-		),
 );
  
 /* End of file users.php */

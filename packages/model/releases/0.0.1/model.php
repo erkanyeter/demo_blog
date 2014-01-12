@@ -109,7 +109,7 @@ Class Model {
                 function __assignColumns(){
                     if(sizeof($this->data) > 0){
                         foreach($this->data as $k => $v){
-                            if(strpos($k, ".") > 0){
+                            if(strpos($k, ".") > 0){     // Column join support
                                 unset($this->data[$k]);  // remove join "." data
                                 $exp    = explode(".", $k);
                                 $table  = $exp[0];

@@ -31,9 +31,8 @@ Class Exceptions {
         global $packages;
 
         $error = new Error;
-
-        $core = strtolower($packages['components']['core']);
-        $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
+        $core  = strtolower($packages['components']['core']);
+        $type  = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
         
         // If user want to close error_reporting in some parts of the application.
         //-----------------------------------------------------------------------
@@ -81,7 +80,7 @@ Class Exceptions {
             
             return;
         }
-                
+
         // Load Error Template
         //-----------------------------------------------------------------------
 

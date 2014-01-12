@@ -20,23 +20,35 @@ namespace Database_Pdo\Src\Crud {
 
         if(is_object($key) AND isset($crud->ar_from[0]))  // Model Object ( Schema Support )
         {
-            $tablename      = $crud->ar_from[0];
-            $setSchemaArray = array();
-            $schemaArray    = $key->getMultiSchema();  // Get current multi schema array
+            $tablename   = str_replace($crud->_escape_char, '', $crud->ar_from[0]); // remove escape char "`" get pure tablename
+            $schemaArray = $key->getMultiSchema();  // Get current multi schema array
 
-            if( ! isset($schemaArray[$tablename]))   // Get schemas using tablenames
+            if( ! isset($schemaArray[$tablename]))  // Get schemas using tablenames
             {
-                throw new Exception('Schema '.$tablename.' file not found for crud operation.');
+                throw new \Exception('Schema '.$tablename.' file not found for crud operation.');
             }
 
-            foreach(array_keys($schemaArray[$tablename] as $field)
+            $setSchemaArray = array();
+            foreach(array_keys($schemaArray[$tablename]) as $field)
             {
+                if(isset($key->data[$tablename.'.'.$field]))  // Is column join request ? 
+                {
+                    $key->data[$field] = $key->data[$tablename.'.'.$field]; // Remove column join prefix
+                    unset($key->data[$tablename.'.'.$field]);
+                }
+
                 if(isset($key->data[$field])) // Is schema field selected ?
                 {
                     $setSchemaArray[$field] = $key->data[$field]; // Let's build insert data.
                 }
             }
-            
+
+            if($tablename == 'posts')
+            {
+                var_dump($key->data);
+                var_dump($setSchemaArray); exit;
+            }
+
             unset($key);
             $key = $setSchemaArray;
         }
@@ -51,12 +63,12 @@ namespace Database_Pdo\Src\Crud {
         foreach ($key as $k => $v)
         {
             if ($escape === false)                      
-            {                                           
-                if( strpos($v, ':') === false || strpos($v, ':') > 0) // We ake sure is it bind value, if not ... 
+            {
+                if( strpos($v, ':') === false || strpos($v, ':') > 0) // We make sure is it bind value, if not ... 
                 {
                      if(is_string($v))
                      {
-                         $v = "'{$v}'";  // PDO changes.
+                         $v = "{$v}";  // PDO changes.
                      }
                 }
 

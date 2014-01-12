@@ -65,32 +65,42 @@ Class Odm {
         $validator = $this->_odmValidator;
         $table     = $this->_odmTable;
 
-        $fields = array_merge($this->getSchema(), $validator->_field_data); // Merge "Odm" and "Validator fields"
+        $validator->set('_callback_object', $this);
 
-        //----------------
-        // COLUMN JOIN
-        //---------------
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // @ Column join
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-        if(isset($this->_odmColumnJoins[$table])) // if column join exists merge schemas
+        $joinSchemaFields = array();
+        foreach($this->_odmColumnJoins as $tablename => $columns)
         {
-            foreach($this->_odmColumnJoins as $joinTable)
+            if( ! isset($this->_odmColumnJoins[$table])) // if column join exists merge schemas
             {
-                if(strpos())
+                $joinSchema = getSchema($tablename);
+                unset($joinSchema['*']);
+
+                foreach ($columns as $col)
                 {
-                    
+                    if(isset($this->data[$col]))
+                    {
+                        $joinSchemaFields[$col] = $joinSchema[$col];
+                    }
                 }
             }
         }
-        
-        $validator->set('_callback_object', $this);
 
+        $fields = array_merge($this->_odmSchema, $validator->_field_data);// Merge "Odm" and "Validator fields"
+        $fields = array_merge($joinSchemaFields, $fields);  // Merge with $this->_odmSchema
+
+        // print_r($this->_odmSchema);
+        // echo '<pre>'.print_r($fields,true).'<pre>'; exit;
+        
         foreach($fields as $key => $val)
         {
             if(is_array($val))
             {
                 if(isset($val['rules']) AND $val['rules'] != '')
                 {
-                    echo $key."<br>";
                     if(isset($this->data[$key])) // Set selected key to REQUEST.
                     {
                         $label = (isset($val['label'])) ? $val['label'] : '';   // $_REQUEST[$key] = $this->{$key};
@@ -270,6 +280,19 @@ Class Odm {
     // --------------------------------------------------------------------
 
     /**
+     * Customize odm outputs
+     * 
+     * @param string $key
+     * @param mixed $val
+     */
+    public function setOutput($key, $val)
+    {
+        $this->_odmErrors[$this->_odmTable][$key] = $val;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Get all error messages in array format.
      * 
      * @return array
@@ -366,11 +389,23 @@ Class Odm {
     {
         $this->_odmErrors[$this->_odmTable]['errors'][$key] = $error;
 
-        if(isset($this->_odmSchema->{$key})) // set a validation error.
+        if(isset($this->_odmSchema[$key])) // set a validation error.
         {
             $validator = $this->_odmValidator;
             $validator->_field_data[$key]['error'] = $error;
         }
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+    * Set Custom Odm  message
+    *
+    * @param string $key or $field
+    */
+    public function setMessage($key, $message)
+    {
+        $this->_odmErrors[$this->_odmTable]['messages'][$key] = $message;
     }
 
     // --------------------------------------------------------------------
@@ -475,7 +510,10 @@ Class Odm {
         {
             foreach($this->_odmColumnJoins as $tablename => $column)
             {
-                $schemas[$tablename] = getSchema($tablename);
+                $joinSchema = getSchema($tablename);
+                unset($joinSchema['*']); // remove settings
+                
+                $schemas[$tablename] = $joinSchema;
             }
         }
 

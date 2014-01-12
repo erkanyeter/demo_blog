@@ -726,14 +726,14 @@ Class Schema_Sql_Reader {
 
 		if(isset($col['_foreign_keys']))  // Add Foreign Key 
 		{
-			$rules.= '_foreign_key('.$col['_foreign_keys'][0].')('.$col['_foreign_keys'][1].')|';
+			$rules.= '_foreign_key('.$col['_foreign_keys'][0][0].')('.$col['_foreign_keys'][0][1].')|';
 		}
 
 		if(isset($col['_keys']))  // Add Index 
 		{
 			for ($i=0; $i < sizeof($col['_keys'][0]) ; $i++) // get all keys for field
 			{ 
-				$temp = array_keys($col['_keys'][0][$i]); 
+				$temp  = array_keys($col['_keys'][0][$i]); 
 				$rules.= '_key('.$temp[0].')('.$col['_keys'][0][$i][$temp[0]].')|';
 			}
 		}
@@ -742,10 +742,9 @@ Class Schema_Sql_Reader {
 		{
 			for ($i=0; $i < sizeof($col['_unique_keys'][0]) ; $i++)  // get all unique keys for field
 			{ 
-				$temp = array_keys($col['_unique_keys'][0][$i]);
+				$temp  = array_keys($col['_unique_keys'][0][$i]);
 				$rules.= '_unique_key('.$temp[0].')('.$col['_unique_keys'][0][$i][$temp[0]].')|';
 			}
-		
 		}
 
 		return trim($rules,'|');
@@ -823,8 +822,8 @@ Class Schema_Sql_Reader {
 			$attribute = 'unsigned';
 		}
 
-		if ($exp !== false AND preg_match('/\((.*?)\)/', $type, $matches))
-		{
+		if ($exp !== false AND preg_match('/\((.*?)\)/', $type, $matches)) // render type and values
+		{ 
 		    $typeName  = current($exp);
 		   	$typeValue = $matches[1];
 		} 
@@ -847,6 +846,12 @@ Class Schema_Sql_Reader {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Sanitize Enum chars (,'")
+	 * 
+	 * @param  string $enumData
+	 * @return array
+	 */
 	function sanitizeEnum($enumData)
 	{
         $enumData = preg_replace('#(?<=[\w\s+])(?:[,]+)#', '__TEMP_COMMA__', $enumData); // sanitize comma.
@@ -854,14 +859,14 @@ Class Schema_Sql_Reader {
         $enumArray = array();
         foreach(explode(',', trim(trim($enumData,')'),'(')) as $v)
         {
-            $v = str_replace('__TEMP_COMMA__',',',$v);
+            $v = str_replace('__TEMP_COMMA__',',',$v);  // come back again comma chars
             $v = trim(trim($v,"'"),'"');
             $v = preg_replace("#[']+#", "'", $v);  // remove mysql escaped quotes \''
             $v = "'".addslashes(addslashes($v))."'";
             $enumArray[] = $v;
         }
 
-        return implode(',', $enumArray);
+        return implode(',', $enumArray); // render as array
 	}
 
 }

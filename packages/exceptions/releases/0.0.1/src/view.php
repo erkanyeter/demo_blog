@@ -18,7 +18,11 @@ margin:             0;
 margin-top:         3px;
 }
 #exceptionContent .errorFile { 
-line-height: 2.0em; 
+line-height: 2.0em;
+}
+#exceptionContent .errorLine {
+font-weight: bold;
+color:#069586;
 }
 #exceptionContent pre.source { 
 margin: 0px 0 0px 0; 
@@ -30,9 +34,8 @@ line-height: none;
 #exceptionContent div.collapsed { display: none; }
 #exceptionContent div.arguments { }
 #exceptionContent div.arguments table { 
-font-family : Verdana, Arial, Sans-serif;
-
-font-size:12px; 
+font-family: Verdana, Arial, Sans-serif;
+font-size: 12px; 
 border-collapse: collapse; 
 border-spacing: 0; 
 background: #fff;  
@@ -40,7 +43,7 @@ background: #fff;
 #exceptionContent div.arguments table td { text-align: left; padding: 5px; border: 1px solid #ccc; }
 #exceptionContent div.arguments table td .object_name { color: blue; }
 #exceptionContent pre.source span.line { display: block; }
-#exceptionContent pre.source span.highlight { background: #D3D3D3; }
+#exceptionContent pre.source span.highlight { background: #DBDBDB; }
 #exceptionContent pre.source span.line span.number { color: none; }
 #exceptionContent pre.source span.line span.number { color: none; }
 
@@ -50,7 +53,6 @@ code,kbd{ background:#EEE;border:1px solid #DDD;border:1px solid #DDD;border-rad
 pre{ color:#069586; font-weight: normal; background:#fff;border:1px solid #DDD;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:5px 10px;color:#666;font-size:12px;}
 pre code{ border:none;padding:0; }
 </style>
-
 <script type="text/javascript">
 function ExceptionElement() {
     var elements = new Array();
@@ -80,7 +82,8 @@ if(isset($shutdownError))  // Is it compile or fatal error ?
 {                          // if yes we need to exit.
 ?>
 <h2><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, PACKAGES, PUBLIC_DIR), array('APP'. DS, 'DATA'. DS, 'CLASSES'. DS, 'ROOT'. DS, 'PACKAGES'. DS, 'PUBLIC'. DS), $e->getMessage()) ?></h2>
-<div class="errorFile"><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, PACKAGES, PUBLIC_DIR), array('APP'. DS, 'DATA'. DS, 'CLASSES'. DS, 'ROOT'. DS, 'PACKAGES'. DS, 'PUBLIC'. DS), $e->getFile()).' Code : '.$e->getCode().' ( Line : '.$e->getLine().' ) ' ?></div>
+    <div class="errorFile errorLine"><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, PACKAGES, PUBLIC_DIR), array('APP'. DS, 'DATA'. DS, 'CLASSES'. DS, 'ROOT'. DS, 'PACKAGES'. DS, 'PUBLIC'. DS), $e->getFile()).'  Line : '.$e->getLine() ?>
+    </div>
 </div>
 <?php
 exit; // Shutdown error exit.
@@ -88,15 +91,15 @@ exit; // Shutdown error exit.
 ?>
 <h2><?php 
 $error = new Error;
-
-echo $error->getSecurePath($e->getMessage(), true) ?></h2>
+echo $error->getSecurePath($e->getMessage(), true) ?>
+</h2>
 <?php 
 if(isset($sql)) 
 {
     echo '<div class="errorFile"><pre>'.$sql.'</pre></div>';
 }
 ?>
-<div class="errorFile"><?php echo $error->getSecurePath($e->getFile()).' Code : '.$e->getCode().' ( Line : '.$e->getLine().' ) ' ?></div>
+<div class="errorFile errorLine"><?php echo $error->getSecurePath($e->getFile()).'  Line : '.$e->getLine().' ' ?></div>
 <?php 
 $debug = config('debug_backtrace');
 

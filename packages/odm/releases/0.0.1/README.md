@@ -981,7 +981,7 @@ Validate the schema using schema rules.
 
 Returns true if the model's schema validation success.
 
-#### $this->model->messages();
+#### $this->model->getMessages();
 
 Returns error codes, success and failure messages strings.
 
@@ -989,7 +989,11 @@ Returns error codes, success and failure messages strings.
 
 Returns error codes, success and failure message strings.
 
-#### $this->model->errors();
+#### $this->model->setMessage($key = '', $val = '');
+
+Sets custom message for the provided key.
+
+#### $this->model->getErrors();
 
 Returns all errors in array format.
 
@@ -1009,7 +1013,7 @@ Builds Httpd GET friendly errors using query strings.
 
 Sets custom failure messages, you can use it when your transaction is fail.
 
-#### $this->model->values();
+#### $this->model->getValues();
 
 Returns the <b>filtered secure</b> values of the inputs. 
 
@@ -1017,6 +1021,6 @@ Returns the <b>filtered secure</b> values of the inputs.
 
 Fetches the <b>filtered secure</b> value of the input. 
 
-#### $this->model->output();
+#### $this->model->getOutput();
 
 Returns all outputs of the model for debugging.

@@ -57,7 +57,6 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 	public function __construct($schemaDBContent, \Schema $schemaObject)
 	{
 		parent::__construct($schemaDBContent, $schemaObject);
-
 	}
 
 	// --------------------------------------------------------------------

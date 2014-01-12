@@ -57,12 +57,8 @@ Class Schema_Auto_Sync_Html {
 							$html.= '<div class="columnNewRow">';
 
 								$add 	= (isset($val['options'][1])) ? '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]) : '' ;
-						    	
-								// $this->syncObject->$attributeTypes;
-						    	// $add 	= '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]);
-								
 								$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
-								$html.= '<kbd class="columnDelRow"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
+								$html.= '<kbd class="columnDelRow break"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
 								
 								if( ! empty($add))
 								{
