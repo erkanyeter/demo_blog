@@ -47,14 +47,6 @@ Abstract Class Schema_Auto_Sync {
         $this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema); // Render schema, fetch just types.
         $this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema, true);  // Get just types 
 
-        // print_r($this->dbSchema);
-
-        // echo '<br>';
-        // echo '<br>';
-
-        // print_r($this->fileSchema);
-
-
         $this->db           = $schemaObject->dbObject;     // Database Object
         $this->schemaObject = $schemaObject; // Schema Object
         $this->debug        = false;
@@ -256,7 +248,8 @@ Abstract Class Schema_Auto_Sync {
                             $this->schemaDiff[$k]['options'] = array(
                                 'types' => implode('|', $v),
                                 'remove-from-file',
-                                'add-to-db'
+                                'add-to-db',
+                                
                                 );
                             $this->schemaDiff[$k]['new_types'][] = array(
                             'type' => $v[$i],
@@ -272,7 +265,8 @@ Abstract Class Schema_Auto_Sync {
                             $this->schemaDiff[$k]['options'] = array(
                                 'types' => implode('|', $v),
                                 'remove-from-file',
-                                'add-to-db'
+                                'add-to-db',
+                                'class' => 'syncerror'
                                 );
                             $this->schemaDiff[$k]['new_types'][] = array(
                             'type' => $v[$i],
@@ -297,32 +291,118 @@ Abstract Class Schema_Auto_Sync {
                 $schemaTypes = explode('|', trim($this->fileSchema[$k], '|'));
 
                 $diffMatches = array_diff($schemaTypes, $dbTypes);
-                
+                    
                 if(sizeof($diffMatches) > 0)
                 {    
+                    
+                 
                     $result = preg_replace('#(\(.*?\))#','',implode('|', $diffMatches));
                     $unbreacketsDiffMatches = explode('|', $result); 
                     $i = 0;
                     $diffMatches = array_values($diffMatches);
-
                     foreach ($diffMatches as $diffVal)
                     {
+
                         if (in_array($unbreacketsDiffMatches[$i],$this->dataTypes) OR in_array($unbreacketsDiffMatches[$i], $this->attributeTypes)) // check is it datatype.
                         {
+                            
+                            switch ($unbreacketsDiffMatches[$i])  
+                            {
+                                case '_varchar': // these types don't have brackets or contains non-numeric chars
+                                case '_varbinary':
+                                        preg_match('#('.$unbreacketsDiffMatches[$i].')(\(.*?\))#s',$diffMatches[$i], $match);
+                                        preg_match('#(\(([0-9]*)\))#s',$diffMatches[$i], $bracketsMatch);
+                                       if (isset($match[2]) && (isset($bracketsMatch[2]) && !empty(trim($bracketsMatch[2]))))
+                                       {
+                                           $this->schemaDiff[$k][] = array(
+                                                'update_types' => $diffMatches[$i],
+                                                'options' => array(
+                                                    'remove-from-file',
+                                                    'add-to-db'
+                                                    ),
+                                                );
+                                       }
+                                       else
+                                       {
+                                            $this->schemaDiff[$k]['options'] = array(
+                                                'class' => 'syncerror'
+                                                );
+                                            $this->schemaDiff[$k][] = array(
+                                                'update_types' => $diffMatches[$i],
+                                                'options' => array(
+                                                    'remove-from-file',
+                                                    ),
+                                                );
+                                           }
+                                        
+                                    break;
+                                case '_enum': // these types don't have brackets or contains non-numeric chars
+                                case '_set':
+                                        preg_match('#('.$unbreacketsDiffMatches[$i].')(\(.*?\))#s',$diffMatches[$i], $match);
+                                        preg_match('#(\((.*?)\))#s',$diffMatches[$i], $bracketsMatch);
+                                       if (isset($match[2]) && !empty(trim($bracketsMatch[2])))
+                                       {
+                                           $this->schemaDiff[$k][] = array(
+                                                'update_types' => $diffMatches[$i],
+                                                'options' => array(
+                                                    'remove-from-file',
+                                                    'add-to-db'
+                                                    ),
+                                                );
+                                       }
+                                       else
+                                       {
+                                            $this->schemaDiff[$k]['options'] = array(
+                                                'class' => 'syncerror'
+                                                );
+                                            $this->schemaDiff[$k][] = array(
+                                                'update_types' => $diffMatches[$i],
+                                                'options' => array(
+                                                    'remove-from-file',
+                                                    ),
+                                                );
+                                           }
+                                        
+                                    break;
+                                default:
+                                    $unbracketsFileColType  = preg_replace('#(\(.*?\))#s','', $this->fileSchema[$k]);
+                                    $unbracketsFileColTypeArray = explode('|',$unbracketsFileColType);
+                                    if (!in_array('_primary_key' ,$unbracketsFileColTypeArray))
+                                    {
+                                       
+                                        $this->schemaDiff[$k][] = array(
+                                        'update_types' => $diffMatches[$i],
+                                        'options' => array(
+                                            'remove-from-file',
+                                            'add-to-db'
+                                            ),
+                                        );
+                                    }
+                                    else
+                                    {
+                                        $this->schemaDiff[$k]['options'] = array(
+                                                'class' => 'syncerror'
+                                                );
+                                         $this->schemaDiff[$k][] = array(
+                                        'update_types' => $diffMatches[$i],
+                                        'options' => array(
+                                            'remove-from-file',
+                                            ),
+                                        );
+                                    }
 
-                            $this->schemaDiff[$k][] = array(
-                            'update_types' => $diffMatches[$i],
-                            'options' => array(
-                                'remove-from-file',
-                                'add-to-db'
-                                ),
-                            );
+                                     
+                                    break;
+                            }
+                           
                         }
                         else  // if not show just remove file option
                         {
-
+                            $this->schemaDiff[$k]['options'] = array(
+                                'class' => 'syncerror'
+                                );
                             $this->schemaDiff[$k][] = array(
-                            'update_types' => $diffMatches[$i],
+                            'update_types' => $diffMatches[$i], 
                             'options' => array(
                                 'remove-from-file'
                                 ),
@@ -373,10 +453,14 @@ Abstract Class Schema_Auto_Sync {
 
             $val['types'] = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $val['types']);  // remove unnecessary pipes ..
             $val['types'] = preg_replace('#["]+#', '', $val['types']); // remove double " " quotes ...
-
+            $val['types'] = preg_replace('#(_enum)(\(.*?\))#', "_enum", $val['types']);//if user insert enum data in types we remove it
             if(isset($schemaArray[$key]['_enum']))
-            {
+            { 
+
+
                 $enum = '';
+                
+               
                 foreach($schemaArray[$key]['_enum'] as $enumVal)
                 {
                     if($quote)
@@ -388,8 +472,8 @@ Abstract Class Schema_Auto_Sync {
                 }
                 
                 $enum = trim($enum, ',');
-
                 $schema[$key] = preg_replace('#_enum#', "_enum($enum)", $val['types']);
+          
             }
             elseif(isset($schemaArray[$key]['_set']))
             {
@@ -412,6 +496,7 @@ Abstract Class Schema_Auto_Sync {
                 $schema[$key] = $val['types'];
             }
         }
+
         return $schema;
     }
 

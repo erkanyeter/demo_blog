@@ -249,10 +249,12 @@ Class Schema_Sql_Creator {
 					$FOREIGN_KEYS.= "\n FOREIGN KEY ($_fk) REFERENCES $_fk_reference_table ($_fk_reference_field),"; 
 				}
 
-				if(strpos($fieldAttribute, '#_primary_key') > 0)  // Detect primary key
-				{
-					$PRIMARY_KEY = ",\n PRIMARY KEY(".$this->quoteValue($fieldKey)."),";
-				}
+				// if(strpos($fieldAttribute, '#_primary_key') > 0)  // Detect primary key
+				// {
+				// 	$PRIMARY_KEY = ",\n PRIMARY KEY(".$this->quoteValue($fieldKey)."),";
+				// 	echo $this->quoteValue($fieldKey);
+
+				// }
 
 				$sql.= $sqlLine;
 			}
@@ -260,7 +262,7 @@ Class Schema_Sql_Creator {
 			$sql = rtrim(trim($sql), ',');
 			$sql = $this->_buildKeys($sql, '_key', 'KEY');	// create `KEY` s
 			$sql = $this->_buildKeys($sql, '_unique_key', 'UNIQUE KEY');  // create `UNIQUE KEY` s
-
+			$sql = $this->_buildKeys($sql, '_primary_key', 'PRIMARY KEY');
 			$sql.= $PRIMARY_KEY;
 			$sql.= trim($FOREIGN_KEYS, ',');
 
@@ -311,7 +313,7 @@ Class Schema_Sql_Creator {
 
 			if($this->_hasRule('_null', $rule) AND $this->_hasRule('_default', $rule) == false AND $this->_hasRule('_not_null', $rule) == false)
 			{
-				$attrribute.= 'DEFAULT NULL';
+				$attrribute.= 'NULL';
 			}
 
 			if($this->_hasRule('_default', $rule))
@@ -406,6 +408,15 @@ Class Schema_Sql_Creator {
 						{
 							$KEYS.= ",\n$sqlKey ".$this->quoteValue($kmValue[2]).' ('.$this->quoteValue($kmValue[2]).')';
 						}
+					}
+				}
+				else
+				{
+					if (!in_array($_keyMatches[0][2],$keyIndexArray))  // if index name exist in index array for DUPLICATE ERROR
+					{
+
+						$keyIndexArray[] = $_keyMatches[0][2];
+						$KEYS.= ",\n$sqlKey  ".'('.$_keyMatches[0][2].')';
 					}
 				}
 			}
@@ -505,8 +516,8 @@ Class Schema_Sql_Creator {
 	{
 		if(isset($this->schemaArray[$field][$func]) AND is_array($this->schemaArray[$field][$func])) 		// parse from schema
 		{
-			$closure = function($val){
-				return "'".$this->removeQuotes($val)."'"; 
+			$closure = function($val){   /// run this function for every enum and set value
+				return "'".$this->removeQuotes(addslashes($val))."'"; 
 			};
 			$values = array();
 			foreach($this->schemaArray[$field][$func] as $k => $v)
@@ -515,7 +526,7 @@ Class Schema_Sql_Creator {
 			}
 			return trim($func,'_').'('.implode(',',$values).')';
 		}
-		return trim($func,'_').'('.str_replace('"', "'", $value).')';
+		// return trim($func,'_').'('.str_replace('"', "'", $value).')'; 
 	}
 	private function _set($value = '', $field = '', $func = '_set'){ return $this->_enum($value, $field, $func); }
 	private function _int($value)

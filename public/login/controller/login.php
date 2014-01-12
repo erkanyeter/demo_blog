@@ -10,6 +10,8 @@ $c = new Controller(function(){
 	new Html;
 	new Form;
 	new Get;
+
+
 });
 
 $c->func('index', function() use($c){
