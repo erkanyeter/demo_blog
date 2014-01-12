@@ -27,8 +27,6 @@ namespace Database_Pdo\Src\Crud {
             if ( ! isset($crud->ar_from[0]))
             {
                 throw new \Exception('Please set table for delete operation.');
-                
-                return false;
             }
 
             $table = $crud->ar_from[0];
@@ -37,11 +35,13 @@ namespace Database_Pdo\Src\Crud {
         {
             foreach($table as $single_table)
             {
-                $crud->delete($single_table, $where, array(), false);   
+                $crud->from($table); // set tablename for set() function.
+                $crud->delete($single_table, $where, array(), false);
             }
         
             $crud->_resetWrite();
             return;
+
         } else 
         {
             $table = $crud->_protectIdentifiers($table, true, null, false);
@@ -54,6 +54,7 @@ namespace Database_Pdo\Src\Crud {
             return false;
         }        
 
+        $crud->from($table); // set tablename for set() function.
         $sql = $crud->_delete($table, $crud->ar_where, $crud->ar_like, $crud->ar_limit);
         
         if ($reset_data)

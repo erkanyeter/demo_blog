@@ -30,7 +30,7 @@ namespace Database_Pdo\Src\Crud {
         } 
         else 
         {
-            $crud->from($table);
+            $crud->from($table); // set tablename correctly.
         }
 
         if( ! is_null($set))

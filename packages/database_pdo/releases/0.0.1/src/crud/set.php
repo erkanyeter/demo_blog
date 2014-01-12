@@ -43,12 +43,6 @@ namespace Database_Pdo\Src\Crud {
                 }
             }
 
-            if($tablename == 'posts')
-            {
-                var_dump($key->data);
-                var_dump($setSchemaArray); exit;
-            }
-
             unset($key);
             $key = $setSchemaArray;
         }

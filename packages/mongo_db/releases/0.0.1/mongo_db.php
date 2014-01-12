@@ -596,7 +596,8 @@ Class Mongo_Db {
      */
     public function insert($collection = '', $data = array(), $options = array())
     {
-        $this->operation = 'insert';  // Set operation for lastQuery output.
+        $this->operation  = 'insert';  // Set operation for lastQuery output.
+        $this->collection = $collection;
 
         if (empty($collection))
         {
@@ -614,6 +615,8 @@ Class Mongo_Db {
             ->insert($data, 
                 array_merge($this->config_options, $options));
         
+        $this->_resetSelect();
+
         if (isset($data['_id']))
         {
             $this->insert_id = $data['_id'];
@@ -642,7 +645,8 @@ Class Mongo_Db {
      */
     public function batchInsert($collection = '', $data = array(), $options = array())
     {
-        $this->operation = 'insert';  // Set operation for lastQuery output.
+        $this->operation  = 'insert';  // Set operation for lastQuery output.
+        $this->collection = $collection; 
 
         if (empty($collection))
         {
@@ -655,6 +659,8 @@ Class Mongo_Db {
         }
 
         $data = $this->_parseSchema($data);  // check for the odm schema.
+
+        $this->_resetSelect();
 
         return $this->db->{$collection}
             ->batchInsert($data, 
@@ -676,7 +682,8 @@ Class Mongo_Db {
      */
     public function update($collection = '', $data = array(), $options = array())
     {
-        $this->operation = 'update';  // Set operation for lastQuery output.
+        $this->operation  = 'update';  // Set operation for lastQuery output.
+        $this->collection =  $collection;
 
         $data = $this->_parseSchema($data);  // check for the odm schema.
 
@@ -705,8 +712,7 @@ Class Mongo_Db {
             '$rename' => '',
             '$bit' => '');
         
-        // Multiple update behavior like MYSQL.
-        $default_options = array_merge(array('multiple' => true), $this->config_options);
+        $default_options = array_merge(array('multiple' => true), $this->config_options);  // Multiple update behavior like MYSQL.
         
         //  If any modifier used remove the default modifier ( $set ).
         //  
@@ -978,7 +984,8 @@ Class Mongo_Db {
      */
     public function delete($collection = '', $options = array())
     {
-        $this->operation = 'delete';  // Set operation for lastQuery output
+        $this->operation  = 'delete';  // Set operation for lastQuery output
+        $this->collection = $collection;
 
         $default_options = array_merge(array('justOne' => false), $this->config_options);
 
@@ -991,15 +998,15 @@ Class Mongo_Db {
         {
             $this->wheres['_id'] = new MongoId($this->wheres['_id']);
         }
-
-        $affected_rows = $this->db->{$collection}
-                                ->find($this->wheres)
-                                ->count();
         
         $this->db->{$collection}
         ->remove($this->wheres, 
             array_merge($default_options, $options)
         );
+
+        $affected_rows = $this->db->{$collection}
+                                ->find($this->wheres)
+                                ->count();
         
         $this->_resetSelect();
         
@@ -1060,11 +1067,11 @@ Class Mongo_Db {
             return;
         }
         
-        $this->host         = $config['host'];
-        $this->port         = $config['port'];
-        $this->user         = $config['username'];
-        $this->pass         = $config['password'];
-        $this->dbname       = $config['database'];
+        $this->host           = $config['host'];
+        $this->port           = $config['port'];
+        $this->user           = $config['username'];
+        $this->pass           = $config['password'];
+        $this->dbname         = $config['database'];
         $this->config_options = $config['options'];
         
         if($this->dbname == '')
@@ -1110,16 +1117,17 @@ Class Mongo_Db {
     {
         $this->_setLastQuery(); //  Build lastest sql query.
 
-        $this->selects	= array();
-        $this->updates	= array();
-        $this->wheres	= array();
-        $this->limit	= 999999;
-        $this->offset	= 0;
-        $this->sorts	= array();
-        $this->find     = false;
-
+        $this->selects    = array();
+        $this->updates    = array();
+        $this->wheres     = array();
+        $this->limit      = 999999;
+        $this->offset     = 0;
+        $this->sorts      = array();
+        $this->find       = false;
+        $this->collection = '';
+ 
         $this->updateData = array();
-        $this->operation = null;
+        $this->operation  = null;
     }
     
     // --------------------------------------------------------------------
@@ -1224,22 +1232,31 @@ Class Mongo_Db {
     {
         //-------------- Schema Support Begin -----------------//
 
-        if(is_object($key))  // Model Object
+        if(is_object($key) AND ! empty($this->collection))  // Model Object ( Schema Support )
         {
-            $setSchemaArray = array();
-            $schemaArray = getSchema($key->getTableName()); // Get tablename from model
-            $colprefix   = (isset($schemaArray['*']['colprefix'])) ? $schemaArray['*']['colprefix'] : '';
+            $tablename   = $this->collection; // remove escape char "`" get pure tablename
+            $schemaArray = $key->getMultiSchema();  // Get current multi schema array
 
-            unset($schemaArray['*']); // Grab just the fields.
-
-            foreach(array_keys($schemaArray) as $field)
+            if( ! isset($schemaArray[$tablename]))  // Get schemas using tablenames
             {
-                if(isset($key->data[$field])) // Is schema field selected ? // Is schema field selected ?
+                throw new Exception('Schema '.$tablename.' file not found for crud operation.');
+            }
+
+            $setSchemaArray = array();
+            foreach(array_keys($schemaArray[$tablename]) as $field)
+            {
+                if(isset($key->data[$tablename.'.'.$field]))  // Is column join request ? 
                 {
-                    $setSchemaArray[$colprefix.$field] = $key->data[$field]; // Let's build insert data.
+                    $key->data[$field] = $key->data[$tablename.'.'.$field]; // Remove column join prefix
+                    unset($key->data[$tablename.'.'.$field]);
+                }
+
+                if(isset($key->data[$field])) // Is schema field selected ?
+                {
+                    $setSchemaArray[$field] = $key->data[$field]; // Let's build insert data.
                 }
             }
-            
+
             unset($key);
             $key = $setSchemaArray;
         }

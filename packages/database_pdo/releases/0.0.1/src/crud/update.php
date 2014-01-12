@@ -15,9 +15,23 @@ namespace Database_Pdo\Src\Crud {
     function update($table = '', $set = null, $options = array())
     {
         $crud = getInstance()->{\Db::$var};
-
+        
         $options = array(); // Update options.
         
+        if ($table == '') // Set table
+        {
+            if ( ! isset($crud->ar_from[0]))
+            {
+                throw new \Exception('Please set tablename for update operation.');
+            }
+            
+            $table = $crud->ar_from[0];
+        } 
+        else 
+        {
+            $crud->from($table); // set tablename for set() function.
+        }
+
         $crud->_mergeCache(); // Combine any cached components with the current statements
         
         if ( ! is_null($set))
@@ -31,12 +45,7 @@ namespace Database_Pdo\Src\Crud {
             
             return false;
         }
-                                    
-        if($table == '')
-        {
-            $table = $crud->ar_from[0];
-        }
-        
+
         $sql = $crud->_update($crud->_protectIdentifiers($table, true, null, false), $crud->ar_set, $crud->ar_where, $crud->ar_orderby, $crud->ar_limit);
                  
         $crud->_resetWrite();

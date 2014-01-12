@@ -51,7 +51,7 @@ $c->func('index', function() use($c){
 
                 $this->db->insert('users', $this);
 
-                $this->data['posts.post_user_id'] = '3';
+                $this->data['posts.post_user_id'] = '2';
 
                 $this->db->insert('posts', $this);
                 return true;
@@ -64,7 +64,7 @@ $c->func('index', function() use($c){
             $this->url->redirect('/login');
         }
         
-        // echo '<pre>'.print_r($this->user->getOutput(), true).'</pre>';
+        // echo '<pre>'.print_r($this->user->getValues(), true).'</pre>';
     }
 
     $c->view('signup_form', function() {
