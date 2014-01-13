@@ -238,14 +238,15 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					echo $this->schemaObject->displaySqlQueryForm($dbCommand, $this->queryWarning,$disabled); // Show sql query to developer to confirmation.
 
 					break;
-
+					
 				case 'add-to-db': 	//  Add Type to Database
 					
 					$schemaKeys = explode('|',$colType);
 					
 					if (isset($this->dbSchema[$colName])) // Already exists 
 					{
-						$dbCommand            = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($colName);
+						
+						$dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($colName);
 						$unbracketsColType    = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets coming from $_POST
 						$unbracketsColTypes   = explode('|',$unbracketsColType);
 						
@@ -303,10 +304,14 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_auto_increment':
+									if (isset($dbCommands[3])) 
+									{
+										unset($dbCommands[3]);
+									}
 										$dbCommands[1] = ' NOT NULL';
 										$dbCommands[2] = ' AUTO_INCREMENT';
+									
 										break;
-
 									case '_unsigned':
 										$dbCommands[0] = strtoupper($this->removeUnderscore($schemaKeys[$i]));
 										break;
@@ -350,7 +355,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_primary_key':
-											preg_match('#(\(.*?\))#',$schemaKeys[$i], $pKColumns);
+										preg_match('#(\(.*?\))#',$schemaKeys[$i], $pKColumns);
 											
 										$pkey = (isset($pKColumns[0])) ? $pKColumns[0] : '('.$this->quoteValue($colName).')'; 
 										$dbCommands[4] = ',ADD PRIMARY KEY '.$pkey.' ';
@@ -361,7 +366,8 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 										break;
 
 									case '_default':
-
+										if ( ! isset($dbCommands[2])) 
+										{
 											$defValues = ($unbracketsColType != $unbracketsSchemaKeys[$i]) ? $schemaKeys[$i] : $colType ; // if schema key and column type
 
 											$defValues = $this->removeUnderscore($defValues);
@@ -378,6 +384,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 												$defaultStringValue = trim($defaultValue[1], '"');
 												$dbCommands[3] = ' DEFAULT '."'".addslashes($defaultStringValue)."'";
 											}
+										}	
 										break;
 									default :
 										$dbCommand .= $schemaKeys[$i];
@@ -619,7 +626,77 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					$this->schemaObject->setOutput($ruleString);
 
 					break;
-				
+
+				case 'rename':
+
+					$dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' CHANGE '.$this->quoteValue($colName).' '.$this->quoteValue('$NEW NAME');
+					$dbCommands[5] = ''; // for multiple indexes we should define here
+					$schemaKeys = explode('|',$colType);
+					$unbracketsColType 	= preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
+					$unbracketsColTypes = explode('|',$unbracketsColType); // Create pure column types without brackets and variables 
+					if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->dataTypes))
+					{
+						$dbCommand = 'You have to define a datatype in your file schema.';
+						$disabled = true;
+					}
+					else
+					{
+						$colKeyValue = array_values($columnType)[0];
+						$colkey 	 = array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
+						
+						$columnType  = $this->removeUnderscore($schemaKeys[$colkey]);
+						$i = 0;
+						
+						foreach ($unbracketsColTypes as $key => $value)
+						{
+							switch ($value) 
+							{
+								case '_null':
+									if ( ! isset($dbCommands[2])) 
+									{
+										$dbCommands[1] = strtoupper($this->removeUnderscore($value));
+										unset($dbCommands[3]);
+									}
+									break;
+
+								case '_auto_increment':
+									$dbCommands[1] = 'NOT NULL';
+									$dbCommands[2] = ' AUTO_INCREMENT';
+									break;
+								case '_unsigned':
+									$dbCommands[0] = strtoupper($this->removeUnderscore($value));
+									break;
+								case '_not_null':
+									$dbCommands[1] = strtoupper($this->removeUnderscore($value));
+									break;
+
+								case '_default':
+									$schemaKeys[$key] = $this->removeUnderscore($schemaKeys[$key]);
+
+									preg_match('#\((([^\]])*)\)#',$schemaKeys[$key],$matches);
+
+									$dbCommands[1] = ' NOT NULL';
+									$dbCommands[3] = ' DEFAULT '.addslashes($matches[1]);
+									break;
+							}
+							$i++;
+						}
+					}
+					    $columnType = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
+					        return strtoupper($match[0]); 
+					    }, $columnType);
+						$dbCommand .= $columnType;
+						for ($i = 0; $i < 7; $i++) 
+						{ 
+							if (isset($dbCommands[$i])) 
+							{
+								$dbCommand.= $dbCommands[$i];
+							}
+						}
+
+					echo $this->schemaObject->displaySqlQueryForm($dbCommand, $this->queryWarning,$disabled); // Show sql query to developer to confirmation.
+
+					   break;
 				case 'remove-from-file':
 
 					if(array_key_exists($colName, $this->fileSchema)) // new Field
@@ -656,6 +733,7 @@ Class Schema_Sync extends \Schema\Src\Schema_Auto_Sync {
 					}
 
 					break;
+				
 			}
 		}
 	}

@@ -10,7 +10,7 @@ $contacts = array(
 		),
 	'contact_name' => array(
 		'label' => 'Contact Name',
-		'types' => '_varchar(50)|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)|_not_null',
+		'types' => '_varchar(50)|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)|_null',
 		'rules' => 'required',
 		),
 	'contact_email' => array(
@@ -20,7 +20,7 @@ $contacts = array(
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
-		'types' => '_not_null|_varchar(255)|_default(true)|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)',
+		'types' => '_not_null|_varchar(255)|_default(true)',
 		'rules' => '',
 		),
 	'contact_body' => array(
@@ -42,7 +42,7 @@ $contacts = array(
 		'types' => '_enum|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)|_not_null',
 		'rules' => '',
 		),
-	'test' => array(
+	'test1' => array(
 		'label' => 'Test',
 		'types' => '_not_null|_int(11)|_unique_key(test)(test,contact_id)',
 		'rules' => '',
@@ -53,12 +53,12 @@ $contacts = array(
 			'data',
 			'ersin\'s',
 		),
-		'types' => '_not_null|_enum',
+		'types' => '_not_null|_enum|_primary_key',
 		'rules' => '',
 		),
-	'test2' => array(
-		'label' => 'Test2',
-		'types' => '_null|_int(11)|_key(test34)(test2)|_unique_key(test4)(test2)',
+	'ersin' => array(
+		'label' => 'Ersin',
+		'types' => '_null|_int(11)',
 		'rules' => '',
 		),
 );

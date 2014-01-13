@@ -61,10 +61,14 @@ Class Schema_Auto_Sync_Html {
 								$add 	= (isset($val['options'][1])) ? '(+)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][1]) : '' ;
 								$remove = '(-)'.str_replace(array('db','file'), array('<b>db</b>','<b>file</b>'), $val['options'][0]);
 								$html.= '<kbd class="columnDelRow break"><a href="javascript:void(0);" onclick="removeKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][0].'\');">'.$remove.'</a></kbd>';
-								
+								$rename 	= (isset($val['options'][2])) ?  '<b>'.$val['options'][2].'</b>' : '' ;
 								if( ! empty($add))
 								{
 									$html.= '<kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][1].'\');">'.$add.'</a></kbd>';
+								}
+								if (! empty($rename)) 
+								{
+									$html.= ' <kbd class="columnAddRow"><a href="javascript:void(0);" onclick="addKey(\''.$this->_stripQuotes($key).'\',\''.base64_encode($val['options']['types']).'\',\''.$val['options'][2].'\');">'.$rename.'</a></kbd>';
 								}
 
 							$html.= '</div>';
