@@ -15,8 +15,9 @@
 */
 $odm = array(
 
-	'get' => new Get,    // Get object
-	'form' => new Form,	 // Form object
+	'get' => new Get,    // Get object.
+	'form' => new Form,	 // Form object.
+	'global_transactions' => true, // Database transactions switch On / Off.
 );
 
 

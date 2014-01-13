@@ -430,6 +430,7 @@ $this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' =>
 $this->user->func('save',function() {
     if ($this->isValid()){
         $this->password = md5($this->values('password'));
+        
         try
         {
             $this->db->transaction();
@@ -442,6 +443,7 @@ $this->user->func('save',function() {
             $this->setFailure($e->getMessage());  // Set rollback message to error messages.
             return false;
         }
+
         return true;
     }
     return false;
@@ -589,21 +591,13 @@ You can set custom errors.
 $this->model->setError($field = '', $message = '');
 ```
 
-#### Setting Messages
-
-Sets session flashdata notice using current odm error status.
+Set message to messages output.
 
 ```php
-$this->model->setNotice($message);
-```
-Gets current odm flashdata notice.
-
-```php
-$this->model->getNotice();
+$this->model->setMessage($key, $message);
 ```
 
 Failure messages allow to you set custom messages for unsuccessful operations e.g. ( Transactions RollBack Messages ).
-
 ```php
 $this->model->setFailure($field = '', $message = '');
 ```

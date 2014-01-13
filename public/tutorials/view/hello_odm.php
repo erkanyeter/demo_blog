@@ -15,12 +15,7 @@
         <h2><?php echo $this->url->anchor('tutorials/hello_ajax', 'Ajax Tutorial') ?></h2>
 
         <section>
-            <?php
-                if($this->get->post('dopost'))
-                {
-                    echo $this->user->getMessage('errorMessage');
-                }
-            ?>
+            <?php echo $this->user->getMessage('errorMessage') ?>
         </section>
 
         <section>

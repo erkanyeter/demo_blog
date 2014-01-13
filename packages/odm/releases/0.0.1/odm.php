@@ -15,7 +15,8 @@ Class Odm {
 
     public $_odmSchema       = null;      // User schema
     public $_odmTable        = '';        // Table name ( model name )
-    public $_odmErrors       = array();   // Validation errors and transactional ( Insert, Update, delete ) messages
+    public $_odmConfig       = array();   // Odm configuration variable
+    public $_odmMessages     = array();   // Validation errors and transactional ( Insert, Update, delete ) messages
     public $_odmValues       = array();   // Filtered safe values
     public $_odmValidation   = false;     // If form validation success we set it to true
     public $_odmValidator;
@@ -34,7 +35,7 @@ Class Odm {
     */
     public function __construct(array $schemaArray, $dbObject)
     {
-        $odm = getConfig('odm');   // Initialize to Validator Object.
+        $this->_odmConfig    = getConfig('odm');   // Initialize to Validator Object.
         $this->_odmValidator = getInstance()->validator; 
 
         $this->clear();            // Clear the validator.
@@ -140,13 +141,13 @@ Class Odm {
 
                    if( ! empty($error))
                    {
-                       $this->_odmErrors[$table]['errors'][$key] = $error;
+                       $this->_odmMessages[$table]['errors'][$key] = $error;
                    }
                }
 
                 //----------------------------
 
-                $this->_odmErrors[$table]['messages'] = array(
+                $this->_odmMessages[$table]['messages'] = array(
                     'success' => 0, 
                     'errorKey' => 'validationError',
                     'errorCode'  => 10,
@@ -212,12 +213,12 @@ Class Odm {
         $validator = $this->_odmValidator;
         $validator->clear();
 
-        $this->_odmSchema    = null;     // Schema object.
-        $this->_odmTable     = '';       // Tablename.
-        $this->_odmErrors    = array();  // Validation errors.
-        $this->_odmMessage   = array();  // Save messsages.
-        $this->_odmValues    = array();  // Filtered safe values.
+        $this->_odmSchema       = null;     // Schema object.
+        $this->_odmTable        = '';       // Tablename.
+        $this->_odmMessages     = array();  // Validation errors.
+        $this->_odmValues       = array();  // Filtered safe values.
         $this->_odmFormTemplate = 'default'; // Form template.
+        $this->_odmColumnJoins  = array(); 
     }    
 
     // --------------------------------------------------------------------
@@ -269,9 +270,9 @@ Class Odm {
      */
     public function getOutput()
     {
-        if(isset($this->_odmErrors[$this->_odmTable]))
+        if(isset($this->_odmMessages[$this->_odmTable]))
         {
-            return $this->_odmErrors[$this->_odmTable];
+            return $this->_odmMessages[$this->_odmTable];
         }
 
         return;
@@ -287,7 +288,7 @@ Class Odm {
      */
     public function setOutput($key, $val)
     {
-        $this->_odmErrors[$this->_odmTable][$key] = $val;
+        $this->_odmMessages[$this->_odmTable][$key] = $val;
     }
 
     // --------------------------------------------------------------------
@@ -301,9 +302,9 @@ Class Odm {
     {
         $table = $this->_odmTable;
 
-        if(isset($this->_odmErrors[$table]['messages']))
+        if(isset($this->_odmMessages[$table]['messages']))
         {
-            return $this->_odmErrors[$table]['messages'];
+            return $this->_odmMessages[$table]['messages'];
         }
 
         return false;
@@ -323,20 +324,20 @@ Class Odm {
     {
         $table = $this->_odmTable;
 
-        if(isset($this->_odmErrors[$table]['messages'][$key]))
+        if(isset($this->_odmMessages[$table]['messages'][$key]))
         {
-            if(in_array($key, array('error','errorMessage','successMessage')))
+            if(in_array($key, array('error','errorMessage','successMessage','infoMessage')))
             {
                 $form     = Form::getFormConfig();
                 $template = empty($prefix) ? $form['notifications'][$key] : $prefix.'%s'.$suffix;
 
-                return sprintf($template, $this->_odmErrors[$table]['messages'][$key]);
+                return sprintf($template, $this->_odmMessages[$table]['messages'][$key]);
             }
 
-            return $this->_odmErrors[$table]['messages'][$key];
+            return $this->_odmMessages[$table]['messages'][$key];
         }
 
-        return false;
+        return;
     }
 
     // --------------------------------------------------------------------
@@ -350,9 +351,9 @@ Class Odm {
     {
         $table = $this->_odmTable;
         
-        if(isset($this->_odmErrors[$table]['errors']))
+        if(isset($this->_odmMessages[$table]['errors']))
         {
-            return $this->_odmErrors[$table]['errors'];
+            return $this->_odmMessages[$table]['errors'];
         }
 
         return false;
@@ -370,9 +371,9 @@ Class Odm {
     {
         $table = $this->_odmTable;
 
-        if(isset($this->_odmErrors[$table]['errors'][$field]))
+        if(isset($this->_odmMessages[$table]['errors'][$field]))
         {
-            return $this->_odmErrors[$table]['errors'][$field];
+            return $this->_odmMessages[$table]['errors'][$field];
         }
 
         return false;
@@ -387,7 +388,7 @@ Class Odm {
     */
     public function setError($key, $error)
     {
-        $this->_odmErrors[$this->_odmTable]['errors'][$key] = $error;
+        $this->_odmMessages[$this->_odmTable]['errors'][$key] = $error;
 
         if(isset($this->_odmSchema[$key])) // set a validation error.
         {
@@ -405,7 +406,7 @@ Class Odm {
     */
     public function setMessage($key, $message)
     {
-        $this->_odmErrors[$this->_odmTable]['messages'][$key] = $message;
+        $this->_odmMessages[$this->_odmTable]['messages'][$key] = $message;
     }
 
     // --------------------------------------------------------------------
@@ -434,9 +435,9 @@ Class Odm {
         $table = $this->_odmTable;
 
         $http_query = array();
-        if(isset($this->_odmErrors[$table]))
+        if(isset($this->_odmMessages[$table]))
         {
-            foreach($this->_odmErrors[$table] as $key => $val)
+            foreach($this->_odmMessages[$table] as $key => $val)
             {
                 if(is_string($val))
                 {
@@ -459,7 +460,7 @@ Class Odm {
     {
         $errorMessage = (lingo($message) != '') ? lingo($message) : $message;
 
-        $this->_odmErrors[$this->_odmTable]['messages'] = array(
+        $this->_odmMessages[$this->_odmTable]['messages'] = array(
         'success' => 0, 
         'errorKey' => 'failure',
         'errorCode'  => 12,
@@ -512,7 +513,7 @@ Class Odm {
             {
                 $joinSchema = getSchema($tablename);
                 unset($joinSchema['*']); // remove settings
-                
+
                 $schemas[$tablename] = $joinSchema;
             }
         }

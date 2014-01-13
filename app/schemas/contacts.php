@@ -11,17 +11,17 @@ $contacts = array(
 	'contact_name' => array(
 		'label' => 'Contact Name',
 		'types' => '_varchar(50)|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)|_not_null',
-		'rules' => 'required',
+		'rules' => 'required|maxLen(40)',
 		),
 	'contact_email' => array(
 		'label' => 'Contact Email',
 		'types' => '_varchar(50)|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)|_not_null',
-		'rules' => '',
+		'rules' => 'required|validEmail',
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
 		'types' => '_not_null|_varchar(255)|_default(true)|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)',
-		'rules' => '',
+		'rules' => 'required|maxLen(160)',
 		),
 	'contact_body' => array(
 		'label' => 'Contact Body',
@@ -31,7 +31,7 @@ $contacts = array(
 			'bob, Store',
 		),
 		'types' => '_enum|_primary_key(contact_id,contact_name,contact_creation_date,contact_body,contact_subject,contact_email)|_not_null',
-		'rules' => '',
+		'rules' => 'required|xssClean',
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',

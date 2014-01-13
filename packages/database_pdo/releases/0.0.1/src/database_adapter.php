@@ -200,6 +200,11 @@ Abstract Class Database_Adapter extends Database_Layer {
         return $this;
     }
     
+    public function inTransaction()
+    {
+        return $this->_conn->inTransaction();
+    }
+
     // --------------------------------------------------------------------
 
     /**

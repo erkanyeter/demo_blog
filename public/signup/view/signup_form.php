@@ -24,7 +24,11 @@
 					<div id="container">
 					
 			        <section>
-			            <?php echo $this->form->getNotice() ?>
+			        	<?php echo $this->user->getMessage('errorMessage') ?>
+			        </section>
+
+			        <section>
+			        	<?php echo $this->form->getNotice() ?>
 			        </section>
 
 						<p>Please fill out the following form with your login credentials: </p>
@@ -38,20 +42,6 @@
 			                        <td><?php 
 			                            echo $this->form->error('user_username');
 			                            echo $this->form->input('user_username', $this->form->setValue('user_username'), " id='user_username' ");
-			                            ?></td>
-			                    </tr>
-			               		<tr>
-			                        <td style="width:15%;"><?php echo $this->form->label('Post title') ?></td>
-			                        <td><?php 
-			                            echo $this->form->error('post_title');
-			                            echo $this->form->input('post_title', $this->form->setValue('post_title'), " id='post_title' ");
-			                            ?></td>
-			                    </tr>
-			               		<tr>
-			                        <td style="width:15%;"><?php echo $this->form->label('Post content') ?></td>
-			                        <td><?php 
-			                            echo $this->form->error('post_content');
-			                            echo $this->form->input('post_content', $this->form->setValue('post_content'), " id='post_content' ");
 			                            ?></td>
 			                    </tr>
 			                    <tr>

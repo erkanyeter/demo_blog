@@ -6,14 +6,17 @@ namespace Odm\Src {
         private $_modelMethods = array();
         private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','put');
 
+        // --------------------------------------------------------------------
+
         /**
          * Create the model function.
          * 
          * @param  string $methodName  
          * @param  closure $methodCallable
+         * @param  transaction $transaction on / off switch
          * @return void
          */
-        public function func($methodName, $methodCallable)
+        public function func($methodName, $methodCallable, $transaction = null)
         {
             if( strpos($methodName, 'callback_') !== 0 AND ! in_array($methodName, $this->_modelDefinedMethods))
             {
@@ -21,8 +24,8 @@ namespace Odm\Src {
                     <pre>'.implode("\n", $this->_modelDefinedMethods)."\n".'callback_</pre>');
             }
 
-            $this->__assignObjects(); // Assign all objects of Contoller into the Model.
-            $this->__assignColumns(); // Render column names & detect the column joins to another schema.
+            $this->__assignObjects(); // Assign all objects of Contoller to Model.
+            $this->__assignColumns(); // Render column names & detects the column joins to another schema.
 
             if ( ! is_callable($methodCallable)) // @todo throw new InvalidArgumentException
     	    {
@@ -103,7 +106,7 @@ namespace Odm\Src {
          * 
          * @return void
          */
-        public function __assignObjects()
+        private function __assignObjects()
         {
             $modelKey = strtolower(get_class());
 

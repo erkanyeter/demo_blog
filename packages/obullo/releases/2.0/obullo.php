@@ -624,7 +624,7 @@
                     {              
                         case  0: return; break; 
                         case  1: 
-                            include (PACKAGES .$core. DS .'releases'. DS .$packages['dependencies'][$core]['version']. DS .'src'. DS .'exception'. EXT);
+                            include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
                             return; 
                         break;
                     }   
@@ -639,7 +639,7 @@
                 $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
                 if(isset($allowedErrors[$code]))
                 {
-                    include (PACKAGES .$core. DS .'releases'. DS .$packages['dependencies'][$core]['version']. DS .'src'. DS .'exception'. EXT);
+                    include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
                 }
             }
             else  // If error_reporting = 0, we show a blank page template.
