@@ -119,14 +119,16 @@ Abstract Class Schema_Auto_Sync {
                     $this->schemaDiff[$k]['options'] = array(
                         'types' => $v,
                         'drop',
-                        'add-to-file'
+                        'add-to-file',
+                        'rename'
                         );
                     $this->schemaDiff[$k]['new_types'][] = array(
                     'type' => $type,
                     'types' => $v,
                     'options' => array(
                         'drop',
-                        'add-to-file'
+                        'add-to-file',
+                        'rename'
                         ),
                     );   
                 }
@@ -192,6 +194,9 @@ Abstract Class Schema_Auto_Sync {
      */
     private function _schemaDiff()
     {
+        $allDbData   = implode('|',$this->dbSchema); //get all db data
+        $allDbData = preg_replace('#(\(.*?\))#','', $allDbData);
+        $allDbDataArray =  explode('|',$allDbData);
         foreach($this->fileSchema as $k => $v)
         {
             if( ! isset($this->dbSchema[$k]))    // Sync column names
@@ -291,15 +296,15 @@ Abstract Class Schema_Auto_Sync {
                 $schemaTypes = explode('|', trim($this->fileSchema[$k], '|'));
 
                 $diffMatches = array_diff($schemaTypes, $dbTypes);
-                    
+                
                 if(sizeof($diffMatches) > 0)
                 {    
-                    
-                 
                     $result = preg_replace('#(\(.*?\))#','',implode('|', $diffMatches));
                     $unbreacketsDiffMatches = explode('|', $result); 
+
                     $i = 0;
                     $diffMatches = array_values($diffMatches);
+
                     foreach ($diffMatches as $diffVal)
                     {
 
@@ -365,11 +370,11 @@ Abstract Class Schema_Auto_Sync {
                                         
                                     break;
                                 default:
-                                    $unbracketsFileColType  = preg_replace('#(\(.*?\))#s','', $this->fileSchema[$k]);
-                                    $unbracketsFileColTypeArray = explode('|',$unbracketsFileColType);
-                                    if (!in_array('_primary_key' ,$unbracketsFileColTypeArray))
+                                    
+                                    $unbracketsDBColType  = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$k]);
+                                    $unbracketsDBColTypeArray = explode('|',$unbracketsDBColType); //if any field has a primary key 
+                                    if (!in_array('_primary_key' ,$allDbDataArray) || $unbreacketsDiffMatches[$i] != '_primary_key' )
                                     {
-                                       
                                         $this->schemaDiff[$k][] = array(
                                         'update_types' => $diffMatches[$i],
                                         'options' => array(
