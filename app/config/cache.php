@@ -19,7 +19,7 @@ $cache = array(
 								  							// used to determine which server to read/write keys from.
 								  ),
 			   
-				'cache_path' =>  '/data/temp/cache/';  // Just cache file .data/temp/cache
+				'cache_path' =>  '/data/temp/cache/',  // Just cache file .data/temp/cache
 			   );
 
 

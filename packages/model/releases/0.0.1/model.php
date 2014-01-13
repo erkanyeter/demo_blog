@@ -70,7 +70,7 @@ Class Model {
                 $task = new Task;
                 $output = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
 
-                // print_r($_POST); debug On / Off
+                // print_r($_POST); // debug On / Off
 
                 if( ! empty($output))
                 {

@@ -22,7 +22,7 @@ Class Schema_Mysql {
 	 * @param object $schemaObject
 	 * @param object $dbObject
 	 */
-	public function __construct(Schema $schemaObject)
+	public function __construct($schemaObject)
 	{
 		$this->schemaObject = $schemaObject; // Store schema object
 
@@ -81,13 +81,13 @@ Class Schema_Mysql {
 	 * @return string sync results
 	 */
 	public function sync()
-	{
+	{                           
 		$schemaContent = $this->read();
 
 		if($schemaContent != false)
-		{
-			$sync_mysql = new Schema_Mysql\Src\Schema_Sync($schemaContent, $this->schemaObject);
-			$sync_mysql->run(); 
+		{           
+			$sync_mysql = new Schema_Sync($schemaContent, $this->schemaObject);
+            $sync_mysql->run(); 
 
 			if($sync_mysql->collisionExists())
 			{	

@@ -108,6 +108,13 @@ Class Schema {
             $this->redirect();
         }
     }
+    
+    // --------------------------------------------------------------------
+
+    public function syncTable()
+    {
+        $this->driver->sync();
+    }
 
     // --------------------------------------------------------------------
 
@@ -163,18 +170,6 @@ Class Schema {
         $html.= "\n</html>";
 
         echo $html;
-    }
-    
-    // --------------------------------------------------------------------
-
-    /**
-     * Sync table ( Sync with Database Schema )
-     *
-     * @return void
-     */
-    public function syncTable()
-    {
-        $this->driver->sync();
     }
 
     // --------------------------------------------------------------------
@@ -444,7 +439,7 @@ Class Schema {
     {  
         global $packages;
 
-        $css_file = PACKAGES .'schema'. DS .'releases'. DS .$packages['dependencies']['schema']['version']. DS .'src'. DS .'schema_sync.css';
+        $css_file = PACKAGES .'schema_sync'. DS .'releases'. DS .$packages['dependencies']['schema_sync']['version']. DS .'src'. DS .'schema_sync.css';
 
         $css = '<style type="text/css">';
         $css.= file_get_contents($css_file);
@@ -564,7 +559,7 @@ Class Schema {
         {
             $label = ucfirst($field);
         }
-        
+
         return trim($label);
     }
 

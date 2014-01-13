@@ -57,15 +57,14 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
 
         if( ! $schema->tableExists())  // Check table exits.
         {
-          $schema->createTable(); // Create sql query & run
+            $schema->createTable(); // Create sql query & run
         }
         else 
         {
-          $schema->syncTable();  // Display sync table
+            $schema->syncTable();  // Display sync table
         }
-
-    }        
-
+    }
+    
 });
 
 

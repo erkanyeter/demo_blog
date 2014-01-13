@@ -1,7 +1,7 @@
 <?php
-namespace Schema\Src;
+namespace Schema_Sync\Src;
 
-Class Schema_Auto_Sync_Html {
+Class Schema_Sync_Html {
 
 	public $sync; // Auto sync object
 
@@ -12,8 +12,8 @@ Class Schema_Auto_Sync_Html {
 	 */
 	public function __construct($syncObject, $schemaObject)
 	{
-		$this->syncObject 	= &$syncObject;
-		$this->schemaObject = &$schemaObject;
+		$this->syncObject 	= $syncObject;
+		$this->schemaObject = $schemaObject;
 
 		$this->form = new \Form;
 	}

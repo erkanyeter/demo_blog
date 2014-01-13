@@ -24,7 +24,7 @@ $config = array(
 							   // In LIVE mode you need set to "false" because of the performance.
 
 	 // Logs
-	'log_threshold' => 5,    // 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
+	'log_threshold' => 0,    // 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
 	'log_queries'=> true,    // If true ALL SQL Queries gets logged.
 	'log_benchmark' => true, // If true ALL framework benchmarks gets logged.
 	'log_date_format' => 'Y-m-d H:i:s', // Date format for log date() function.
