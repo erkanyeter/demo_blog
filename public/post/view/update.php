@@ -9,14 +9,6 @@
 
 <body>
 
-<?php 
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-$this->form->setSchema('posts');  // use schema for update operation.
-
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-?>
-
 <?php echo $header ?>
 
 		<div id="clear"></div>
@@ -43,6 +35,14 @@ $this->form->setSchema('posts');  // use schema for update operation.
 					<?php echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST', " id='createform' ")) ?>
 
 			                <table>
+			                    <tr>
+			                        <td><?php echo $this->form->label('Username') ?></td>
+			                        <td><?php 
+			                            echo $this->form->error('user_username');
+			                            echo $this->form->input('user_username', $row, ' style="width:50%" ');
+			                            ?><span class="color_red">*</span></td>
+			                    </tr>
+
 			                    <tr>
 			                        <td style="width:15%;"><?php echo $this->form->label('Title') ?></td>
 			                        <td><?php 
@@ -78,6 +78,9 @@ $this->form->setSchema('posts');  // use schema for update operation.
 			                        <?php 
 			                            echo $this->form->error('post_status');
 										echo $this->form->dropdown('post_status','getSchema(posts)[post_status][_enum]', $row, " ");
+
+										// getSchema() is a tiny function to get schema configuration array
+										// 
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>

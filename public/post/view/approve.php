@@ -14,9 +14,7 @@
 		<div id="containerbox">
 			
 			<section>
-				<?php 
-					echo $this->form->getNotice();
-				?>
+				<?php echo $this->form->getNotice() ?>
 			</section>
 
 			<div id="content">
@@ -52,7 +50,7 @@
 
 						<div id="detail_left"><?php echo $this->date_get->mDate("%F %d,%Y", strtotime($row->comment_creation_date)) ?></div>
 						<div id="clear"></div>
-						<div id="commentext"><?php echo $row->comment_comment ?></div>
+						<div id="commentext"><?php echo $row->comment_body ?></div>
 					</div>	
 
 				<?php } ?>

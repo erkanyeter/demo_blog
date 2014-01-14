@@ -23,7 +23,10 @@
 |
 */
 
-$autorun['controller'] = array('init','menu');
+$autorun['controller'] = array(
+	'load_classes',
+	'load_menu'
+	);
 
 /*
 |--------------------------------------------------------------------------
@@ -39,14 +42,14 @@ $autorun['controller'] = array('init','menu');
 */
 
 $autorun['routes'] = array(
-	'post/manage/index' => array('auth'),
-	'post/create/index' => array('auth'),
-	'post/update/index' => array('auth'),
-	'post/delete/index' => array('auth'),
-	'post/preview/index' => array('auth'),
-	'post/approve/index' => array('auth'),
-	'post/approve/update' => array('auth'),
-	'post/approve/delete' => array('auth'),
+	'post/manage/index'   => array('check_auth'),
+	'post/create/index'   => array('check_auth'),
+	'post/update/index'   => array('check_auth'),
+	'post/delete/index'   => array('check_auth'),
+	'post/preview/index'  => array('check_auth'),
+	'post/approve/index'  => array('check_auth'),
+	'post/approve/update' => array('check_auth'),
+	'post/approve/delete' => array('check_auth'),
 );
 
 /*
@@ -63,11 +66,14 @@ $autorun['routes'] = array(
 */
 
 $autorun['func'] = array(
-	'init' => function(){
+	'load_classes' => function(){
 		new Sess;
 		new Auth;
 	},
-	'auth' => function(){
+    'load_menu' => function(){
+		$this->config->load('menu');  // load menu config
+	},
+	'check_auth' => function(){
 
 	    if( ! $this->auth->hasIdentity())
 	    {
@@ -76,9 +82,6 @@ $autorun['func'] = array(
 	        $this->url->redirect('/login');
 	    }
 	},
-    'menu' => function(){
-		$this->config->load('menu');  // load menu config
-	}
 );
 
 /* End of file autorun.php */

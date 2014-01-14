@@ -1,7 +1,7 @@
 <?php
 
 /**
- * $c create
+ * $c update
  * @var Controller
  */
 $c = new Controller(function(){
@@ -17,6 +17,7 @@ $c->func('index', function($id) use($c){
 
     if($this->get->post('dopost')) // if do post click
     {
+        $this->post->data['users.user_username']    = $this->get->post('user_username');
         $this->post->data['post_user_id']           = $this->auth->getIdentity('user_id');
         $this->post->data['post_title']             = $this->get->post('post_title');
         $this->post->data['post_content']           = $this->get->post('post_content');
@@ -26,8 +27,14 @@ $c->func('index', function($id) use($c){
         
         $this->post->func('save', function() use($id) {
             if ($this->isValid()){
+
                 $this->db->where('post_id', $id);
-                return $this->db->update('posts', $this);
+                $this->db->update('posts', $this);
+
+                $this->db->where('user_id', $this->auth->getIdentity('user_id'));
+                $this->db->update('users', $this);
+
+                return true;
             }
             return false;
         });
@@ -40,7 +47,9 @@ $c->func('index', function($id) use($c){
     } 
 
     $this->db->where('post_id', $id); // get db data
+    $this->db->join('users', 'users.user_id = posts.post_user_id');
     $this->db->get('posts');
+
     $row = $this->db->row();
 
     if($row == false)

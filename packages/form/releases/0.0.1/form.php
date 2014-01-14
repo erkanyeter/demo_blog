@@ -256,7 +256,7 @@ Class Form {
      * 
      * @param string $schemaName
      */
-    public function getSchema()
+    public function getSchemaName()
     {
         return $this->schemaName;
     }

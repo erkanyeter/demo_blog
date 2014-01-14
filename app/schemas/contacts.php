@@ -5,7 +5,7 @@ $contacts = array(
 	
 	'contact_id' => array(
 		'label' => 'Contact Id',
-		'types' => '_not_null|_auto_increment|_primary_key',
+		'types' => '_not_null|_auto_increment|_primary_key|_foreign_key(burak)(posts)(post_id)|_int(11)',
 		'rules' => '',
 		),
 	'contact_name' => array(

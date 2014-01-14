@@ -92,9 +92,6 @@ Class Odm {
 
         $fields = array_merge($this->_odmSchema, $validator->_field_data);// Merge "Odm" and "Validator fields"
         $fields = array_merge($joinSchemaFields, $fields);  // Merge with $this->_odmSchema
-
-        // print_r($this->_odmSchema);
-        // echo '<pre>'.print_r($fields,true).'<pre>'; exit;
         
         foreach($fields as $key => $val)
         {
