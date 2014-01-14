@@ -928,8 +928,6 @@ Class Schema_Sync {
                                         if ( ! isset($dbCommands[2])) 
                                         {
                                             $defValues = ($unbracketsColType != $unbracketsSchemaKeys[$i]) ? $schemaKeys[$i] : $colType ; // if schema key and column type
-
-                                            $defValues = $this->removeUnderscore($defValues);
                                             
                                             preg_match('#\((([^\]])*)\)#',$defValues, $defaultValue);
                                             $dbCommands[1] = ' NOT NULL';
@@ -1044,7 +1042,7 @@ Class Schema_Sync {
                                         break;
 
                                     case '_default':
-                                        $schemaKeys[$key] = $this->removeUnderscore($schemaKeys[$key]);
+                                        $schemaKeys[$key] = $schemaKeys[$key];
 
                                         preg_match('#\((([^\]])*)\)#',$schemaKeys[$key],$matches);
 

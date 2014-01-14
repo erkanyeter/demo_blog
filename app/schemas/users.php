@@ -30,8 +30,8 @@ $users = array(
 		),
 	'user_username' => array(
 		'label' => 'User Username',
-		'types' => '_null|_varchar(50)',
-		'rules' => '',
+		'types' => '_not_null|_varchar(50)',
+		'rules' => 'required|callback_username',
 		),
 );
  

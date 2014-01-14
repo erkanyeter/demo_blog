@@ -32,7 +32,6 @@ $c->func('index', function() use($c){
 $c->func('update', function($comment_id, $status = 'approve'){
 
     $update = ($status == 'approve') ? '1' : '0';
-
     $this->db->where('comment_id', $comment_id);
     $this->db->update('comments', array('comment_status' => $update));
 
@@ -43,6 +42,5 @@ $c->func('delete', function($comment_id){
 
     $this->db->where('comment_id', $comment_id);
     $this->db->delete('comments');
-
     $this->url->redirect('/post/approve/');
 });

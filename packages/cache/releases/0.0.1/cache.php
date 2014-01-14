@@ -1,7 +1,7 @@
 <?php
 
  /**
- * Session Database Driver
+ * Cace Class
  *
  * @package       packages
  * @subpackage    sess_database

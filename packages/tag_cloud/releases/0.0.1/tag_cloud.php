@@ -152,9 +152,8 @@ Class Tag_Cloud {
 	/**
 	 * _htmlizeTag
 	 * 
-	 * @param  [type]  $color   [description]
-	 * @param  boolean $shuffle [description]
-	 * @return [type]           [description]
+	 * @param  boolean $shuffle
+	 * @return string          
 	 */
 	private function _htmlizeTag($shuffle)
 	{
@@ -162,17 +161,22 @@ Class Tag_Cloud {
 		{
 			$this->_shuffle(); // Tagları karıştırıyoruz. Random olarak geri dönüş sağlanıyor.
 		}
+
 		$i = 0;
 		$count = count($this->_tagsArr);
+
+		$return = '';
 		foreach($this->_tagsArr as $key => $value)
 		{
 			$styleColor = '';
-			$url = $this->_config['seo_segment'] .'/'. $value['url']; // create a new url
+			$url 		= $this->_config['seo_segment'] .'/'. $value['url']; // create a new url
+
 			if($this->_colorType != null)
 			{
 				$colors     = $this->_getColor();
 				$styleColor = ' style="color: rgb('.implode(',', $colors).')"';
 			}
+
 			if($i == 0)
 			{
 				$return = $this->url->anchor($url, $value['tag'], $value['attribute'].$styleColor).'&nbsp;';
@@ -181,6 +185,7 @@ Class Tag_Cloud {
 			{
 				$return.= $this->url->anchor($url, $value['tag'], $value['attribute'].$styleColor).'&nbsp;';
 			}
+
 			$i++;
 		}
 

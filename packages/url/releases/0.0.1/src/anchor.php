@@ -3,7 +3,7 @@ namespace Url\Src {
 
     // ------------------------------------------------------------------------
 
-	/**
+    /**
     * Anchor Link
     *
     * Creates an anchor based on the local URL.
@@ -18,8 +18,8 @@ namespace Url\Src {
     function anchor($uri = '', $title = '', $attributes = '', $suffix = true)
     {
         $title = (string) $title;
-        
         $sharp = false;
+
         if(strpos($uri, '#') > 0)  // ' # ' sharp support for anchors.
         {
             $sharp_uri = explode('#', $uri);
@@ -27,7 +27,14 @@ namespace Url\Src {
             $sharp     = true;
         }
 
-        $site_url = ( ! preg_match('!^\w+://! i', $uri)) ? getInstance()->uri->siteUrl($uri, $suffix) : $uri;
+        $siteUri = getInstance()->uri->siteUrl($uri, $suffix);
+
+        if(strpos(trim($uri,'/'), '?') === 0) // If we have question mark beginning of the  the uri // ?service_type=email&user_id=50
+        {
+            $siteUri = (strpos($uri, '/') === 0) ? $siteUri : trim($siteUri,'/');
+        }
+
+        $site_url = ( ! preg_match('!^\w+://! i', $uri)) ? $siteUri : $uri;
 
         if ($title == '')
         {

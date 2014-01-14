@@ -125,8 +125,8 @@ Use <b>$this->model->func();</b> method to build model functions.
 
 ```
 <?php
-$this->user->email = 'test@example.com';
-$this->user->password = '123456';
+$this->user->data['email']    = 'test@example.com';
+$this->user->data['password'] = '123456';
 
 $this->user->func('save',function() {
         return $this->db->insert('users', $this);
@@ -166,8 +166,7 @@ Available <b>CRUD operations</b> that we are support listed below. You can defin
 * replace
 * delete
 * remove
-* read
-* callback_ ( form validation callback function prefix )
+* callback_ ( form validation callback_* functions )
 
 
 ### Saving Data
@@ -178,8 +177,8 @@ Below the example we create a save function and call it on the fly.
 <?php
 new Model('user', 'users');
 
-$this->user->email = 'me@example.com';
-$this->user->password = '123456';
+$this->user->data['email']    = 'me@example.com';
+$this->user->data['password'] = '123456';
 
 $this->user->func('save',function() {
     return $this->db->insert('users', $this);
@@ -191,8 +190,8 @@ if($this->user->save())  // if save function success !
 } 
 else 
 {
-    print_r($this->user->errors());  // Gives validation errors !
-    print_r($this->user->values());  // Gives filtered values !
+    print_r($this->user->getErrors());  // Gives validation errors !
+    print_r($this->user->getValues());  // Gives filtered values !
 }
 ```
 
@@ -205,8 +204,8 @@ Using <b>isValid()</b> function you can control the validator object.
 <?php
 new Model('user', 'users');
 
-$this->user->email = 'me@example.com';
-$this->user->password = '123456';
+$this->user->data['email']    = 'me@example.com';
+$this->user->data['password'] = '123456';
 
 // Set extra rule for none db fields.
 $this->user->setRules('confirm_password', array('label' => 'Confirm Password', 'rules' => 'required|matches[password]'));
@@ -215,7 +214,7 @@ $this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' =>
 $this->user->func('save',function() {
     if ($this->isValid())  // isValid() function do validation using your schema.
     {
-        $this->password = md5($this->values('password'));  // You can set again a value after the validation
+        $this->data['password'] = md5($this->getValue('password'));  // You can set again a value after the validation
         return $this->db->insert('users', $this);
     }
     return false;
@@ -227,8 +226,8 @@ if($this->user->save())  // if save function success !
 } 
 else 
 {
-    print_r($this->user->errors());  // Gives validation errors !
-    print_r($this->user->values());  // Gives filtered values !
+    print_r($this->user->getErrors());  // Gives validation errors !
+    print_r($this->user->getValues());  // Gives filtered values !
 }
 ```
 
@@ -241,7 +240,7 @@ Updating, deleting, saving and other crud operations are similar.
 
 ```
 <?php
-$this->user->email = 'me@example.com';
+$this->user->data['email'] = 'me@example.com';
 
 $this->user->func('save',function($id) {
         $this->db->where('id', $id);
@@ -266,7 +265,7 @@ $this->user->delete(5);  // updated user id 5
 
 ### Getting Validation Errors
 
-<b>$this->user->values()</b> function gives you validation errors.
+<b>$this->user->getValues()</b> function gives you validation errors.
 
 ```php
 <?php
@@ -275,7 +274,7 @@ if($this->user->save())
     // ...
 }
 
-print_r($this->user->errors());  //  gives all errors
+print_r($this->user->getErrors());  //  gives all errors
 
 /*
 Array
@@ -286,7 +285,7 @@ Array
 )
 */
 
-$this->user->errors('user_email');  // gives error of the user_email field
+$this->user->getError('user_email');  // gives error of the user_email field
 ```
 
 ### Getting Validated Values
@@ -300,7 +299,7 @@ if($this->user->save())
     // ...
 } 
 
-print_r($this->user->values());  //  gives all validated values
+print_r($this->user->getValues());  //  gives all validated values
 
 /*
 Array
@@ -311,16 +310,16 @@ Array
 )
 */
 
-$this->user->values('user_email');  // gives value of the user_email field
+$this->user->getValue('user_email');  // gives value of the user_email field
 ```
 
-### Getting Error Messages
+### Getting Odm Messages
 
-<b>$this->user->messages()</b> function gives you the last error message with <b>error codes</b>.
+<b>$this->user->getMessages()</b> function gives you the last error message with <b>error codes</b>.
 
 ```php
 <?php
-print_r($this->user->messages());
+print_r($this->user->getMessages());
 /*
 Array
 (
@@ -331,10 +330,10 @@ Array
     [errorMessage] => There are some errors in the form fields.
 )
 */
-$this->user->messages('success'); // gives you value of the success. 
+$this->user->getMessage('success'); // gives you value of the success. 
 ```
 
-<b>$this->user->messages('key');</b> function gives you the value of the message. 
+<b>$this->user->getMessage('key');</b> function gives you the value of the message. 
 
 #### Description Of Keys
 
@@ -361,30 +360,6 @@ $this->user->messages('success'); // gives you value of the success.
 <tr>
 <td>failure</td>
 <td>User customized failure message produced by $this->model->setFailure(); method.</td>
-</tr>
-<tr>
-<td>saveSuccess</td>
-<td>Successful save operation.</td>
-</tr>
-<tr>
-<td>insertSuccess</td>
-<td>Successful insert operation.</td>
-</tr>
-<tr>
-<td>updateSuccess</td>
-<td>Successful update operation.</td>
-</tr>
-<tr>
-<td>removeSuccess</td>
-<td>Successful remove operation.</td>
-</tr>
-<tr>
-<td>deleteSuccess</td>
-<td>Successful delete operation.</td>
-</tr>
-<tr>
-<td>replaceSuccess</td>
-<td>Successful replace operation.</td>
 </tr>
 </tbody>
 </table>
@@ -414,6 +389,38 @@ $this->user->messages('success'); // gives you value of the success.
 </tbody>
 </table>
 
+#### Description of Error Keys
+
+<table>
+<thead>
+</thead>
+<tbody>
+<tr>
+<td>saveSuccess</td>
+<td>Successful save operation.</td>
+</tr>
+<tr>
+<td>insertSuccess</td>
+<td>Successful insert operation.</td>
+</tr>
+<tr>
+<td>updateSuccess</td>
+<td>Successful update operation.</td>
+</tr>
+<tr>
+<td>removeSuccess</td>
+<td>Successful remove operation.</td>
+</tr>
+<tr>
+<td>deleteSuccess</td>
+<td>Successful delete operation.</td>
+</tr>
+<tr>
+<td>replaceSuccess</td>
+<td>Successful replace operation.</td>
+</tr>
+</tbody>
+</table>
 
 ### Using Transactions
 
@@ -471,7 +478,7 @@ new Model('user', 'users');
 $this->user->func('save',function() { 
     if ($this->isValid())
     {
-        $this->password = md5($this->values('password'));
+        $this->data['password'] = md5($this->values('password'));
         $this->db->insert('users', $this);
         return true;
     }

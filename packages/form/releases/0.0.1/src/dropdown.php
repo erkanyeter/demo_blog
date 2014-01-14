@@ -35,15 +35,15 @@ namespace Form\Src {
                 if(isset($options[1])) // custom options
                 { 
                     $customOption = $options[1];
-                    $options = _parseSchemaOptions($options[0]);
-                    $options = array_merge($options,$customOption);
+                    $options      = _parseSchemaOptions($options[0]);
+                    $options      = array_merge($options,$customOption);
                 }
 
             } elseif(isset($options[1]) AND strpos($options[1], 'getSchema') === 0)
             {
                 $customOption = $options[0];
-                $options = _parseSchemaOptions($options[1]);
-                $options = array_merge($customOption,$options);
+                $options      = _parseSchemaOptions($options[1]);
+                $options      = array_merge($customOption,$options);
             }
         }
 
@@ -52,7 +52,7 @@ namespace Form\Src {
         if($selected === false)   // False == "0" bug fix, false is not an Integer.
         {
             $selected_option = array_keys($options);
-            $selected = $selected_option[0];
+            $selected        = $selected_option[0];
         }
         
         if ( ! is_array($selected))
@@ -73,7 +73,7 @@ namespace Form\Src {
             $extra = ' '.$extra;
         }
 
-        $multiple = (sizeof($selected) > 1 AND strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
+        $multiple  = (sizeof($selected) > 1 AND strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
         $selectTag = '<select name="'.$name.'"'.$extra.$multiple.">\n";
 
         foreach ($options as $key => $val)
@@ -138,6 +138,7 @@ namespace Form\Src {
         if($enumName == 'func')
         {
             $closure = $schema[$fieldName][$enumName];
+
             if(is_callable($closure))
             {
                 $options = call_user_func_array(\Closure::bind($closure,getInstance(), 'Controller'), array());
