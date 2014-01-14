@@ -5,7 +5,7 @@ $contacts = array(
 	
 	'contact_id' => array(
 		'label' => 'Contact Id',
-		'types' => '_not_null|_int(11)|_auto_increment',
+		'types' => '_not_null|_auto_increment|_primary_key',
 		'rules' => '',
 		),
 	'contact_name' => array(
@@ -35,26 +35,26 @@ $contacts = array(
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
-		'types' => '_datetime|_null|_primary_key',
-		'rules' => '',
-		),
-	'ersin' => array(
-		'label' => 'Ersin',
-		'types' => '_null|_int(11)',
-		'rules' => '',
-		),
-	'test1' => array(
-		'label' => 'Test1',
-		'types' => '_not_null|_int(11)',
-		'rules' => '',
-		),
-	'test4' => array(
-		'label' => 'Test3',
 		'_enum' => array(
 			'data',
 			'ersin\'s',
 		),
-		'types' => '_not_null|_enum',
+		'types' => '_enum|_not_null',
+		'rules' => '',
+		),
+	'ersin' => array(
+		'label' => 'Ersin',
+		'types' => '_null|_foreign_key(contacts_ibfk_5)(posts)(post_id)|_int(11)|_key(contacts_ibfk_5)(ersin)',
+		'rules' => '',
+		),
+	'burak' => array(
+		'label' => 'Test1',
+		'types' => '_not_null|_int(11)',
+		'rules' => '',
+		),
+	'ersin2' => array(
+		'label' => 'Ersin2',
+		'types' => '_null|_int(11)',
 		'rules' => '',
 		),
 );

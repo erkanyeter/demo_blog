@@ -315,24 +315,23 @@ Class Schema_Sql_Reader {
 		{
 			foreach ($sql as $key) 
 			{
-				if(preg_match_all('/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+([^\(^\s]+)\s*\(([^\)]+)\)/mi', $key, $matches, PREG_SET_ORDER))
+				if(preg_match_all('/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+([^\(^\s]+)\s*\(([^\)]+)\)/mi', $key, $matches, PREG_SET_ORDER) && preg_match_all('/CONSTRAINT\s+([^\(^\s]+)/mi', $key, $constraitNames, PREG_SET_ORDER))
 				{
 					break;
 				}
 			}			
 		}
+		for ($i=0; $i < sizeof($matches); $i++) 
+		{ 
+			$keys = array_map('trim', explode(',', str_replace(array('`','"'), '', $matches[$i][1])));
 
-		foreach($matches as $match)
-		{
-			$keys = array_map('trim', explode(',', str_replace(array('`','"'), '', $match[1])));
-			$fks  = array_map('trim', explode(',', str_replace(array('`','"'), '', $match[3])));
-
-			foreach($keys as $k => $name)
-			{
-				$foreignKeys[$name] = array(str_replace(array('`','"'), '', $match[2]), $fks[$k]);
+			$fks  = array_map('trim', explode(',', str_replace(array('`','"'), '', $matches[$i][3])));
+			for ($k=0; $k <sizeof($keys) ; $k++) 
+			{ 
+				$foreignKeys[$keys[$k]][] = array($constraitNames[$i][$k+1],$keys[$k],str_replace(array('`','"'), '', $matches[$k][2]), $fks[$k]);
 			}
+			
 		}
-
 		return $foreignKeys;
 	}
 
@@ -769,7 +768,21 @@ Class Schema_Sql_Reader {
 
 		if(isset($col['_foreign_keys']))  // Add Foreign Key 
 		{
-			$rules.= '_foreign_key('.$col['_foreign_keys'][0][0].')('.$col['_foreign_keys'][0][1].')|';
+			for ($i=0; $i < sizeof($col['_foreign_keys'][0]) ; $i++)  // get all unique keys for field
+			{ 
+				$rules.= '_foreign_key';
+				for ($j=0; $j < sizeof($col['_foreign_keys'][0][$i]); $j++)
+				{ 
+					if ($j != '1') 
+					{
+						$trimValue = trim($col['_foreign_keys'][0][$i][$j],'`');
+						$rules.= '('.$trimValue.')';
+					}
+					
+				}
+				$rules.= '|';
+				
+			}
 		}
 
 		if(isset($col['_keys']))  // Add Index 

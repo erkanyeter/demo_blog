@@ -506,8 +506,29 @@ Class Schema_Sync {
                                     
                                     $unbracketsDBColType  = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$k]);
                                     $unbracketsDBColTypeArray = explode('|',$unbracketsDBColType); //if any field has a primary key 
-
-                                    if (!in_array('_primary_key' ,$allDbDataArray) || $unbreacketsDiffMatches[$i] != '_primary_key' )
+                                    $isBracketNull = false;
+                                    if ($unbreacketsDiffMatches[$i] ==  '_foreign_key') // if foreign keys field is empty 
+                                    {
+                                        preg_match_all('#\((.*?)\)#s',$diffMatches[$i], $match);
+                                        if (count($match[1]) == 3) 
+                                        {
+                                            for ($j=0; $j < count($match[1]); $j++) 
+                                            { 
+                                                $trimed = $match[1][$j];
+                                               if (empty($trimed)) 
+                                               {
+                                                    $isBracketNull = true;
+                                                    break;
+                                               }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $isBracketNull = true;
+                                        }
+                                       
+                                    }
+                                    if ( ! in_array('_primary_key' ,$allDbDataArray) || $unbreacketsDiffMatches[$i] != '_primary_key' && ! $isBracketNull) // if foreign keys fields is not  empty and any other primary key doesn't exist in db 
                                     {
                                         $this->schemaDiff[$k][] = array(
                                         'update_types' => $diffMatches[$i],
@@ -772,7 +793,11 @@ Class Schema_Sync {
                                         $indexName = $matches[1];
                                         $dbCommand .= 'DROP INDEX '.$this->quoteValue($indexName);
                                         break;
-
+                                    case '_foreign_key':
+                                            preg_match_all('#\((.*?)\)#',$colType,$matches);// Get Key Index Name
+                                            $indexName = $matches[1][0];
+                                            $dbCommand .='DROP FOREIGN KEY `'.$indexName.'`';
+                                        break;
                                     case '_primary_key':
                                         $dbCommand .= 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey].',DROP PRIMARY KEY ';
                                         break;
@@ -912,7 +937,22 @@ Class Schema_Sync {
                                             }
                                         }
                                         break;
+                                    case '_foreign_key':  
+                                            preg_match_all('#\((.*?)\)#',$colType,$matches);// Get Key Index Name
+                                            $indexName = $matches[1][1];
+                                            $colType = trim($colType, '_');
 
+                                            if (strpos($colType, ')(') > 0) 
+                                            {
+                                                $colType = trim($colType,')');
+                                                $exp     = explode(')(', $colType);
+
+                                                $keyIndex  = $exp[0];
+                                                unset($exp[0]);
+                                                $refField = array_values($exp);
+                                            $dbCommands[5] = ',ADD CONSTRAINT `'.$matches[1][0].'`'.strtoupper($this->removeUnderscore($unbracketsSchemaKeys[$i])).' ('.$this->quoteValue($colName).') REFERENCES '.$this->quoteValue($indexName).' ('.$this->quoteValue($refField[1]).') ';
+                                            }
+                                            break;
                                     case '_primary_key':
                                         preg_match('#(\(.*?\))#',$schemaKeys[$i], $pKColumns);
                                             
@@ -1031,7 +1071,23 @@ Class Schema_Sync {
                                         }
                                         
                                         break;
+                                    case '_foreign_key':
+                                        preg_match_all('#\((.*?)\)#',$schemaKeys[$i],$matches);// Get Foreign Key Index Name
 
+                                        $indexName = $matches[1][1];
+                                        $schemaKeys[$i] = trim($schemaKeys[$i], '_');
+
+                                        if (strpos($schemaKeys[$i], ')(') > 0) 
+                                        {
+                                            $schemaKeys[$i] = trim($schemaKeys[$i],')');
+                                            $exp     = explode(')(', $schemaKeys[$i]);
+
+                                            $keyIndex  = $exp[0];
+                                            unset($exp[0]);
+                                            $refField = array_values($exp);
+                                        $dbCommands[5] = ',ADD CONSTRAINT `'.$matches[1][0].'`'.strtoupper($this->removeUnderscore($value)).' ('.$this->quoteValue($colName).') REFERENCES '.$this->quoteValue($indexName).' ('.$this->quoteValue($refField[1]).') ';
+                                        }
+                                        break;
                                     case '_primary_key':
                                             preg_match('#(\(.*?\))#',$schemaKeys[$i], $pKColumns);
                                             
@@ -1135,32 +1191,18 @@ Class Schema_Sync {
                                         $schemaKeys[] = $colType;   
                                     }
                                 break;
-
-                            case '_key':
-                                is_numeric(($key = array_search('_key',$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType;
-                                break;
-
                             case '_unsigned':
-                                is_numeric(($key = array_search('_unsigned',$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType;
-                                break;
-
-                            case '_unique_key' : 
-                                is_numeric(($key = array_search('_unique_key',$unbracketsFileColTypes))) ? $schemaKeys[] = $colType
-                                 : $schemaKeys[] = $colType;
-                                break;
-
                             case '_primary_key':
-                                is_numeric(($key = array_search('_primary_key',$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType;
-                                break;
-
                             case '_default':
-                                is_numeric(($key = array_search('_default',$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType; 
-                                break;
-
                             case '_auto_increment':
-                                is_numeric(($key = array_search('_auto_increment',$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType; 
+                                is_numeric(($key = array_search($unbracketsColTypes[0],$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType; 
                                 break;
-
+                            case '_key':
+                            case '_foreign_key':
+                            case '_unique_key' : 
+                                is_numeric(($key = array_search($unbracketsColTypes[0],$unbracketsFileColTypes))) ? $schemaKeys[] = $colType
+                                 : $schemaKeys[] = $colType;
+                                break;   
                             default:
                                  if (isset($colkey)) 
                                  {
