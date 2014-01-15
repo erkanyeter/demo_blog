@@ -11,9 +11,31 @@ $c = new Controller(function(){
     new Get;            
     new Url;
     new Html;
+    new Uform;
 });
 
 $c->func('index', function() use($c){  
+
+    $this->uform->open('/tutorials/hello_uform', array('method' => 'post'),function() {
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Email',
+            'rules' => 'required|validEmail',
+            'input' => $this->input('user_email', $this->setValue('user_email'), ' id="user_email" ' ),
+        ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Password',
+            'rules' => 'required|xssClean',
+            'input' => $this->input('user_password', $this->setValue('user_password'), ' id="user_password" ' ),
+        ) );
+    });
+
+    // $this->uform->close();
 
     if($this->get->post('dopost'))
     {
@@ -29,7 +51,7 @@ $c->func('index', function() use($c){
         
         $this->user->func('save', function() {
             if ($this->isValid()){
-                $this->password = md5($this->getValue('password'));
+                $this->data['password'] = md5($this->getValue('password'));
                 return $this->db->insert('users', $this);
             }
             return false;
@@ -42,7 +64,7 @@ $c->func('index', function() use($c){
         }
     }
 
-    $c->view('hello_odm', function() use($c) {
+    $c->view('hello_uform', function() use($c) {
 
         $this->set('name', 'Obullo');
         $this->set('footer', $c->tpl('footer', false));

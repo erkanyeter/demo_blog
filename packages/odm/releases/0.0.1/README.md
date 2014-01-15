@@ -1135,6 +1135,52 @@ The following is a list of all the prepping functions that are available to use:
     </tbody>
 </table>
 
+### Creatig Schema Functions
+
+Schema functions allow to you manipulation data of schema field.
+
+```php
+<?php 
+
+$users = array(
+  '*' => array(),
+
+  'email' => array(
+    'label' => 'User Email',
+    'types' => 'minLen(6)|_varchar(160)',
+    'rules' => 'required|validEmail'
+    ),
+  'cities' => array(
+    'label' => 'Cities',
+    'types' => '_enum|_default(Berlin)',
+    'rules' => 'required|maxLen(20)'),
+    '_enum' => array(
+        'London',
+        'Tokyo',
+        'Paris',
+        'New York',
+        'Berlin',
+        'Istanbul'
+        ),
+    'func' => function(){   // Render _enum options as $key => $value
+        $users   = getSchema('users');
+        $options = array();
+        foreach($users['cities']['_enum'] as $val)
+        {
+            $options[$val] = $val;
+        }
+        return $options;
+    }
+    ),
+);
+```
+
+After the creating schema function you can run it in a form element.
+
+```php
+<?php 
+echo $this->form->dropdown('cities', 'getSchema(users)[_enum][func]', $this->form->setValue('cities'));
+```
 
 ### Function Reference
 

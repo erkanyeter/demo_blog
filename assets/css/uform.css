@@ -1,0 +1,138 @@
+/**
+ * General
+ * 
+ * */
+.uform-div-wrapper
+{
+	font-size:12px;
+}
+/**
+ * Row CSS
+ * */
+.uform-row
+{
+	width: 100%;
+	margin:0px auto;
+	padding: 5px 0px;
+	clear:both;
+}
+.uform-row:after{
+	clear: both;
+}
+.uform-row:before, .uform-row:after{
+	display: table;
+}
+/**
+ * Column CSS
+ * 
+ * */
+.uform-column
+{
+	padding-left: 0.5375em;
+	padding-right: 0.5375em;
+	padding-bottom: 0.5375em;
+	float: left;
+	margin: 0;
+	color:rgb(6, 149, 120);
+}
+.uform-column input,.uform-column select{
+	width : 65%;
+	font-size:10pt;
+	color: rgb(6, 149, 134);
+}
+.uform-column input[type='checkbox'], .uform-column input[type='radio']{
+	width : 15px !important;
+	display:inline;
+	margin:auto 25px auto 5px;
+}
+.uform-column textarea{
+	max-width:75%;
+	resize:none;
+}
+.uform-column input[type='submit']{
+	cursor:pointer;
+}
+
+/**
+ * Label CSS
+ * 
+ * */
+.uform-label-wrapper{
+	font-weight:bold;
+	color:rgb(102, 102, 102);	
+}
+.uform-label-left{
+	float:left;
+	margin-right:0.3375em;
+	/*width:25%;*/
+}
+.uform-label-right{
+	float:right;
+	margin-left:0.3375em;
+	/*width:25%;*/
+}
+.uform-label-top{
+	margin-bottom:0.2375em;
+}
+
+/**
+ * Input Possitions
+ * 
+ * */
+.uform-ipos-left input{
+	float:left;
+}
+.uform-ipos-right input{
+	float:right;
+}
+.uform-ipos-center input{
+	display:block;
+	margin:auto;
+}
+
+
+/**
+ * Grid System
+ * 
+ * */
+.uform-grid-1
+{
+	width: 10%;
+}
+.uform-grid-2
+{
+	width: 20%;
+}
+.uform-grid-3
+{
+	width: 30%;
+}
+.uform-grid-4
+{
+	width: 40%;
+}
+.uform-grid-5{
+	width: 50%;
+}
+.uform-grid-6{
+	width: 60%;
+}
+.uform-grid-7{
+	width: 70%;
+}
+.uform-grid-8{
+	width: 80%;
+}
+.uform-grid-9{
+	width: 90%;
+}
+.uform-grid-10{
+	width: 100%;
+}
+/**
+ * Error Input Styles
+ * */
+.uform_error{
+	font-size:10pt;
+	color:red !important;
+}

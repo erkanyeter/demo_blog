@@ -4,5 +4,5 @@
 <div id="footer">
 	Copyright © 2013 by My Company.
 	All Rights Reserved.
-	Powered by <a href="#">Obullo Framework</a>. 
+	Powered by <a href="#">Obullo</a>.
 </div>
