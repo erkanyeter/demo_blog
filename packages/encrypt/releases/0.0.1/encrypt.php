@@ -447,6 +447,7 @@ Class Encrypt {
     {
         return ($this->_hash_type == 'sha1') ? sha1($str) : md5($str);
     }
+
 }
 
 // END Encrypt class

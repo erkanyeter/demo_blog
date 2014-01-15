@@ -14,7 +14,7 @@ Schema is simply a class that contains your <b>labels</b>, <b>data types</b> and
 <?php
 
 $users = array(
-  '*' => array('colprefix' => 'user_'),
+  '*' => array(),
 
   'id' => '',
   'email' => array(
@@ -46,13 +46,13 @@ $users = array(
 
 ### Using Array Data for Types
 
-Some data types requires multiple values ( like _enum ) you can provide array data.
+Some data types requires array type of values ( like _enum or _set ).
 
 ```php
 <?php 
 
 $users = array(
-  '*' => array('colprefix' => 'user_'),
+  '*' => array(),
 
   'id' => '',
   'email' => array(
@@ -67,17 +67,24 @@ $users = array(
     ),
   'cities' => array(
     'label' => 'Cities',
-    'types' => '_enum|_default("Berlin")',
+    'types' => '_enum|_default(Berlin)',
     'rules' => 'required|maxLen(20)'),
-    '_enum' => array('London','Tokyo','Paris','New York','Berlin','Istanbul'),
+    '_enum' => array(
+        'London',
+        'Tokyo',
+        'Paris',
+        'New York',
+        'Berlin',
+        'Istanbul'
+        ),
 );
 
 ```
 
-### Creating Schemas Automatically ( Only Mysql )
+### Auto Schema Creation & Sync ( Only Mysql )
 
 When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exists. 
-Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current validation rules.
+Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current field and datatypes.
 
 If you provide the schema in array format schema driver also will create the database table if it does not exists.
 
@@ -94,27 +101,12 @@ new Model(string $var, mixed $schemaOrTable = '', string $dbVar = 'db');
 * <b>Third Parameter:</b> This parameter sets the current database variable, default is "db".
 
 
-### Creating & Loading Models
+### Creating Models *Using File Schema*
 
 ```php
 new Model('user', 'users');
 ```
 This code create a model on the fly and store it into <b>$this->user</b> variable. All models are empty classes and they extend to Odm Class automatically.
-
-
-### Using Array Schema
-
-```php
-<?php
-$userSchema['users'] = array(
-            'email'    => array('label' => 'User Email', 'types' => '_varchar(160)', 'rules' => 'required|validEmail'),
-            'password' => array('label' => 'User Password', 'types' => '_varchar(255)', 'rules' => 'required|minLen(6)')
-        );
-
-new Model('user', $userSchema);
-```
-
-The <b>key</b> of the $userSchema array ( in this example we use <kbd>users</kbd> ) sets the <b>tablename</b> of the schema.
 
 
 ### Creating Model Functions
@@ -208,7 +200,7 @@ $this->user->data['email']    = 'me@example.com';
 $this->user->data['password'] = '123456';
 
 // Set extra rule for none db fields.
-$this->user->setRules('confirm_password', array('label' => 'Confirm Password', 'rules' => 'required|matches[password]'));
+$this->user->setRules('confirm_password', array('label' => 'Confirm Password', 'rules' => 'required|matches(password)'));
 $this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'isInteger|required'));
 
 $this->user->func('save',function() {
@@ -290,7 +282,7 @@ $this->user->getError('user_email');  // gives error of the user_email field
 
 ### Getting Validated Values
 
-<b>$this->user->values()</b> function gives you filtered values.
+<b>$this->user->getValues()</b> function gives you filtered values.
 
 ```php
 <?php
@@ -343,7 +335,7 @@ $this->user->getMessage('success'); // gives you value of the success.
 * <b>errorString</b> : Gives the error message as string.
 * <b>errorMessage</b> : Gives the translated error message using lingo() function. ( uses lingo package )
 
-#### Description of Messages
+#### Description of Error Keys
 
 <table>
 <thead>
@@ -359,7 +351,7 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tr>
 <tr>
 <td>failure</td>
-<td>User customized failure message produced by $this->model->setFailure(); method.</td>
+<td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
 </tr>
 </tbody>
 </table>
@@ -389,7 +381,7 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tbody>
 </table>
 
-#### Description of Error Keys
+#### Description of Success Keys
 
 <table>
 <thead>
@@ -428,30 +420,28 @@ You can use the transactions if your table engine setted correctly as <b>INNODB<
 
 ```php
 <?php
-$get = new Get;
+new Get;
 
-$this->user->email    = $get->post('email');
-$this->user->password = $get->post('password');
+$this->user->data['email']    = $this->get->post('email');
+$this->user->data['password'] = $this->get->post('password');
+
 $this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'isInteger|required'));
 
 $this->user->func('save',function() {
     if ($this->isValid()){
-        $this->password = md5($this->values('password'));
-        
+        $this->data['password'] = md5($this->getValue('password'));
         try
         {
             $this->db->transaction();
             $this->db->insert('users', $this);
             $this->db->commit();
+            return true;
         } 
         catch(Exception $e)
         {
             $this->db->rollBack();
-            $this->setFailure($e->getMessage());  // Set rollback message to error messages.
-            return false;
+            $this->setFailure($e);  // Set rollback message to error messages.
         }
-
-        return true;
     }
     return false;
 });
@@ -478,7 +468,7 @@ new Model('user', 'users');
 $this->user->func('save',function() { 
     if ($this->isValid())
     {
-        $this->data['password'] = md5($this->values('password'));
+        $this->data['password'] = md5($this->getValue('password'));
         $this->db->insert('users', $this);
         return true;
     }
@@ -492,8 +482,8 @@ $users[] = array('email' => 'hasan@gmail', 'password' => '');
 foreach ($users as $row)
 {
     $this->user->clear();  // you need to do clear for per request.    
-    $this->user->email = $row['email'];
-    $this->user->password = $row['password'];
+    $this->user->data['email']    = $row['email'];
+    $this->user->data['password'] = $row['password'];
 
     if($this->user->save())
     {
@@ -501,7 +491,7 @@ foreach ($users as $row)
     } 
     else 
     {
-        $errors[] = $this->user->errors();
+        $errors[] = $this->user->getErrors();
     }
 }
 
@@ -524,13 +514,13 @@ To run this functionality you need to load your language file using <b>$this->li
 <?php
 
 $users = array(
-  '*' => array('_colprefix' => 'user_'),
+  '*' => array(),
 
   'id' => '',
   'email' => array(
     'label' => 'Username', 
     'types' => '_not_null|_varchar(60)',
-    'rules' => 'required|callback_checkuser',
+    'rules' => 'required|callback_username',
     ),
   'password' => array(
     'label' => 'Password', 
@@ -550,13 +540,13 @@ new Get;
 
 new Model('user', 'users');
 
-$this->user->username = $this->get->post('username');
-$this->user->password = $this->get->post('password');
+$this->user->data['username'] = $this->get->post('username');
+$this->user->data['password'] = $this->get->post('password');
 
-$this->user->func('callback_checkuser', function($username){
+$this->user->func('callback_username', function($username){
     if(strlen($username) > 10)
     {
-        $this->setMessage('callback_checkuser', 'Username must be less than 10 characters.');
+        $this->setMessage('callback_username', 'Username must be less than 10 characters.');
         return false;
     }
     return true;
@@ -565,7 +555,7 @@ $this->user->func('callback_checkuser', function($username){
 $this->user->func('save',function() {
     if ($this->isValid())
     {
-        $this->password = md5($this->values('password'));
+        $this->data['password'] = md5($this->getValue('password'));
         $this->db->insert('users', $this);
         return true;
     }
@@ -603,17 +593,26 @@ Set message to messages output.
 ```php
 $this->model->setMessage($key, $message);
 ```
-
 Failure messages allow to you set custom messages for unsuccessful operations e.g. ( Transactions RollBack Messages ).
+
+
+
 ```php
-$this->model->setFailure($field = '', $message = '');
+$this->model->setFailure($message = '');
+```
+<b>Sending exception object "$e"</b>
+
+if you send exception object in <b>debug</b> and <b>test</b> mode it will give you <b>$e->getMessage()</b>, otherwise in <b>live</b> mode it will produce user friendly error message <b>( We couldn\'t do operation at this time please try again. )</b> which is defined in your <kbd>lingo/english/odm.php</kbd> language file.
+```php
+$this->model->setFailure($e);
 ```
 
-### Type Reference <a name="type-casting-reference"></a>
+
+### Mysql Schema Data Type Reference <a name="data-type-reference"></a>
 
 ------
 
-Type casting functions set your variables to the right type. The following is a list of all the type functions that are available to use:
+The following is a list of all mysql schema driver data types and attributes that are available to use:
 
 <table>
     <thead>
@@ -626,114 +625,254 @@ Type casting functions set your variables to the right type. The following is a 
     </thead>
     <tbody>
             <tr>
-                <td>_array</td>
-                <td>No</td>
-                <td>Sets the schema field to array.</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>_binary</td>
+                <td>_bit</td>
                 <td>Yes</td>
-                <td>Sets the schema field to binary data.</td>
-                <td>_binary or _binary(5)</td>
+                <td>Sets the schema field to bit data.</td>
+                <td>bit(n) 1 to 64</td>
             </tr>
+
             <tr>
-                <td>_bool</td>
-                <td>No</td>
-                <td>Sets the schema field to boolean.</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>_boolean</td>
-                <td>No</td>
-                <td>Sets the schema field to boolean.</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>_decimal</td>
+                <td>_tinyint</td>
                 <td>Yes</td>
-                <td>Sets the schema field to decimal number.</td>
-                <td>_decimal(10,2)</td>
+                <td>Sets the schema field to tinyint data.</td>
+                <td>_tinyint(n) -128 to 127</td>
             </tr>
+
             <tr>
-                <td>_double</td>
+                <td>_smallint</td>
                 <td>Yes</td>
-                <td>Sets the schema field to decimal number.</td>
-                <td>_double(5,1)</td>
+                <td>Sets the schema field to smallint data.</td>
+                <td>_smallint(n) -32768 to 32767</td>
             </tr>
+
             <tr>
-                <td>_empty</td>
-                <td>No</td>
-                <td>Sets the schema field to ' '.</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>_enum</td>
+                <td>_mediumint</td>
                 <td>Yes</td>
-                <td>Sets the schema field to mixed.</td>
-                <td>It takes parameter using schema array.</td>
+                <td>Sets the schema field to mediumint data.</td>
+                <td>_mediumint(n) -8388608 to -8388607</td>
             </tr>
-            <tr>
-                <td>_float</td>
-                <td>Yes</td>
-                <td>Sets the schema field to float number.</td>
-                <td>_float(7,4)</td>
-            </tr>
+
             <tr>
                 <td>_int</td>
-                <td>No</td>
-                <td>Sets the schema field to integer number.</td>
-                <td>int, int(4), int(5), int(9), int(11), int(20) ...</td>
+                <td>Yes</td>
+                <td>Sets the schema field to mediumint data.</td>
+                <td>_int(n) -2147483648 to -2147483647</td>
             </tr>
+        
             <tr>
                 <td>_integer</td>
                 <td>No</td>
                 <td>Sets the schema field to integer number.</td>
                 <td>Same as _int()</td>
             </tr>
+
             <tr>
-                <td>_mixed</td>
-                <td>No</td>
-                <td>Keeps the native type of schema field.</td>
-                <td>No</td>
+                <td>_bigint</td>
+                <td>Yes</td>
+                <td>Sets the schema field to bigint data.</td>
+                <td>_bigint(n) -9223372036854775808 to -9223372036854775807</td>
+            </tr> 
+
+             <tr>
+                <td>_real</td>
+                <td>Yes</td>
+                <td>Sets the schema field to real data.</td>
+                <td>_bigint(n) -9223372036854775808 to -9223372036854775807</td>
             </tr>
+
+            <tr>
+                <td>_double</td>
+                <td>Yes</td>
+                <td>Sets the schema field to decimal number.</td>
+                <td>_double(5,1)</td>
+            </tr>
+
+            <tr>
+                <td>_float</td>
+                <td>Yes</td>
+                <td>Sets the schema field to float number.</td>
+                <td>_float(7,4)</td>
+            </tr>
+                
+            <tr>
+                <td>_decimal</td>
+                <td>Yes</td>
+                <td>Sets the schema field to decimal number.</td>
+                <td>_decimal(7,4)</td>
+            </tr>
+
+           <tr>
+                <td>_numeric</td>
+                <td>Yes</td>
+                <td>Sets the schema field to numeric number.</td>
+                <td>_numeric(7,4)</td>
+            </tr>
+
+            <tr>
+                <td>_date</td>
+                <td>Yes</td>
+                <td>Sets the schema field to date.</td>
+                <td> </td>
+            </tr>
+
+            <tr>
+                <td>_time</td>
+                <td>Yes</td>
+                <td>Sets the schema field to time.</td>
+                <td> </td>
+            </tr>
+
+            <tr>
+                <td>_timestamp</td>
+                <td>Yes</td>
+                <td>Sets the schema field to date.</td>
+                <td> </td>
+            </tr>
+
+            <tr>
+                <td>_datetime</td>
+                <td>Yes</td>
+                <td>Sets the schema field to date.</td>
+                <td> </td>
+            </tr>
+
+            <tr>
+                <td>_year</td>
+                <td>Yes</td>
+                <td>Sets the schema field to year.</td>
+                <td> </td>
+            </tr>
+
+             <tr>
+                <td>_char</td>
+                <td>Yes</td>
+                <td>Sets the schema field to char.</td>
+                <td> _char(n) 0 to 255 </td>
+            </tr>
+
+            <tr>
+                <td>_varchar</td>
+                <td>Yes</td>
+                <td>Sets the schema field to varchar.</td>
+                <td> _varchar(n) 0 to 255 </td>
+            </tr>
+
+            <tr>
+                <td>_binary</td>
+                <td>Yes</td>
+                <td>Sets the schema field to binary data.</td>
+                <td>_binary or _binary(5) 0 to 2</td>
+            </tr>
+
+            <tr>
+                <td>_varbinary</td>
+                <td>Yes</td>
+                <td>Sets the schema field to varbinary data.</td>
+                <td>_varbinary or _varbinary(5) 0 to 2</td>
+            </tr>
+
+             <tr>
+                <td>_tinyblob</td>
+                <td>Yes</td>
+                <td>Sets the schema field to tinyblob data.</td>
+                <td>_tinyblob or _tinyblob(5)</td>
+            </tr>
+
+              <tr>
+                <td>_blob</td>
+                <td>Yes</td>
+                <td>Sets the schema field to blob data.</td>
+                <td>_blob or _blob(5)</td>
+            </tr>
+
+              <tr>
+                <td>_mediumblob</td>
+                <td>Yes</td>
+                <td>Sets the schema field to _mediumblob data.</td>
+                <td>_mediumblob or _mediumblob(5) </td>
+            </tr>
+
+              <tr>
+                <td>_longblob</td>
+                <td>Yes</td>
+                <td>Sets the schema field to longblob data.</td>
+                <td>_longblob or _longblob(5)</td>
+            </tr>
+
+             <tr>
+                <td>_tinytext</td>
+                <td>Yes</td>
+                <td>Sets the schema field to tinytext data.</td>
+                <td>_tinytext or _tinytext(5)</td>
+            </tr>
+
+              <tr>
+                <td>_text</td>
+                <td>Yes</td>
+                <td>Sets the schema field to text data.</td>
+                <td>_text or _text(5)</td>
+            </tr>
+
+              <tr>
+                <td>_mediumtext</td>
+                <td>Yes</td>
+                <td>Sets the schema field to _mediumtext data.</td>
+                <td>_mediumtext or _mediumtext(5) </td>
+            </tr>
+
+              <tr>
+                <td>_longbtext</td>
+                <td>Yes</td>
+                <td>Sets the schema field to longtext data.</td>
+                <td>_longtext or _longtext(5)</td>
+            </tr>
+
+             <tr>
+                <td>_enum</td>
+                <td>Yes</td>
+                <td>Sets the schema field to mixed.</td>
+                <td>It takes parameter using schema array.</td>
+            </tr>
+
+             <tr>
+                <td>_set</td>
+                <td>Yes</td>
+                <td>Sets the schema field to mixed.</td>
+                <td>It takes parameter using schema array.</td>
+            </tr>
+
             <tr>
                 <td>_null</td>
                 <td>No</td>
-                <td>Sets the schema field to null data.</td>
-                <td>No</td>
+                <td>Sets _null data.</td>
+                <td></td>
             </tr>
+
             <tr>
-                <td>_number</td>
+                <td>_not_null</td>
                 <td>No</td>
-                <td>Checks number type if its not number sets the schema field to 0.</td>
-                <td>No</td>
-            </tr>
-            <tr>
-                <td>_bit</td>
-                <td>No</td>
-                <td>Checks bit type if its not number sets the schema field to 0. Same as number.</td>
+                <td>Sets the schema field to not null data.</td>
                 <td>No</td>
             </tr>
 
             <tr>
                 <td>_default</td>
                 <td>Yes</td>
-                <td>Sets the database field to default value.</td>
+                <td>Sets the database field to default value. e.g. _defaul(0) or _default('0')</td>
                 <td>It takes parameter using schema array.</td>
-            </tr>
-
-            <tr>
-                <td>_not_null</td>
-                <td>No</td>
-                <td>Sets _not_null data.</td>
-                <td></td>
             </tr>
 
             <tr>
                 <td>_unsigned</td>
                 <td>No</td>
                 <td>Accept only positive numbers.</td>
+                <td>No</td>
+            </tr>
+
+            <tr>
+                <td>_unsigned_zerofill</td>
+                <td>No</td>
+                <td></td>
                 <td>No</td>
             </tr>
 
@@ -769,7 +908,7 @@ Type casting functions set your variables to the right type. The following is a 
                 <td>_foreign_key</td>
                 <td>Yes</td>
                 <td>Sets FOREIGN KEY.</td>
-                <td>_foreign_key(users)(id)</td>
+                <td>_foreign_key(fk_key_name)(users)(id)</td>
             </tr>
 
     </tbody>
@@ -792,6 +931,37 @@ The following is a list of all the native rules that are available to use:
 </tr>
 </thead>
 <tbody>
+
+<tr>
+<td>_int</td>
+<td>No</td>
+<td>Sets data type to integer.</td>
+<td></td>
+</tr>
+<tr>
+<td>_string</td>
+<td>No</td>
+<td>Sets data type to string.</td>
+<td></td>
+</tr>
+<tr>
+<td>_array</td>
+<td>No</td>
+<td>Sets data type to array.</td>
+<td></td>
+</tr>
+<tr>
+<td>_bool</td>
+<td>No</td>
+<td>Sets data type to boolean.</td>
+<td></td>
+</tr>
+<tr>
+<td>_boolean</td>
+<td>No</td>
+<td>Alias of bool.</td>
+<td></td>
+</tr>
 <tr>
 <td>required</td>
 <td>No</td>
