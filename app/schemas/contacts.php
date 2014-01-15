@@ -5,7 +5,7 @@ $contacts = array(
 	
 	'contact_id' => array(
 		'label' => 'Contact Id',
-		'types' => '_not_null|_auto_increment|_primary_key|_foreign_key(burak)(posts)(post_id)|_int(11)',
+		'types' => '_not_null|_auto_increment|_primary_key|_int(11)',
 		'rules' => '',
 		),
 	'contact_name' => array(
@@ -25,36 +25,12 @@ $contacts = array(
 		),
 	'contact_body' => array(
 		'label' => 'Contact Body',
-		'_enum' => array(
-			'data',
-			'ersin\'s',
-			'bob, Store',
-		),
-		'types' => '_enum|_not_null',
+		'types' => '_null|_text',
 		'rules' => 'required|xssClean',
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
-		'_enum' => array(
-			'data',
-			'ersin\'s',
-		),
-		'types' => '_enum|_not_null',
-		'rules' => '',
-		),
-	'ersin' => array(
-		'label' => 'Ersin',
-		'types' => '_null|_foreign_key(contacts_ibfk_5)(posts)(post_id)|_int(11)|_key(contacts_ibfk_5)(ersin)',
-		'rules' => '',
-		),
-	'burak' => array(
-		'label' => 'Test1',
-		'types' => '_not_null|_int(11)',
-		'rules' => '',
-		),
-	'ersin2' => array(
-		'label' => 'Ersin2',
-		'types' => '_null|_int(11)',
+		'types' => '_null|_datetime',
 		'rules' => '',
 		),
 );

@@ -453,9 +453,18 @@ Class Odm {
      * 
      * @param string $message
      */
-    public function setFailure($message = 'We couldn\'t do operation at this time please try again.')
+    public function setFailure($e = 'We couldn\'t do operation at this time please try again.')
     {
-        $errorMessage = (lingo($message) != '') ? lingo($message) : $message;
+        $errorMessage = $e;
+
+        if(is_object($e) AND (ENV == 'DEBUG' OR ENV == 'TEST'))
+        {
+            $errorMessage = $e->getMessage();
+        } 
+        elseif(is_string($e))
+        {
+            $errorMessage = (lingo($e) != '') ? lingo($e) : $e;
+        }
 
         $this->_odmMessages[$this->_odmTable]['messages'] = array(
         'success' => 0, 
