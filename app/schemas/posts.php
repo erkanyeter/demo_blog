@@ -2,23 +2,23 @@
 
 $posts = array(
 	'*' => array(),
-	
-	'post_id' => array(
-		'label' => 'Post Id',
-		'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
-		'rules' => '',
+
+	'post_id' => array(               
+		'label'  => 'Post Id',
+		'types'  => '_not_null|_primary_key|_int(11)|_auto_increment',
+		'rules'  => '',
 		),
-	'post_user_id' => array(
+	'post_user_id' => array(          
 		'label' => 'Post User Id',
-		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null',
+		'types' => '_int(11)|_foreign_key(users)(user_id)|_key(post_user_id)(post_user_id)|_null|_key(post_user_id2)(post_user_id)|',
 		'rules' => '',
 		),
-	'post_title' => array(
+	'post_title' => array(            
 		'label' => 'Post Title',
 		'types' => '_varchar(255)|_not_null',
 		'rules' => 'required|maxLen(255)',
 		),
-	'post_content' => array(
+	'post_content' => array(          
 		'label' => 'Post Content',
 		'types' => '_not_null|_text',
 		'rules' => 'required',
@@ -31,9 +31,9 @@ $posts = array(
 	'post_status' => array(
 		'label' => 'Post Status',
 		'_enum' => array(
-			'Draft',
-			'Published',
-			'Archived',
+		'Draft',
+		'Published',
+		'Archived',
 		),
 		'types' => '_not_null|_enum',
 		'rules' => 'required',
@@ -47,7 +47,7 @@ $posts = array(
 		'label' => 'Post Modification Date',
 		'types' => '_null|_datetime',
 		'rules' => '',
-		),
+				),
 );
  
 /* End of file posts.php */

@@ -39,17 +39,17 @@ $contacts = array(
 			'data',
 			'ersin\'s',
 		),
-		'types' => '_enum|_not_null',
+		'types' => '_enum|_not_null|_key(contacts2)(ersin)|_key(contacts_ibfk_5)(ersin)',
 		'rules' => '',
 		),
 	'ersin' => array(
 		'label' => 'Ersin',
-		'types' => '_null|_foreign_key(contacts_ibfk_5)(posts)(post_id)|_int(11)|_key(contacts_ibfk_5)(ersin)',
+		'types' => '_null|_foreign_key(contacts_ibfk_5)(posts)(post_id)|_int(11)|_key(contacts2)(ersin)|_key(contacts_ibfk_57)(ersin)|_key(contacts_ibfk_56)(ersin)|_key(contacts_ibfk_5)(ersin)',
 		'rules' => '',
 		),
 	'burak' => array(
 		'label' => 'Test1',
-		'types' => '_not_null|_int(11)',
+		'types' => '_null|_int(11)|_key(contact_subject_id)(contact_subject_id)|_foreign_key(contacts_ibfk_56)(posts)(post_id)|_key(contacts_ibfk_56)(burak)',
 		'rules' => '',
 		),
 	'ersin2' => array(

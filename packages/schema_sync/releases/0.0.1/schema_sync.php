@@ -907,12 +907,12 @@ Class Schema_Sync {
 
                                             $indexName = $matches[1];
 
-                                            $colType = trim($colType, '_');
+                                            $newColType = trim($colType, '_');
 
-                                            if (strpos($colType, ')(') > 0) 
+                                            if (strpos($newColType, ')(') > 0) 
                                             {
-                                                $colType = trim($colType,')');
-                                                $exp     = explode(')(', $colType);
+                                                $newColType = trim($newColType,')');
+                                                $exp     = explode(')(', $newColType);
 
                                                 $keyIndex  = $exp[0];
                                                 unset($exp[0]);
@@ -939,18 +939,22 @@ Class Schema_Sync {
                                         break;
                                     case '_foreign_key':  
                                             preg_match_all('#\((.*?)\)#',$colType,$matches);// Get Key Index Name
+                                            
                                             $indexName = $matches[1][1];
-                                            $colType = trim($colType, '_');
+                                            $newColType = trim($colType, '_');
 
                                             if (strpos($colType, ')(') > 0) 
                                             {
-                                                $colType = trim($colType,')');
-                                                $exp     = explode(')(', $colType);
+                                                $newColType = trim($newColType,')');
+                                                $exp     = explode(')(', $newColType);
 
                                                 $keyIndex  = $exp[0];
                                                 unset($exp[0]);
                                                 $refField = array_values($exp);
-                                            $dbCommands[5] = ',ADD CONSTRAINT `'.$matches[1][0].'`'.strtoupper($this->removeUnderscore($unbracketsSchemaKeys[$i])).' ('.$this->quoteValue($colName).') REFERENCES '.$this->quoteValue($indexName).' ('.$this->quoteValue($refField[1]).') ';
+                                                if (isset($refField[1])) 
+                                                {
+                                                    $dbCommands[5] = ',ADD CONSTRAINT `'.$matches[1][0].'`'.strtoupper($this->removeUnderscore($unbracketsSchemaKeys[$i])).' ('.$this->quoteValue($colName).') REFERENCES '.$this->quoteValue($indexName).' ('.$this->quoteValue($refField[1]).') ';
+                                                }
                                             }
                                             break;
                                     case '_primary_key':
@@ -1117,7 +1121,7 @@ Class Schema_Sync {
                         }   
                     }
 
-                    for ($i = 0; $i < 7; $i++) 
+                    for ($i = 0; $i < 8; $i++) 
                     { 
                         if (isset($dbCommands[$i])) 
                         {
