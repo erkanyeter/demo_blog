@@ -20,20 +20,30 @@ namespace Url\Src {
         $title = (string) $title;
         $sharp = false;
 
-        if(strpos($uri, '#') > 0)  // ' # ' sharp support for anchors.
+        $siteUri = getInstance()->uri->siteUrl($uri, $suffix);
+
+        // ' # ' sharp support
+        
+        if(strpos($uri, '#') === 0)  // If we have "#" begining of the uri
+        {
+            return '<a href="'.trim($siteUri, '/').'"'.$attributes.'>'.$title.'</a>';
+        }
+        elseif(strpos($uri, '#') > 0)  
         {
             $sharp_uri = explode('#', $uri);
             $uri       = $sharp_uri[0];
             $sharp     = true;
         }
 
-        $siteUri = getInstance()->uri->siteUrl($uri, $suffix);
+        // "?" Question mark support
 
         if(strpos(trim($uri,'/'), '?') === 0) // If we have question mark beginning of the  the uri // ?service_type=email&user_id=50
         {
             $siteUri = (strpos($uri, '/') === 0) ? $siteUri : trim($siteUri,'/');
         }
 
+        // "?" Question mark support end
+        
         $site_url = ( ! preg_match('!^\w+://! i', $uri)) ? $siteUri : $uri;
 
         if ($title == '')

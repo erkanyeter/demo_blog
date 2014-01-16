@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Session Helper
+* Session Class
 *
 * @package       packages
 * @subpackage    sess

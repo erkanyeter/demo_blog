@@ -12,7 +12,6 @@
 Class Form {
 
     public static $template = 'default';  // Default form template
-    public $schemaName;                   // Set schema name if 
 
     public function __construct()
     {
@@ -235,30 +234,6 @@ Class Form {
         }
 
         return $form;
-    }
-
-    // ------------------------------------------------------------------------
-    
-    /**
-     * Set schema name to form 
-     * 
-     * @param string $schemaName
-     */
-    public function setSchema($schemaName)
-    {
-        $this->schemaName = $schemaName;
-    }
-    
-    // ------------------------------------------------------------------------
-
-    /**
-     * Get schema name.
-     * 
-     * @param string $schemaName
-     */
-    public function getSchemaName()
-    {
-        return $this->schemaName;
     }
 
 }

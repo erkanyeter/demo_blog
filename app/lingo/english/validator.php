@@ -5,6 +5,7 @@
 
 $lang['required']              = "The %s field is required.";
 $lang['isset']                 = "The %s field must have a value.";
+$lang['contains']			   = "The %s field contains unaccepted value.";
 $lang['validEmail']            = "The %s field must contain a valid email address.";
 $lang['validEmails']           = "The %s field must contain all valid email addresses.";
 $lang['validEmailDns']         = "The %s field must contain all valid email addresses.";

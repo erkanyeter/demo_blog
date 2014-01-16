@@ -350,7 +350,7 @@ Class Agent {
      * @access    public
      * @return    string
      */
-    public function agentString()
+    public function getAgent()
     {
         return $this->agent;
     }
@@ -363,7 +363,7 @@ Class Agent {
      * @access    public
      * @return    string
      */
-    public function platform()
+    public function getPlatform()
     {
         return $this->platform;
     }
@@ -376,7 +376,7 @@ Class Agent {
      * @access    public
      * @return    string
      */
-    public function browser()
+    public function getBrowser()
     {
         return $this->browser;
     }
@@ -389,7 +389,7 @@ Class Agent {
      * @access    public
      * @return    string
      */
-    public function version()
+    public function getBrowserVersion()
     {
         return $this->version;
     }
@@ -402,7 +402,7 @@ Class Agent {
      * @access    public
      * @return    string
      */
-    public function robot()
+    public function getRobotName()
     {
         return $this->robot;
     }
@@ -414,7 +414,7 @@ Class Agent {
      * @access    public
      * @return    string
      */
-    public function mobile()
+    public function getMobileDevice()
     {
         return $this->mobile;
     }
@@ -427,7 +427,7 @@ Class Agent {
      * @access    public
      * @return    bool
      */
-    public function referrer()
+    public function getReferrer()
     {
         return ( ! isset($_SERVER['HTTP_REFERER']) OR $_SERVER['HTTP_REFERER'] == '') ? '' : trim($_SERVER['HTTP_REFERER']);
     }
@@ -440,7 +440,7 @@ Class Agent {
      * @access    public
      * @return    array
      */
-    public function languages()
+    public function getLanguages()
     {
         if (count($this->languages) == 0)
         {
@@ -458,7 +458,7 @@ Class Agent {
      * @access    public
      * @return    array
      */
-    public function charsets()
+    public function getCharsets()
     {
         if (count($this->charsets) == 0)
         {
@@ -476,9 +476,9 @@ Class Agent {
      * @access    public
      * @return    bool
      */
-    public function acceptLang($lang = 'en')
+    public function getAcceptLang($lang = 'en')
     {
-        return (in_array(strtolower($lang), $this->languages(), true)) ? true : false;
+        return (in_array(strtolower($lang), $this->getLanguages(), true)) ? true : false;
     }
 
     // --------------------------------------------------------------------
@@ -489,9 +489,9 @@ Class Agent {
      * @access    public
      * @return    bool
      */
-    public function acceptCharset($charset = 'utf-8')
+    public function getAcceptCharset($charset = 'utf-8')
     {
-        return (in_array(strtolower($charset), $this->charsets(), true)) ? true : false;
+        return (in_array(strtolower($charset), $this->getCharsets(), true)) ? true : false;
     }
     
 }

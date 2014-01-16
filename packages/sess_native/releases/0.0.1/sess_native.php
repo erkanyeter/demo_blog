@@ -12,6 +12,7 @@
 Class Sess_Native {
     
     public $get;
+    public $request;
     public $now;
     public $encrypt_cookie       = false;
     public $expiration           = '7200';
@@ -31,17 +32,18 @@ Class Sess_Native {
 
     function init($params = array())
     {        
-        foreach (array('encrypt_cookie', 'get', 'expiration', 'expire_on_close', 'match_ip', 
+        foreach (array('encrypt_cookie','get','request','expiration','expire_on_close','match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
+            $this->$key = (isset($params[$key])) ? $params[$ke] : config($key, 'sess');
         }
 
         $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : config('cookie_path');
         $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : config('cookie_domain');
         $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : config('cookie_prefix');
 
-        $this->get = &$this->get;   // Set Get request object
+        $this->get     = &$this->get;     // Set Get object
+        $this->request = &$this->request; // Set Request object
 
         if($this->expire_on_close)  // Expire on close 
         {
@@ -149,7 +151,7 @@ Class Sess_Native {
             return false;
         }
 
-        if ($this->match_ip == true AND $session['ip_address'] != $this->get->ipAddress()) // Does the IP Match?
+        if ($this->match_ip == true AND $session['ip_address'] != $this->request->getIpAddress()) // Does the IP Match?
         {
             $this->destroy();
 
@@ -198,7 +200,7 @@ Class Sess_Native {
     {
         $this->userdata = array(
                             'session_id'     => session_id(),
-                            'ip_address'     => $this->get->ipAddress(),
+                            'ip_address'     => $this->request->getIpAddress(),
                             'user_agent'     => substr($this->get->server('HTTP_USER_AGENT'), 0, 50),
                             'last_activity'  => $this->now
                             );

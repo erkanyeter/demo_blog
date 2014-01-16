@@ -1,11 +1,22 @@
-## Get ( Input Class )
+## Get Class ( Get The Php Super Globals )
 
-The Get Helper serves two purposes:
+The Get Class serves two purposes:
 
 <ol>
     <li>It pre-processes global input data for security.</li>
     <li>It provides some helper functions for fetching input data and pre-processing it.</li>
 </ol>
+
+### Initializing the Class
+
+------
+
+```php
+new Get;
+$this->get->method();
+```
+Once loaded, the Get object will be available using: <dfn>$this->get->method()</dfn>
+
 
 ### Using POST, GET, REQUEST or SERVER Data
 
@@ -97,29 +108,4 @@ If the third optional parameter is true, function grabs the original global $_RE
 
 ```php
 $this->get->request('some_data', true, $use_global_var = false);
-```
-
-#### $this->get->ipAddress()
-
-Returns the IP address for the current user. If the IP address is not valid, the function will return an IP of: 0.0.0.0
-
-```php
-echo $this->get->ipAddress();  // 216.185.81.90
-```
-
-#### $this->get->validIp($ip)
-
-Gets the IP address as input and returns true or false (boolean) depending on it is valid or not. 
-
-***Note:*** The $this->get->ipAddress() method also validates the IP automatically.
-
-```php
-if ( ! $this->get->validIp($ip))
-{
-     echo 'Not Valid';
-}
-else
-{
-     echo 'Valid';
-}
 ```

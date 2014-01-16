@@ -110,7 +110,7 @@ Class Output {
         // the reduction, causing the browser to hang waiting for more data.
         // We'll just skip content-length in those cases.
 
-        if (@ini_get('zlib.output_compression') && strncasecmp($header, 'content-length', 14) == 0)
+        if (@ini_get('zlib.output_compression') AND strncasecmp($header, 'content-length', 14) == 0)
         {
             return;
         }

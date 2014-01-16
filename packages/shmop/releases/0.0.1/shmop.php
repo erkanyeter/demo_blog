@@ -3,7 +3,7 @@
 /**
  * Shmop Class
  *
- * Allow to use *nix shared memory
+ * Allows to use *nix shared memory
  *
  * @package       packages
  * @subpackage    shmop

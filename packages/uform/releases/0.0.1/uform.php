@@ -52,6 +52,7 @@ Class Uform
     private $fieldsArr;
     private $rowNum = 0;
     private $colNum = 0;
+    private $colNames = array();
 
     // --------------------------------------------------------------------
 
@@ -78,7 +79,6 @@ Class Uform
 
     // --------------------------------------------------------------------
 
-
     /**
      * This function is used to handle some functions.
      * 
@@ -95,28 +95,26 @@ Class Uform
             case 'checkbox':
             case 'radio':
             case 'dropdown':
-            case 'multiselect':
-            case 'textarea': {
-                    if ($method == 'textarea')
-                        $this->setColValue('field_name', $arguments[0]['name']);
-                    else
-                        $this->setColValue('field_name', $arguments[0]);
+            case 'textarea':
+            case 'multiselect':{
+                $colname = $arguments[0];
+                $this->setColValue('field_name', $arguments[0]);
+                $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
 
+                return call_user_func_array(array(getInstance()->form, $method), $arguments);
+            }
+            /*
+            case 'textarea':
+                    $this->setColValue('field_name', $arguments[0]['name']);
                     return array('method' => $method, 'arguments' => $arguments);
-
                     break;
-                }
+            */
             // case "setValue":
             // {
             //     $this->setColValue("setValue" , $arguments[0]);
             //     return Form::setValue($arguments[0]);
             //     break;
-            // }
-            default: {
-                    if ( ! method_exists($this, $method))
-                        throw new Exception("Uform error : Wrong method name $method");
-                    break;
-                }
+            // }                
         }
     }
 
@@ -144,34 +142,57 @@ Class Uform
 
     /**
      * Adding new column to the form
-     * @param array : accepted parameters : "label" => '', input => array(), array("input" => array())
+     * 
+     * @param $value : label' => '', input => array(), array("input" => array())
      */
-    protected function addCol()
+    protected function addCol($data)
     {
-        $arg = (func_get_args());
-        $arg = $arg[0];
-
-        if ( ! isset($arg['input']))  // for radios & checkboxes "input" isn't set directly in $arg
+        if ( ! array_key_exists('input', $data))  // for radios & checkboxes "input" isn't set directly in $arg
         {
-            foreach ($arg as $o)
+            foreach ($data as $item)
             {
-                if (isset($o['input']))
+                if (isset($item['input']))
                 {
-                    $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['input'][]     = $o['input'];
-                    $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($o['label'])) ? $o['label'] : ' ';
+                    $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['input'][]     = $item['input'];
+                    $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($item['label'])) ? $item['label'] : ' ';
                 }
             }
         }
-        elseif (isset($arg['input']))
+        else
         {
-            $this->setColValue('input', $arg['input']);
+            $this->setColValue('input', $data['input']);
         }
 
-        $this->setColValue('label', (isset($arg['label'])) ? $arg['label'] : ' ');
-        $this->setColValue('rules', (isset($arg['rules'])) ? $arg['rules'] : ' ');
+        if(array_key_exists('label', $data))
+        {
+            $this->setColValue('label', $data['label']);
+        }
+
+        if(array_key_exists('rules', $data))
+        {
+            $label = (isset($data['label'])) ? $data['label'] : ucfirst(strtolower($data['label']));
+
+            getInstance()->form->setRules($this->getColName(), $label, $data['rules']);
+
+            // $this->setColValue('rules', $arg['rules']);
+        }
 
         // increase column index in the columns array
         $this->colNum ++;
+
+        // print_r($this->colNames);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get current column name
+     * 
+     * @return [type] [description]
+     */
+    public function getColName()
+    {
+        return $this->colNames[$this->rowNum][$this->colNum];
     }
 
     // --------------------------------------------------------------------
@@ -194,6 +215,7 @@ Class Uform
      * @param  [type] $input [description]
      * @return [type]        [description]
      */
+    /*
     protected function printInput($input)
     {
         if (is_array($input))
@@ -216,22 +238,23 @@ Class Uform
         }
         return;
     }
-
+*/
     // --------------------------------------------------------------------
 
     /**
-     * [setPosition for label or input : $this->setPosition("label" , "left")]
+     * Set position for label or input
+     * 
+     * $this->setPosition('label' , 'left');
+     * $this->setPosition('input' , 'right');
      * 
      * @param string element name
      * @param string position
      */
-    protected function setPosition()
+    protected function setPosition($element, $position = 'left')
     {
-        $arg = func_get_args();
-
-        if (in_array($arg[0], array('label', 'input')) AND in_array($arg[1], array('left', 'top', 'right', 'center')))
+        if (in_array($element, array('label', 'input')) AND in_array($position, array('left', 'top', 'right', 'center')))
         {
-            $this->fieldsArr[$this->rowNum]['position'][$arg[0]] = $arg[1];
+            $this->fieldsArr[$this->rowNum]['position'][$element] = $position;
         }
     }
 
@@ -265,24 +288,24 @@ Class Uform
 
         if (is_array($this->fieldsArr))         // looping the fields array
         {
-            foreach ($this->fieldsArr as $rowId => $v)
+            foreach ($this->fieldsArr as $rowNum => $v)
             {
                 $out .= "\n\t<div class='uform-row'>";  // printing a row "<div>"
 
                 if (is_array($v))
                 {
                     $columnsNum = count($v['columns']);     // get column grid class
-                    $gridClass = $this->calculateWidth($columnsNum);
+                    $gridClass  = $this->calculateWidth($columnsNum);
 
-                    foreach ($v['columns'] as $colId => $v2)
+                    foreach ($v['columns'] as $colNum => $v2)
                     {
                         $label = $error = $columnContent = '';
                         $addon_class = (isset($v['position']['input'])) ? "uform-ipos-" . $v['position']['input'] : "";
 
                         $out  .= "\n\t\t<div class='uform-column " . array_shift($gridClass) . " $addon_class' >";  // add the column TD
-                        $label = "\n\t\t\t".$this->printLabel($rowId, $colId);
+                        $label = "\n\t\t\t".$this->printLabel($rowNum, $colNum);
                         
-                        $columnContent = "\n\t\t\t".$this->printColumnContent($rowId, $colId);  // retrive column content.
+                        // $columnContent = "\n\t\t\t".$this->printColumnContent($rowNum, $colId);  // retrive column content.
 
                         $error = (isset($v2['error_msg'])) ? $v2['error_msg'] : '';   // retrive validation error msg
 
@@ -304,8 +327,10 @@ Class Uform
     // --------------------------------------------------------------------
 
     /**
-     * [This function determines which 'css classes' will be assigned to each column]
-     * @return array(strings)
+     * This function determines which 'css classes'
+     * will be assigned to each column
+     * 
+     * @return array
      */
     protected function calculateWidth($columnsNum)
     {
@@ -321,10 +346,10 @@ Class Uform
             9 => array(2, 1, 1, 1, 1, 1, 1, 1, 1),
             10 => array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
         );
+
         $x = array();
-        // check if the count of columns in the same row is larger than the accepted count.
-        if (in_array($columnsNum, array_keys($gridSys)))
-        {
+        if (in_array($columnsNum, array_keys($gridSys))) // check if the count of columns in 
+        {                                                // the same row is larger than the accepted count.
             array_walk($gridSys[$columnsNum], function($value, $key) use(&$x) {
                 $x[] = 'uform-grid-' . $value;
             });
@@ -332,8 +357,11 @@ Class Uform
         else
         {
             for ($i = 0; $i < $columnsNum; $i++)
+            {
                 $x[] = 'uform-grid-10';
+            }
         }
+
         return $x;
     }
 
@@ -341,23 +369,31 @@ Class Uform
 
     /**
      * Print the column content
+     * 
      * @return string Column output
      */
-    protected function printColumnContent()
+    protected function printColumnContent($rowNum, $colNum)
     {
-        $arg = func_get_args();
-        $rowId = $arg[0];
-        $colId = $arg[1];
-        $row = $this->fieldsArr[$rowId];
-        $col = $this->fieldsArr[$rowId]['columns'][$colId];
-        $out = '';
+        $arg   = func_get_args();
+        
+        $row   = $this->fieldsArr[$rowNum];
+        $col   = $this->fieldsArr[$rowNum]['columns'][$colNum];
+        $out   = '';
 
-        // it will be an array with "radios, checkboxs";
-        if (!isset($col['input']['method']) AND isset($col['label']))
+        print_r($this->fieldsArr); exit;
+
+        var_dump($col); 
+
+        /*
+        if ( ! isset($col['input']['method']) AND isset($col['label']))  // it will be an array with "radios, checkboxs";
         {
             $i = 0;
+            
             if (isset($col['setValue']))
-                $this->setValueFun($rowId, $colId, $col['setValue']);
+            {
+                $this->setValueFun($rowNum, $colNum, $col['setValue']);
+            }
+
             foreach ($col['input'] as $col_v)
             {
                 $out .= (isset($col['listLabel'][$i])) ? $col['listLabel'][$i] : '';
@@ -368,9 +404,13 @@ Class Uform
         else
         {
             if (isset($col['setValue']))
-                $this->setValueFun($rowId, $colId, $col['setValue']);
+            {
+                $this->setValueFun($rowNum, $colNum, $col['setValue']);
+            }
+
             $out = $this->printInput($col['input']);
         }
+
         return $out;
     }
 
@@ -383,7 +423,7 @@ Class Uform
     {
         $arg = (func_get_args());
 
-        return $return = call_user_func_array(array(getInstance()->form, 'setValue'), $arg);
+        return call_user_func_array(array(getInstance()->form, 'setValue'), $arg);
     }
 
     // --------------------------------------------------------------------
@@ -432,12 +472,24 @@ Class Uform
 
     // --------------------------------------------------------------------
 
+    public function setRules()
+    {
+        $args = func_get_args();
+
+        call_user_func_array(array(getInstance()->form, 'setRules'), $args);
+    }
+
+    // --------------------------------------------------------------------
+
     /**
      * Run the validation
-     * @return boolean [description]
+     * 
+     * @return boolean
      */
     public function isValid()
     {
+        getInstance()->form->isValid();
+        /*
         $validator = getComponentInstance('validator');
         $validator->set('_callback_object', $this);
 
@@ -471,12 +523,30 @@ Class Uform
             {
                 for ($j = 0; $j < count($this->fieldsArr[$i]['columns']); $j++)
                 {
-                    $this->fieldsArr[$i]['columns'][$j]['error_msg'] = getInstance()->form->error($this->fieldsArr[$i]['columns'][$j]['field_name'], "<div class='uform_error' >", "</div>");
+                    $this->fieldsArr[$i]['columns'][$j]['error_msg'] = getInstance()->form->error($this->fieldsArr[$i]['columns'][$j]['field_name'], "<div class='uform-error' >", "</div>");
                 }
             }
         }
 
         return $validation;
+    */
+    }
+
+    public function render()
+    {
+        for ($i = 1; $i < count($this->fieldsArr); $i++)
+        {
+            if (is_array($this->fieldsArr[$i]))
+            {
+                for ($j = 0; $j < count($this->fieldsArr[$i]['columns']); $j++)
+                {
+                    $this->fieldsArr[$i]['columns'][$j]['error_msg'] = getInstance()->form->error($this->fieldsArr[$i]['columns'][$j]['field_name'], "<div class='uform-error' >", "</div>");
+                }
+            }
+        }
+
+        // print_r($this->fieldsArr);
+        // echo getInstance()->form->error('user_email');
     }
 
 }

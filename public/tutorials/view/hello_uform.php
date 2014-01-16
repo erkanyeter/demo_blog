@@ -8,25 +8,18 @@
     </head>
 
     <body>
-        <header>
-            <?php echo $this->url->anchor('/', $this->html->img('logo.png', ' alt="Obullo" ')) ?>
-        </header>
+        <header><?php echo $this->url->anchor('/', $this->html->img('logo.png', ' alt="Obullo" ')) ?></header>
         
         <h1>Hello Uform</h1>
 
-        <section>
-            <?php echo $this->user->getMessage('errorMessage') ?>
-        </section>
+        <section><?php echo $this->user->getMessage('errorMessage') ?></section>
+        <section><?php echo $this->form->getNotice() ?></section>
 
-        <section>
-            <?php echo $this->form->getNotice() ?>
-        </section>
-
-
-        <?php echo $this->uform->printForm('<div style="clear:both;"></div>') ?>
         
         <section>
                     <!-- print form output -->
+
+                    <?php echo $this->uform->printForm() ?>
 
                     <!-- print form output -->
     

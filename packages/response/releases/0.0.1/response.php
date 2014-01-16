@@ -1,7 +1,7 @@
 <?php
 
  /**
- * Response Helper
+ * Response Class
  * 
  * Http Headers, Errors
  *

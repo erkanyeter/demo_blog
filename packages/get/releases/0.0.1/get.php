@@ -1,7 +1,8 @@
 <?php
 
 /**
-* GET Helper ( Manage the $_GET, $_POST, $_SERVER variables ).
+* GET Class ( Get the Super Globals Items
+* $_GET, $_POST, $_SERVER ).
 *
 * @package       packages
 * @subpackage    get
@@ -45,19 +46,7 @@ Class Get
 
         self::$method = $method;
 
-        $execMethod = array('Get', '_method');
-
-        if($method == 'ipAddress' || $method == 'validIp')
-        {
-            if( ! function_exists($method))
-            {
-                require PACKAGES .'get'. DS .'releases'. DS .$packages['dependencies']['get']['version']. DS .'src'. DS .'ipaddress'. EXT;
-            }
-
-            $execMethod = $method;
-        }
-
-        return call_user_func_array($execMethod, $arguments);
+        return call_user_func_array(array('Get', '_method'), $arguments);
     }
 
     // --------------------------------------------------------------------
@@ -150,7 +139,6 @@ Class Get
 
         return $array[$index];
     }
-
 }
 
 // END Get Class

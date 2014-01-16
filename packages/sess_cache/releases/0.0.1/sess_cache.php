@@ -14,6 +14,7 @@ Class Sess_Cache {
     public $db;
     public $database;
     public $get;
+    public $request;
     public $encrypt_cookie       = false;
     public $expiration           = '7200';
     public $match_ip             = false;
@@ -49,7 +50,7 @@ Class Sess_Cache {
 
     function init($params = array())
     {        
-        foreach (array('database','get','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
+        foreach (array('database','get','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
@@ -67,8 +68,9 @@ Class Sess_Cache {
 
         $this->cookie_name = $this->cookie_prefix . $this->cookie_name; // Set the cookie name
         
-        $this->get = &$this->get;         // Set Get request object
-        $this->db  = &$this->database;    // Set Database object
+        $this->get     = &$this->get;         // Set Get request object
+        $this->request = &$this->request;     // Set Request object
+        $this->db      = &$this->database;    // Set Database object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.
@@ -144,7 +146,7 @@ Class Sess_Cache {
             return false;
         }
 
-        if ($this->match_ip == true AND $session['ip_address'] != $this->get->ipAddress()) // Does the IP Match?
+        if ($this->match_ip == true AND $session['ip_address'] != $this->request->getIpAddress()) // Does the IP Match?
         {
             $this->destroy();
 
@@ -259,11 +261,11 @@ Class Sess_Cache {
             $sessid .= mt_rand(0, mt_getrandmax());
         }
 
-        $sessid .= $this->get->ipAddress(); // To make the session ID even more secure we'll combine it with the user's IP
+        $sessid .= $this->request->getIpAddress(); // To make the session ID even more secure we'll combine it with the user's IP
 
         $this->userdata = array(
                                 'session_id'     => md5(uniqid($sessid, true)),
-                                'ip_address'     => $this->get->ipAddress(),
+                                'ip_address'     => $this->request->getIpAddress(),
                                 'user_agent'     => substr($this->get->server('HTTP_USER_AGENT'), 0, 50),
                                 'last_activity'  => $this->now
                                 );
@@ -298,7 +300,7 @@ Class Sess_Cache {
             $new_sessid .= mt_rand(0, mt_getrandmax());
         }
 
-        $new_sessid .= $this->get->ipAddress();         // To make the session ID even more secure
+        $new_sessid .= $this->request->getIpAddress();         // To make the session ID even more secure
         $new_sessid = md5(uniqid($new_sessid, true));   // Turn it into a hash
         
         $this->userdata['session_id']    = $new_sessid; // Update the session data in the session data array

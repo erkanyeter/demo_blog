@@ -969,6 +969,12 @@ The following is a list of all the native rules that are available to use:
 <td></td>
 </tr>
 <tr>
+<td>contains</td>
+<td>Yes</td>
+<td>Returns false if the form element has unaccepted values.</td>
+<td>contains(1) or contains(foo,bar), contains(1,3,9)</td>
+</tr>
+<tr>
 <td>matches</td>
 <td>Yes</td>
 <td>Returns false if the form element does not match the one in the parameter.</td>
@@ -1021,6 +1027,12 @@ The following is a list of all the native rules that are available to use:
 <td>No</td>
 <td>Returns false if the form element contains anything other than numeric characters.</td>
 <td></td>
+</tr>
+<tr>
+<td>isUnique</td>
+<td>Yes</td>
+<td>Returns FALSE if the form element is not unique to the table and field name in the parameter.</td>
+<td>isUnique[table.field]</td>
 </tr>
 <tr>
 <td>isInteger</td>

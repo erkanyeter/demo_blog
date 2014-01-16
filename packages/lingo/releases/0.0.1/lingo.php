@@ -85,6 +85,19 @@ Class Lingo {
         
         return true;
     }
+
+    // --------------------------------------------------------------------
+    
+    /**
+     * Get all language items
+     * 
+     * @return array
+     */
+    public function getAllData()
+    {
+        return $this->language;
+    }
+
 }
 
 /* End of file lingo.php */

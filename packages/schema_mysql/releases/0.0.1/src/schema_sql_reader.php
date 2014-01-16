@@ -226,7 +226,7 @@ Class Schema_Sql_Reader {
 	 */
 	private function _buildPrimaryKeys($row)
 	{
-		$matches 	= array();
+		$matches 	 = array();
 		$primaryKeys = array();
 
 		foreach($row as $key => $sql)

@@ -1,12 +1,12 @@
 <?php
 
 /**
-* Hmvc Request Helper
-* Do Request to another controller using HMVC Class.
-*
+* Request Class
+* Get Http Request Headers
+* 
 * @package       packages
 * @subpackage    request
-* @category      hmvc
+* @category      http request
 * @link
 */
 
@@ -19,82 +19,166 @@ Class Request {
     {
         if( ! isset(getInstance()->request))
         {
-            getInstance()->request = $this; // Make available it in the controller $this->get->method();
+            getInstance()->request = $this; // Make available it in the controller $this->request->method();
         }
 
-        logMe('debug', 'Request Helper Initialized');
+        logMe('debug', 'Request Class Initialized');
     }
 
-    // ------------------------------------------------------------------------
+    // --------------------------------------------------------------------
 
     /**
-     * Defined methods GET, POST, PUT, DELETE
-     * executes the 
+     * Get server request method 
      * 
-     *    -> exec($method, $uri, $params, $cache_time_or_config)
-     * 
-     * @param  string $method Request Method ( GET, POST, PUT, DELETE )
-     * @param  array $arguments
-     * @return string
+     * @return string | bool
      */
-    public function __call($method, $arguments)
+    public function getHttpMethod()
     {
-        return call_user_func_array(array('Request', "exec"), $arguments);
-    }
-    
-    // ------------------------------------------------------------------------
-    
-    /**
-     * Execute the request
-     * 
-     * @param string $method
-     * @param string $request_uri
-     * @param array $params
-     * @param int | array $cache_time_or_config
-     * @return string
-     */
-    public function exec($method = 'get', $request_uri = '', $params = array(), $cache_time_or_config = '0')
-    {
-        logMe('debug', 'Request Helper '.ucfirst($method).' Executed');
-
-        $methods = array('GET' => '', 'POST' => '', 'PUT' => '', 'DELETE' => ''); // Supported request methods
-
-        if( ! isset($methods[strtoupper($method)]))
+        if(isset($_SERVER['REQUEST_METHOD']))
         {
-            if(is_numeric($params))
-            {
-                $cache_time_or_config = $params;
-            }
-            
-            if(is_array($request_uri))
-            {
-                $params  = $request_uri;
-            }
-
-            if($request_uri === false)  // Long Access request
-            {   
-                $hmvc = new Hmvc();  // Every hmvc request must create new instance.
-                $hmvc->clear();               // Clear variables for each request.
-                $hmvc->noLoop();
-                $hmvc->request($method);
-                
-                return $hmvc->exec();
-            }
-            
-            $request_uri = $method;
-            $method      = 'GET';   // Set default method
+            return $_SERVER['REQUEST_METHOD'];
         }
 
-        $hmvc = new Hmvc();
-        $hmvc->clear();
-        $hmvc->noLoop();                 
-        $hmvc->request($request_uri, $cache_time_or_config);
-        $hmvc->setMethod($method, $params);
+        return false;
+    }
+
+    // --------------------------------------------------------------------
     
-        return $hmvc->exec();   // return to hmvc object
+    public function getHttpHeader($type = 'host')
+    {
+        // ....http://symfony.com/doc/current/book/http_fundamentals.html
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+    * Fetch the IP Address
+    *
+    * @access    public
+    * @return    string
+    */
+    public function getIpAddress()
+    {
+        static $ipAddress = '';
+
+        if ($ipAddress != '')
+        {
+            return $ipAddress;
+        }
+
+        $proxy_ips = config('proxy_ips');
+
+        if ( ! empty($proxy_ips))
+        {
+            $proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
+
+            foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header)
+            {
+                $spoof = (isset($_SERVER[$header])) ? $_SERVER[$header] : false;
+
+                if ($spoof !== FALSE)
+                {
+                    // Some proxies typically list the whole chain of IP
+                    // addresses through which the client has reached us.
+                    // e.g. client_ip, proxy_ip1, proxy_ip2, etc.
+                    if (strpos($spoof, ',') !== FALSE)
+                    {
+                        $spoof = explode(',', $spoof, 2);
+                        $spoof = $spoof[0];
+                    }
+
+                    if ( ! $this->isValidIp($spoof))
+                    {
+                        $spoof = FALSE;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            $ipAddress = ($spoof !== FALSE AND in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, true)) ? $spoof : $_SERVER['REMOTE_ADDR'];
+        }
+        else
+        {
+            $ipAddress = $_SERVER['REMOTE_ADDR'];
+        }
+
+        if ( ! $this->isValidIp($ipAddress))
+        {
+            $ipAddress = '0.0.0.0';
+        }
+
+        return $ipAddress;
     }
     
+    // ------------------------------------------------------------------------
+    
+    /**
+    * Validate IP Address
+    *
+    * @access   public
+    * @param    string
+    * @param    string  ipv4 or ipv6
+    * @return   string
+    */
+    public function isValidIp($ip, $which = '')
+    {
+        $which = strtolower($which);
+        switch ($which)
+        {
+            case 'ipv4':
+                $flag = FILTER_FLAG_IPV4;
+                break;
+            case 'ipv6':
+                $flag = FILTER_FLAG_IPV6;
+                break;
+            default:
+                $flag = '';
+                break;
+        }
+
+        return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flag);
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Detect the request is xmlHttp ( Ajax )
+     * 
+     * @return boolean
+     */
+    public function isXmlHttp()
+    {
+        if( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Detects the secure connection ( Https )
+     * 
+     * @return boolean
+     */
+    public function isSecure()
+    {
+        if (empty($_SERVER['https']) AND $_SERVER['https'] != 'on')
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 }
+
+// END Request Class
 
 /* End of file request.php */
 /* Location: ./packages/request/releases/0.0.1/request.php */

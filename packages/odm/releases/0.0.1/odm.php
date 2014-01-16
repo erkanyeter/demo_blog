@@ -455,13 +455,14 @@ Class Odm {
      */
     public function setFailure($e = 'We couldn\'t do operation at this time please try again.')
     {
-        $errorMessage = $e;
+        $errorMessage = $errorString = $e;
 
         if(is_object($e) AND (ENV == 'DEBUG' OR ENV == 'TEST'))
         {
-            $errorMessage = $e->getMessage();
+            $errorMessage = $errorString = $e->getMessage();
         } 
-        elseif(is_string($e))
+
+        if(is_string($e))
         {
             $errorMessage = (lingo($e) != '') ? lingo($e) : $e;
         }
@@ -470,7 +471,7 @@ Class Odm {
         'success' => 0, 
         'errorKey' => 'failure',
         'errorCode'  => 12,
-        'errorString' => $message,
+        'errorString' => (is_string($e)) ? $e : $errorString,
         'errorMessage' => $errorMessage,
         );
     }

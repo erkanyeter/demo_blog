@@ -148,7 +148,7 @@ Class Schema_Sync {
 
             $val['types'] = preg_replace('#(\|+|\|\s+)(?:\|)#', '|', $val['types']);  // remove unnecessary pipes ..
             $val['types'] = preg_replace('#["]+#', '', $val['types']); // remove double " " quotes ...
-            $val['types'] = preg_replace('#(_enum)(\(.*?\))#', "_enum", $val['types']);//if user insert enum data in types we remove it
+            $val['types'] = preg_replace('#(_enum)(\(.*?\))#', "_enum", $val['types']); // if user insert enum data in types we remove it
 
             if(isset($schemaArray[$key]['_enum']))
             { 
@@ -319,7 +319,7 @@ Class Schema_Sync {
      */
     public function _schemaDiff()
     {
-        $allDbData      = implode('|',$this->dbSchema); // get all db data
+        $allDbData      = implode('|',$this->dbSchema); // Get all db data
         $allDbData      = preg_replace('#(\(.*?\))#','', $allDbData);
         $allDbDataArray = explode('|',$allDbData);
 
@@ -504,12 +504,14 @@ Class Schema_Sync {
 
                                 default:
                                     
-                                    $unbracketsDBColType  = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$k]);
-                                    $unbracketsDBColTypeArray = explode('|',$unbracketsDBColType); //if any field has a primary key 
+                                    $unbracketsDBColType      = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$k]);
+                                    $unbracketsDBColTypeArray = explode('|',$unbracketsDBColType);  // if any field has a primary key 
+
                                     $isBracketNull = false;
                                     if ($unbreacketsDiffMatches[$i] ==  '_foreign_key') // if foreign keys field is empty 
                                     {
                                         preg_match_all('#\((.*?)\)#s',$diffMatches[$i], $match);
+
                                         if (count($match[1]) == 3) 
                                         {
                                             for ($j=0; $j < count($match[1]); $j++) 
@@ -694,6 +696,7 @@ Class Schema_Sync {
 
                         $dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' ';
                         $dataTypeNotExist = false;
+
                         if (isset($this->fileSchema[$colName])) 
                         {
                             $unbracketsFileColType = preg_replace('#(\(.*?\))#','', $this->fileSchema[$colName]); // File schema column types
@@ -764,10 +767,12 @@ Class Schema_Sync {
                                 $dataType[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {  // Dont uppercase data inside brackets
                                     return strtoupper($match[0]); 
                                 }, $dataType[$colkey]);
+
                                 if ($isNew || $dataTypeNotExist) // if you want to drop a new field 
                                 {
                                     unset($dataType[$colkey]);
                                 }
+
                                 $dbCommand .=  (isset($dataType[$colkey])) ? 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey] : 'DROP '.$this->quoteValue($colName) ;
                             }
                             else
@@ -950,6 +955,7 @@ Class Schema_Sync {
 
                                                 $keyIndex  = $exp[0];
                                                 unset($exp[0]);
+                                                
                                                 $refField = array_values($exp);
                                                 if (isset($refField[1])) 
                                                 {
@@ -996,7 +1002,7 @@ Class Schema_Sync {
                     }
                     else    // New 
                     {
-                        $unbracketsColType = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
+                        $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
                         $unbracketsColTypes = explode('|',$unbracketsColType);
 
                         if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->dataTypes))

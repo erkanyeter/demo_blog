@@ -30,15 +30,15 @@ new Agent();
 
 if ($this->agent->isBrowser())
 {
-    $user_agent = $this->agent->browser().' '.$this->agent->version();
+    $user_agent = $this->agent->getBrowser().' '.$this->agent->getBrowserVersion();
 }
 elseif ($this->agent->isRobot())
 {
-    $user_agent = $this->agent->robot();
+    $user_agent = $this->agent->getRobotName();
 }
 elseif ($this->agent->isMobile())
 {
-    $user_agent = $this->agent->mobile();
+    $user_agent = $this->agent->getMobileDevice();
 }
 else
 {
@@ -47,7 +47,7 @@ else
 
 echo $user_agent;
 
-echo $this->agent->platform(); // Platform info (Windows, Linux, Mac, etc.)
+echo $this->agent->getPlatform(); // Platform info (Windows, Linux, Mac, etc.)
 ```
 
 ### Function Reference
@@ -81,35 +81,35 @@ Returns true/false (boolean) if the user agent is a known robot.
 Returns true/false (boolean) if the user agent is referred from another site.
 
 
-#### $this->agent->browser()
+#### $this->agent->getBrowser()
 
 ------
 Returns a string containing the name of the web browser viewing your site.
 
-#### $this->agent->version()
+#### $this->agent->getBrowserVersion()
 
 -----
 Returns a string containing the version number of the web browser viewing your site.
 
-#### $this->agent->mobile()
+#### $this->agent->getMobileDevice()
 
 -----
 
 Returns a string containing the name of the mobile device viewing your site.
 
-#### $this->agent->robot()
+#### $this->agent->getRobotName()
 
 ------
 Returns a string containing the name of the robot viewing your site.
 
 
-#### $this->agent->platform()
+#### $this->agent->getPlatform()
 
 -----
 
 Returns a string containing the platform viewing your site (Linux, Windows, OS X, etc.).
 
-#### $this->agent->referrer()
+#### $this->agent->getReferrer()
 
 ------
 
@@ -118,11 +118,11 @@ The referrer, if the user agent is referred from another site. Typically you'll 
 ```php
 if ($this->agent->isReferral())
 {
-    echo $this->agent->referrer();
+    echo $this->agent->getReferrer();
 }
 ```
 
-#### $this->agent->agentString()
+#### $this->agent->getAgentString()
 
 ----
 
@@ -132,14 +132,14 @@ Returns a string containing the full user agent string. Typically it will be som
 Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.0.4) Gecko/20060613 Camino/1.0.2
 ```
 
-#### $this->agent->acceptLang()
+#### $this->agent->getAcceptLang()
 
 ----
 
 Lets you determine if the user agent accepts a particular language. Example:
 
 ```php
-if ($this->agent->acceptLang('en'))
+if ($this->agent->getAcceptLang('en'))
 {
     echo 'You accept English !';
 }
@@ -147,16 +147,16 @@ if ($this->agent->acceptLang('en'))
 
 **Note:** This function is not typically very reliable since some browsers do not provide language info, and even among those that do, it is not always accurate.
 
-#### $this->agent->acceptCharset()
+#### $this->agent->getAcceptCharset()
 
 ----
 
 Lets you determine if the user agent accepts a particular character set. Example:
 
 ```php
-if ($this->agent->acceptCharset('utf-8'))
+if ($this->agent->getAcceptCharset('utf-8'))
 {
-    echo 'You browser supports UTF-8!';
+    echo 'You browser supports UTF-8';
 }
 ```
 

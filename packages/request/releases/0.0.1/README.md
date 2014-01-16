@@ -1,105 +1,60 @@
-## Request ( Hmvc ) Helper
+## Request Class
 
-HMVC library supports <b>internal</b> requests. If you new to use hmvc you can find some useful information in Advanced Topics (/docs/advanced/hmvc) section.
+Request class detects the server request method, secure connection, ip address, ajax requests and other similar things.
 
-### Calling HMVC Requests
+### Initializing the Class
 
 ------
 
-Normally first parameter is assigned for request method but if you do not choose a method , request helper will do $_GET request atuomatically. Don't forget Hmvc also stores get and post data into $_REQUEST global variable.
+```php
+new Request;
+$this->request->method();
+```
+Once loaded, the Request object will be available using: <dfn>$this->request->method()</dfn>
+
+
+#### $this->request->getHttpMethod();
+
+if its available returns to http method otherwise false.
+
+#### $this->request->getHttpHeader($header);
+
+Fetches the server header.
 
 ```php
-$response = $this->request->get('blog/blog/read');
-
-echo $response; // output value
+echo $this->request->getHttpHeader('host');
+echo $this->request->getHttpHeader('content_type');
 ```
 
-### Available Query Methods
+#### $this->request->getIpAddress();
 
-------
-
-<ul>
-    <li>POST</li>
-    <li>GET</li>
-    <li>UPDATE</li>
-    <li>DELETE</li>
-    <li>PUT ( When we use PUT method we provide data as string using third parameter instead of array. )</li>
-</ul>
-
-### Sending POST and GET Data
-
-------
-
-You can set post or get data by manually.
-
-POST data example
+Returns the IP address for the current user. If the IP address is not valid, the function will return an IP of: 0.0.0.0
 
 ```php
-$this->request->post('blog/write',  array('article' => 'content blabla'));  // data must be array
+echo $this->get->ipAddress();  // 216.185.81.90
 ```
 
-GET data example
+#### $this->request->isValidIp($ip);
+
+Gets the IP address as input and returns true or false (boolean) depending on it is valid or not. 
+
+***Note:*** The $this->request->getIpAddress() method also validates the IP automatically.
 
 ```php
-$this->request->get('blog/write',  array('article' => 'content blabla'));  // data must be array
-```
-
-
-### GET data with Query String
-
-------
-
-You enter query strings and hmvc will parse it simply as getting data.
-
-```php
-echo $this->request->get('api/v1?query=SELECT * FROM users LIMIT 100');
-```
-
-### Examples
-
-------
-
-```php
-<?php
-Class Welcome extends Controller {
-    
-    function __construct()
-    {   
-        parent::__construct();
-    }           
-    
-    public function index()
-    {   
-        echo $this->request->post('blog/read/18282/');
-    }
+if ( ! $this->request->getValidIp($ip))
+{
+     echo 'Not Valid';
 }
-
-/* End of file welcome.php 
-Location: .public/welcome/controller/welcome.php */
-```
-
-and <kbd>modules/blog/controller/blog.php</kbd> file should be like this.
-
-```php
-<?php
-Class Blog extends Controller {
-    
-    function __construct()
-    {   
-        parent::__construct();
-    }           
-    
-    public function read($id)
-    {
-        $this->db->where('id', $id);
-        $this->db->get('articles');
-        $row = $this->db->row();
-        
-        echo $row->article;  // hmvc request output must be return to string.
-    }
-
+else
+{
+     echo 'Valid';
 }
-
-/* End of file blog.php 
-/Location: .public/blog/controller/blog.php */
 ```
+
+#### $this->request->isXmlHttp($ip);
+
+Returns "true" if xmlHttpRequest ( Ajax ) available in server header.
+
+#### $this->request->isSecure();
+
+Returns "true" if the secure connection ( Https ) available in server header.
