@@ -92,7 +92,6 @@ Class Schema_Mysql {
 			if($sync_mysql->collisionExists())
 			{	
 				echo $sync_mysql->output(); // Display sync table to developer
-                $sync_mysql->clear();
 				exit;  				  		// die current process
 			}
 
