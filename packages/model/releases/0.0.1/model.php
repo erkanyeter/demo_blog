@@ -68,6 +68,7 @@ Class Model {
                 $postData   = base64_encode(serialize($_POST));
 
                 $task = new Task;
+                $tablename =  isset($_POST['lastCurrentSchema']) ? $_POST['lastCurrentSchema'] : $tablename ;
                 $output = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
 
                 // print_r($_POST); // debug On / Off

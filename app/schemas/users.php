@@ -28,10 +28,15 @@ $users = array(
 		'types' => '_null|_datetime',
 		'rules' => '',
 		),
-	'user_username' => array(
-		'label' => 'User Username',
+	'user_name' => array(
+		'label' => 'User Name',
 		'types' => '_not_null|_varchar(50)',
-		'rules' => 'required|callback_username',
+		'rules' => '',
+		),
+	'user_test' => array(
+		'label' => 'User Test',
+		'types' => '_null|_int(11)',
+		'rules' => '',
 		),
 );
  

@@ -1153,6 +1153,7 @@ Class Schema_Sync {
                     }
                     else
                     {
+                        // print_r($this->fileSchema);
                         $schemaKeys = explode('|', $this->fileSchema[$colName]);
 
                         $unbracketsFileColType  = preg_replace('#(\(.*?\))#','', $this->fileSchema[$colName]); // Get pure column type withouth brackets
@@ -1347,6 +1348,20 @@ Class Schema_Sync {
         }
     }
 
+
+    public function clear()
+    {
+        $this->tablename='';       // Valid tablename
+        $this->modelName='';       // Model not may not be same name some times
+        $this->queryWarning='';               // Javascript query alert for dangerous mysql operations.
+        $this->tablename = '';               // tablename
+        $this->modelName= '';                  // modelname
+
+        $this->schemaName = null;          // lowercase schema name
+        $this->dbSchema   = array();       // database schema array
+        $this->fileSchema = array();       // stored file schema array
+        $this->schemaDiff = array(); 
+    }
 
 } // end class
 

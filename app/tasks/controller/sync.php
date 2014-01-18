@@ -38,6 +38,7 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
     }
 
     $schema     = new Schema($tablename, $modelName, $dbObject, urldecode($requestUri));
+    
     $schemaPath = $schema->getPath();
 
     if( ! empty($postData))

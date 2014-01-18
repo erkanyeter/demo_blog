@@ -191,6 +191,7 @@ Class Schema_Sync_Html {
 		$html.= '</table>';
 
 		$html.= '<input type="hidden" name="lastCurrentPage" id="lastCurrentPage" value="'.urlencode($this->schemaObject->getRequestUri()).'" style="width:500px;">';
+		$html.= '<input type="hidden" name="lastCurrentSchema" id="lastCurrentSchema" value="'.strtolower($this->schemaObject->getTableName()).'" style="width:500px;">';
 		$html.= '<input type="hidden" name="lastSyncCommand" id="lastSyncCommand" value="" style="width:500px;">';
 		$html.= '<input type="hidden" name="lastSyncFunc" id="lastSyncFunc" value="" style="width:500px;">'."\n";
 

@@ -11,8 +11,9 @@ $c = new Controller(function(){
 	new Form;
     new Get;
     new View;
-
+    
 	new Model('contact', 'contacts');
+    new Model('user', 'users');
 });
 
 $c->func('index', function(){

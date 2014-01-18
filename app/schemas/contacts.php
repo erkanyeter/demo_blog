@@ -25,12 +25,36 @@ $contacts = array(
 		),
 	'contact_body' => array(
 		'label' => 'Contact Body',
-		'types' => '_null|_text',
+		'_enum' => array(
+			'data',
+			'ersin\'s',
+			'bob, Store',
+		),
+		'types' => '_not_null|_enum',
 		'rules' => 'required|xssClean',
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
-		'types' => '_null|_datetime',
+		'_enum' => array(
+			'data',
+			'ersin\'s',
+		),
+		'types' => '_not_null|_enum',
+		'rules' => '',
+		),
+	'burak' => array(
+		'label' => 'Burak',
+		'types' => '_null|_int(11)|_foreign_key(contacts_ibfk_56)(posts)(post_id)|_key(contacts_ibfk_56)(burak)',
+		'rules' => '',
+		),
+	'ersin' => array(
+		'label' => 'Ersin',
+		'types' => '_null|_int(11)|_foreign_key(contacts_ibfk_5)(posts)(post_id)|_key(contacts_ibfk_5)(ersin)',
+		'rules' => '',
+		),
+	'ersin2' => array(
+		'label' => 'Ersin2',
+		'types' => '_null|_int(11)',
 		'rules' => '',
 		),
 );
