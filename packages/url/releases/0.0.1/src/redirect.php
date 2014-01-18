@@ -28,7 +28,7 @@ namespace Url\Src {
                 $sharp     = true;
             }
 
-            $uri = getInstance()->uri->siteUrl($uri, $suffix);
+            $uri = getInstance()->uri->getSiteUrl($uri, $suffix);
 
             if($sharp == true AND isset($sharp_uri[1]))
             {

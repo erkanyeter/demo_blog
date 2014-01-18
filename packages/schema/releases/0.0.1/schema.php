@@ -308,7 +308,7 @@ Class Schema {
             } 
             else 
             {
-                $url->redirect(getInstance()->uri->requestUri());
+                $url->redirect(getInstance()->uri->getRequestUri());
             }
         }
     }

@@ -58,28 +58,28 @@ If you find that you need a particular config file globally, you can have it loa
 To retrieve an item from your config file, use the following function:
 
 ```php
-$this->config->item('itemname');
+$this->config->getItem('itemname');
 ```
 
 Where <var>itemname</var> is the <dfn>$config<dfn> array index you want to retrieve. For example, to fetch your language choice you'll do this:
 
 ```php
-$lang = $this->config->item('lingo');
+$lang = $this->config->getItem('lingo');
 ```
 
 The function returns false (boolean) if the item you are trying to fetch does not exist.
 
-If you are using the second parameter of the <kbd>$this->config->load();</kbd> function in order to assign your config items to a specific index you can retrieve it by specifying the index name in the second parameter of the <kbd>$this->config->item()</kbd> function. Example:
+If you are using the second parameter of the <kbd>$this->config->load();</kbd> function in order to assign your config items to a specific index you can retrieve it by specifying the index name in the second parameter of the <kbd>$this->config->getItem()</kbd> function. Example:
 
 ```php
 // Loads a config file named settings.php and assigns it to an index named "settings"
 $this->config->load('settings');
 
 // Retrieve a config item named site_name contained within the settings array
-$siteName = $this->config->item('sitename', 'settings');
+$siteName = $this->config->getItem('sitename', 'settings');
 
 // An alternative way to specify the same item:
-$config = $this->config->item('settings');
+$config = $this->config->getItem('settings');
 
 $siteName = $config['sitename'];
 ```

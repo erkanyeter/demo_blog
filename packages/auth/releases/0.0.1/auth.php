@@ -92,7 +92,7 @@ Class Auth {
     */
     public function attemptQuery($username = '', $password = '')
     {
-        if($this->item('allow_login') == false)
+        if($this->getItem('allow_login') == false)
         {
             return 'disabled';
         }
@@ -318,7 +318,7 @@ Class Auth {
      * @param string $key
      * @return mixed
      */
-    public function item($key)
+    public function getItem($key)
     {
         return $this->{$key};
     }

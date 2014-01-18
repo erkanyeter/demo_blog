@@ -15,6 +15,7 @@
 			 
 			<div id="content">
 				<?php 
+
 				if(count($posts) > 0)
 				{
 					foreach($posts as $row) { 
@@ -31,7 +32,7 @@
 
 						<div id="postnav">
 
-							<b>Tags:</b> <?php echo $this->tag_cloud->render('html', explode(',',$row['post_tags']), false) ?><br><br>
+							<b>Tags:</b> <?php echo $this->tag_cloud->getHtml(explode(',',$row['post_tags']), false) ?><br><br>
 
 						<?php 
 						echo $this->url->anchor('/post/detail/'.$row['post_id'], 'Comments ('.$row['total_comment'].')') ?>

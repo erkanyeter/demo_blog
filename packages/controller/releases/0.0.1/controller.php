@@ -15,7 +15,7 @@ Class Controller {
 
     public static $instance;   // Controller instance
     public $_controllerAppMethods = array();  // Controller user defined methods. ( @private )
-    public $config, $router, $uri, $output, $lingo; // Component instances
+    public $config, $router, $uri, $lingo, $response; // Component instances
         
     // ------------------------------------------------------------------------
 
@@ -32,12 +32,12 @@ Class Controller {
         // Assign Core Libraries
         // ------------------------------------
         
-        $this->config = getComponentInstance('config');
-        $this->router = getComponentInstance('router');
-        $this->uri    = getComponentInstance('uri');
-        $this->output = getComponentInstance('output');
-        $this->lingo  = getComponentInstance('lingo');
-        
+        $this->config   = getComponentInstance('config');
+        $this->router   = getComponentInstance('router');
+        $this->uri      = getComponentInstance('uri');
+        $this->lingo    = getComponentInstance('lingo');
+        $this->response = getComponentInstance('response');
+
         $currentRoute = $this->router->fetchDirectory().'/'.$this->router->fetchClass().'/'.$this->router->fetchMethod();
 
         // Initialize to Autorun
@@ -82,6 +82,26 @@ Class Controller {
     // ------------------------------------------------------------------------
 
     /**
+     * We prevent custom variables
+     *
+     * this is not allowed $this->user_variable 
+     * 
+     * @param string $key
+     * @param string $val
+     */
+    public function __set($key, $val)  // Custom variables is not allowed !!! 
+    {
+        if( ! is_object($val) AND $key != '_controllerAppMethods')
+        {
+            throw new Exception('Manually storing variables into Controller is not allowed');
+        }
+
+        $this->{$key} = $val; // store only application classes & packages
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
      * Create the controller methods.
      * 
      * @param  string $methodName  
@@ -91,12 +111,6 @@ Class Controller {
     public function func($methodName, $methodCallable)
     {
         $method = strtolower($methodName);
-
-        if($method == 'view' OR $method == 'tpl')
-        {
-            throw new Exception("view() and tpl() are reserved methods for view component. 
-                Please use different names. Reserved Controller Methods : <pre>- view()\n- tpl()</pre>");
-        }
 
         if ( ! is_callable($methodCallable))
         {
@@ -125,36 +139,6 @@ Class Controller {
         }
 
         throw new Exception('Controller '.get_class().' error: There is no method "'.$method.'()" to call.');
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Fetch view file from /view folder
-     * 
-     * @param  string  $filename           filename
-     * @param  mixed  $data_or_no_include  Closure data, array data or boolean ( fetch as string )
-     * @param  boolean $include            no include ( fetch as string )
-     * @return string                      
-     */
-    public function view($filename, $data_or_no_include = null, $include = true)
-    {
-        return getComponentInstance('view')->fetch(PUBLIC_DIR .getInstance()->router->fetchDirectory(). DS .'view'. DS, $filename, $data_or_no_include, $include);    
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Fetch view file app / templates folder
-     * 
-     * @param  string  $filename           filename
-     * @param  mixed  $data_or_no_include  Closure data, array data or boolean ( fetch as string )
-     * @param  boolean $include            no include ( fetch as string )
-     * @return string                      
-     */
-    public function tpl($filename, $data_or_no_include = null, $include = true)
-    {
-        return getComponentInstance('view')->fetch(APP .'templates'. DS, $filename, $data_or_no_include, $include);
     }
 
 }

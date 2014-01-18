@@ -64,7 +64,7 @@ Class Model {
 
             if(config('model_auto_sync')) // Create new schema if not exists.
             {
-                $requestUri = urlencode(getInstance()->uri->requestUri());
+                $requestUri = urlencode(getInstance()->uri->getRequestUri());
                 $postData   = base64_encode(serialize($_POST));
 
                 $task = new Task;

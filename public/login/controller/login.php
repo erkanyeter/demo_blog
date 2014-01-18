@@ -10,11 +10,10 @@ $c = new Controller(function(){
 	new Html;
 	new Form;
 	new Get;
-
-
+	new View;
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
 	if($this->get->post('dopost'))  // check login button is submit ?
 	{
@@ -45,8 +44,7 @@ $c->func('index', function() use($c){
         }
 	}
 
-
-    $c->view('login', function() {
+    $this->view->get('login', function() {
 
         $this->set('title', 'Login to My blog');
         $this->getScheme();

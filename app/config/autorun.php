@@ -19,7 +19,7 @@
 | Prototype
 | -------------------------------------------------------------------
 | 
-|$autorun['controller'] = array('init');
+|$autorun['controller'] = array('load_classes');
 |
 */
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Web Request Helper
+* Web Request Class
 * Do Request to another controller using HMVC Class.
 *
 * @package       packages

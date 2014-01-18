@@ -5,7 +5,7 @@
  * 
  * This class contains functions that enable config files to be managed
  *
- * @package       packages
+ * @package     packages
  * @subpackage  config
  * @category    configuration
  * @link        

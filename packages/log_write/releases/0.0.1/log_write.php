@@ -103,7 +103,10 @@ Class Log_Write {
         flock($fp, LOCK_UN);
         fclose($fp);
 
-        chmod($filePath, 0666);
+        if( ! defined('STDIN')) // Do not do chmod in CLI mode, it cause write errors
+        {
+            chmod($filePath, 0666);
+        }
 
         return true;
     }    

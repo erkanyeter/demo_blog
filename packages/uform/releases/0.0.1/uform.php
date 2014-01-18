@@ -410,7 +410,7 @@ Class Uform
 
             $out = $this->printInput($col['input']);
         }
-
+        */
         return $out;
     }
 
@@ -419,7 +419,7 @@ Class Uform
     /**
      * Setting a value for 'inputs', Form::setValue()
      */
-    protected function setValue()
+    public function setValue()
     {
         $arg = (func_get_args());
 
@@ -428,7 +428,7 @@ Class Uform
 
     // --------------------------------------------------------------------
 
-    protected function setValueFun($rowId, $colId, $value)
+    public function setValueFun($rowId, $colId, $value)
     {
         // $col = $this->fieldsArr[$rowId]['columns'][$colId];
         // if (!isset($col['input']['arguments']))

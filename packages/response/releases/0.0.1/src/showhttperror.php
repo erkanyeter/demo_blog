@@ -15,8 +15,7 @@ namespace Response\Src {
     */
     function showHttpError($heading, $message, $template = 'general', $statusCode = 500)
     {
-        $response = new \Response;
-        $response->setHttpResponse($statusCode);
+        getComponentInstance('response')->setHttpResponse($statusCode);
 
         $message = implode('<br />', ( ! is_array($message)) ? array($message) : $message);
 

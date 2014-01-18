@@ -12,18 +12,18 @@ $this->request->method();
 ```
 Once loaded, the Request object will be available using: <dfn>$this->request->method()</dfn>
 
-
-#### $this->request->getHttpMethod();
+#### $this->request->getMethod();
 
 if its available returns to http method otherwise false.
 
-#### $this->request->getHttpHeader($header);
+#### $this->request->getHeader($key);
 
-Fetches the server header.
+Fetches the http server header.
 
 ```php
-echo $this->request->getHttpHeader('host');
-echo $this->request->getHttpHeader('content_type');
+echo $this->request->getHeader('host'); // demo_blog
+echo $this->request->getHeader('content-type'); // gzip, deflate
+echo $this->request->getHeader('connection'); // keep-alive
 ```
 
 #### $this->request->getIpAddress();

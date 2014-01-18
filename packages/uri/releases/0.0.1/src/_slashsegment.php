@@ -12,7 +12,7 @@ namespace Uri\Src {
      * @param    string
      * @return   string
      */
-    function _slashSegment($n, $where = 'trailing', $which = 'segment')
+    function _slashSegment($n, $where = 'trailing', $which = 'getSegment')
     {
         $uriObject = getComponentInstance('uri');
         

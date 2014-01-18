@@ -9,11 +9,12 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
+    new View;
 
 	new Model('post', 'posts');
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
     if($this->get->post('dopost')) // if do post click
     {
@@ -38,7 +39,8 @@ $c->func('index', function() use($c){
         }
     }
 
-	$c->view('create', function(){
+	$this->view->get('create', function(){
+
 		$this->set('title', 'Create New Post');
 		$this->getScheme();
 	});

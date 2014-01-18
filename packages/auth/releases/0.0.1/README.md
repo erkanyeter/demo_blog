@@ -9,7 +9,7 @@ Auth Class provides a lightweight and simple auth implementation for user authen
 ------
 
 ```php
-new Auth();
+new Auth;
 $this->auth->method();
 ```
 
@@ -85,11 +85,11 @@ if($this->auth->isValid())
         $this->auth->setIdentity('username', $row->user_username);    // Set user identity items.
         $this->auth->setIdentity('email', $row->user_email);
 
-        $this->url->redirect($this->auth->item('dashboard_url'));
+        $this->url->redirect('/dashboard');
     } 
     else 
     {
-       $this->url->redirect($this->auth->item('login_url'));
+       $this->url->redirect('/login');
     }
 }
 ```
@@ -122,41 +122,6 @@ if($this->auth->hasIdentity())
 }
 ```
 
-### Automatically Checking Identity and Redirect ( Check identity and redirect users to login Page )
-
-Redirects user to <b>/login</b> page for unauthenticated page views. Redirect page is a configurable option in auth.php.
-
-```php
-$this->auth->identityRedirect(); http://example.com/settings?a=1&b=2 Unauthenticated user request
-```
-
-i.e. If an <b>unauthenticated</b> user want to display the <b>/settings</b> page, <b>$this->auth->identityRedirect()</b> will redirect user to the login page.
-
-```php
-http://example.com/login?redirect=%2Fsettings%3Fa%3D1%26b%3D2
-```
-
-Don't forget to use $this->auth->identityRedirect() which is designed for <b>unauthorized</b> pages.
-
-And you may want to create hidden redirect input element to your login screen.
-
-```php
-<?php 
-echo $form->open('login/post', array('method' => 'POST'));
-echo $form->hidden('redirect', $this->get('redirect'));
-?>
-```
-
-So now you are able to redirect the user to the redirect url. You need to check redirect input using $this->get('redirect') in your login page.
-
-### IdentityRedirect Parameters
-
-------
-
-```php
-$this->auth->identityRedirect('/login',  $urlencode = false);
-```
-
 ### Checking Identity and Redirect
 
 ------
@@ -168,7 +133,7 @@ Redirect user to <kbd>dashboard_url</kbd> (<b>/dashboard</b>) page that is confi
 
 if($this->auth->hasIdentity())
 {
-    $this->url->redirect($this->auth->item('dashboard_url'));
+    $this->url->redirect('/dashboard');
 }
 
 It's redirect request to /dashboard url as default.
@@ -279,7 +244,7 @@ Removes identity data from identity container.
 
 Logs out user, destroys all identity data. This method <kbd>does not destroy</kbd> the user <kbd>sessions</kbd>. It will just remove authorization and identity data of the user.
 
-#### $this->auth->item($key)
+#### $this->auth->getItem($key)
 
 Gets auth config item.
 

@@ -15,7 +15,7 @@
 */
 $odm = array(
 
-	'get' => new Get,    // Get object.
+	'get'  => new Get,   // Get object.
 	'form' => new Form,	 // Form object.
 );
 

@@ -19,21 +19,21 @@ namespace Html\Src {
 
         if(strpos($href, '/*') !== false)   // Is it folder ?
         {
-            $files = '';
-            $exp   = explode('/*', $href);
-            $data  = getInstance()->html->_parseRegex($src, $exp);
+            $files      = '';
+            $exp        = explode('/*', $href);
+            $data       = getInstance()->html->_parseRegex($src, $exp);
             $source_dir = ASSETS.'css'. DS . str_replace('/', DS, $exp[0]);
 
             foreach (scandir($source_dir, ($tit === true) ? 1 : 0) as $filename)
             {   
                 if(pathinfo($source_dir.$filename, PATHINFO_EXTENSION) == 'css')
                 {
-                    if( count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles']))
+                    if(count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles']))
                     {
                         $files .= _css($exp[0].'/'.$filename, $title, $media, $rel, $index_page = false);
                     }
                     
-                    if( count($data['excludeFiles']) > 0 AND ! in_array($filename, $data['excludeFiles']))
+                    if(count($data['excludeFiles']) > 0 AND ! in_array($filename, $data['excludeFiles']))
                     {
                         $files .= _css($exp[0].'/'.$filename, $title, $media, $rel, $index_page = false);
                     }
@@ -67,6 +67,7 @@ namespace Html\Src {
     {
         $link = '<link ';           
         $ext  = 'css';
+        
         if(strpos($href, 'js/') === 0)
         {
             $ext  = 'js';
@@ -81,7 +82,7 @@ namespace Html\Src {
         }
         elseif ($index_page === true)
         {
-            $link .= ' href="'. getInstance()->uri->siteUrl($href, false) .'" ';
+            $link .= ' href="'. getInstance()->uri->getSiteUrl($href, false) .'" ';
         }
         else
         {

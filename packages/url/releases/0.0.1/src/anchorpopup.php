@@ -20,7 +20,7 @@ namespace Url\Src {
     {
         $title = (string) $title;
 
-        $siteUri = getInstance()->uri->siteUrl($uri, $suffix);
+        $siteUri = getInstance()->uri->getSiteUrl($uri, $suffix);
 
         // "?" Question mark support
 
@@ -31,7 +31,7 @@ namespace Url\Src {
 
         // "?" Question mark support end
         
-        $site_url = ( ! preg_match('!^\w+://! i', $uri)) ? getInstance()->uri->siteUrl($uri, $suffix) : $uri;
+        $site_url = ( ! preg_match('!^\w+://! i', $uri)) ? getInstance()->uri->getSiteUrl($uri, $suffix) : $uri;
 
         if ($title == '')
         {

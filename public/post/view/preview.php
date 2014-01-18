@@ -27,14 +27,14 @@
 					</div>
 					<div id="postnav">
 
-						<b>Tags:</b> <?php echo $this->tag_cloud->render('html', explode(',',$post->post_tags), false) ?>
+						<b>Tags:</b> <?php echo $this->tag_cloud->getHtml(explode(',',$post->post_tags), false) ?>
 						<br><br>
 
 			<?php if( ! empty($post->post_modification_date)) { ?>
 
-Last Updated On <?php echo $post->user_username ?> on <?php echo $this->date_get->mDate("%F %d,%Y", strtotime($post->post_modification_date)) ?>
+			Last Updated On <?php echo $post->user_username ?> on <?php echo $this->date_get->mDate("%F %d,%Y", strtotime($post->post_modification_date)) ?>
 
-<?php } ?>
+			<?php } ?>
 					</div>
 				</div>
 

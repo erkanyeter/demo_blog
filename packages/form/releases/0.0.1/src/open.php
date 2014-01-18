@@ -19,7 +19,7 @@ namespace Form\Src {
             $attributes = 'method="post"';
         }
 
-        $action = ( strpos($action, '://') === false) ? getInstance()->uri->siteUrl($action) : $action;
+        $action = ( strpos($action, '://') === false) ? getInstance()->uri->getSiteUrl($action) : $action;
 
         $form  = '<form action="'.$action.'"';
         $form .= \Form::_attributesToString($attributes, true);

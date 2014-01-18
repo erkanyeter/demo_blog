@@ -4,9 +4,16 @@ A view is simply a web page, or a page fragment, like a header, footer, sidebar,
 
 Views are never called directly, they must be loaded by a controller. Remember that in a MVC framework, the Controller acts as the traffic cop, so it is responsible for fetching a particular view. If you have not read the Controllers page you should do so before continuing.
 
-**Note:** This class is initialized automatically by <b>view()</b> and <b>tpl()</b> functions so there is no need to do it manually.
+### Initializing the Class
 
-**Note:** View class is a <kbd>component</kbd> defined in your package.json. You can <kbd>replace components</kbd> with third-party packages.
+------
+
+```php
+new View;
+$this->view->method();
+```
+Once loaded, the FTP object will be available using: <dfn>$this->view->method()</dfn>
+
 
 ### Loading Views
 
@@ -15,13 +22,13 @@ Views are never called directly, they must be loaded by a controller. Remember t
 To load a view file from <kbd>modules/modulename/view</kbd> folder you will use the following function:
 
 ```php
-view('filename');
+$this->view->get('filename');
 ```
 
 **Tip**: This function normally include a view file. If you want to load file as string use <b>false</b> parameter.
 
 ```php
-echo view('filename', false);
+echo $this->view->get('filename', false);
 ```
 
 ### Loading Templates
@@ -31,13 +38,13 @@ echo view('filename', false);
 To load a template file from <kbd>modules/templates</kbd> folder you will use the following function:
 
 ```php
-tpl('filename');
+$this->view->tpl('filename');
 ```
 
 **Tip**: This function normally include a view file. If you want to load file as string use <b>false</b> parameter.
 
 ```php
-echo tpl('filename', false);
+echo $this->view->tpl('filename', false);
 ```
 
 ### Creating Variables <a name="creating-variables"></a>
@@ -47,7 +54,7 @@ echo tpl('filename', false);
 To create view variables shown as below:
 
 ```php
-view('hello_world',function() {
+$this->view->get('hello_world',function() {
     $this->set('name', 'Obullo');
 });
 ```
@@ -66,9 +73,9 @@ To using a scheme before you need to add it your scheme file in <b>app/config/sc
 ```php
 $scheme['general'] = function($filename){
 
-    $this->set('header', tpl('header',false));
-    $this->set('content',view($filename, false));
-    $this->set('footer', tpl('footer',false));
+    $this->set('header', $this->tpl('header',false));
+    $this->set('content',$this->get($filename, false));
+    $this->set('footer', $this->tpl('footer',false));
 
 };
 ```
@@ -99,10 +106,10 @@ Add <kbd>default.php</kbd> scheme file to your <kbd>modules/templates</kbd> fold
 Then in your controller file you can call your scheme using tpl() function.
 
 ```php
-tpl('default',function() {
+$this->view->get('',function() {
 
     $this->set('title', 'Hello World !');
-    $this->scheme('general', 'hello_world');
+    $this->getScheme('yourfilename', 'general')
 
 });
 ```
@@ -119,7 +126,7 @@ Data is passed from the controller to the view by an <strong>array</strong> in t
 ```php
 <?php
 
-view('blog', function(){
+$this->view->get('blog', function(){
 
         $data = array(
                        'numbers' => array('1','2','3','4','5'),
@@ -148,7 +155,7 @@ $anotherData = array(
                   'title' => 'Hello World !';
                 );
 
-view('blog', function() use($data, $anotherData) {
+$this->view->get('blog', function() use($data, $anotherData) {
 
         $this->set('mydata', $data);
         $this->set('mydata', $anotherData);
@@ -161,28 +168,29 @@ Let's try it with your controller file. Open it add this code:
 
 ```php
 <?php
-Class Start extends Controller
-{
-    function __construct()
-    {
-        parent::__construct();
-    }
+
+/**
+ * $c hello_world
+ * @var Controller
+ */
+$c = new Controller(function(){
+    // __construct
+});
+
+$c->func('index', function() use($c){
+  
+    $data = array(
+                   'numbers' => array('1','2','3','4','5'),
+                   'message' => 'My Message'
+              );
+
+    $this->view->get('blog', function() use($data){
+
+        $this->set('title', 'Hello World !');
+        $this->set('data', $data);
+    });
     
-    public function index()
-    {   
-        view('blog', function(){
-
-            $data = array(
-                           'numbers' => array('1','2','3','4','5'),
-                           'message' => 'My Message'
-                      );
-
-            $this->set('title', 'Hello World !');
-            $this->set('data', $data);
-            
-        });
-    }
-} 
+});   
 ?>
 ```
 
@@ -229,12 +237,12 @@ There is a second optional parameter lets you change the behavior of the functio
 ### View as String
 
 ```php
-echo view('myfile', false);  
+echo $this->view->get('myfile', false);  
 ```
 ### View as Include
 
 ```php
-view('myfile');  // default behaviour
+$this->view->get('myfile');  // default behaviour
 ```
 
 ### Templates
@@ -242,8 +250,8 @@ view('myfile');  // default behaviour
 ------
 
 ```php
-echo tpl('header', false);
-echo tpl('footer', false);
+echo $this->view->tpl('header', false);
+echo $this->view->tpl('footer', false);
 ```
 
 ### Subfolders
@@ -253,25 +261,25 @@ echo tpl('footer', false);
 You can create unlimited subfolders.
 
 ```php
-echo view('subfolder/sub/filename');
+echo $this->view->get('subfolder/sub/filename');
 ```
 
 ### Function Reference
 
 ------
 
-#### view('filename', $include = true, $data = array());
+#### $this->view->get('filename', $include = true, $data = array());
 
 Gets the file from local directory e.g. <kbd>/modules/welcome/view</kbd>
 
-#### tpl('filename', $include = true, $data = array());
+#### $this->view->tpl('filename', $include = true, $data = array());
 
 Gets the file from templates directory e.g. <kbd>/modules/templates</kbd>
 
-#### $this->set('key', $val = '');
+#### $this->view->set('key', $val = '');
 
 Sets a view variable ( Variable types can be String, Array or Object ), this method <kbd>automatically detects</kbd> the variable types.
 
-#### $this->scheme('scheme_key', $filename = '');
+#### $this->view->getScheme('scheme_key');
 
 Uses the scheme function that is defined in your <kbd>app/config/scheme.php</kbd>.

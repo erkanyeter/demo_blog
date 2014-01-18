@@ -7,7 +7,7 @@ The Zip Encoding Class permits you to create Zip archives. Archives can be downl
 ------
 
 ```php
-new Zip();
+new Zip;
 $this->zip->method();
 ```
 

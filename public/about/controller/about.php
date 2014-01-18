@@ -8,11 +8,12 @@ $c = new Controller(function(){
     // __construct
 	new Url;
 	new Html;
+	new View;
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
-    $c->view('about', function() {
+    $this->view->get('about', function() {
 
         $this->set('title', 'About');
         $this->getScheme();

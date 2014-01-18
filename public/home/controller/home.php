@@ -11,9 +11,10 @@ $c = new Controller(function(){
 	new Db;
 	new Date_Get;
 	new Tag_Cloud;
+    new View;
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
     $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
         WHERE posts.post_id = comment_post_id AND comment_status = '1' 
@@ -25,7 +26,7 @@ $c->func('index', function() use($c){
 
     $posts = $this->db->resultArray();
 
-    $c->view('home', function() use($posts) {
+    $this->view->get('home', function() use($posts) {
 
         $this->set('title', 'Welcome to home');
         $this->set('posts', $posts);

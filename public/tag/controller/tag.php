@@ -11,9 +11,10 @@ $c = new Controller(function(){
 	new Db;
 	new Date_Get;
 	new Tag_Cloud;
+    new View;
 });
 
-$c->func('index', function($tag) use($c){
+$c->func('index', function($tag){
 
     $this->db->like('post_tags', $tag);
     $this->db->where('post_status', 'Published');
@@ -22,7 +23,7 @@ $c->func('index', function($tag) use($c){
 
     $posts = $this->db->resultArray();
 
-    $c->view('tag', function() use($posts) {
+    $this->view->get('tag', function() use($posts) {
 	   
         $this->set('title', 'Welcome to home');
         $this->set('posts', $posts);

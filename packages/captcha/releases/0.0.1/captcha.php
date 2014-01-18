@@ -56,7 +56,7 @@ Class Captcha {
 			$this->init();
  			
 			$this->img_path          = ROOT .str_replace('/', DS, trim($this->config['img_path'], '/')). DS;
-			$this->img_url           = getInstance()->uri->baseUrl($this->config['img_path']. DS); //deg sonuna DS Eklendi birde framework silinecek
+			$this->img_url           = getInstance()->uri->getBaseUrl($this->config['img_path']. DS); //deg sonuna DS Eklendi birde framework silinecek
 			$this->user_font_path    = ROOT .$this->config['user_font_path']. DS;
 			$this->default_font_path = PACKAGES .'captcha'. DS .'releases'. DS .$packages['dependencies']['captcha']['version']. DS .'src'. DS .'fonts'. DS;
 

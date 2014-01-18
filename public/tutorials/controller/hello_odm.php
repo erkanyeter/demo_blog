@@ -6,19 +6,20 @@
  */
 $c = new Controller(function(){
     // __construct
-    
-    new Model('user', 'users');
-    new Get;            
+    new Get;
     new Url;
     new Html;
+    new View;
+
+    new Model('user', 'users');
 });
 
-$c->func('index', function() use($c){  
+$c->func('index', function(){
 
     if($this->get->post('dopost'))
     {
-        $this->user->data['email']    = $this->get->post('email');
-        $this->user->data['password'] = $this->get->post('password');
+        $this->user->data['user_email']    = $this->get->post('user_email');
+        $this->user->data['user_password'] = $this->get->post('user_password');
 
         //--------------------- set non schema rules
         
@@ -29,7 +30,7 @@ $c->func('index', function() use($c){
         
         $this->user->func('save', function() {
             if ($this->isValid()){
-                $this->password = md5($this->getValue('password'));
+                $this->data['password'] = md5($this->getValue('password'));
                 return $this->db->insert('users', $this);
             }
             return false;
@@ -42,10 +43,10 @@ $c->func('index', function() use($c){
         }
     }
 
-    $c->view('hello_odm', function() use($c) {
+    $this->view->get('hello_odm',function() {
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $c->tpl('footer', false));
+        $this->set('footer', $this->tpl('footer', false));
     });
 
 });

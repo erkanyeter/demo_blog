@@ -6,15 +6,16 @@
  */
 $c = new Controller(function(){
     // __construct
-    
-    new Model('user', 'users');
-    new Get;            
+    new Get;      
     new Url;
     new Html;
     new Uform;
+    new View;
+    
+    new Model('user', 'users'); 
 });
 
-$c->func('index', function() use($c){  
+$c->func('index', function(){
     /*
     if($this->get->post('dopost'))
     {
@@ -82,10 +83,10 @@ $c->func('index', function() use($c){
         $this->uform->render();
     }
 
-    $c->view('hello_uform', function() use($c) {
+    $this->view->get('hello_uform', function() {
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $c->tpl('footer', false));
+        $this->set('footer', $this->tpl('footer', false));
     });
 
 });

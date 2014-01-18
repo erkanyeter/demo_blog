@@ -222,10 +222,10 @@ You can define allowed extensions from your app/config/config.php file, default 
 - rss
 - ajax
 
-Using URI Class $this->uri->extension(); function you can grab the called URI extension.
+Using URI Class $this->uri->getExtension(); function you can grab the called URI extension.
 
 ```php
-switch($this->uri->extension())
+switch($this->uri->getExtension())
 {
     case 'json':
         echo json_encode($data);

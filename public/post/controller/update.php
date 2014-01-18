@@ -9,11 +9,12 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
+    new View;
 
 	new Model('post', 'posts');
 });
 
-$c->func('index', function($id) use($c){
+$c->func('index', function($id){
 
     if($this->get->post('dopost')) // if do post click
     {
@@ -54,11 +55,10 @@ $c->func('index', function($id) use($c){
 
     if($row == false)
     {
-        new Response();  // send 404 response
         $this->response->show404();
     }
 
-	$c->view('update', function() use($id, $row){
+	$this->view->get('update', function() use($id, $row){
 
 		$this->set('title', 'Update Post');
         $this->set('post_id', $id);

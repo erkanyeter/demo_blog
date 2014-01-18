@@ -386,6 +386,7 @@ Class Odm {
     public function setError($key, $error)
     {
         $this->_odmMessages[$this->_odmTable]['errors'][$key] = $error;
+        $this->_odmValidation = false; // set validation to false.
 
         if(isset($this->_odmSchema[$key])) // set a validation error.
         {
@@ -455,6 +456,8 @@ Class Odm {
      */
     public function setFailure($e = 'We couldn\'t do operation at this time please try again.')
     {
+        $this->_odmValidation = false; // set validation to false;
+
         $errorMessage = $errorString = $e;
 
         if(is_object($e) AND (ENV == 'DEBUG' OR ENV == 'TEST'))

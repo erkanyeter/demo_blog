@@ -14,13 +14,8 @@
         <h1>Hello Odm</h1>
         <h2><?php echo $this->url->anchor('tutorials/hello_ajax', 'Ajax Tutorial') ?></h2>
 
-        <section>
-            <?php echo $this->user->getMessage('errorMessage') ?>
-        </section>
-
-        <section>
-            <?php echo $this->form->getNotice() ?>
-        </section>
+        <section><?php echo $this->user->getMessage('errorMessage') ?></section>
+        <section><?php echo $this->form->getNotice() ?></section>
         
         <section>
 
@@ -31,15 +26,15 @@
                     <tr>
                         <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
                         <td><?php 
-                            echo $this->form->error('email');
-                            echo $this->form->input('email', $this->form->setValue('email'), " id='email' ");
+                            echo $this->form->error('user_email');
+                            echo $this->form->input('user_email', $this->form->setValue('user_email'), " id='user_email' ");
                             ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Password') ?></td>
                         <td><?php 
-                            echo $this->form->error('password');
-                            echo $this->form->password('password', '', " id='password' ");
+                            echo $this->form->error('user_password');
+                            echo $this->form->password('user_password', '', " id='user_password' ");
                             ?></td>
                     </tr>
                     <tr>

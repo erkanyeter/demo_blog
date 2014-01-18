@@ -14,14 +14,17 @@ $c = new Controller(function(){
 	new Model('post', 'posts');
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
+
+    new View;
 
     $this->db->join('posts', 'post_id = comment_post_id');  // Get all comments
     $this->db->orderBy('comment_status', 'ASC');
     $this->db->get('comments'); // reset query
+    
     $result = $this->db->result();
 
-	$c->view('approve', function() use($result){
+	$this->view->get('approve', function() use($result){
         
 		$this->set('title', 'Approve Comments');
         $this->set('comments', $result);

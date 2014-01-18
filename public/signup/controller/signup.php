@@ -11,10 +11,12 @@ $c = new Controller(function(){
 	new Html;
 	new Form;
 	new Get;
+    new View;
+
     new Model('user', 'users');
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
     if($this->get->post('dopost')) // if do post click
     {
@@ -43,7 +45,6 @@ $c->func('index', function() use($c){
 
         $this->user->func('save', function() {
             if ($this->isValid()){
-                
                 $bcrypt = new Bcrypt; // use bcrypt
                 $this->data['user_password'] = $bcrypt->hashPassword($this->getValue('user_password'), 8);
 
@@ -57,10 +58,9 @@ $c->func('index', function() use($c){
                 catch(Exception $e)
                 {
                     $this->db->rollBack();
-                    $this->setFailure($e->getMessage());  // Set rollback message to error messages.
+                    $this->setFailure($e);  // Set rollback message to error messages.
                 }
             }
-
             return false;
         });
 
@@ -69,8 +69,8 @@ $c->func('index', function() use($c){
             $this->url->redirect('/login');
         }
     }
-
-    $c->view('signup_form', function() {
+    
+    $this->view->get('signup_form', function() {
 
         $this->set('title', 'Signup to my blog');
         $this->getScheme();

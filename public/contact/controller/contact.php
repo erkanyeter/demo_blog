@@ -9,11 +9,13 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
+    new Get;
+    new View;
 
 	new Model('contact', 'contacts');
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
     if($this->get->post('dopost')) // if do post click
     {
@@ -37,7 +39,7 @@ $c->func('index', function() use($c){
         }
     }
 
-	$c->view('contact', function(){
+	$this->view->get('contact', function(){
 
 		$this->set('title', 'Contact');
 		$this->getScheme();

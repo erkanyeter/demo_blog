@@ -133,7 +133,7 @@ Class Uri
             }
 
             // No PATH_INFO?... What about QUERY_STRING?
-            $path =  (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
+            $path = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
             if (trim($path, '/') != '')
             {
                 $this->uri_protocol = 'QUERY_STRING';
@@ -142,7 +142,7 @@ Class Uri
             }
 
             // As a last ditch effort lets try using the $_GET array
-            if (is_array($_GET) && count($_GET) == 1 && trim(key($_GET), '/') != '')
+            if (is_array($_GET) AND count($_GET) == 1 AND trim(key($_GET), '/') != '')
             {
                 $this->setUriString(key($_GET));
                 return;
@@ -185,6 +185,7 @@ Class Uri
         }
 
         $uri = $_SERVER['REQUEST_URI'];
+
         if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
         {
             $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
@@ -196,13 +197,15 @@ Class Uri
 
         // This section ensures that even on servers that require the URI to be in the query string (Nginx) a correct
         // URI is found, and also fixes the QUERY_STRING server var and $_GET array.
+        
         if (strncmp($uri, '?/', 2) === 0)
         {
             $uri = substr($uri, 2);
         }
 
         $parts = preg_split('#\?#i', $uri, 2);
-        $uri = $parts[0];
+        $uri   = $parts[0];
+
         if (isset($parts[1]))
         {
             $_SERVER['QUERY_STRING'] = $parts[1];
@@ -265,13 +268,16 @@ Class Uri
      */
     public function _filterUri($str)
     {
-    	if ($str != '' && config('permitted_uri_chars') != '' && config('enable_query_strings') == false  &&  ! defined('STDIN'))
+        // defined STDIN FOR task requests
+        // we should not prevent some characters in CLI mode
+
+    	if ($str != '' AND config('permitted_uri_chars') != '' AND config('enable_query_strings') == false  AND  ! defined('STDIN')) 
         {
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
             if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote(config('permitted_uri_chars'), '-')).']+$|i', $str))
             {
-                $response = new Response;
+                $response = getComponentInstance('response');
                 $response->showError('The URI you submitted has disallowed characters.', 400);
             }
         }
@@ -322,6 +328,7 @@ Class Uri
     }
 
 }
+
 // END URI Class
 
 /* End of file Uri.php */

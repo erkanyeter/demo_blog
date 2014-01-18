@@ -68,7 +68,7 @@ $obullo = getInstance();
 ```
 
 ```php
-$obullo->config->item('base_url');
+$obullo->config->getItem('log_threshold');
 ```
 
 #### packageExists('name');
@@ -145,18 +145,3 @@ $this->response->setHttpResponse(401);  // Sets the header as:  Unauthorized
 ```
 
 [See here](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html) for a full list of headers.
-
-### View Functions
-
-------
-
-Some tiny view functions available in the controller and that use the <kbd>View</kbd> component.
-
-#### $c->view('filename', $include = true, $data = array());
-
-Get the file from local directory e.g. <kbd>/public/welcome/view</kbd>
-
-
-#### $c->tpl('filename', $include = true, $data = array());
-
-Get the file from templates directory e.g. <kbd>/app/templates</kbd>

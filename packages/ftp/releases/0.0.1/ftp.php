@@ -590,9 +590,7 @@ Class Ftp {
     private function _error($line)
     {
         getInstance()->lingo->load('ftp'); // load framework language file.
-        
-        $response = new Response;
-        $response->showError(lingo($line));
+        getInstance()->response->showError(lingo($line));
     }
 
 }

@@ -10,9 +10,10 @@ $c = new Controller(function(){
 	new Html;
 	new Form;
     new Get;
+    new View;
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
     if($this->get->post('post_title'))
     {
@@ -27,7 +28,7 @@ $c->func('index', function() use($c){
     $this->db->get('posts');
     $posts = $this->db->result();
 
-	$c->view('manage', function() use($posts) {
+	$this->view->get('manage', function() use($posts) {
         
         $this->set('title', 'Manage Posts');
 		$this->set('posts', $posts);

@@ -1,18 +1,18 @@
-## Html Helper
+## Html Class
 
 The Html Helper package contains a few functions that assist in working with HTML tags.
 
 <ul>
-    <li><a href="#css">Html::css()</a></li>
-    <li><a href="#js">Html::js()</a></li>
-    <li><a href="#img">Html::img()</a></li>
+    <li><a href="#css">$this->html->css()</a></li>
+    <li><a href="#js">$this->html->js()</a></li>
+    <li><a href="#img">$this->html->img()</a></li>
 </ul>
 
 ### Loading Single File
 
 ```php
-echo Html::css('welcome.css');
-echo Html::js('welcome.js');
+echo $this->html->css('welcome.css');
+echo $this->html->js('welcome.js');
 
 // gives <link href="/assets/css/welcome.css" rel="stylesheet" type="text/css" />
 // gives <script type="text/javascript" src="/assets/js/welcome.js"></script>
@@ -23,7 +23,7 @@ echo Html::js('welcome.js');
 Using this <kbd>"/*"</kbd> sign you can load all grouped files in a folder.
 
 ```php
-echo Html::js('jquery/*');
+echo $this->html->js('jquery/*');
 
 // gives <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 // gives <script type="text/javascript" src="/assets/js/jquery.livequery.js"></script>
@@ -35,7 +35,7 @@ echo Html::js('jquery/*');
 Sets exclude files if you don't want to load all contents of the folder.
 
 ```php
-echo Html::js('jquery/*^(jquery.livequery.js)');
+echo $this->html->js('jquery/*^(jquery.livequery.js)');
 
 // gives <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 // gives <script type="text/javascript" src="/assets/js/jquery.map.js"></script>
@@ -46,11 +46,11 @@ echo Html::js('jquery/*^(jquery.livequery.js)');
 You can get strict files if you don't want to load all contents of the folder.
 
 ```php
-echo Html::js('jquery/*(jquery.min.js)');
+echo $this->html->js('jquery/*(jquery.min.js)');
 
 // gives <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 
-echo Html::js('jquery/*(jquery.min.js|jquery.map.js)');
+echo $this->html->js('jquery/*(jquery.min.js|jquery.map.js)');
 
 // gives <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
 // gives <script type="text/javascript" src="/assets/js/jquery.map.js"></script>
@@ -59,7 +59,7 @@ echo Html::js('jquery/*(jquery.min.js|jquery.map.js)');
 ### css() <a name="css"></a>
 
 ```php
-echo Html::css('welcome.css');
+echo $this->html->css('welcome.css');
 
 // gives <link href="/assets/css/welcome.css" rel="stylesheet" type="text/css" />
 ```
@@ -67,7 +67,7 @@ echo Html::css('welcome.css');
 #### Additionally you can pass extra paramaters.
 
 ```php
-echo Html::css('welcome.css', $title='' $media = 'print', $rel='stylesheet', $index_page = false);
+echo $this->html->css('welcome.css', $title='' $media = 'print', $rel='stylesheet', $index_page = false);
 
 // gives <link href="/assets/css/welcome.css"  title="" rel="stylesheet" type="text/css"  media="print" />
 ```
@@ -77,7 +77,7 @@ echo Html::css('welcome.css', $title='' $media = 'print', $rel='stylesheet', $in
 Loading .js files from <kbd>assets/js</kbd> folder. Example:
 
 ```php
-echo Html::js('welcome.js');
+echo $this->html->js('welcome.js');
 
 // gives <script type="text/javascript" src="/assets/js/welcome.js"></script>
 ```
@@ -85,7 +85,7 @@ echo Html::js('welcome.js');
 #### Additionally you can pass extra paramaters.
 
 ```php
-echo Html::js('welcome.js', $arguments = '', $type = 'text/javascript', $index_page = false);
+echo $this->html->js('welcome.js', $arguments = '', $type = 'text/javascript', $index_page = false);
 ```
 
 #### img() <a name="img"></a>
@@ -93,14 +93,14 @@ echo Html::js('welcome.js', $arguments = '', $type = 'text/javascript', $index_p
 Lets you create HTML <b>img</b> tags. The first parameter contains the image source. Example:
 
 ```php
-echo Html::img('picture.jpg');
+echo $this->html->img('picture.jpg');
 
 // gives <img src="http://site.com/assets/images/picture.jpg" />
 ```
 There is an optional second parameter that is a true/false value that specifies if the src should have the page specified by $config['index_page'] added to the address it creates. Presumably, this would be if you were using a media controller.
 
 ```php
-echo Html::img('picture.jpg', true);
+echo $this->html->img('picture.jpg', true);
 
 // gives <img src="http://site.com/index.php/images/picture.jpg" />
 ```
@@ -118,7 +118,7 @@ $imageProperties = array(
       'rel'    => 'lightbox',
 );
 
-echo Html::img($imageProperties);
+echo $this->html->img($imageProperties);
 
 // gives <img src="/assets/images/picture.jpg" alt="Me, demonstrating how to eat 4 slices of pizza at one time"  class="postImages" width="200" height="200" title="That was quite a night" rel="lightbox" />
 ```
@@ -128,7 +128,7 @@ echo Html::img($imageProperties);
 You can change the paths simply or you can provide sub paths.
 
 ```php
-echo Html::css('js/subfolder/example.css');
+echo $this->html->css('js/subfolder/example.css');
 
 // gives <link  href="/modules/assets/js/subfolder/example.css" rel="stylesheet" type="text/css" />
 ```
@@ -137,14 +137,14 @@ echo Html::css('js/subfolder/example.css');
 
 ------
 
-#### Html::css($filename, $title = '', $media = '', $rel = 'stylesheet', $index_page = false)
+#### $this->html->css($filename, $title = '', $media = '', $rel = 'stylesheet', $index_page = false)
 
 Load .css files from <kbd>assets/css</kbd> folder.
 
-#### Html::js($src, $arguments = '', $type = 'text/javascript', $index_page = false)
+#### $this->html->js($src, $arguments = '', $type = 'text/javascript', $index_page = false)
 
 Load .js files from <kbd>assets/js</kbd> folder.
 
-#### Html::img($src = '', $attributes = '', $index_page = false)
+#### $this->html->img($src = '', $attributes = '', $index_page = false)
 
 Load image files from <kbd>assets/images</kbd> folder.

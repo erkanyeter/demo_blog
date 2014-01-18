@@ -27,7 +27,7 @@
 					</div>
 					<div id="postnav">
 
-						<b>Tags:</b> <?php echo $this->tag_cloud->render('html', explode(',',$post->post_tags), false) ?>
+						<b>Tags:</b> <?php echo $this->tag_cloud->getHtml(explode(',',$post->post_tags), false) ?>
 						<br><br>
 
 			<?php if( ! empty($post->post_modification_date)) { ?>

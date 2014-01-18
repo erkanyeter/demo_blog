@@ -228,7 +228,8 @@ Class Validator {
             }
             
             $uriClass = getComponentInstance('uri');
-            $uri = ($group == '') ? trim($uriClass->routedUriString(), '/') : $group; // Is there a validation rule for the particular URI being accessed?
+            
+            $uri = ($group == '') ? trim($uriClass->getRoutedUriString(), '/') : $group; // Is there a validation rule for the particular URI being accessed?
             
             if ($uri != '' AND isset($this->_config_rules[$uri]))
             {

@@ -69,7 +69,7 @@
         
         $_COOKIE = cleanInputData($_COOKIE);
 
-        logMe('debug', "Global POST and COOKIE data sanitized");
+        logMe('debug', 'Global POST and COOKIE data sanitized');
 
         /*
          * ------------------------------------------------------
@@ -78,7 +78,7 @@
          */
         if(config('log_threshold') > 0)
         {
-            logMe('debug', '$_REQUEST_URI: '.$uri->requestUri());
+            logMe('debug', '$_REQUEST_URI: '.$uri->getRequestUri());
             logMe('debug', '$_COOKIE: '.preg_replace('/\n/', '', print_r($_COOKIE, true)));
 
             if(sizeof($_REQUEST) > 0)
@@ -93,14 +93,13 @@
          *  Load core components
          * ------------------------------------------------------
          */
-        $output = getComponentInstance('output');
+        $response = getComponentInstance('response');
 
         $pageUri    = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
         $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .'controller'. DS .$router->fetchClass(). EXT;
 
         if( ! file_exists($controller))
         {
-            $response = new Response;
             $response->show404($pageUri);
         }
 
@@ -122,7 +121,6 @@
                 OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
             )
         {
-            $response = new Response;
             $response->show404($pageUri);
         }
 
@@ -139,7 +137,6 @@
         // Check method exist or not 
         if ( ! in_array(strtolower($router->fetchMethod()), array_keys($c->_controllerAppMethods)))
         {
-            $response = new Response;
             $response->show404($pageUri);
         }
 
@@ -176,12 +173,12 @@
         {
             if($hooks->_callHook('display_override') === FALSE)
             {
-                $output->_display();  // Send the final rendered output to the browser
+                $response->_sendOutput();  // Send the final rendered output to the browser
             }
         } 
         else 
         {
-            $output->_display();    // Send the final rendered output to the browser
+            $response->_sendOutput();    // Send the final rendered output to the browser
         }
 
         /*
@@ -315,7 +312,7 @@
             }
 
             $variables[$key] =& $$var;
-            $loaded[$key] = $key;
+            $loaded[$key]    = $key;
          }
 
         return $variables[$key];
@@ -416,9 +413,9 @@
      */
     function lingo()
     {
-        $args = func_get_args();
-        $item = $args[0];
-
+        $args  = func_get_args();
+        $item  = $args[0];
+        
         $lingo = getComponentInstance('lingo');
         $item  = ($item == '' OR ! isset($lingo->language[$item])) ? false : $lingo->language[$item];
 

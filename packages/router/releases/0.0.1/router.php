@@ -155,7 +155,7 @@ Class Router {
                     return false;
                 }
 
-                $response = new Response;
+                $response = getComponentInstance('response');
                 $reponse->showError($this->response['404'], 404);
             }
 
@@ -319,7 +319,7 @@ Class Router {
 
         $error_page = (isset($segments[1])) ? $segments[0].'/'.$segments[1] : $segments[0];
 
-        $response = new Response;
+        $response = getComponentInstance('response');
         $response->show404($error_page);
     }
                

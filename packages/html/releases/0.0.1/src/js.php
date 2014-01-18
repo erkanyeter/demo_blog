@@ -19,9 +19,9 @@ namespace Html\Src {
 
         if(strpos($src, '/*') !== false)  // Is it folder ?
         {
-            $files = '';
-            $exp   = explode('/*', $src);
-            $data  = getInstance()->html->_parseRegex($src, $exp);
+            $files      = '';
+            $exp        = explode('/*', $src);
+            $data       = getInstance()->html->_parseRegex($src, $exp);
             $source_dir = ASSETS .'js'. DS . str_replace('/', DS, $exp[0]);
 
             foreach (scandir($source_dir, ($args === true) ? 1 : 0) as $filename)
@@ -73,7 +73,7 @@ namespace Html\Src {
         }
         elseif ($index_page === true)  // .js file as PHP
         {
-            $link .= ' src="'. getInstance()->uri->siteUrl($src, false) .'" ';
+            $link .= ' src="'. getInstance()->uri->getSiteUrl($src, false) .'" ';
         }
         else
         {

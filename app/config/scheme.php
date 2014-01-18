@@ -29,9 +29,9 @@ $scheme = array(
 
 	'default' => function()
 	{
-		$this->set('header', getInstance()->tpl('header',false));
-		$this->set('sidebar', getInstance()->tpl('sidebar',false));
-	    $this->set('footer', getInstance()->tpl('footer',false));
+		$this->set('header', getInstance()->view->tpl('header',false));
+		$this->set('sidebar', getInstance()->view->tpl('sidebar',false));
+	    $this->set('footer', getInstance()->view->tpl('footer',false));
 	},
 );
 

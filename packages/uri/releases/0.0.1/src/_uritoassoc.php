@@ -12,19 +12,19 @@ namespace Uri\Src {
      * @param    string    which array we should use
      * @return   array
      */
-    function _uriToAssoc($n = 3, $default = array(), $which = 'segment')
+    function _uriToAssoc($n = 3, $default = array(), $which = 'getSegment')
     {
         $uriObject = getComponentInstance('uri');
 
-        if ($which == 'segment')
+        if ($which == 'getSegment')
         {
-            $totalSegments = 'totalSegments';
-            $segmentArray  = 'segmentArray';
+            $totalSegments = 'getTotalSegments';
+            $segmentArray  = 'getSegmentArray';
         }
         else
         {
-            $totalSegments = 'totalRoutedSegments';
-            $segmentArray  = 'routedSegmentArray';
+            $totalSegments = 'getTotalRoutedSegments';
+            $segmentArray  = 'getRoutedSegmentArray';
         }
 
         if ( ! is_numeric($n))
@@ -49,6 +49,7 @@ namespace Uri\Src {
             {
                 $retval[$val] = false;
             }
+
             return $retval;
         }
 
@@ -83,8 +84,7 @@ namespace Uri\Src {
             }
         }
 
-        // Cache the array for reuse
-        $uriObject->keyval[$n] = $retval;
+        $uriObject->keyval[$n] = $retval;  // Cache the array for reuse
         
         return $retval;
     }

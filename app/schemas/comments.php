@@ -10,7 +10,7 @@ $comments = array(
 		),
 	'comment_post_id' => array(
 		'label' => 'Comment Post Id',
-		'types' => '_not_null|_int(11)|_foreign_key(posts)(post_id)|_key(comment_post_id)(comment_post_id)',
+		'types' => '_not_null|_int(11)|_key(comment_post_id)(comment_post_id)|_foreign_key(comments_ibfk_1)(posts)(post_id)',
 		'rules' => '',
 		),
 	'comment_name' => array(
@@ -49,7 +49,7 @@ $comments = array(
 			'0',
 			'1',
 		),
-		'types' => '_null|_default("0")|_enum',
+		'types' => '_null|_default(0)|_enum',
 		'rules' => '',
 		),
 );

@@ -17,8 +17,7 @@ namespace Response\Src {
 
         header('Content-type: text/html; charset='.config('charset')); // Some times we use utf8 chars in errors.
         
-        $response = new \Response;
-        echo $response->showHttpError($heading, $message, 'general', $statusCode);
+        echo getComponentInstance('response')->showHttpError($heading, $message, 'general', $statusCode);
         exit();
     }
 

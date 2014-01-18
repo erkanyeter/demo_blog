@@ -32,7 +32,7 @@ namespace Html\Src {
             {
                 if ($index_page === true)
                 {
-                    $img .= ' src="'. getInstance()->uri->siteUrl($v, false).'" ';
+                    $img .= ' src="'. getInstance()->uri->getSiteUrl($v, false).'" ';
                 }
                 else
                 {

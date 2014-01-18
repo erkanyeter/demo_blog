@@ -10,7 +10,7 @@ FTP Class permits files to be transfered to a remote server. Remote files can al
 ------
 
 ```php
-new Ftp();
+new Ftp;
 $this->ftp->method();
 ```
 Once loaded, the FTP object will be available using: <dfn>$this->ftp->method()</dfn>

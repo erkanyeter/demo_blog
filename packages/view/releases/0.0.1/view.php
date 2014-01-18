@@ -1,7 +1,7 @@
 <?php
 
 /**
- * View Helper
+ * View Class
  *
  * @package       packages
  * @subpackage    view
@@ -10,8 +10,6 @@
  */
 
 Class View {
-
-    public static $_instance;  // Object instance
 
     /**
      * Data Storage variables
@@ -27,19 +25,12 @@ Class View {
      */
     public function __construct()
     {
+        if( ! isset(getInstance()->view))
+        {
+            getInstance()->view = $this; // Make available it in the controller $this->view->method();
+        }
+
         logMe('debug', "View Class Initialized");
-    }
-
-    // ------------------------------------------------------------------------
-
-    public static function getInstance()
-    {
-       if( ! self::$_instance instanceof self)
-       {
-           self::$_instance = new self();
-       } 
-       
-       return self::$_instance;
     }
 
     // ------------------------------------------------------------------------
@@ -94,7 +85,7 @@ Class View {
             return $output;
         }
         
-        getComponentInstance('output')->appendOutput($output);
+        getComponentInstance('response')->appendOutput($output);
 
         return;
     }
@@ -149,11 +140,10 @@ Class View {
      */
     public function getScheme($file = '', $schemeName = 'default')
     {
-        $args = func_get_args();
-
+        $args     = func_get_args();
         $fileData = (empty($file)) ? array() : array($file);
-
-        $schemes = getConfig('scheme');
+        $schemes  = getConfig('scheme');
+        
         if(isset($schemes[$schemeName]) AND is_callable($schemes[$schemeName]))
         {
             call_user_func_array(Closure::bind($schemes[$schemeName], $this, get_class()), $fileData);
@@ -180,6 +170,36 @@ Class View {
         }
 
         return $val;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Load view file from /view folder
+     * 
+     * @param  string  $filename           filename
+     * @param  mixed  $data_or_no_include  Closure data, array data or boolean ( fetch as string )
+     * @param  boolean $include            no include ( fetch as string )
+     * @return string                      
+     */
+    public function get($filename, $data_or_no_include = null, $include = true)
+    {
+        return $this->fetch(PUBLIC_DIR .getInstance()->router->fetchDirectory(). DS .'view'. DS, $filename, $data_or_no_include, $include);    
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Load view file app / templates folder
+     * 
+     * @param  string  $filename           filename
+     * @param  mixed  $data_or_no_include  Closure data, array data or boolean ( fetch as string )
+     * @param  boolean $include            no include ( fetch as string )
+     * @return string                      
+     */
+    public function tpl($filename, $data_or_no_include = null, $include = true)
+    {
+        return $this->fetch(APP .'templates'. DS, $filename, $data_or_no_include, $include);
     }
 
 }

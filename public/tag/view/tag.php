@@ -14,7 +14,7 @@
 		<div id="containerbox">
 			 
 			<div id="content">
-			<h1 class="post_tag">Post Tagged With <?php echo $this->uri->segment(1)?></h1>
+			<h1 class="post_tag">Post Tagged With <?php echo $this->uri->getSegment(1)?></h1>
 
 				<?php 
 				if(count($posts) > 0)
@@ -33,7 +33,7 @@
 
 						<div id="postnav">
 
-							<b>Tags:</b> <?php echo $this->tag_cloud->render('html', explode(',',$row['post_tags']), false) ?><br><br>
+							<b>Tags:</b> <?php echo $this->tag_cloud->getHtml(explode(',',$row['post_tags']), false) ?><br><br>
 
 							<a href="post.php#commentcontainer">Comments (2)</a> | Last Updated On December 15,2013
 						</div>

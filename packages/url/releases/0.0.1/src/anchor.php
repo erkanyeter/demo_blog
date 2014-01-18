@@ -20,7 +20,7 @@ namespace Url\Src {
         $title = (string) $title;
         $sharp = false;
 
-        $siteUri = getInstance()->uri->siteUrl($uri, $suffix);
+        $siteUri = getInstance()->uri->getSiteUrl($uri, $suffix);
 
         // ' # ' sharp support
         

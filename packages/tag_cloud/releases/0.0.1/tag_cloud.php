@@ -97,7 +97,7 @@ Class Tag_Cloud {
 
 		foreach($this->_Arr as $key => $val)
 		{
-			$tag = $this->_formatTag($val['tag']);
+			$tag        = $this->_formatTag($val['tag']);
 			$val['tag'] = $tag;
 
 			if(empty($val['url']) OR $val['url'] === null OR $val['url'] === false)
@@ -105,10 +105,38 @@ Class Tag_Cloud {
 				$val['url'] = $this->_createUrl($val['tag']);
 			}
 
-			$values[]= $val;
+			$values[] = $val;
 		}
 
 		return $this->_tagsArr = $values; 
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * getHtml
+	 * 
+	 * @param  array   $tags    [description]
+	 * @param  boolean $shuffle [description]
+	 * @return [type]           [description]
+	 */
+	public function getHtml($tags = array(), $shuffle = true)
+	{
+		return $this->_render('html', $tags, $shuffle);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * getArray
+	 * 
+	 * @param  array   $tags    [description]
+	 * @param  boolean $shuffle [description]
+	 * @return [type]           [description]
+	 */
+	public function getArray($tags = array(), $shuffle = true)
+	{
+		return $this->_render('array', $tags, $shuffle);
 	}
 
 	// --------------------------------------------------------------------
@@ -121,7 +149,7 @@ Class Tag_Cloud {
 	 * @param  boolean $shuffle [description]
 	 * @return [type]           [description]
 	 */
-	public function render($type = 'array', $tags = array(), $shuffle = true)
+	public function _render($type = 'array', $tags = array(), $shuffle = true)
 	{
 		if(sizeof($tags) > 1)
 		{
@@ -202,6 +230,7 @@ Class Tag_Cloud {
 	private function _getColor()
 	{
 		$hash = md5('color' . mt_rand(0,100)); // hexdec için random hash oluşturuluyor.
+		
 		switch($this->_colorType)
 		{
 			case 'dark': // Koyu renkli tonlar

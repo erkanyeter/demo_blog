@@ -11,12 +11,15 @@
 |
 */
 $agents['platforms'] = array (
-							'windows nt 6.2'	=> 'Windows 8',
-							'windows nt 6.1'	=> 'Windows 7',
-					        'windows nt 6.0'	=> 'Windows Longhorn',
-					        'windows nt 5.2'	=> 'Windows 2003',
+							'windows nt 6.3'	=> 'Windows 8.1',
+					        'windows nt 6.2'	=> 'Windows 8',
+					        'windows nt 6.1'	=> 'Windows 7',
+					        'windows nt 6.0'	=> 'Windows Vista',
+					        'windows nt 5.2'	=> 'Windows 2003/XP x64',
 					        'windows nt 5.0'	=> 'Windows 2000',
+					        'windows me'		=> 'Windows ME',
 					        'windows nt 5.1'	=> 'Windows XP',
+					        'windows xp'		=> 'Windows XP',
 					        'windows nt 4.0'	=> 'Windows NT 4.0',
 					        'winnt4.0'			=> 'Windows NT 4.0',
 					        'winnt 4.0'			=> 'Windows NT',
@@ -25,12 +28,14 @@ $agents['platforms'] = array (
 					        'win98'				=> 'Windows 98',
 					        'windows 95'		=> 'Windows 95',
 					        'win95'				=> 'Windows 95',
+					        'win16'				=> 'Windows 3.11',
 					        'windows'			=> 'Unknown Windows OS',
 					        'os x'				=> 'Mac OS X',
 					        'ppc mac'			=> 'Power PC Mac',
 					        'freebsd'			=> 'FreeBSD',
 					        'ppc'				=> 'Macintosh',
 					        'linux'				=> 'Linux',
+					        'ubuntu'			=> 'Ubuntu',
 					        'debian'			=> 'Debian',
 					        'sunos'				=> 'Sun Solaris',
 					        'beos'				=> 'BeOS',
@@ -43,7 +48,8 @@ $agents['platforms'] = array (
 					        'bsdi'				=> 'BSDi',
 					        'openbsd'			=> 'OpenBSD',
 					        'gnu'				=> 'GNU/Linux',
-					        'unix'				=> 'Unknown Unix OS'
+					        'unix'				=> 'Unknown Unix OS',
+
 				        );
 
 
@@ -95,8 +101,10 @@ $agents['mobiles'] = array(
 					        // Phones and Manufacturers
 					        'motorola'			=> "Motorola",
 					        'nokia'				=> "Nokia",
+                            'android'        	=> "Android",
 					        'palm'				=> "Palm",
 					        'iphone'			=> "Apple iPhone",
+					        'ipad'				=> 'Apple iPad',
 					        'ipod'				=> "Apple iPod Touch",
 					        'sony'				=> "Sony Ericsson",
 					        'ericsson'			=> "Sony Ericsson",

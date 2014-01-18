@@ -413,7 +413,7 @@ Class Hmvc
 
         $response = $this->_response();
 
-        logMe('debug', 'Hmvc process is done.');
+        logMe('debug', 'Hmvc process done.');
         logMe('debug', 'Hmvc output: '.$response);
         
         return $response;

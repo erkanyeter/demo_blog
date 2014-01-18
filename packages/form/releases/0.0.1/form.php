@@ -13,6 +13,9 @@ Class Form {
 
     public static $template = 'default';  // Default form template
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         self::getFormConfig();  // Initialize to form config and validator object.

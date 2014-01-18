@@ -1,7 +1,7 @@
 <?php
-	$menu = $this->config->item('menu');
-
-	$segment = $this->uri->segment(0);
+	$menu        = $this->config->getItem('menu');
+	$segment     = $this->uri->getSegment(0);
+	
 	$currentPage = (empty($segment)) ? 'home' : $segment;
 ?>
 
@@ -11,7 +11,7 @@
 		<ul>
 			<?php 
 			$hasIdentity = $this->auth->hasIdentity();
-
+			
 			foreach ($menu as $key => $value)
 			{
 				$active = ($currentPage == $key) ? ' id="active" ' : '';

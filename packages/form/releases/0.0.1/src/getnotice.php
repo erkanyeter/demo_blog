@@ -11,11 +11,10 @@ namespace Form\Src {
      */
     function getNotice($error = '', $suffix = '')
     {
-        $Class = getComponent('sess');
-        $sess  = (isset(getInstance()->sess)) ? getInstance()->sess : new $Class;
-
-        $form     = getConfig('form');
-        $errorKey = 'errorMessage';
+        $class        = getComponent('sess');
+        $sess         = (isset(getInstance()->sess)) ? getInstance()->sess : new $class;
+        $form         = getConfig('form');
+        $errorKey     = 'errorMessage';
         $noticeString = '';
 
         if(empty($error) AND empty($suffix))  // Auto detect notices ..
@@ -30,6 +29,7 @@ namespace Form\Src {
                 if(strpos($key, $oldKey) === 0)
                 {
                     preg_match('/flash:old:(.*?)Message_(.*?)$/',$key,$match);
+
                     $noticeKey = $match[1];
                     $suffix    = $match[2];
 

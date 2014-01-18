@@ -13,11 +13,12 @@ $c = new Controller(function(){
 	new Tag_Cloud;
     new Form;
     new Get;
+    new View;
 
     new Model('comment', 'comments');
 });
 
-$c->func('index', function($id) use($c){
+$c->func('index', function($id){
 
     if($this->get->post('dopost')) // if do post click
     {
@@ -38,7 +39,7 @@ $c->func('index', function($id) use($c){
         if($this->comment->save())  // save post
         {        
             $this->form->setNotice('Post saved successfully.');
-            $this->url->redirect($this->uri->requestUri());
+            $this->url->redirect($this->uri->getRequestUri());
         }
     }
 
@@ -46,11 +47,11 @@ $c->func('index', function($id) use($c){
     $this->db->where('post_status', 'Published');
     $this->db->join('users', 'user_id = post_user_id');
     $this->db->get('posts');
+    
     $post = $this->db->row();
 
     if($post == false)
     {
-        new Response;
         $this->response->show404();  // set 404 response.
     }
 
@@ -61,7 +62,7 @@ $c->func('index', function($id) use($c){
     
     $comments = $this->db->result();
 
-    $c->view('detail', function() use($post, $comments) {
+    $this->view->get('detail', function() use($post, $comments) {
 
         $this->set('post', $post);
         $this->set('comments', $comments);

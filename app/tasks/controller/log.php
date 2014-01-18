@@ -1,6 +1,17 @@
 <?php
 defined('STDIN') or die('Access Denied');
 
+error_reporting(E_ERROR | E_WARNING | E_PARSE); // error reporting
+
+function logErrorHandler($errno, $errstr, $errfile, $errline)
+{
+    echo("\n\033[1;33mError: $errstr \033[0m"); // Do something other than output message.
+}
+
+set_error_handler('logErrorHandler');
+
+// ------------------------------------------------------------------------
+
 /**
  * $c log
  * @var Controller
@@ -71,7 +82,11 @@ $c->func('_follow', function($file, $level = ''){
             continue;
         }
 
-        $fh = fopen($file, 'r'); // Open file
+        if( ! $fh = fopen($file, 'rb'))
+        {
+            echo("\n\n\033[1;31mPermission Error: You need root access or log folder has not got write permission.\033[0m\n"); exit;
+        } 
+
         fseek($fh, $size);
 
         $i = 0;

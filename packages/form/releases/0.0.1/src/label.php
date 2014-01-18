@@ -12,7 +12,7 @@ namespace Form\Src {
     * @param	string	Additional attributes
     * @return	string
     */
-    function label($label_text = '', $id = '', $attributes = array())
+    function label($label_text = '', $id = '', $attributes = "")
     {
         $label = '<label';
 
@@ -29,6 +29,10 @@ namespace Form\Src {
             {
                 $label .= ' '.$key.'="'.$val.'"';
             }
+        } 
+        else 
+        {
+            $label .= $attributes;
         }
 
         $label .= ">$label_text</label>";
