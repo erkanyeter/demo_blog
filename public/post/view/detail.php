@@ -59,7 +59,7 @@ Last Updated On <?php echo $post->user_username ?> on <?php echo $this->date_get
 						<?php } ?>
 
 			<h3>Leave a Comment</h3>
-					<i class="required-t">Fields with * are required.</i>
+			<i class="required-t">Fields with * are required.</i>
 
 			<?php echo $this->form->open('post/detail/'.$post->post_id, array('method' => 'POST', 'id' => 'commentform')) ?>
 			<?php echo $this->form->hidden('comment_post_id', $post->post_id) ?>

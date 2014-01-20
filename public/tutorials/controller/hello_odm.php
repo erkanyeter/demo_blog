@@ -30,7 +30,9 @@ $c->func('index', function(){
         
         $this->user->func('save', function() {
             if ($this->isValid()){
-                $this->data['password'] = md5($this->getValue('password'));
+                
+                $this->data['user_password'] = md5($this->getValue('user_password'));
+                
                 return $this->db->insert('users', $this);
             }
             return false;

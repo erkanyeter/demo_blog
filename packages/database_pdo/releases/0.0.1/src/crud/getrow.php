@@ -8,7 +8,7 @@ namespace Database_Pdo\Src\Crud {
     *
     * @return object
     */
-    function row()
+    function getRow()
     {
     	$crud = getInstance()->{\Db::$var};
     	

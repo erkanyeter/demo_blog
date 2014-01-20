@@ -51,7 +51,7 @@ $c->func('index', function($id){
     $this->db->join('users', 'users.user_id = posts.post_user_id');
     $this->db->get('posts');
 
-    $row = $this->db->row();
+    $row = $this->db->getRow();
 
     if($row == false)
     {

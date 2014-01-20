@@ -645,7 +645,7 @@ Class Mongo_Db {
      */
     public function batchInsert($collection = '', $data = array(), $options = array())
     {
-        $this->operation  = 'insert';  // Set operation for lastQuery output.
+        $this->operation  = 'insert';  // Set operation for getLastQuery output.
         $this->collection = $collection; 
 
         if (empty($collection))
@@ -682,7 +682,7 @@ Class Mongo_Db {
      */
     public function update($collection = '', $data = array(), $options = array())
     {
-        $this->operation  = 'update';  // Set operation for lastQuery output.
+        $this->operation  = 'update';  // Set operation for getLastQuery output.
         $this->collection =  $collection;
 
         $data = $this->_parseSchema($data);  // check for the odm schema.
@@ -1214,7 +1214,7 @@ Class Mongo_Db {
     
     // --------------------------------------------------------------------
 
-    public function lastQuery()
+    public function getLastQuery()
     { 
         //@todo parse setLastQuery method variables.
     }

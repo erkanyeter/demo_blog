@@ -13,11 +13,11 @@ namespace Database_Pdo\Src\Crud {
     * @access	public
     * @return	object
     */	
-    function nextRow($type = 5)
+    function getNextRowArray()
     {
         $crud = getInstance()->{\Db::$var};
 
-        $result = $crud->_stmtResult($type);
+        $result = $crud->_stmtResult(2);
 
         if(sizeof($result) == 0)
         {

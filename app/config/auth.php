@@ -24,6 +24,7 @@ $auth = array(
     'algorithm'           => 'bcrypt',  // Whether to use "bcrypt" or "sha256" or "sha512" hash. ( Do not use md5 )
     'allow_login'         => true,      // Whether to allow logins to be performed on login form.
     'regenerate_sess_id'  => false,     // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
+    'xss_clean'           => true,      // Do xss clean for username 
 );
 
 // Auth Query
@@ -38,7 +39,7 @@ $auth['query'] = function($username) use($auth)
     $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),
     $this->db->exec();
     
-    return $this->db->row();  // return to object.
+    return $this->db->getRow();  // return to object.
 };
 
 

@@ -23,20 +23,20 @@ Once loaded the class is ready to be used as described below.
 ------
 
 ```php
-$query = $this->db->query('SELECT name, title, email FROM my_table');
+$this->db->query('SELECT name, title, email FROM my_table');
 
-foreach ($query->result() as $row)   // CODEIGNITER  DB FUNCTIONS ARE AVAILABLE
+foreach ($this->db->getResult() as $row)   // CODEIGNITER  DB FUNCTIONS ARE AVAILABLE
 {
     echo $row->title;
     echo $row->name;
     echo $row->email;
 }
 
-echo 'Total Results: ' . $query->numRows();  // Pdo does not supported some database using 
+echo 'Total Results: ' . $this->db->getCount();  // Pdo does not supported some database using 
 rowCount func via SELECT statement .(Mysql is ok.) 
 ```
 
-The above <dfn>result()</dfn> function returns an array of <strong>objects</strong>. Example: $row->title
+The above <dfn>getResult()</dfn> function returns an array of <strong>objects</strong>. Example: $row->title
 
 ### Grabbing Database Object
 
@@ -46,7 +46,7 @@ The above <dfn>result()</dfn> function returns an array of <strong>objects</stro
 $database = new Db(false);
 $db = $database->connect();
 
-print_r($db->get('users')->resultArray());
+print_r($db->get('users')->getResultArray());
 ```
 
 The above the example returns to Database Instance if you want to grab it.
@@ -56,9 +56,9 @@ The above the example returns to Database Instance if you want to grab it.
 ------
 
 ```php
-$query = $this->db->query('SELECT name, title, email FROM my_table');
+$this->db->query('SELECT name, title, email FROM my_table');
 
-foreach ($query->resultArray() as $row)
+foreach ($this->db->getResultArray() as $row)
 {
     echo $row['title'];
     echo $row['name'];
@@ -66,7 +66,7 @@ foreach ($query->resultArray() as $row)
 }
 ```
 
-The above <dfn>resultArray()</dfn> function returns an array of standard array indexes. Example: $row['title']
+The above <dfn>getResultArray()</dfn> function returns an array of standard array indexes. Example: $row['title']
 
 ### Testing for Results
 
@@ -80,10 +80,10 @@ $query = $this->db->prep()    // pdo prepare switch
 ->get('ob_sessions')    // from this table 
 ->exec();
 
-if($query->row())
+if($query->getRow())
 {
     $query = $query->exec();  // get cached query..
-    $b = $query->resultArray();
+    $b = $query->getResultArray();
 
     print_r($b);    // output array( ... )   
 }
@@ -95,9 +95,9 @@ If your database support using rowCount function via the SELECT statement you ca
 $this->db->where('ip_address', '127.0.0.1')
 ->get('ob_sessions')    // from this table 
 
-if($query->rowCount() > 0)
+if($query->getCount() > 0)
 {
-    $b = $query->resultArray();
+    $b = $query->getResultArray();
 
     print_r($b);    // output array( ... )   
 }
@@ -110,12 +110,12 @@ if($query->rowCount() > 0)
 ```php
 $query = $this->db->query('SELECT name FROM my_table LIMIT 1');
 
-$row = $query->row();
+$row = $query->getRow();
 
 echo $row->name;
 ```
 
-The above <dfn>row()</dfn> function returns an <strong>object</strong>. Example: $row->name
+The above <dfn>getRow()</dfn> function returns an <strong>object</strong>. Example: $row->name
 
 ### Standard Query With Single Result (Array version)
 
@@ -124,12 +124,12 @@ The above <dfn>row()</dfn> function returns an <strong>object</strong>. Example:
 ```php
 $query = $this->db->query('SELECT name FROM my_table LIMIT 1');
 
-$row = $query->rowArray();
+$row = $query->getRowArray();
 
 echo $row['name'];
 ```
 
-The above <dfn>rowArray()</dfn> function returns an <strong>array</strong>. Example: $row['name']
+The above <dfn>getRowArray()</dfn> function returns an <strong>array</strong>. Example: $row['name']
 
 ### Standard Insert
 
@@ -178,13 +178,13 @@ The [Active Record Pattern](/ob/obullo/releases/2.0/docs/database/active-record-
 ```php
 $query = $this->db->get('table_name');
 
-foreach ($query->result() as $row)
+foreach ($query->getResult() as $row)
 {
     echo $row->title;
 }
 ```
 
-The above <dfn>get()</dfn> function retrieves all the results from the supplied table. The Active Record(CRUD) class contains a full compliment of functions for working with data.
+The above <dfn>get()</dfn> function retrieves all the results from the supplied table. The Active Record ( CRUD ) class contains a full compliment of functions for working with data.
 
 ### CRUD ( Active Record ) Insert
 

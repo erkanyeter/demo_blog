@@ -2,16 +2,16 @@
 namespace Database_Pdo\Src\Crud {
 
     // --------------------------------------------------------------------
-
+    
     /**
-    * Returns the "previous" row
+    * Returns the "last" row
     *
     * @access    public
     * @return    object
     */    
-    function previousRow($type = 5)
+    function getLastRow($type = 5)
     {
-        $crud = getInstance()->{\Db::$var};
+		$crud = getInstance()->{\Db::$var};
 
         $result = $crud->_stmtResult($type);
 
@@ -20,12 +20,7 @@ namespace Database_Pdo\Src\Crud {
             return $result;
         }
 
-        if (isset($result[$crud->current_row - 1]))
-        {
-            --$crud->current_row;
-        }
-        
-        return $result[$crud->current_row];
-    }
-
+        return $result[count($result) -1];
+    }    
+    
 }

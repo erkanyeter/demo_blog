@@ -68,12 +68,15 @@ Class Schema_Sql_Reader {
 	 */
 	public function readSQL($tablename)
 	{
-		$keyData = $this->db->query('SHOW CREATE TABLE '.$tablename)->resultArray();
+		$keyData = $this->db->query('SHOW CREATE TABLE '.$tablename)->getResultArray();
+
 		$tempFkArray  = $this->_buildForeignKeys($keyData);
 		$tempUkArray  = $this->_buildUniqueKeys($keyData);
 		$tempKeyArray = $this->_buildKeys($keyData);
 		$tempPkArray  = $this->_buildPrimaryKeys($keyData);
-		$columns = $this->db->query('SHOW COLUMNS FROM '.$tablename)->resultArray();
+		
+		$columns = $this->db->query('SHOW COLUMNS FROM '.$tablename)->getResultArray();
+
         if(count($columns) > 0)
         {	
         	$schemaContent = '';

@@ -32,7 +32,7 @@ $this->db->bindValue(':id', 1, PARAM_INT);  // Integer
 $this->db->bindValue(':code', 'i see dead people', PARAM_STR); // String      
 
 $this->db->exec();  // execute query
-$a = $this->db->rowArray();
+$a = $this->db->getRowArray();
 
 print_r($a);
 ```
@@ -53,7 +53,7 @@ $this->db->bindParam(':id', 1, PARAM_INT, 11);   // Integer
 $this->db->bindParam(':code', 'i see dead people', PARAM_STR, 20); // String (int Length)      
 
 $this->db->exec();  // execute query
-$a = $this->db->rowArray();
+$a = $this->db->getRowArray();
 
 print_r($a);
 ```
@@ -68,11 +68,11 @@ The <b>double dots</b> in the query are automatically replaced with the values o
 $query = $this->db->prep()
  ->query("SELECT * FROM articles WHERE article_id=:id OR link=:code");
 
-$query->bindValue(':id', 1, PARAM_INT);  
-$query->bindValue(':code', 'i-see-dead-people', PARAM_STR); 
+$this->db->bindValue(':id', 1, PARAM_INT);  
+$this->db->bindValue(':code', 'i-see-dead-people', PARAM_STR); 
 
-$query->exec();
-$a = $query->rowArray(); 
+$this->db->exec();
+$a = $this->db->getRowArray(); 
 print_r($a);
 ```
 
@@ -87,7 +87,7 @@ $values[':code'] = 'i see dead people';
 $res= $this->db->prep()
 ->query("SELECT * FROM articles WHERE article_id=:id OR link=:code")
 ->exec($values)
-->rowArray();
+->getRowArray();
 
 print_r($res);
 ```
@@ -105,7 +105,7 @@ Obullo allows to use query bind functionality with active record class like this
 ```php
 $title = 'some-title';
 
-$query = $this->db->prep()   // tell to db class use pdo prepare
+$this->db->prep()   // tell to db class use pdo prepare
 ->select("*")
 ->where('title', ':title')
 ->get('articles')
@@ -113,7 +113,7 @@ $query = $this->db->prep()   // tell to db class use pdo prepare
                                     // get() Function will switched to passive
                                     // so exec() is your active function .. 
                                     
-$a = $query->resultArray();
+$a = $this->db->getResultArray();
 
 print_r($a)
 ```
@@ -131,8 +131,8 @@ $this->db
 $this->db->bindParam(':title', 'some title', PARAM_STR, 20); // String (int Length)
 $this->db->bindParam(':active', 1, PARAM_BOOL);          // Int (int Length)
 
-$query = $this->db->exec();
-$a = $query->resultArray();
+$this->db->exec();
+$a = $this->db->getResultArray();
 
 print_r($a);
 ```

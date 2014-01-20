@@ -28,14 +28,9 @@ $users = array(
 		'types' => '_null|_datetime',
 		'rules' => '',
 		),
-	'user_name' => array(
-		'label' => 'User Name',
+	'user_username' => array(
+		'label' => 'User Username',
 		'types' => '_not_null|_varchar(50)',
-		'rules' => '',
-		),
-	'user_test' => array(
-		'label' => 'User Test',
-		'types' => '_null|_int(11)',
 		'rules' => '',
 		),
 );

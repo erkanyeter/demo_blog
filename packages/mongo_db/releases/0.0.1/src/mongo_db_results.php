@@ -14,7 +14,7 @@ Class Mongo_Db_Results {
 
 	protected $rows;	// row array data
 	protected $current_row; // current data
-	protected $num_rows; // number of rows
+	protected $count_rows;  // number of rows
 	
 	/**
 	 * Constructor
@@ -23,9 +23,9 @@ Class Mongo_Db_Results {
 	 */
 	public function __construct($rows = null)
 	{
-		$this->rows = $rows;
+		$this->rows        = $rows;
 		$this->current_row = 0;
-		$this->num_rows = count($rows);
+		$this->count_rows  = count($rows);
 	}
 
 	// ------------------------------------------------------------------------
@@ -35,7 +35,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return array
 	 */
-	public function result()
+	public function getResult()
 	{
 		return $this->resultObject();
 	}
@@ -47,7 +47,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return array
 	 */
-	public function resultObject()
+	public function getResultObject()
 	{
 		$rows = array();
 
@@ -66,7 +66,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return array
 	 */
-	public function resultArray()
+	public function getResultArray()
 	{
 		return $this->rows;
 	}
@@ -79,7 +79,7 @@ Class Mongo_Db_Results {
 	 * @param  integer $n [description]
 	 * @return [type]     [description]
 	 */
-	public function row()
+	public function getRow()
 	{
 		return (isset($this->rows[0])) ? (object)$this->rows[0] : (object)$this->rows;
 	}
@@ -92,7 +92,7 @@ Class Mongo_Db_Results {
 	 * @param  integer $n
 	 * @return array
 	 */
-	public function rowArray()
+	public function getRowArray()
 	{
 		return (isset($this->rows[0])) ? $this->rows[0] : (array)$this->rows;
 	}
@@ -104,7 +104,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return object
 	 */
-	public function firstRow()
+	public function getFirstRow()
 	{
         $result = $this->_getRow();
 
@@ -123,7 +123,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return object
 	 */
-	public function previousRow()
+	public function getPreviousRow()
 	{
         $result = $this->_getRow();
 
@@ -148,7 +148,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return object
 	 */
-	public function nextRow()
+	public function getNextRow()
 	{
 		$result = $this->_getRow();
 
@@ -172,7 +172,7 @@ Class Mongo_Db_Results {
 	 * 
 	 * @return object
 	 */
-	public function lastRow()
+	public function getLastRow()
 	{
 		$result = $this->_getRow();
 
@@ -185,27 +185,15 @@ Class Mongo_Db_Results {
 	}
 	
     // ------------------------------------------------------------------------
-
+    
 	/**
 	 * Get number of rows
 	 * 
 	 * @return integer
 	 */
-	public function numRows()
+	public function getCount()
 	{
-		return (int)$this->num_rows;
-	}
-
-    // ------------------------------------------------------------------------
-	
-	/**
-	 * Get number of rows
-	 * 
-	 * @return integer
-	 */
-	public function count()
-	{
-		return $this->numRows();
+		return (int)$this->count_rows;
 	}
 
     // ------------------------------------------------------------------------

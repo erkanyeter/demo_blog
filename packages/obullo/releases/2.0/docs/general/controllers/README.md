@@ -42,24 +42,33 @@ Then create <kbd>controller</kbd>  and <kbd>view</kbd> folders.
     + config
 -  public
     + welcome
-    - blog
+    - home
        - controller
-           start.php
+           home.php
          view
 ```
 
-Using your text editor, create file called <kbd>start.php</kbd> in the <kbd>blog/controller</kbd> folder, and put the following code in it:
+Using your text editor, create folder <kbd>home/controller</kbd> then create a file called <kbd>home.php</kbd> in the <kbd>home/controller</kbd> folder, and put the following code in it:
 
 ```php
 <?php
-Class Start extends Controller 
-{
-    public function index()
-    {
-        echo 'Hello World !';
-    }
+/**
+ * $c home
+ * @var Controller
+ */
+$c = new Controller(function(){
+    // __construct
+
+});
+
+$c->func('index', function(){
     
-}
+    echo 'Hello World !';
+    
+});
+
+/* End of file home.php */
+/* Location: .public/home/controller/home.php */
 ```
 
 Then save the file to your <kbd>public/blog/controllers/</kbd> folder.
@@ -67,32 +76,8 @@ Then save the file to your <kbd>public/blog/controllers/</kbd> folder.
 Now visit the your site using a URL similar to this:
 
 ```php
-example.com/index.php/blog/start
+demo-blog.com/index.php/blog/start
 ```
-
-If you did it right, you should see <kbd>Hello World!</kbd>.
-
-**Note**: Class names must start with an uppercase letter. In other words, this is valid:
-
-```php
-<?php
-Class Start extends Controller
-{
-
-}
-```
-
-This is **not** valid:
-
-```php
-<?php
-Class start extends Controller
-{
-    
-}
-```
-
-Also, always make sure your controller <kbd>extends</kbd> the parent controller class so that it can inherit all its functions.
 
 ### Functions <a name="functions"></a>
 
@@ -101,34 +86,37 @@ Also, always make sure your controller <kbd>extends</kbd> the parent controller 
 In the above example the function name is <kbd>index()</kbd>. The "index" function is always loaded by default if the **third segment** of the URI is empty. Another way to show your "Hello World" message would be this:
 
 ```php
-example.com/index.php/blog/start/index/
+demo-blog.com/index.php/blog/start/index/
 ```
 
 **The third segment of the URI determines which function in the controller gets called.**
 
 Let's try it. Add a new function to your controller:
 
+
+
 ```php
 <?php
-Class Start extends Controller
-{
-    public function index()
-    {
-        echo 'Hello World !';
-    }
+/**
+ * $c start
+ * @var Controller
+ */
+$c = new Controller(function(){
+    // __construct
+
+});
+
+$c->func('comment', function(){
     
-    public function comments()
-    {
-        echo 'Dummy Comments .. !'; 
-    }
+    echo 'Dummy Comments .. !'; 
     
-}  
+});
 ```
 
-Now load the following URL to see the <kbd>comment</kbd> function:
+Now load the following URL to see the <kbd>commen</kbd> function:
 
 ```php
-example.com/index.php/blog/start/comments/
+demo-blog.com/index.php/comments/
 ```
 
 You should see your new message.
@@ -142,7 +130,7 @@ If your URI contains more then two segments they will be passed to your function
 For example, lets say you have a URI like this:
 
 ```php
-example.com/index.php/shop/products/cars/classic/123
+shop.com/index.php/products/cars/classic/123
 ```
 
 Your function will be passed URI segments number 4 and 5 ("classic" and "123"):
@@ -305,3 +293,5 @@ Class Start extends MyController
     
 }
 ```
+
+### "One Public Method Per Controller" Rule

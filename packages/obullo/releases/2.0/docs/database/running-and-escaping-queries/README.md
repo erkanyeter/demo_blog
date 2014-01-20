@@ -68,7 +68,7 @@ $query = $this->db->select("*")
 ->orLike('article', 'blabla')
 ->get('articles');
 
-echo $this->db->lastQuery();
+echo $this->db->getLastQuery();
 
 // Output
 ```
@@ -83,9 +83,9 @@ $this->db->prep()    // tell to db class use pdo prepare()
 
 $value = "%%%some";
 $this->db->exec(array(':like' => $this->db->escapeLike($value)));
-$this->db->fetchAll(assoc);
+$this->db->fetchAll(ASSOC);
 
-echo $this->db->lastQuery();
+echo $this->db->getLastQuery();
 
 // Output
 ```

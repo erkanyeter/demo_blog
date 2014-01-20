@@ -24,7 +24,7 @@ $c->func('index', function(){
     $this->db->join('users', 'user_id = post_user_id');
     $this->db->get('posts');
 
-    $posts = $this->db->resultArray();
+    $posts = $this->db->getResultArray();
 
     $this->view->get('home', function() use($posts) {
 
@@ -32,7 +32,7 @@ $c->func('index', function(){
         $this->set('posts', $posts);
         $this->getScheme();
     });
-    
+
 });
 
 /* End of file home.php */

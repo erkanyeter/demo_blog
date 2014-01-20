@@ -1,0 +1,341 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+body{
+  color:#444;
+  font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman',
+              "Hiragino Sans GB", "STXihei", "微软雅黑", serif;
+  font-size:12px;
+  line-height:1.5em;
+  background:#fefefe;
+  width: 45em;
+  margin: 10px auto;
+  padding: 1em;
+  outline: 1300px solid #FAFAFA;
+}
+
+a{ color: #0645ad; text-decoration:none;}
+a:visited{ color: #0b0080; }
+a:hover{ color: #06e; }
+a:active{ color:#faa700; }
+a:focus{ outline: thin dotted; }
+a:hover, a:active{ outline: 0; }
+
+span.backtick {
+  border:1px solid #EAEAEA;
+  border-radius:3px;
+  background:#F8F8F8;
+  padding:0 3px 0 3px;
+}
+
+::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
+::selection{background:rgba(255,255,0,0.3);color:#000}
+
+a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
+a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
+
+p{
+margin:1em 0;
+}
+
+img{
+max-width:100%;
+}
+
+h1,h2,h3,h4,h5,h6{
+font-weight:normal;
+color:#111;
+line-height:1em;
+}
+h4,h5,h6{ font-weight: bold; }
+h1{ font-size:2.5em; }
+h2{ font-size:2em; border-bottom:1px solid silver; padding-bottom: 5px; }
+h3{ font-size:1.5em; }
+h4{ font-size:1.2em; }
+h5{ font-size:1em; }
+h6{ font-size:0.9em; }
+
+blockquote{
+color:#666666;
+margin:0;
+padding-left: 3em;
+border-left: 0.5em #EEE solid;
+}
+hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
+
+
+pre , code, kbd, samp { 
+  color: #000; 
+  font-family: monospace; 
+  font-size: 0.88em; 
+  border-radius:3px;
+  background-color: #F8F8F8;
+  border: 1px solid #CCC; 
+}
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 5px 12px;}
+pre code { border: 0px !important; padding: 0;}
+code { padding: 0 3px 0 3px; }
+
+b, strong { font-weight: bold; }
+
+dfn { font-style: italic; }
+
+ins { background: #ff9; color: #000; text-decoration: none; }
+
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
+li p:last-child { margin:0 }
+dd { margin: 0 0 0 2em; }
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+@media only screen and (min-width: 480px) {
+body{font-size:14px;}
+}
+
+@media only screen and (min-width: 768px) {
+body{font-size:16px;}
+}
+
+@media print {
+  * { background: transparent !important; color: black !important; filter:none !important; -ms-filter: none !important; }
+  body{font-size:12pt; max-width:100%; outline:none;}
+  a, a:visited { text-decoration: underline; }
+  hr { height: 1px; border:0; border-bottom:1px solid black; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; padding-right: 1em; page-break-inside: avoid; }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style><title>README</title></head><body><h2 id="controllers-wzxhzdk18wzxhzdk19">Controllers <a name="controllers"></a></h2>
+<p>Controllers are the heart of your application, as they determine how HTTP requests should be handled.</p>
+<ul>
+<li><a href="#what-is-a-controller">What is a Controller?</a></li>
+<li><a href="#lets-try-it-hello-world">Hello World</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#passing-uri-segments-to-your-functions">Passing URI Segments to Your Functions</a></li>
+<li><a href="#defining-a-default-controller">Defining a Default Controller</a></li>
+<li><a href="#remapping-function-calls">Remapping Function Calls</a></li>
+<li><a href="#processing-output">Controlling Output Data</a></li>
+<li><a href="#private-functions">Private Functions</a></li>
+<li><a href="#class-constructors">Class Constructors</a></li>
+<li><a href="#reserved-function-names">Reserved Function Names</a></li>
+</ul>
+<h3 id="what-is-a-controller-wzxhzdk20wzxhzdk21">What is a Controller? <a name="what-is-a-controller"></a></h3>
+<hr />
+<p><strong>A Controller is simply a class file that is named in a way that can be associated with a URI.</strong></p>
+<p>Consider this URI:</p>
+<pre><code class="php">example.com/index.php/blog/start
+</code></pre>
+
+<p>In the above example, framework would attempt to find a MODULE named <kbd>/blog</kbd> in the PUBLIC folder and it attempt the find a controller named <kbd>start.php</kbd> in the /controller folder and load it.</p>
+<p><strong>When a controller's name matches the second segment of a URI, it will be loaded.</strong></p>
+<h3 id="lets-try-it-hello-world-wzxhzdk26wzxhzdk27">Let's try it: Hello World! <a name="lets-try-it-hello-world"></a></h3>
+<hr />
+<p>Let's create a simple controller so you can see it in action. Create a directory called <kbd>blog</kbd> in the public folder</p>
+<p>Then create <kbd>controller</kbd>  and <kbd>view</kbd> folders.</p>
+<pre><code class="php">-  app
+    + config
+-  public
+    + welcome
+    - home
+       - controller
+           home.php
+         view
+</code></pre>
+
+<p>Using your text editor, create folder <kbd>home/controller</kbd> then create a file called <kbd>home.php</kbd> in the <kbd>home/controller</kbd> folder, and put the following code in it:</p>
+<pre><code class="php">&lt;?php
+/**
+ * $c home
+ * @var Controller
+ */
+$c = new Controller(function(){
+    // __construct
+
+});
+
+$c-&gt;func('index', function(){
+
+    echo 'Hello World !';
+
+});
+
+/* End of file home.php */
+/* Location: .public/home/controller/home.php */
+</code></pre>
+
+<p>Then save the file to your <kbd>public/blog/controllers/</kbd> folder.</p>
+<p>Now visit the your site using a URL similar to this:</p>
+<pre><code class="php">demo-blog.com/index.php/blog/start
+</code></pre>
+
+<h3 id="functions-wzxhzdk42wzxhzdk43">Functions <a name="functions"></a></h3>
+<hr />
+<p>In the above example the function name is <kbd>index()</kbd>. The "index" function is always loaded by default if the <strong>third segment</strong> of the URI is empty. Another way to show your "Hello World" message would be this:</p>
+<pre><code class="php">demo-blog.com/index.php/blog/start/index/
+</code></pre>
+
+<p><strong>The third segment of the URI determines which function in the controller gets called.</strong></p>
+<p>Let's try it. Add a new function to your controller:</p>
+<pre><code class="php">&lt;?php
+/**
+ * $c start
+ * @var Controller
+ */
+$c = new Controller(function(){
+    // __construct
+
+});
+
+$c-&gt;func('comment', function(){
+
+    echo 'Dummy Comments .. !'; 
+
+});
+</code></pre>
+
+<p>Now load the following URL to see the <kbd>commen</kbd> function:</p>
+<pre><code class="php">demo-blog.com/index.php/comments/
+</code></pre>
+
+<p>You should see your new message.</p>
+<h3 id="passing-uri-segments-to-your-functions-wzxhzdk48wzxhzdk49">Passing URI Segments to your Functions <a name="passing-uri-segments-to-your-functions"></a></h3>
+<hr />
+<p>If your URI contains more then two segments they will be passed to your function as parameters.</p>
+<p>For example, lets say you have a URI like this:</p>
+<pre><code class="php">shop.com/index.php/products/cars/classic/123
+</code></pre>
+
+<p>Your function will be passed URI segments number 4 and 5 ("classic" and "123"):</p>
+<pre><code class="php">&lt;?php
+
+Class Products extends Controller
+{
+    public function cars($type, $id)
+    {
+        echo $type;           // Output  classic 
+        echo $id;                // Output  123 
+
+        echo $this-&gt;uri-&gt;segment(4);    // Output  123 
+
+    }
+} 
+</code></pre>
+
+<p><strong>Important:</strong> If you are using the URI Routing feature, the segments passed to your function will be the re-routed ones.</p>
+<h3 id="defining-a-default-controller-wzxhzdk50wzxhzdk51">Defining a Default Controller <a name="defining-a-default-controller"></a></h3>
+<hr />
+<p>Framework can be told to load a default controller when a URI is not present, as will be the case when only your site root URL is requested. To specify a default controller, open your <kbd>app/config/routes.php</kbd> file and set this variable:</p>
+<pre><code class="php">$route['default_controller'] = 'blog/start';
+</code></pre>
+
+<p>Where <var>Blog</var> is the name of the <kbd>directory</kbd> and <var>Start</var> controller class you want used. If you now load your main index.php file without specifying any URI segments you'll see your Hello World message by default.</p>
+<h3 id="remapping-function-calls-wzxhzdk60wzxhzdk61">Remapping Function Calls <a name="remapping-function-calls"></a></h3>
+<hr />
+<p>As noted above, the second segment of the URI typically determines which function in the controller gets called. Framework permits you to override this behavior through the use of the <kbd>_remap()</kbd> function:</p>
+<pre><code class="php">public function _remap()
+{
+    // Some code here...
+}
+</code></pre>
+
+<p><strong>Important:</strong> If your controller contains a function named <kbd>remap()</kbd> , it will <strong>always</strong> get called regardless of what your URI contains. It overrides the normal behavior in which the URI determines which function is called, allowing you to define your own function routing rules.
+The overridden function call (typically the second segment of the URI) will be passed as a parameter the <kbd>_remap()</kbd> function:</p>
+<pre><code class="php">
+public function _remap($method)
+{
+    if ($method == 'some_method')
+    {
+        $this-&gt;$method();
+
+    } else 
+    {
+        $this-&gt;defaultMethod();
+    }
+}
+</code></pre>
+
+<h3 id="processing-output-wzxhzdk68wzxhzdk69">Processing Output <a name="processing-output"></a></h3>
+<hr />
+<p>Framework has an output class that takes care of sending your final rendered data to the web browser automatically. More information on this can be found in the Views and Output class pages. In some cases, however, you might want to post-process the finalized data in some way and send it to the browser yourself. Framework permits you to add a function named <kbd>_output()</kbd> to your controller that will receive the finalized output data.</p>
+<p><strong>Important:</strong> If your controller contains a function named <kbd>_output()</kbd>, it will always be called by the output class instead of echoing the finalized data directly. The first parameter of the function will contain the finalized output.</p>
+<p>Here is an example:</p>
+<pre><code class="php">public function _output($output)
+{
+    echo $output;
+}
+</code></pre>
+
+<p>Please note that your <kbd>_output()</kbd> function will receive the data in its finalized state. Benchmark and memory usage data will be rendered, cache files written (if you have caching enabled), and headers will be sent (if you use that feature) before it is handed off to the _output() function. If you are using this feature the page execution timer and memory usage stats might not be perfectly accurate since they will not take into acccount any further processing you do. For an alternate way to control output <em>before</em> any of the final processing is done, please see the available methods in the Output Class.</p>
+<h3 id="private-functions-wzxhzdk78wzxhzdk79">Private Functions <a name="private-functions"></a></h3>
+<hr />
+<p>In some cases you may want certain functions hidden from public access. To make a function private, simply add php native <kbd>private</kbd> property and it will not be served via a URL request. For example, if you were to have a function like this:</p>
+<pre><code class="php">private function utility()
+{
+    // some code
+}
+</code></pre>
+
+<p>Trying to access it via the URL, like this, will not work and framework will show "404 page not found" error:</p>
+<pre><code class="php">example.com/index.php/blog/start/utility/
+</code></pre>
+
+<h3 id="class-constructors-wzxhzdk82wzxhzdk83">Class Constructors <a name="class-constructors"></a></h3>
+<hr />
+<p>If you intend to use a constructor in any of your Controllers, you <strong>MUST</strong> place the following line of code in it:</p>
+<pre><code class="php">parent::__construct();
+</code></pre>
+
+<p>The reason this line is necessary is because your local constructor will be overriding the one in the parent controller class so we need to manually call it.</p>
+<pre><code class="php">&lt;?php
+class Start extends Controller
+{
+    function __construct()
+    {
+        parent::__construct();
+    }
+}
+</code></pre>
+
+<p>Constructors are useful if you need to set some default values, or run a default process when your class is instantiated. Constructors can't return a value, but they can do some default work.</p>
+<h3 id="reserved-function-names-wzxhzdk84wzxhzdk85">Reserved Function Names <a name="reserved-function-names"></a></h3>
+<hr />
+<p>Since your controller classes will extend the main application controller you must be careful not to name your functions identically to the ones used by that class, otherwise your local functions will override them. See Reserved Names for a full list.</p>
+<h3 id="thats-it">That's it!</h3>
+<hr />
+<p>That, in a nutshell, is all there is to know about controllers.</p>
+<h3 id="extending-to-your-controllers">Extending To Your Controllers</h3>
+<p>Put your controller to <kbd>classes/mycontroler</kbd> folder. When you extend to it framework will automatically load it.</p>
+<pre><code class="php">&lt;?php 
+Class Start extends MyController
+{
+    function __construct()
+    {
+        parent::__construct(); 
+    }
+
+    public function index()
+    {
+        setVar('title',  'Hello World !');
+
+        view('example');
+    }
+
+}
+</code></pre>
+
+<p>controller</p></body></html>

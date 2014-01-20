@@ -48,7 +48,7 @@ $c->func('index', function($id){
     $this->db->join('users', 'user_id = post_user_id');
     $this->db->get('posts');
     
-    $post = $this->db->row();
+    $post = $this->db->getRow();
 
     if($post == false)
     {
@@ -60,7 +60,7 @@ $c->func('index', function($id){
     $this->db->where('comment_status', '1');
     $this->db->get('comments'); // reset query
     
-    $comments = $this->db->result();
+    $comments = $this->db->getResult();
 
     $this->view->get('detail', function() use($post, $comments) {
 

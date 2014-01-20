@@ -21,7 +21,7 @@ $c->func('index', function($tag){
     $this->db->join('users', 'user_id = post_user_id');
     $this->db->get('posts');
 
-    $posts = $this->db->resultArray();
+    $posts = $this->db->getResultArray();
 
     $this->view->get('tag', function() use($posts) {
 	   

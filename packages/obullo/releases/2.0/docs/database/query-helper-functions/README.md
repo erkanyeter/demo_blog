@@ -8,15 +8,15 @@
 
 The insert ID number when performing database inserts.
 
-#### $this->db->drivers()
+#### $this->db->getDrivers()
 
 Outputs the database platform you are running (MySQL, MS SQL, Postgres, etc...):
 
 ```php
-$drivers = $this->db->drivers();   print_r($drivers);  // Array ( [0] => mssql [1] => mysql [2] => sqlite2 )
+$drivers = $this->db->getDrivers();   print_r($drivers);  // Array ( [0] => mssql [1] => mysql [2] => sqlite2 )
 ```
  
-#### $this->db->version()
+#### $this->db->getVersion()
 
 Outputs the database version you are running (MySQL, MS SQL, Postgres, etc...):
 
@@ -32,7 +32,7 @@ Check the database connection is active or not
 echo $this->db->isConnected(); // output 1 or 0
 ```
 
-#### $this->db->lastQuery();
+#### $this->db->getLastQuery();
 
 Returns the last query that was run (the query string, not the result). Example:
 
@@ -40,7 +40,7 @@ Returns the last query that was run (the query string, not the result). Example:
 $str = $this->db->lastQuery();
 ```
 
-#### $this->db->lastQuery(true);
+#### $this->db->getLastQuery(true);
 
 Returns the <b>prepared</b> last query that was run (the query string, not the result). Example:
 
@@ -62,7 +62,7 @@ print_r($this->db->errors());  // handling pdo errors
 $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // restore error mode
 ```
 
-#### $this->db->errors();
+#### $this->db->getErrors();
 
 Get the database errors in pdo slient mode instead of getting pdo exceptions.
 

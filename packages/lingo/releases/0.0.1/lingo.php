@@ -16,9 +16,14 @@ Class Lingo {
     
     public static $instance;
 
-    function __construct()
+    // --------------------------------------------------------------------
+
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
-        logMe('debug', "Lingo Class Initialized");    
+        logMe('debug', 'Lingo Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -46,7 +51,7 @@ Class Lingo {
     */
     public function load($filename = '', $idiom = '', $return = false)
     {
-        if ($idiom == '')
+        if ($idiom == '' OR $idiom === false)
         {
             $default = config('lingo');
             $idiom   = ($default == '') ? 'english' : $default;

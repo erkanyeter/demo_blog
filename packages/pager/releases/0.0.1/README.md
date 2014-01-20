@@ -7,7 +7,7 @@ The Pager class <b>derived</b> from <b>PEAR Pager Class</b>, Pager is a class to
 ------
 
 ```php
-new Pager();
+new Pager;
 $this->pager->method();
 ```
 
@@ -196,7 +196,7 @@ echo 'from:'.$from.'<br />';
 echo 'to:'.$to.'<br />';
  
 $this->db->get('articles', $params['per_page'], $from - 1);
-$data = $this->db->resultArray();
+$data = $this->db->getResultArray();
  
 echo $this->pager->links;
 
@@ -331,7 +331,7 @@ Class Pager_Example extends Controller {
         list($from, $to) = $this->pager->getOffsetByPage();
         $this->db->get('articles', $params['per_page'], $from - 1);
         
-        setVar('rows', $this->db->result());
+        setVar('rows', $this->db->getResult());
         setVar('params', $params);
         setVar('links', $this->pager->getLinks());
         setVar('select_box', $this->pager->getPerPageSelectBox(5, 50, 5, false));
@@ -404,15 +404,16 @@ Class Pager_Example extends Controller {
     {   
         parent::__construct();
         
-        new Db();
+        new Db;
+        new Get;
     }           
     
     public function index()
     {                  
         setVar('title', 'Pager Test !');
         
-        $query = $this->db->query('SELECT * FROM articles');
-        $numRows = $query->count();
+        $query   = $this->db->query('SELECT * FROM articles');
+        $numRows = $this->db->getCount();
         
         $perPage = ($this->get->post('set_per_page') != '') ? $this->get->post('set_per_page') : '5';
         
@@ -433,7 +434,7 @@ Class Pager_Example extends Controller {
          
         $this->db->get('articles', $params['per_page'], $from - 1);
         
-        setVar('rows', $this->db->result());
+        setVar('rows', $this->db->getResult());
         setVar('params', $params);
         setVar('links', $this->pager->getLinks());
         

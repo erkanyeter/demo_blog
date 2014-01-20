@@ -50,7 +50,6 @@ $c->func('index', function(){
             'rules' => 'required|validEmail',
             'input' => $this->input('user_email', $this->setValue('user_email')),
         ));
-        /*
 
         $this->addRow();
         $this->setPosition('label', 'left');
@@ -67,7 +66,7 @@ $c->func('index', function(){
             'rules' => 'required|matches(user_password)',
             'input' => $this->input('confirm_password', $this->setValue('confirm_password'), ' id="confirm" ' ),
         ));
-*/
+
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(

@@ -10,7 +10,7 @@ namespace Database_Pdo\Src\Crud {
     * @param    boolean $prepared
     * @return   string
     */
-    function lastQuery($prepared = false)
+    function getLastQuery($prepared = false)
     {
         $crud = getInstance()->{\Db::$var};
 

@@ -673,7 +673,7 @@ $this->db
 ### Query Binding
 
 ```php
-$query = $this->db->prep()  // tell to db class use pdo prepare
+$this->db->prep()  // tell to db class use pdo prepare
 ->select("DATE_FORMAT(creation_date, '%d-%m-%Y') as date, title",false)
 ->where('title', ':title')
 ->where('title', ':title2')
@@ -682,11 +682,11 @@ $query = $this->db->prep()  // tell to db class use pdo prepare
 ->bindValue(':title2', 'my title', PARAM_STR)
 ->exec();
 
-$a = $query->resultArray();
+$a = $this->db->getResultArray();
 
 print_r($a); // Array ( [0] => Array ( [date] => 00-00-0000 [title] => my title ) ) 
 
-echo $this->db->lastQuery(true);
+echo $this->db->getLastQuery(true);
 
 // Query output:
 ```

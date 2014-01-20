@@ -59,7 +59,7 @@ $auth['query'] = array(function($username) use($auth)
     $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),
     $this->db->exec();
     
-    return $this->db->row();  // return to object.
+    return $this->db->getRow();  // return to object.
 });
 ```
 
@@ -69,10 +69,13 @@ $auth['query'] = array(function($username) use($auth)
 
 ```php
 <?php
-new Auth();
+new Auth;
+
 $this->auth->attemptQuery(
-    $this->get->post('email'),
-    $this->get->post('password'),
+    
+    $_POST['email'],
+    $_POST['password'],
+
 );
         
 if($this->auth->isValid())
@@ -100,7 +103,7 @@ if($this->auth->isValid())
 
 ```php
 <?php
-new Auth();
+new Auth;
 
 if($this->auth->hasIdentity())
 {
@@ -178,29 +181,9 @@ $auth['db']['query'] = array(function()
     $this->db->select(implode(',', $this->select_data));
     $this->db->where($this->username_col, $this->username);
     $this->db->limit(1);
-    $query = $this->db->get($this->tablename);
-    $this->row = $query->row();
-});
-```
+    $this->db->get($this->tablename);
 
-### Database Query for MongoDb
-
-Below the codes show an example database query for mongodb.
-
-```php
-$auth['db']['query'] = array(function()
-{
-    $this->db->select($this->select_data);
-    $this->db->where($this->username_col, $this->username);
-    $this->db->limit(1);
-    $docs = $this->db->get($this->tablename);
-
-    if( ! $docs->hasNext())
-    {
-        return false;
-    }
-
-    $this->row = (object) $docs->getNext();
+    return $this->db->getRow();
 });
 ```
 

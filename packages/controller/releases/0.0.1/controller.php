@@ -91,7 +91,7 @@ Class Controller {
      */
     public function __set($key, $val)  // Custom variables is not allowed !!! 
     {
-        if( ! is_object($val) AND $key != '_controllerAppMethods')
+        if( ! is_object($val) AND $key != '_controllerAppMethods' AND $key != '_controllerAppPublicMethods')
         {
             throw new Exception('Manually storing variables into Controller is not allowed');
         }
@@ -112,9 +112,23 @@ Class Controller {
     {
         $method = strtolower($methodName);
 
+        //-----------------------------------------------------
+        // "One Public Method Per Controller" Rule
+        //-----------------------------------------------------
+        
+        if(strncmp($methodName, '_', 1) !== 0) // if it is not a private method control the "One public method per controller"
+        {
+            $this->_controllerAppPublicMethods[$method] = $methodName;
+
+            if(sizeof($this->_controllerAppPublicMethods) > 1)
+            {
+                throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
+            }
+        }
+
         if ( ! is_callable($methodCallable))
         {
-            throw new InvalidArgumentException('Model '.get_class().' error: Second param must be callable.');
+            throw new InvalidArgumentException('Controller error: Second param must be callable.');
         }
         
         $this->_controllerAppMethods[$method] = Closure::bind($methodCallable, $this, get_class());

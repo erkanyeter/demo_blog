@@ -68,28 +68,34 @@ For Example :
 $this->lingo->load('calendar','spanish');
 ```
 
-### Loading the Obullo Language
+### Loading the Framework Language File
 
-Some of the packages use Obullo language file which is located in your <kbd>app/lingo</kbd> folder. You can change the default language. For example, if you set your default language to <b>spanish</b> ( look at <kbd>app/config/config.php</kbd> ) 
-core packages will load obullo.php from <kbd>app/lingo/spanish</kbd> folder.
+Some of the packages use framework language file which is located in your <kbd>app/lingo</kbd> folder. You can change the default language. ( look at <kbd>app/config/debug/config.php</kbd> ) 
+
+Core packages will load framework language files which are located in <kbd>app/lingo/$language</kbd> folder.
 
 ------
 
 ```php
 -  app
-    +cache
     +config
     +errors
     -lingo
         -english
-            obullo.php
+            date_get.php
+            ftp.php
+            email.php
+            odm.php
+            validator.php
             welcome.php
             ...
         -spanish
-            obullo.php
-            welcome.php
+            date_get.php
+            ftp.php
+            email.php
+            odm.php
+            validator.php
             ...
-    +logs
 ```
 
 This function load the <b>welcome</b> language file from your <kbd>app/lingo/spanish</kbd> folder.
@@ -134,5 +140,5 @@ Where <samp>language_key</samp> is the array key corresponding to the line you w
 If you find that you need a globally particular language throughout your application, you can tell Framework autoloader functions ( see the /docs/advanced/auto-loading ) it during system initialization.
 
 ```php
-$autoload['lingo'] = array('languagefile');
+$this->lingo->load('filename');
 ```

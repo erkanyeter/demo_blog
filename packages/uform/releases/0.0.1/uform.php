@@ -305,7 +305,7 @@ Class Uform
                         $out  .= "\n\t\t<div class='uform-column " . array_shift($gridClass) . " $addon_class' >";  // add the column TD
                         $label = "\n\t\t\t".$this->printLabel($rowNum, $colNum);
                         
-                        // $columnContent = "\n\t\t\t".$this->printColumnContent($rowNum, $colId);  // retrive column content.
+                        $columnContent = "\n\t\t\t".$this->printColumnContent($rowNum, $colNum);  // retrive column content.
 
                         $error = (isset($v2['error_msg'])) ? $v2['error_msg'] : '';   // retrive validation error msg
 

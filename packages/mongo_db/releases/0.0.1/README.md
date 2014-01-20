@@ -122,11 +122,11 @@ $this->db->delete('users')
 
 ```php
 <?php
-$docs = $this->db->get('users');
+$this->db->get('users');
 
-echo 'found '.$docs->count().' row(s)';
+echo 'found '.$this->db->getCount().' row(s)';
 
-foreach($docs as $row)
+foreach($this->db->getResultArray() as $row)
 {
    echo $row['username'].'<br />';
 }

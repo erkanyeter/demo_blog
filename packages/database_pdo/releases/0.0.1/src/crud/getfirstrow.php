@@ -9,7 +9,7 @@ namespace Database_Pdo\Src\Crud {
     * @access    public
     * @return    object
     */    
-    function firstRow($type = 5)
+    function getFirstRow($type = 5)
     {
         $crud = getInstance()->{\Db::$var};
 

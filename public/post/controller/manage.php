@@ -26,7 +26,8 @@ $c->func('index', function(){
     }
 
     $this->db->get('posts');
-    $posts = $this->db->result();
+    
+    $posts = $this->db->getResult();
 
 	$this->view->get('manage', function() use($posts) {
         

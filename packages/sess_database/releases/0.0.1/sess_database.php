@@ -177,7 +177,7 @@ Class Sess_Database {
         }
 
         $query = $this->db->get($this->table_name);
-        $row = $query->row(); 
+        $row   = $query->getRow(); 
         
                                // Is there custom data?  If so, add it to the main session array
         if ($row == false)     // No result?  Kill it! // Obullo changes ..

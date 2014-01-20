@@ -21,9 +21,8 @@ Sets a database schema for update operations.
 <?php
 $this->db->where('post_id', $post_id); // get db data
 $this->db->get('posts');
-$row = $this->db->row();  // get one post
 
-$this->form->setSchema('posts')  // set schema for form
+$row = $this->db->getRow();  // get one post
 
 echo $this->form->getNotice();
 echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST'));

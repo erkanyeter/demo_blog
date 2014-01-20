@@ -150,7 +150,7 @@ Abstract Class Database_Adapter extends Database_Layer {
     * @access    public
     * @return    string
     */
-    public function version()
+    public function getVersion()
     {
         $this->connect();
         
@@ -268,7 +268,7 @@ Abstract Class Database_Adapter extends Database_Layer {
     * 
     * @return type 
     */
-    public function errors()
+    public function getErrors()
     {
         return $this->_conn->errorInfo();
     }
@@ -280,7 +280,7 @@ Abstract Class Database_Adapter extends Database_Layer {
     *
     * @return  object PDO::Statement
     */
-    public function drivers()
+    public function getDrivers()
     {
         return $this->_conn->getAvailableDrivers();
     }

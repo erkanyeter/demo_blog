@@ -21,10 +21,12 @@ $c->func('index', function(){
     	$this->form->setRules('password', 'Password', 'required');
 
         if($this->form->isValid())  // check form validation
-        {
-			$this->auth->attemptQuery(
-			    $this->get->post('email'),
-			    $this->get->post('password')
+        {	
+			$this->auth->attemptQuery(	 // login, query
+
+			    $_POST['email'],
+			    $_POST['password']
+			    
 			);
 
 			if($this->auth->isValid())  // check auth is success

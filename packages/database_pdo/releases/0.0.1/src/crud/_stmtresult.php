@@ -5,7 +5,7 @@ namespace Database_Pdo\Src\Crud {
     
     /**
     * Get results for current db 
-    * operation. (firstRow(), nextRow() .. )
+    * operation. (getFirstRow(), getNextRow() .. )
     *     
     * @access   private
     * @param    integer $type

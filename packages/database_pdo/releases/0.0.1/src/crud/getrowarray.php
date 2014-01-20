@@ -2,17 +2,18 @@
 namespace Database_Pdo\Src\Crud {
 
     // --------------------------------------------------------------------
-
+    
     /**
-    * Fetch all results as array
+    * Result row as array
     *
+    * @author CJ Lazell
     * @return  array
     */
-    function resultArray()
+    function getRowArray()
     {
         $crud = getInstance()->{\Db::$var};
 
-        return $crud->Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $crud->Stmt->fetch(\PDO::FETCH_ASSOC);
     }
-    
+
 }

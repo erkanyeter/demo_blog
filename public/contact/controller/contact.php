@@ -13,10 +13,10 @@ $c = new Controller(function(){
     new View;
     
 	new Model('contact', 'contacts');
-    new Model('user', 'users');
 });
 
 $c->func('index', function(){
+
 
     if($this->get->post('dopost')) // if do post click
     {

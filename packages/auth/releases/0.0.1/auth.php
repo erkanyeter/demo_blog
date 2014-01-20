@@ -99,8 +99,13 @@ Class Auth {
         
         $password = ($this->password_salt_str != '') ? ($this->password_salt_str.trim($password)) : trim($password);
 
-        $this->username = trim($username);
-        $this->password = $password;
+        $this->username = (string)$username;
+        $this->password = (string)$password;
+
+        if($this->getItem('xss_clean')) // if xss clean filter enabled
+        {
+            $this->username = getComponentInstance('security')->xssClean($this->username);
+        }
 
         // Get query function.
         $this->row = call_user_func_array(Closure::bind($this->query, $this, get_class()), array($this->username));

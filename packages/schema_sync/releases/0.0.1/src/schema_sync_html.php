@@ -30,7 +30,7 @@ Class Schema_Sync_Html {
 		$html = '<html>';
 		$html.= '<head>'.$this->schemaObject->writeCss().'</head>';
 		$html.= '<body>';
-		$html.= '<h1>Synchronize the <i><u>'.strtolower($this->schemaObject->getTableName()).'</u></i> schema</h1>';
+		$html.= '<h1>Synchronize the <i><u>'.$this->schemaObject->getTableName().'</u></i> schema</h1>';
 
 		$html.= $this->form->open('/'.$this->schemaObject->getRequestUri(), array('method' => 'POST', 'name' => 'sync_table', 'id' => 'sync_table'));
 
@@ -48,6 +48,7 @@ Class Schema_Sync_Html {
 			if( ! isset($val['types']) ) { $class = 'newColumn'; } // New Column
 
 				$class = isset($val['options']['class']) ? $val['options']['class'] : $class ; 
+
 				if(isset($val['new_types']))  // LEFT COLUMN
 				{
 					
@@ -191,7 +192,7 @@ Class Schema_Sync_Html {
 		$html.= '</table>';
 
 		$html.= '<input type="hidden" name="lastCurrentPage" id="lastCurrentPage" value="'.urlencode($this->schemaObject->getRequestUri()).'" style="width:500px;">';
-		$html.= '<input type="hidden" name="lastCurrentSchema" id="lastCurrentSchema" value="'.strtolower($this->schemaObject->getTableName()).'" style="width:500px;">';
+		$html.= '<input type="hidden" name="lastCurrentSchema" id="lastCurrentSchema" value="'.$this->schemaObject->getTableName().'" style="width:500px;">';
 		$html.= '<input type="hidden" name="lastSyncCommand" id="lastSyncCommand" value="" style="width:500px;">';
 		$html.= '<input type="hidden" name="lastSyncFunc" id="lastSyncFunc" value="" style="width:500px;">'."\n";
 

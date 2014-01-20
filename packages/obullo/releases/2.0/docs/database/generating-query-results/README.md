@@ -4,33 +4,32 @@
 
 ------
 
-#### $this->db->result()
+#### $this->db->getResult()
 
 This function returns the query result as object.
 
-#### $this->db->resultArray();
+#### $this->db->getResultArray();
 
 This function returns the query result as a pure array, or an empty array when no result is produced.
 
-#### $this->db->row();
+#### $this->db->getRow();
 
 This function fetch one item and returns query result as object or false on failure.
 
-#### $this->db->rowArray();
+#### $this->db->getRowArray();
 
 Identical to the above row() function, except it returns an array.
 
-#### $this->db->count();
+#### $this->db->getCount();
 
 Returns to number of rows.
 
-
 ```php
-$query = $this->db->query("YOUR QUERY");
+$this->db->query('YOUR QUERY');
 
-if ($query->count() > 0)
+if ($this->db->getCount() > 0)
 {
-   $row = $query->rowArray();
+   $row = $this->db->getRowArray();
 
    echo $row['title'];
    echo $row['name'];
@@ -38,32 +37,19 @@ if ($query->count() > 0)
 } 
 ```
 
-#### $this->db->both()
-
-Get column names and numbers.
-
-
-```php
-$query = $this->db->query("SELECT article_id FROM table");
-
-$result = $query->both(); 
-// output  Array ( [article_id] => 1 [0] => 1 )  
-```
-
-
 In addition, you can walk forward/backwards/first/last through your results using these variations:
 
-* $row = $query->firstRow()
-* $row = $query->lastRow()
-* $row = $query->nextRow()
-* $row = $query->previousRow()
+* $row = $this->db->getFirstRow()
+* $row = $this->db->getLastRow()
+* $row = $this->db->getNextRow()
+* $row = $this->db->getPreviousRow()
 
 By default they return an object unless you put the word "array" in the parameter:
 
-* $row = $query->firstRow(assoc)
-* $row = $query->lastRow(assoc)
-* $row = $query->nextRow(assoc)
-* $row = $query->previousRow(assoc)
+* $row = $this->db->getFirstRowArray()
+* $row = $this->db->getLastRowArray()
+* $row = $this->db->getNextRowArray()
+* $row = $this->db->getPreviousRowArray()
 
 ### Testing for Results
 
@@ -71,28 +57,28 @@ By default they return an object unless you put the word "array" in the paramete
 If you run queries that might not produce a result, you are encouraged to test for a result first using the **row()** and **prepare** function:
 
 ```php
-$query = $this->db->prep()  // pdo prepare() switch 
+$this->db->prep()  // pdo prepare() switch 
 ->where('ip_address', '127.0.0.1')
 ->get('ob_sessions')    // from this table
 ->exec();
 
-if($query->row())
+if($this->db->getRow())
 {
-    $query = $query->exec();  // get cached query..
-    $b = $query->resultArray();
+    $this->db->exec();  // get cached query..
+    $b = $this->db->getResultArray();
 
     print_r($b);    // output array( ... )   
 }
 ```
 
-If **rowCount()** function available in your db driver you can use it ..
+If **getCount()** function available in your db driver you can use it ..
 
 ```php
-$query = $this->db->where('ip_address', '127.0.0.1')->get('ob_sessions');
+$this->db->where('ip_address', '127.0.0.1')->get('ob_sessions');
 
-if($query->rowCount() > 0)
+if($this->db->getCount() > 0)
 {
-    $b = $query->resultArray();
+    $b = $this->db->getResultArray();
 
     print_r($b);    // output array( ... )   
 }
@@ -259,53 +245,6 @@ Below the table show available result types.
 </table>
 
 More details at [PDO Predefined Constants](http://php.net/manual/en/pdo.constants.php).
-
-
-#### $this->db->rowCount()
-
-Returns the number of rows affected by the execution of the last INSERT, DELETE, or UPDATE statement.
-
-The most popular PDO database drivers like **MySQL** support to **rowCount();** function for SELECT statement but some database drivers does not support rowCount() function like **SQLite**.If you develop a portable applications **do not use** rowCount(); function via **SELECT** statements.
-
-```php
-$query = $this->db->query("INSERT UPDATE DELETE QUERY");
-$result = $query->rowCount(); 
-```
-
-```php
-$query = $this->db->query("INSERT INTO articles (title, article) VALUES('test..','blabla..')");
-echo $this->db->rowCount();  // output 1
-```
-
-CRUD class already return to affected rows not necassary to use rowCount();.
-
-```php
-$data['title']   = 'row count test';
-$data['article'] = 'blablabla ...';
-
-$affected_rows = $this->db->insert('articles', $data);
-echo $affected_rows;  // output 1
-```
-
-If your Pdo driver **does not** support **rowCount()**, to finding number of rows for the **SELECT** statement you can use native sql COUNT(*)
-
-```php
-echo $this->db->select("COUNT(*) as num")->get('articles')->row()->num; // output 7
-
-// or 
-
-$query = $this->db->query("SELECT COUNT(*) as num FROM articles");
-echo $query->row()->num; // output 7
-```
-
-An alternative way If data is not large and you already use fetchAll then you can use php count(); function
-
-```php
-$query = $this->db->query("SELECT * FROM articles");
-$a = $query->resultArray();
-
-echo count($a);   // output 7
-```
 
 ### Fetching Column Names
 

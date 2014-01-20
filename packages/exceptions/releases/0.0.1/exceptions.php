@@ -57,7 +57,7 @@ Class Exceptions {
         if(isset(getInstance()->db))
         {
             $prepare   = (isset(getInstance()->db->prepare)) ? getInstance()->db->prepare : false;
-            $lastQuery = getInstance()->db->lastQuery($prepare);
+            $lastQuery = getInstance()->db->getLastQuery($prepare);
         }
         
         if( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) // Yes this is a db error.
