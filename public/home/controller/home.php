@@ -14,12 +14,21 @@ $c = new Controller(function(){
     new View;
     // new Query; // query hmvc kullanmalı. web request gibi
     // new Restql;
-    new Resto;
+    new Rest;
 });
 
 $c->func('index', function(){
 
-    $this->resto->post('save.user', $data);
+    $this->rest->get('getone.user');
+
+    // $this->rest->put(''); upload file, write file
+
+    $this->rest->post('save.user', array(
+        'user_username' => 'test',
+        'user_email' => 'eguvenc@gmail.com',
+    ));
+
+    // $this->rest->post('delete.user', array('user_id' => 1));
 
     $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
         WHERE posts.post_id = comment_post_id AND comment_status = '1' 

@@ -27,9 +27,9 @@ Class Hmvc
     private $method;
 
     // Clone objects
-    public $uri          = '';
-    public $router       = '';
-    public $config       = '';
+    public $uri    = '';
+    public $router = '';
+    public $config = '';
         
     // Global variables
     public $_GET_BACKUP      = '';
@@ -42,8 +42,8 @@ Class Hmvc
     protected $_conn_string    = '';       // Unique HMVC connection string that we need to convert it to conn_id.
     protected static $_conn_id = array();  // Static HMVC Connection ids.
 
-    // Profiler and Benchmark
-    public static $start_time    = '';     // benchmark start time for profiler
+    // Benchmark
+    public static $start_time    = '';     // benchmark start time
     public static $request_count = 0;      // request count for profiler
     
     /**
@@ -51,6 +51,11 @@ Class Hmvc
      */
     public function __construct()
     {        
+        if( ! isset(getInstance()->hmvc))
+        {
+            getInstance()->hmvc = $this; // Make available it in the controller $this->hmvc->method();
+        }
+
         logMe('debug', "Hmvc Class Initialized");
     }
 
@@ -64,7 +69,7 @@ Class Hmvc
     * @param     int $cache_time
     * @return    void
     */
-    public function request($hmvc_uri = '', $cache_time = 0)
+    public function setRequest($hmvc_uri = '', $cache_time = 0)
     {
         $this->_setConnString($hmvc_uri);
 
@@ -72,7 +77,7 @@ Class Hmvc
         #######################################
         
         $this->_this = getInstance();      // We need create backup $this object of main controller
-                                                // becuse of it will change when HMVC process is done.
+                                           // becuse of it will change when HMVC process is done.
         
         #######################################
         
@@ -332,7 +337,8 @@ Class Hmvc
             }
 
             $this->_resetRouter();
-            return $this->_response();
+
+            return $this->getResponse();
         }
         
         //  A Hmvc uri must be unique otherwise
@@ -348,7 +354,7 @@ Class Hmvc
             $this->setResponse('404 - Hmvc request not found: Unable to load your controller.');
             $this->_resetRouter();
 
-            return $this->_response();
+            return $this->getResponse();
         }
 
         // --------- Check class is exists in the storage ----------- //
@@ -371,7 +377,7 @@ Class Hmvc
             $this->setResponse('404 - Hmvc request not found: '.$hmvc_uri);
             $this->_resetRouter();
             
-            return $this->_response();
+            return $this->getResponse();
         }
         
         // Check method exist or not
@@ -380,7 +386,7 @@ Class Hmvc
             $this->setResponse('404 - Hmvc request not found: '.$hmvc_uri);
             $this->_resetRouter();
 
-            return $this->_response();
+            return $this->getResponse();
         }
 
         ob_start(); // Get the output.
@@ -411,7 +417,7 @@ Class Hmvc
 
         // End storage
 
-        $response = $this->_response();
+        $response = $this->getResponse();
 
         logMe('debug', 'Hmvc process done.');
         logMe('debug', 'Hmvc output: '.$response);
@@ -535,24 +541,11 @@ Class Hmvc
     * 
     * @return string
     */
-    public function response()
+    public function getResponse()
     {
         return $this->response;
     }
    
-    // --------------------------------------------------------------------
-    
-    /**
-    * Render final hmvc output.
-    *
-    * @access private
-    * @return   string
-    */
-    public function _response()
-    {        
-        return $this->response();
-    }
-
     // --------------------------------------------------------------------
     
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Lingo Trigger Class ( Language Initializer )
+ * Culture Class ( Language Initializer )
  *
  * @package       packages
  * @subpackage    lingo
@@ -9,7 +9,7 @@
  * @link
  */
 
-Class Lingo_Trigger {
+Class Culture {
 
     public $langCode;
     public $langName;
@@ -23,20 +23,27 @@ Class Lingo_Trigger {
 
     public function __construct()
     {
-        if( ! isset(getInstance()->lingo_trigger))
+        if ( ! extension_loaded('intl')) 
+        {
+            throw new Exception(sprintf(
+                '%s component requires the intl PHP extension',
+                __CLASS__
+            ));
+        }
+        if( ! isset(getInstance()->culture))
         { 
-            getInstance()->lingo_trigger = $this;  // Make available it in the controller $this->lingo_trigger->method();
+            getInstance()->culture = $this;  // Make available it in the controller $this->culture->method();
         }
 
         $this->uri = getInstance()->uri;
 
-        $this->langArray   = getConfig('lingo_starter');
-        $this->langDefault = getInstance()->config->getItem('lingo');
+        $this->langArray   = getConfig('culture');
 
-        $this->langCode    = $this->langArray[$this->langDefault]; //default dil tanımlaması
+        $this->langDefault = getInstance()->config->getItem('lingo');
+        $this->langCode    = $this->langArray['languages'][$this->langDefault]; //default dil tanımlaması
         $this->langName    = $this->langDefault;
 
-        logMe('debug', 'Lingo_Starter Class Initialized');
+        logMe('debug', 'Culture Class Initialized');
 
         $this->_init(); // Initialize 
     }
@@ -83,7 +90,7 @@ Class Lingo_Trigger {
 
             if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
             {
-                $this->setCode(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
+                $this->setCode(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
                 $this->setName();
                 $this->setCookie(); // write to cookie.
             }
@@ -98,7 +105,7 @@ Class Lingo_Trigger {
      * 
      * @param string $langCode
      */
-    private function setCode($langCode = 'en')
+    private function setCode($langCode = 'en_US')
     {
         $this->langCode = (string)$langCode;
     }
@@ -110,7 +117,7 @@ Class Lingo_Trigger {
      */
     private function setName()
     {
-        $langNames      = array_flip($this->langArray);  // Convert to langCode => langName
+        $langNames      = array_flip($this->langArray['languages']);  // Convert to langCode => langName
         $this->langName = isset($langNames[$this->langCode]) ? $langNames[$this->langCode] : $this->langDefault;
     }
 
@@ -156,5 +163,5 @@ Class Lingo_Trigger {
 
 }
 
-/* End of file lingo_starter.php */
-/* Location: ./packages/lingo_starter/releases/0.0.1/lingo_starter.php */
+/* End of file culture.php */
+/* Location: ./packages/culture/releases/0.0.1/culture.php */

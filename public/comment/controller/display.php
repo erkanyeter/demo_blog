@@ -11,6 +11,7 @@ $c = new Controller(function(){
 	new Form;
     new Date_Format;
     new View;
+    new Culture;
 
 	new Model('post', 'posts');
 });

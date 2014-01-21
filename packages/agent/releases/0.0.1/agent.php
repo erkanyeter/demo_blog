@@ -206,7 +206,8 @@ Class Agent {
                 if (preg_match("|".preg_quote($key)."|i", $this->agent))
                 {
                     $this->is_robot = true;
-                    $this->robot = $val;
+                    $this->robot    = $val;
+                    
                     return true;
                 }
             }
