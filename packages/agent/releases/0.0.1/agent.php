@@ -154,7 +154,8 @@ Class Agent {
             {
                 if (preg_match("|".preg_quote($key)."|i", $this->agent))
                 {
-                    $this->platform = $val;
+                    $this->platform['key'] = $key;
+                    $this->platform['val'] = $val;
                     return true;
                 }
             }
@@ -180,7 +181,8 @@ Class Agent {
                 {
                     $this->is_browser = true;
                     $this->version = $match[1];
-                    $this->browser = $val;
+                    $this->browser['key'] = $key;
+                    $this->browser['val'] = $val;
                     $this->_setMobile();
                     return true;
                 }
@@ -206,7 +208,8 @@ Class Agent {
                 if (preg_match("|".preg_quote($key)."|i", $this->agent))
                 {
                     $this->is_robot = true;
-                    $this->robot = $val;
+                    $this->robot['key'] = $key;
+                    $this->robot['val'] = $val;
                     return true;
                 }
             }
@@ -231,7 +234,8 @@ Class Agent {
                 if (false !== (strpos(mb_strtolower($this->agent, config('charset')), $key)))
                 {
                     $this->is_mobile = true;
-                    $this->mobile = $val;
+                    $this->mobile['key'] = $key;
+                    $this->mobile['val'] = $val;
                     return true;
                 }
             }
@@ -365,7 +369,7 @@ Class Agent {
      */
     public function getPlatform()
     {
-        return $this->platform;
+        return $this->platform['val'];
     }
 
     // --------------------------------------------------------------------
@@ -378,7 +382,7 @@ Class Agent {
      */
     public function getBrowser()
     {
-        return $this->browser;
+        return $this->browser['val'];
     }
 
     // --------------------------------------------------------------------
@@ -404,7 +408,7 @@ Class Agent {
      */
     public function getRobotName()
     {
-        return $this->robot;
+        return $this->robot['val'];
     }
     // --------------------------------------------------------------------
 
@@ -416,7 +420,7 @@ Class Agent {
      */
     public function getMobileDevice()
     {
-        return $this->mobile;
+        return $this->mobile['val'];
     }
 
     // --------------------------------------------------------------------
@@ -492,6 +496,39 @@ Class Agent {
     public function getAcceptCharset($charset = 'utf-8')
     {
         return (in_array(strtolower($charset), $this->getCharsets(), true)) ? true : false;
+    }
+
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get The Key
+     *
+     * @access    public
+     * @return    string
+     */
+    public function getKey($keyName = NULL)
+    {
+        $keyName = trim(strtolower($keyName));
+
+        switch ($keyName) 
+        {
+            case 'browser':
+                return $this->browser['key'];
+                break;
+            
+            case 'platform':
+                return $this->platform['key'];
+                break;
+            
+            case 'robot':
+                return $this->robot['key'];
+                break;
+            
+            case 'mobile':
+                return $this->mobile['key'];
+                break;
+        }
     }
     
 }
