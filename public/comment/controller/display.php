@@ -11,7 +11,7 @@ $c = new Controller(function(){
 	new Form;
     new Date_Get;
     new View;
-    new Lingo_Starter;
+    new Culture;
 
 	new Model('post', 'posts');
 });

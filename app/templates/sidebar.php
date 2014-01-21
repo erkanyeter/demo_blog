@@ -12,7 +12,7 @@
 	 	<div class="tags_panel">
 		 	<?php echo $this->url->anchor('/post/create', 'Create New Post') ?> <br>
 		 	<?php echo $this->url->anchor('/post/manage', 'Manage Posts') ?> <br>
-		 	<?php echo $this->url->anchor('/post/approve', 'Approve Comments') ?> <span class="approve_comments">
+		 	<?php echo $this->url->anchor('/comment/display', 'Approve Comments') ?> <span class="approve_comments">
 		 		( <?php
 				 		$this->db->where('comment_status','0');
 		        		$this->db->get('comments');

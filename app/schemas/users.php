@@ -10,7 +10,7 @@ $users = array(
 		),
 	'user_email' => array(
 		'label' => 'User Email',
-		'types' => '_not_null|_varchar(60)',
+		'types' => '_null|_varchar(60)',
 		'rules' => 'required|validEmail',
 		),
 	'user_password' => array(
@@ -31,6 +31,16 @@ $users = array(
 	'user_username' => array(
 		'label' => 'User Username',
 		'types' => '_not_null|_varchar(50)',
+		'rules' => '',
+		),
+	'user_name' => array(
+		'label' => 'User Name',
+		'types' => '_not_null|_varchar(50)',
+		'rules' => '',
+		),
+	'user_test' => array(
+		'label' => 'User Test',
+		'types' => '_null|_int(11)',
 		'rules' => '',
 		),
 );
