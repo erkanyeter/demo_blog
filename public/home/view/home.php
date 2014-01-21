@@ -24,7 +24,7 @@
 					<div id="post">		
 						<div id="title"><h2><?php echo $this->url->anchor('/post/detail/'.$row['post_id'], $row['post_title']) ?></h2></div>
 
-						<div id="author"><small>posted by <?php echo $row['user_username'] ?> on <?php echo $this->date_get->mDate("%F %d,%Y", strtotime($row['post_creation_date'])) ?></small></div>
+						<div id="author"><small>posted by <?php echo $row['user_username'] ?> on <?php echo $this->date_format->getDate("%F %d,%Y", strtotime($row['post_creation_date'])) ?></small></div>
 						
 						<div id="postcontent">
 							<?php echo $row['post_content'] ?>

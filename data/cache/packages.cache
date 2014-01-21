@@ -30,7 +30,7 @@ $packages['dependencies']['cookie']         = array('version' => '0.0.1');
 $packages['dependencies']['cache']          = array('version' => '0.0.1');
 $packages['dependencies']['controller']     = array('version' => '0.0.1');
 $packages['dependencies']['config']         = array('version' => '0.0.1');
-$packages['dependencies']['date_get']       = array('version' => '0.0.1');
+$packages['dependencies']['date_format']    = array('version' => '0.0.1');
 $packages['dependencies']['db']             = array('version' => '0.0.1');
 $packages['dependencies']['database_pdo']   = array('version' => '0.0.1');
 $packages['dependencies']['error']          = array('version' => '0.0.1');

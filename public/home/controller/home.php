@@ -9,12 +9,17 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Db;
-	new Date_Get;
+	new Date_Format;
 	new Tag_Cloud;
     new View;
+    // new Query; // query hmvc kullanmalı. web request gibi
+    // new Restql;
+    new Resto;
 });
 
 $c->func('index', function(){
+
+    $this->resto->post('save.user', $data);
 
     $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
         WHERE posts.post_id = comment_post_id AND comment_status = '1' 

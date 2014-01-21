@@ -1,7 +1,7 @@
 <?php
 
 /**
- * $c approve
+ * $c display
  * @var Controller
  */
 $c = new Controller(function(){
@@ -9,9 +9,8 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
-    new Date_Get;
+    new Date_Format;
     new View;
-    new Lingo_Starter;
 
 	new Model('post', 'posts');
 });

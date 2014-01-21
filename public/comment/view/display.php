@@ -41,14 +41,14 @@
 						?>
 						<?php 
 
-						$approve = ($row->comment_status == 1) ? $this->url->anchor('/post/approve/update/'.$row->comment_id.'/unapprove', 'Unapprove') : $this->url->anchor('/post/approve/update/'.$row->comment_id.'/approve', 'Approve');
+						$approve = ($row->comment_status == 1) ? $this->url->anchor('/comment/update/'.$row->comment_id.'/unapprove', 'Unapprove') : $this->url->anchor('/comment/update/'.$row->comment_id.'/approve', 'Approve');
 
 						echo $approve;
 						?>
-						| <?php echo $this->url->anchor('/post/approve/delete/'.$row->comment_id, 'Delete') ?>
+						| <?php echo $this->url->anchor('/comment/delete/'.$row->comment_id, 'Delete') ?>
 						</small>
 
-						<div id="detail_left"><?php echo $this->date_get->mDate("%F %d,%Y", strtotime($row->comment_creation_date)) ?></div>
+						<div id="detail_left"><?php echo $this->date_format->getDate("%F %d,%Y", strtotime($row->comment_creation_date)) ?></div>
 						<div id="clear"></div>
 						<div id="commentext"><?php echo $row->comment_body ?></div>
 					</div>	
@@ -76,5 +76,4 @@ function submitPage(){
 </script>
 
 </body>
-
 </html>
