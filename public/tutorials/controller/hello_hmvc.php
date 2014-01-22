@@ -12,12 +12,12 @@ $c->func('index',function() use($c){
     
     new Url;
     new Html;
-	new Request;
+	new Web_Request;
     
     $c->view('hello_hmvc', function() use($c){
 
-        $this->set('response_a', $this->request->get('tutorials/hello_dummy/test/1/2/3'));
-        $this->set('response_b', $this->request->get('tutorials/hello_dummy/test/4/5/6'));
+        $this->set('response_a', $this->web_request->get('tutorials/hello_dummy/test/1/2/3'));
+        $this->set('response_b', $this->web_request->get('tutorials/hello_dummy/test/4/5/6'));
 
         $this->set('name', 'Obullo');
         $this->set('footer', $c->tpl('footer', false));

@@ -20,8 +20,8 @@ $config = array(
 
 	// Models & Schemas
 	'model_auto_sync' => true, // Auto sync should be enabled in development mode.
-							   // Sync tool automatically updates your schema and database tables.
-							   // In LIVE mode you need set to "false" because of the performance.
+							   // Sync tool automatically show a sync edit screen for the schema & database synchronization.
+							   // In LIVE mode you need set it to "false" because of the performance & security.
 
 	 // Logs
 	'log_threshold' => 5,    // 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
