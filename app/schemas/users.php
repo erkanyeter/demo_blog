@@ -40,7 +40,7 @@ $users = array(
 		),
 	'user_test' => array(
 		'label' => 'User Test',
-		'types' => '_null|_int(11)',
+		'types' => '_null|_int(11)|_key(user_test)(user_test)',
 		'rules' => '',
 		),
 );

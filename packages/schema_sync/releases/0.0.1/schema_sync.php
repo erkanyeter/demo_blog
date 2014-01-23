@@ -13,52 +13,8 @@ Class Schema_Sync {
     public $dbSchema   = array();       // database schema array
     public $fileSchema = array();       // stored file schema array
     public $schemaDiff = array();       // last schema output after that the sync
+    public $builderObject;
 
-	public $dataTypes  = array(  		// defined mysql data types
-	 	'_bit',
-		'_tinyint',
-		'_smallint',
-		'_mediumint',
-		'_int',
-		'_integer',
-		'_bigint',
-		'_real',
-		'_double',
-		'_float',
-		'_decimal',
-		'_numeric',
-		'_date',
-		'_time',
-		'_timestamp',
-		'_datetime',
-		'_year',
-		'_char',
-		'_varchar',
-		'_binary',
-		'_varbinary',
-		'_tinyblob',
-		'_blob',
-		'_mediumblob',
-		'_longblob',
-		'_tinytext',
-		'_text',
-		'_mediumtext',
-		'_longtext',
-		'_enum',
-		'_set');
-
-	public $attributeTypes = array(
-		'_null',
-		'_not_null',
-		'_default',
-		'_unsigned',
-		'_unsigned_zerofill',
-		'_key',
-		'_foreign_key',
-		'_unique_key',
-		'_primary_key',
-		'_auto_increment',
-		);
 
     // --------------------------------------------------------------------
 
@@ -84,7 +40,8 @@ Class Schema_Sync {
             $newFileSchema[$k] = $v;
         }
 
-        // exit($schemaDBContent);
+        $builderName = $this->getDriverName();
+        $this->builderObject = new $builderName();
 
         eval('$databaseSchema = array('.$schemaDBContent.');');  // Active Schema coming from database
         unset($databaseSchema['*']);
@@ -97,6 +54,20 @@ Class Schema_Sync {
         $this->debug        = false;
     }
    
+    // --------------------------------------------------------------------
+
+    /**
+     * Get the schema driver name
+     * 
+     * @return string
+     */
+    public function getDriverName()
+    {
+        $dbConfig = getConfig('database');
+        $exp = explode('_', get_class($dbConfig[Db::$var]));
+        return 'Schema_Builder_'.ucfirst($exp[1]);
+    }
+
     // --------------------------------------------------------------------
 
     /**
@@ -150,7 +121,7 @@ Class Schema_Sync {
             $val['types'] = preg_replace('#["]+#', '', $val['types']); // remove double " " quotes ...
             $val['types'] = preg_replace('#(_enum)(\(.*?\))#', "_enum", $val['types']); // if user insert enum data in types we remove it
 
-            if(isset($schemaArray[$key]['_enum']))
+            if(isset($schemaArray[$key]['_enum'])) // Mysql Enum Type
             { 
                 $enum = '';
                 foreach($schemaArray[$key]['_enum'] as $enumVal)
@@ -283,7 +254,7 @@ Class Schema_Sync {
                 /* Search data types and remove unecessary buttons. ( REMOVE DROP  BUTTON )*/
 
                 $result     = preg_replace('#(\(.*?\))#','', $this->fileSchema[$k]);  // Remove data type brackets from file schema
-                $grep_array = preg_grep('#'.$result.'#',$this->dataTypes); // Search data type exists
+                $grep_array = preg_grep('#'.$result.'#',$this->builderObject->dataTypes); // Search data type exists
 
                 // If at least one data type not exists in the schema file
                 // don't show "drop" button to users
@@ -329,7 +300,7 @@ Class Schema_Sync {
             {
                 $result = preg_replace('#(\(.*?\))#','', $v); // Remove data type brackets from file schema
 
-                $dataTypeArray = $this->getDataTypeArray($result,$this->dataTypes);
+                $dataTypeArray = $this->builderObject->getDataTypeArray($result,$this->builderObject->dataTypes);
                 $dataTypeCount = sizeof($dataTypeArray);
                 $dataTypeArray = array_values($dataTypeArray);
                 $newAttributes = explode('|', trim($result, '|'));        
@@ -374,7 +345,7 @@ Class Schema_Sync {
                     $i = 0;
                     foreach($newAttributes as $type)
                     {
-                        if (in_array($type,$this->attributeTypes) || in_array($type, $this->dataTypes))
+                        if (in_array($type,$this->builderObject->attributeTypes) || in_array($type, $this->builderObject->dataTypes))
                         {
                             $this->schemaDiff[$k]['options'] = array(
                                 'types' => implode('|', $v),
@@ -435,7 +406,7 @@ Class Schema_Sync {
 
                     foreach ($diffMatches as $diffVal)
                     {
-                        if (in_array($unbreacketsDiffMatches[$i],$this->dataTypes) OR in_array($unbreacketsDiffMatches[$i], $this->attributeTypes)) // check is it datatype.
+                        if (in_array($unbreacketsDiffMatches[$i],$this->builderObject->dataTypes) OR in_array($unbreacketsDiffMatches[$i], $this->builderObject->attributeTypes)) // check is it datatype.
                         {
                             switch ($unbreacketsDiffMatches[$i])  
                             {
@@ -601,45 +572,6 @@ Class Schema_Sync {
         return $sync_html->writeOutput();
     }
 
-    // --------------------------------------------------------------------
-
-    /**
-     * Use escape character
-     * 
-     * @param  string $val escaped value
-     * @return string
-     */
-    public function quoteValue($val)
-    {
-        return sprintf($this->_escape_char, $val);
-    }
-
-    // --------------------------------------------------------------------
-    
-    /**
-     * Remove underscored from data types
-     * 
-     * @param  string $str
-     * @return string
-     */
-    public function removeUnderscore($str)
-    {
-        return str_replace('_',' ',$str);
-    }
-
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get number of data type count.
-     * 
-     * @param  string  $typeString
-     * @return int
-     */
-    public function getDataTypeArray($typeString,$dataTypes)
-    {
-        return array_intersect(explode('|', $typeString),$dataTypes);
-    }
 
     // --------------------------------------------------------------------
 
@@ -678,6 +610,14 @@ Class Schema_Sync {
             $startArray = '$'.$this->schemaName.' = array(';
             $endArray   = ');';
             $disabled   = false;
+
+
+            $this->builderObject->setSchemaName($this->schemaName);
+            $this->builderObject->setColName($colName);
+
+
+
+
             switch ($command)
             {
                 case 'drop':   // Drop Type from Database
@@ -686,7 +626,7 @@ Class Schema_Sync {
                 
                     if ($isNew == true AND count($colTypeArray) > 1)  // If user want to drop this field run this process & coltype has more one
                     {
-                        $dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' DROP '.$this->quoteValue($colName);
+                        $dbCommand = $this->builderObject->dropColumn();
                     }
                     else // If this field exists in FileSchema
                     {
@@ -694,7 +634,6 @@ Class Schema_Sync {
 
                         $explodedColType       = explode('|',$unbracketsColType);
 
-                        $dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' ';
                         $dataTypeNotExist = false;
 
                         if (isset($this->fileSchema[$colName])) 
@@ -703,7 +642,7 @@ Class Schema_Sync {
                             $explodedFileColTypes  = explode('|',$unbracketsFileColType);
                                 
                                 
-                            if ($dbcolKeys = preg_grep('#'.$unbracketsFileColType.'#',$this->dataTypes)) // Check data type exists in FileSchema
+                            if ($dbcolKeys = preg_grep('#'.$unbracketsFileColType.'#',$this->builderObject->dataTypes)) // Check data type exists in FileSchema
                             {
                                 $colkey            = array_search(array_values($dbcolKeys)[0],$explodedFileColTypes);// ColType array position in file schema   
                                 $tempColKey        = $colkey; // temp column key for get datatype in fileschema if try to drop a previous data type
@@ -712,7 +651,7 @@ Class Schema_Sync {
                                 
                                 $dataType          = $fileSchemaArray;
                                 
-                                $dataType[$colkey] = $this->removeUnderscore($dataType[$colkey]);// Remove Underscores from datatypes
+                                $dataType[$colkey] = $this->builderObject->removeUnderscore($dataType[$colkey]);// Remove Underscores from datatypes
 
                             }
                             else
@@ -725,14 +664,15 @@ Class Schema_Sync {
                                 $unbracketsDbColType = preg_replace('#(\(.*?\))#','', $this->dbSchema[$colName]); // Db schema column types
                                 $explodedDbColTypes  = explode('|',$unbracketsDbColType); // Get column types from DBSchema to array 
                                 
-                                $dbcolKeys           = preg_grep('#'.$unbracketsDbColType.'#',$this->dataTypes);
+                                $dbcolKeys           = preg_grep('#'.$unbracketsDbColType.'#',$this->builderObject->dataTypes);
                                 $dbColKeyValue       = array_values($dbcolKeys)[0];
                                 $colkey              = array_search($dbColKeyValue,$explodedDbColTypes);  // Array Position 
                                 
                                 $dbArray             = explode('|',$this->dbSchema[$colName]);
-                                $dbArray[$colkey]    = $this->removeUnderscore($dbArray[$colkey]); // Remove Underscores from datatypes
 
-                                if ($this->removeUnderscore($colType) == $dbArray[$colkey] && isset($dataType)) 
+                                $dbArray[$colkey]    = $this->builderObject->removeUnderscore($dbArray[$colkey]); // Remove Underscores from datatypes
+
+                                if ($this->builderObject->removeUnderscore($colType) == $dbArray[$colkey] && isset($dataType)) 
                                 {
                                     $dbArray[$colkey] = $dataType[$tempColKey];
                                 }
@@ -749,72 +689,37 @@ Class Schema_Sync {
                             $unbracketsDbColType = preg_replace('#(\(.*?\))#','', $this->dbSchema[$colName]); // Db schema column types
                             $explodedDbColTypes  = explode('|',$unbracketsDbColType); // Get column types from DBSchema to array 
                             
-                            $dbcolKeys           = preg_grep('#'.$unbracketsDbColType.'#',$this->dataTypes);
+                            $dbcolKeys           = preg_grep('#'.$unbracketsDbColType.'#',$this->builderObject->dataTypes);
                             $dbColKeyValue       = array_values($dbcolKeys)[0];
                             $colkey              = array_search($dbColKeyValue,$explodedDbColTypes);  // Array Position 
                             
                             $dbArray             = explode('|',$this->dbSchema[$colName]);
                             $dataType            = $dbArray;
-                            $dataType[$colkey] = $this->removeUnderscore($dataType[$colkey]); // Remove Underscores from datatypes
+
+                            $dataType[$colkey] = $this->builderObject->removeUnderscore($dataType[$colkey]); // Remove Underscores from datatypes
 
                         }
                         
                         if (count($dbcolKeys) > 0) // Datatype exist in schema
                         {
-                            if ($colKeys = preg_grep('#'.$explodedColType[0].'#',$this->dataTypes)) // If datatype
+                            if ($colKeys = preg_grep('#'.$explodedColType[0].'#',$this->builderObject->dataTypes)) // If datatype
                             {
-
                                 $dataType[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {  // Dont uppercase data inside brackets
                                     return strtoupper($match[0]); 
                                 }, $dataType[$colkey]);
 
-                                if ($isNew || $dataTypeNotExist) // if you want to drop a new field 
+                                if ($isNew OR $dataTypeNotExist) // if you want to drop a new field 
                                 {
                                     unset($dataType[$colkey]);
                                 }
 
-                                $dbCommand .=  (isset($dataType[$colkey])) ? 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey] : 'DROP '.$this->quoteValue($colName) ;
+                                $dbCommand =  (isset($dataType[$colkey])) ? $this->builderObject->modifyColumn($dataType[$colkey]) : $this->builderObject->dropColumn();
                             }
                             else
                             {
-                                switch ($explodedColType[0])    // types
-                                {
-                                    case '_null':
 
-                                        $dbCommand .= 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey].' NOT NULL';
-                                        break;
-
-                                    case '_auto_increment':
-                                        $dbCommand .= 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey].' NOT NULL';
-                                        break;
-
-                                    case '_unsigned':
-                                        $dbCommand .= 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey];
-                                        break;
-
-                                    case '_key':    
-                                    case '_unique_key' : 
-                                        preg_match('#_key\((.*?)\)#',$colType,$matches);
-                                        $indexName = $matches[1];
-                                        $dbCommand .= 'DROP INDEX '.$this->quoteValue($indexName);
-                                        break;
-                                    case '_foreign_key':
-                                            preg_match_all('#\((.*?)\)#',$colType,$matches);// Get Key Index Name
-                                            $indexName = $matches[1][0];
-                                            $dbCommand .='DROP FOREIGN KEY `'.$indexName.'`';
-                                        break;
-                                    case '_primary_key':
-                                        $dbCommand .= 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey].',DROP PRIMARY KEY ';
-                                        break;
-
-                                    case '_not_null':
-                                        $dbCommand .= 'MODIFY COLUMN '.$this->quoteValue($colName).$dataType[$colkey].' NULL';
-                                        break;
-
-                                    case '_default':
-                                        $dbCommand .= 'ALTER COLUMN '.$this->quoteValue($colName).' DROP DEFAULT';
-                                        break;
-                                }
+                                $dbCommand =  $this->builderObject->dropAttribute($explodedColType[0],$colType,$dataType[$colkey]); // DROP COLUMN ATTRIBUTE
+                                
                             }
                         }
                         else
@@ -834,8 +739,6 @@ Class Schema_Sync {
                     
                     if (isset($this->dbSchema[$colName])) // Already exists 
                     {
-                        
-                        $dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($colName);
                         $unbracketsColType    = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets coming from $_POST
                         $unbracketsColTypes   = explode('|',$unbracketsColType);
                         
@@ -844,168 +747,43 @@ Class Schema_Sync {
                         $unbracketsDBColType  = preg_replace('#(\(.*?\))#s','', $this->dbSchema[$colName]);// Get pure DB column type withouth brackets
                         $unbracketsDBColTypes = explode('|',$unbracketsDBColType);
                         
-                        $dbcolKeys            = preg_grep('#'.$unbracketsDBColType.'#',$this->dataTypes); // Data Type Confirmation
+                        $dbcolKeys            = preg_grep('#'.$unbracketsDBColType.'#',$this->builderObject->dataTypes); // Data Type Confirmation
                         
                         $dbColKeyValue        = array_values($dbcolKeys)[0];
                         $colkey               = array_search($dbColKeyValue,$unbracketsDBColTypes); // Find the location of columnType  in array of dbSchema
 
-                        if ($columnType = preg_grep('#'.$unbracketsColType.'#',$this->dataTypes))  // If colname exists and has a datatype in DBSchema Change Datatypes 
+                        if ($columnType = preg_grep('#'.$unbracketsColType.'#',$this->builderObject->dataTypes))  // If colname exists and has a datatype in DBSchema Change Datatypes 
                         {
-                            $schemaKeys[$colkey] = $this->removeUnderscore($colType);
-                            $schemaKeys[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {  // Change Datatypes 
-                                return strtoupper($match[0]); 
-                            }, $schemaKeys[$colkey]);
+                            if (strpos($colType,'(')) 
+                            {
+                                $schemaKeys[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
+                                    return strtoupper($this->builderObject->removeUnderscore($match[0])); 
+                                }, $colType);
+                            }
+                            else
+                            {
+                                $schemaKeys[$colkey] = strtoupper($this->builderObject->removeUnderscore($colType));
+                            }
+                               
 
-                            $dbCommand .= $schemaKeys[$colkey];
+                              $dbCommand = $this->builderObject->changeDataType($schemaKeys[$colkey]); // CHANGE DATA TYPES 
                         }
                         else
                         {   
-                            $schemaKeys[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
-                                return strtoupper($match[0]); 
-                            }, $this->removeUnderscore($schemaKeys[$colkey]));
-
-                            $schemaKeys[] = $colType;
-
+                            // $schemaKeys[] = $colType;
                              // get index name of KEYS 
                             $unbracketsSchemaKeys = preg_replace('#(\(.*?\))#','', $schemaKeys);// we'r using unbracketSchemaKeys to get unbracket field names  for don't lose previous changes in db  
 
-                            for ($i=0; $i < sizeof($unbracketsSchemaKeys); $i++) // for don't lose previous changes in db  
-                            { 
-                                if (in_array('_primary_key',$unbracketsSchemaKeys) AND $unbracketsColType != '_primary_key') //if primary key defined in fileschema and request is not primary key
-
-                                {
-                                    $locationPK = array_search('_primary_key',$unbracketsSchemaKeys); //find location primary key in schemaArray
-
-                                    unset($unbracketsSchemaKeys[$locationPK]); 
-                                    $unbracketsSchemaKeys = array_values($unbracketsSchemaKeys);// reOrder Schema Array
-
-                                    unset($schemaKeys[$locationPK]);
-                                    $schemaKeys = array_values($schemaKeys);// reOrder Schema Array
-                                }
-                                switch ($unbracketsSchemaKeys[$i]) 
-                                {
-                                    case '_null':
-                                        if ( ! isset($dbCommands[2])) 
-                                        {
-                                            $dbCommands[1] = strtoupper($this->removeUnderscore($schemaKeys[$i]));
-                                            unset($dbCommands[3]);
-                                        }
-                                        break;
-
-                                    case '_auto_increment':
-                                    if (isset($dbCommands[3])) 
-                                    {
-                                        unset($dbCommands[3]);
-                                    }
-                                        $dbCommands[1] = ' NOT NULL';
-                                        $dbCommands[2] = ' AUTO_INCREMENT';
-                                    
-                                        break;
-                                    case '_unsigned':
-                                        $dbCommands[0] = strtoupper($this->removeUnderscore($schemaKeys[$i]));
-                                        break;
-                                    case '_unique_key' : 
-                                    case '_key':
-                                        if ($unbracketsColType == $unbracketsSchemaKeys[$i]) // if Posted Column Type 
-                                        {
-                                            preg_match('#_key\((.*?)\)#',$colType,$matches);// Get Key Index Name
-
-                                            $indexName = $matches[1];
-
-                                            $newColType = trim($colType, '_');
-
-                                            if (strpos($newColType, ')(') > 0) 
-                                            {
-                                                $newColType = trim($newColType,')');
-                                                $exp     = explode(')(', $newColType);
-
-                                                $keyIndex  = $exp[0];
-                                                unset($exp[0]);
-
-                                                $implodeKeys = array();
-
-                                                foreach($exp as $item)
-                                                {
-                                                    if(strpos($item, ',') !== false)
-                                                    {
-                                                        foreach (explode(',', $item) as $k => $v)
-                                                        {
-                                                            $implodeKeys[] = $this->quoteValue($v);
-                                                        }
-                                                    } 
-                                                    else 
-                                                    {
-                                                        $implodeKeys = array($this->quoteValue($item));
-                                                    }
-                                                }
-                                                $dbCommands[5] = ',ADD'.strtoupper($this->removeUnderscore($unbracketsSchemaKeys[$i])).' '.$this->quoteValue($indexName).' ('.implode($implodeKeys, ",").')';
-                                            }
-                                        }
-                                        break;
-                                    case '_foreign_key':  
-                                            preg_match_all('#\((.*?)\)#',$colType,$matches);// Get Key Index Name
-                                            
-                                            $indexName = $matches[1][1];
-                                            $newColType = trim($colType, '_');
-
-                                            if (strpos($colType, ')(') > 0) 
-                                            {
-                                                $newColType = trim($newColType,')');
-                                                $exp     = explode(')(', $newColType);
-
-                                                $keyIndex  = $exp[0];
-                                                unset($exp[0]);
-                                                
-                                                $refField = array_values($exp);
-                                                if (isset($refField[1])) 
-                                                {
-                                                    $dbCommands[5] = ',ADD CONSTRAINT `'.$matches[1][0].'`'.strtoupper($this->removeUnderscore($unbracketsSchemaKeys[$i])).' ('.$this->quoteValue($colName).') REFERENCES '.$this->quoteValue($indexName).' ('.$this->quoteValue($refField[1]).') ';
-                                                }
-                                            }
-                                            break;
-                                    case '_primary_key':
-                                        preg_match('#(\(.*?\))#',$schemaKeys[$i], $pKColumns);
-                                            
-                                        $pkey = (isset($pKColumns[0])) ? $pKColumns[0] : '('.$this->quoteValue($colName).')'; 
-                                        $dbCommands[4] = ',ADD PRIMARY KEY '.$pkey.' ';
-                                        break;
-
-                                    case '_not_null':
-                                        $dbCommands[1] = strtoupper($this->removeUnderscore($schemaKeys[$i]));
-                                        break;
-
-                                    case '_default':
-                                        if ( ! isset($dbCommands[2])) 
-                                        {
-                                            $defValues = ($unbracketsColType != $unbracketsSchemaKeys[$i]) ? $schemaKeys[$i] : $colType ; // if schema key and column type
-                                            
-                                            preg_match('#\((([^\]])*)\)#',$defValues, $defaultValue);
-                                            $dbCommands[1] = ' NOT NULL';
-
-                                            if(is_numeric($defaultValue[1])) // quote support
-                                            {
-                                                $dbCommands[3] = ' DEFAULT '.$defaultValue[1];
-                                            } 
-                                            else 
-                                            {
-                                                $defaultStringValue = trim($defaultValue[1], '"');
-                                                $dbCommands[3] = ' DEFAULT '."'".addslashes($defaultStringValue)."'";
-                                            }
-                                        }   
-                                        break;
-                                    default :
-                                        $dbCommand .= $schemaKeys[$i];
-                                        break;
-                                }
-                            }
+                            $dbCommand = $this->builderObject->addToDb($unbracketsSchemaKeys,$schemaKeys,false,$colType,$unbracketsColType);
                         }
                     }
                     else    // New 
                     {
+                       
                         $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
-                        $unbracketsColTypes = explode('|',$unbracketsColType);
+                        $unbracketsSchemaKeys = preg_replace('#(\(.*?\))#','', $schemaKeys);
 
-                        if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->dataTypes))
+                        if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->builderObject->dataTypes))
                         {
                             $dbCommand = 'You have to define a datatype in your file schema.';
                             $disabled = true;
@@ -1013,127 +791,15 @@ Class Schema_Sync {
                         else
                         {
                             $colKeyValue = array_values($columnType)[0];
-                            $colkey      = array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
+                            $colkey      = array_search($colKeyValue, $unbracketsSchemaKeys);//Get position in Array
                             
-                            $columnType  = $this->removeUnderscore($schemaKeys[$colkey]);
+                            $columnType  = $this->builderObject->removeUnderscore($schemaKeys[$colkey]);
                             
-                            $dbCommand   = 'ALTER TABLE '.$this->schemaName;
-                            $schemaKeys  = explode('|', $colType);
-                            unset($schemaKeys[$colkey]);
-
-                            $schemaKeys  = array_values($schemaKeys);
-                            unset($unbracketsColTypes[$colkey]);
-
-                            $unbracketsColTypes = array_values($unbracketsColTypes);
-                            $dbCommands[5] = ''; // for multiple indexes we should define here
-
-                            $i = 0;
-                            foreach ($unbracketsColTypes as $key => $value)
-                            {
-                                switch ($value) 
-                                {
-                                    case '_null':
-                                        if ( ! isset($dbCommands[2])) 
-                                        {
-                                            $dbCommands[1] = strtoupper($this->removeUnderscore($value));
-                                            unset($dbCommands[3]);
-                                        }
-                                        break;
-
-                                    case '_auto_increment':
-                                        $dbCommands[1] = 'NOT NULL';
-                                        $dbCommands[2] = ' AUTO_INCREMENT';
-                                        break;
-                                    case '_unsigned':
-                                        $dbCommands[0] = strtoupper($this->removeUnderscore($value));
-                                        break;
-                                    case '_key':
-                                    case '_unique_key' :
-                                        preg_match('#_key\((.*?)\)#',$schemaKeys[$i],$matches); // to get Index Name of Key
-                                        $indexName = $matches[1];
-                                        $schemaKeys[$i] = trim($schemaKeys[$i],'_'); //remove underscores from schemakeys
-
-                                        if (strpos($schemaKeys[$i], ')(') > 0) // 
-                                        {
-                                            $schemaKeys[$i] = trim($schemaKeys[$i],")");
-                                            $exp = explode(')(', $schemaKeys[$i]);
-
-                                            unset($exp[0]);
-
-                                            $implodeKeys = array();
-                                            foreach($exp as $item)
-                                            {
-                                                if(strpos($item, ',') !== false)
-                                                {
-                                                    foreach (explode(',', $item) as $k => $v)
-                                                    {
-                                                        $implodeKeys[] = $this->quoteValue($v);
-                                                    }
-                                                } 
-                                                else 
-                                                {
-                                                    $implodeKeys = array($this->quoteValue($item));
-                                                }
-                                            }
-                                            $dbCommands[5] .= ',ADD'.strtoupper($this->removeUnderscore($value)).' '.$this->quoteValue($indexName).' ('.implode($implodeKeys, ",").')';
-                                        }
-                                        
-                                        break;
-                                    case '_foreign_key':
-                                        preg_match_all('#\((.*?)\)#',$schemaKeys[$i],$matches);// Get Foreign Key Index Name
-
-                                        $indexName = $matches[1][1];
-                                        $schemaKeys[$i] = trim($schemaKeys[$i], '_');
-
-                                        if (strpos($schemaKeys[$i], ')(') > 0) 
-                                        {
-                                            $schemaKeys[$i] = trim($schemaKeys[$i],')');
-                                            $exp     = explode(')(', $schemaKeys[$i]);
-
-                                            $keyIndex  = $exp[0];
-                                            unset($exp[0]);
-                                            $refField = array_values($exp);
-                                        $dbCommands[5] = ',ADD CONSTRAINT `'.$matches[1][0].'`'.strtoupper($this->removeUnderscore($value)).' ('.$this->quoteValue($colName).') REFERENCES '.$this->quoteValue($indexName).' ('.$this->quoteValue($refField[1]).') ';
-                                        }
-                                        break;
-                                    case '_primary_key':
-                                            preg_match('#(\(.*?\))#',$schemaKeys[$i], $pKColumns);
-                                            
-                                        $pkey = (isset($pKColumns[0])) ? $pKColumns[0] : '('.$this->quoteValue($colName).')'; 
-                                        $dbCommands[4] = ',ADD PRIMARY KEY '.$pkey.' ';
-                                        break;
-
-                                    case '_not_null':
-                                        $dbCommands[1] = strtoupper($this->removeUnderscore($value));
-                                        break;
-
-                                    case '_default':
-                                        $schemaKeys[$key] = $schemaKeys[$key];
-
-                                        preg_match('#\((([^\]])*)\)#',$schemaKeys[$key],$matches);
-
-                                        $dbCommands[1] = ' NOT NULL';
-                                        $dbCommands[3] = ' DEFAULT '.addslashes($matches[1]);
-                                        break;
-                                }
-                                $i++;
-                            }
-                            $columnType = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
-                                return strtoupper($match[0]); 
-                            }, $columnType);
-                            
-                            $dbCommand .= ' ADD COLUMN '.$this->quoteValue($colName).$columnType;
+                            $dbCommand = $this->builderObject->addToDb($unbracketsSchemaKeys,$schemaKeys,true,$colType);
 
                         }   
                     }
-
-                    for ($i = 0; $i < 8; $i++) 
-                    { 
-                        if (isset($dbCommands[$i])) 
-                        {
-                            $dbCommand.= $dbCommands[$i];
-                        }
-                    }
+               
 
                     echo $this->schemaObject->displaySqlQueryForm($dbCommand, $this->queryWarning,$disabled); // Show sql query to developer to confirmation.
 
@@ -1159,7 +825,7 @@ Class Schema_Sync {
                         $unbracketsFileColType  = preg_replace('#(\(.*?\))#','', $this->fileSchema[$colName]); // Get pure column type withouth brackets
                         $unbracketsFileColTypes = explode('|',$unbracketsFileColType); // Array of unbracketsFileColType
 
-                        if ($key = preg_grep('#'.$unbracketsFileColType.'#',$this->dataTypes)) // Search into datatypes with matches
+                        if ($key = preg_grep('#'.$unbracketsFileColType.'#',$this->builderObject->dataTypes)) // Search into datatypes with matches
                         {
                             $colFileKeyValue = array_values($key)[0];
                             $colkey  = array_search($colFileKeyValue,$unbracketsFileColTypes); // Find datatype location in matches 
@@ -1239,12 +905,12 @@ Class Schema_Sync {
 
                 case 'rename':
 
-                    $dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' CHANGE '.$this->quoteValue($colName).' '.$this->quoteValue('$NEW NAME');
+                    $dbCommand = 'ALTER TABLE '.$this->builderObject->quoteValue($this->schemaName).' CHANGE '.$this->builderObject->quoteValue($colName).' '.$this->builderObject->quoteValue('$NEW NAME');
                     $dbCommands[5] = ''; // for multiple indexes we should define here
                     $schemaKeys = explode('|',$colType);
                     $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
                     $unbracketsColTypes = explode('|',$unbracketsColType); // Create pure column types without brackets and variables 
-                    if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->dataTypes))
+                    if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->builderObject->dataTypes))
                     {
                         $dbCommand = 'You have to define a datatype in your file schema.';
                         $disabled = true;
@@ -1254,7 +920,7 @@ Class Schema_Sync {
                         $colKeyValue = array_values($columnType)[0];
                         $colkey      = array_search($colKeyValue, $unbracketsColTypes);//Get position in Array
                         
-                        $columnType  = $this->removeUnderscore($schemaKeys[$colkey]);
+                        $columnType  = $this->builderObject->removeUnderscore($schemaKeys[$colkey]);
                         $i = 0;
                         
                         foreach ($unbracketsColTypes as $key => $value)
@@ -1264,7 +930,7 @@ Class Schema_Sync {
                                 case '_null':
                                     if ( ! isset($dbCommands[2])) 
                                     {
-                                        $dbCommands[1] = strtoupper($this->removeUnderscore($value));
+                                        $dbCommands[1] = strtoupper($this->builderObject->removeUnderscore($value));
                                         unset($dbCommands[3]);
                                     }
                                     break;
@@ -1274,14 +940,14 @@ Class Schema_Sync {
                                     $dbCommands[2] = ' AUTO_INCREMENT';
                                     break;
                                 case '_unsigned':
-                                    $dbCommands[0] = strtoupper($this->removeUnderscore($value));
+                                    $dbCommands[0] = strtoupper($this->builderObject->removeUnderscore($value));
                                     break;
                                 case '_not_null':
-                                    $dbCommands[1] = strtoupper($this->removeUnderscore($value));
+                                    $dbCommands[1] = strtoupper($this->builderObject->removeUnderscore($value));
                                     break;
 
                                 case '_default':
-                                    $schemaKeys[$key] = $this->removeUnderscore($schemaKeys[$key]);
+                                    $schemaKeys[$key] = $this->builderObject->removeUnderscore($schemaKeys[$key]);
 
                                     preg_match('#\((([^\]])*)\)#',$schemaKeys[$key],$matches);
 

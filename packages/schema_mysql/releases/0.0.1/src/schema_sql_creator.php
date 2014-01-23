@@ -242,19 +242,18 @@ Class Schema_Sql_Creator {
 
 				if(preg_match('/(#_foreign_key)\((.*?)\)\((.*?)\)(#)/', $sqlLine, $_fk_matches)) // Detect keys forign keys
 				{
+					$_fk_reference = explode(')(',$_fk_matches[3]);
 					$_fk = $this->quoteValue($fieldKey);
-					$_fk_reference_table = $this->quoteValue($_fk_matches[2]);
-					$_fk_reference_field = $this->quoteValue($_fk_matches[3]);
-
-					$FOREIGN_KEYS.= "\n FOREIGN KEY ($_fk) REFERENCES $_fk_reference_table ($_fk_reference_field),"; 
+					$_fk_reference_table = $this->quoteValue($_fk_reference[0]);
+					$_fk_reference_field = $this->quoteValue($_fk_reference[1]);
+					$_fk_name = $this->quoteValue($_fk_matches[2]);
+					$FOREIGN_KEYS.= "\nCONSTRAINT $_fk_name FOREIGN KEY ($_fk) REFERENCES $_fk_reference_table ($_fk_reference_field),"; 
 				}
 
-				// if(strpos($fieldAttribute, '#_primary_key') > 0)  // Detect primary key
-				// {
-				// 	$PRIMARY_KEY = ",\n PRIMARY KEY(".$this->quoteValue($fieldKey)."),";
-				// 	echo $this->quoteValue($fieldKey);
-
-				// }
+				if(strpos($fieldAttribute, '#_primary_key#') > 0)  // Detect primary key 
+				{
+					$PRIMARY_KEY = $fieldKey;
+				}
 
 				$sql.= $sqlLine;
 			}
@@ -262,8 +261,7 @@ Class Schema_Sql_Creator {
 			$sql = rtrim(trim($sql), ',');
 			$sql = $this->_buildKeys($sql, '_key', 'KEY');	// create `KEY` s
 			$sql = $this->_buildKeys($sql, '_unique_key', 'UNIQUE KEY');  // create `UNIQUE KEY` s
-			$sql = $this->_buildKeys($sql, '_primary_key', 'PRIMARY KEY');
-			$sql.= $PRIMARY_KEY;
+			$sql = $this->_buildKeys($sql, '_primary_key', 'PRIMARY KEY',$PRIMARY_KEY); // create `PRIMARY KEY` s
 			$sql.= trim($FOREIGN_KEYS, ',');
 
 			$sql = preg_replace('/(#)(.*?)(#)/', '', $sql);  // REMOVE TEMPS
@@ -366,66 +364,73 @@ Class Schema_Sql_Creator {
 	 * @param  string $sqlKey `KEY' or `UNIQUE KEY`
 	 * @return string line of sql keys
 	 */
-	function _buildKeys($sql, $_key = '_key', $sqlKey = 'KEY')
+	function _buildKeys($sql, $_key = '_key', $sqlKey = 'KEY',$primaryKey = null)
 	{
 		if(strpos($sql, '#'.$_key) > 0)  // Detect keys and multiple keys
 		{
-			preg_match_all('/(#'.$_key.')\((.*?)\)(#)/', $sql, $_keyMatches, PREG_SET_ORDER);
-			$keyIndexArray = array();
-			$KEYS = '';
-			$keyImplode = '';
-			foreach ($_keyMatches as $kmValue)
+			if (preg_match_all('/(#'.$_key.')\((.*?)\)(#)/', $sql, $_keyMatches, PREG_SET_ORDER)) 
 			{
-				$keyImplode = $kmValue[2];
-				if(strpos($keyImplode, ')(') > 0)
+				$keyIndexArray = array();
+				$KEYS = '';
+				$keyImplode = '';
+				foreach ($_keyMatches as $kmValue)
 				{
-					$kVal = '';
-					$exp = explode(')(', $keyImplode);
-					$keyIndex  = $exp[0];
-					unset($exp[0]);
-					if (!in_array($keyIndex,$keyIndexArray))  // if index name exist in index array for DUPLICATE ERROR
+					$keyImplode = $kmValue[2];
+					if(strpos($keyImplode, ')(') > 0)
 					{
-						$keyIndexArray[]=$keyIndex;
-						$implodeKeys = array();
-						foreach($exp as $item)
+						$kVal = '';
+						$exp = explode(')(', $keyImplode);
+						$keyIndex  = $exp[0];
+						unset($exp[0]);
+						if (!in_array($keyIndex,$keyIndexArray))  // if index name exist in index array for DUPLICATE ERROR
 						{
-							if(strpos($item, ',') !== false)
+							$keyIndexArray[]=$keyIndex;
+							$implodeKeys = array();
+							foreach($exp as $item)
 							{
-								foreach (explode(',', $item) as $k => $v)
+								if(strpos($item, ',') !== false)
 								{
-									$implodeKeys[] = $this->quoteValue($v);
+									foreach (explode(',', $item) as $k => $v)
+									{
+										$implodeKeys[] = $this->quoteValue($v);
+									}
+								} else 
+								{
+									$implodeKeys = array($this->quoteValue($item));
 								}
-							} else 
+							}
+							if(isset($keyIndex))
 							{
-								$implodeKeys = array($this->quoteValue($item));
+								$KEYS.= ",\n$sqlKey ".$this->quoteValue($keyIndex).' ('.implode($implodeKeys, ',').')';
+							} 
+							else
+							{
+								$KEYS.= ",\n$sqlKey ".$this->quoteValue($kmValue[2]).' ('.$this->quoteValue($kmValue[2]).')';
 							}
 						}
-						if(isset($keyIndex))
+					}
+					else
+					{
+						if (!in_array($_keyMatches[0][2],$keyIndexArray))  // if index name exist in index array for DUPLICATE ERROR
 						{
-							$KEYS.= ",\n$sqlKey ".$this->quoteValue($keyIndex).' ('.implode($implodeKeys, ',').')';
-						} 
-						else
-						{
-							$KEYS.= ",\n$sqlKey ".$this->quoteValue($kmValue[2]).' ('.$this->quoteValue($kmValue[2]).')';
+
+							$keyIndexArray[] = $_keyMatches[0][2];
+							$KEYS.= ",\n$sqlKey  ".'('.$_keyMatches[0][2].')';
 						}
 					}
 				}
-				else
-				{
-					if (!in_array($_keyMatches[0][2],$keyIndexArray))  // if index name exist in index array for DUPLICATE ERROR
-					{
 
-						$keyIndexArray[] = $_keyMatches[0][2];
-						$KEYS.= ",\n$sqlKey  ".'('.$_keyMatches[0][2].')';
-					}
-				}
+				$sql.= $KEYS;
+				$sql = preg_replace('/(#'.$_key.')(.*?)(#)/', '', $sql);  // REMOVE TEMPS
+
+				return $sql;
 			}
-
-			$sql.= $KEYS;
-			$sql = preg_replace('/(#'.$_key.')(.*?)(#)/', '', $sql);  // REMOVE TEMPS
-
-			return $sql;
-
+			else
+			{
+				$PRIMARY_KEY = ",\nPRIMARY KEY (".$this->quoteValue($primaryKey)."),";
+				$sql .= $PRIMARY_KEY;
+				$sql = preg_replace('/(#'.$_key.')(#)/', '', $sql);  // REMOVE TEMPS
+			}
 		}
 
 		return $sql;
