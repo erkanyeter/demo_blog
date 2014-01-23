@@ -12,9 +12,9 @@ class Schema_Builder_Mysql extends Schema_Builder
 
     public $dbCommand = '';
 
-    private $schemaName;
+    private $schemaName = '';
 
-    private $columnName;
+    private $columnName = '';
 
     public $dataTypes  = array(        // defined mysql data types
         '_bit',
@@ -78,8 +78,6 @@ class Schema_Builder_Mysql extends Schema_Builder
      */
     public function addToDb($unbracketsSchemaKeys,$schemaKeys,$isNew = false,$colType,$unbracketsColType = null)
     {
-        // $schemaKeys[] = $colType;
-
         $this->dbCommands[5] = '';
         $this->dbCommand = (! $isNew )  ? 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($this->columnName) : 'ALTER TABLE '.$this->quoteValue($this->schemaName);
         if ($unbracketsColType != null) 
@@ -144,25 +142,9 @@ class Schema_Builder_Mysql extends Schema_Builder
                     break;
             }
         }
-        ksort($this->dbCommands);
-        $this->dbCommands = array_values($this->dbCommands);
-        for ($i = 0; $i < sizeof($this->dbCommands); $i++) 
-        { 
-            $this->dbCommand.= $this->dbCommands[$i];
-        }
-        return $this->dbCommand;
+
+        return $this->sqlOutput();
     } 
-
-    //-------------------------------------------------------------------------------------------------------------------------
-
-    /**
-    * Description
-    * @return type
-    */
-    public function addToDbColumn()
-    {
-
-    }
 
    //-------------------------------------------------------------------------------------------------------------------------
 
@@ -236,11 +218,11 @@ class Schema_Builder_Mysql extends Schema_Builder
      * @param string $schemaKey          [description]
      * @param string $colType            [description]
      */
-    public function addDefault($unbracketSchemaKey,$schemaKey,$colType)
+    public function addDefault($unbracketSchemaKey,$schemaKey)
     {
         if ( ! isset($this->dbCommands[2])) 
             {
-                $defValues = ($unbracketSchemaKey == '_default') ? $schemaKey : $colType ; // if schema key and column type
+                $defValues = $schemaKey; // if schema key and column type
                 preg_match('#\((([^\]])*)\)#',$defValues, $defaultValue);
                 $this->dbCommands[1] = 'NOT NULL ';
 
@@ -439,6 +421,44 @@ class Schema_Builder_Mysql extends Schema_Builder
     }
 
     //-------------------------------------------------------------------------------------------------------------------------
+    
+       /**
+    * Rename Column
+    * @param type $newColType 
+    * @return type
+    */
+   public function renameColumn($unbracketsColTypes,$schemaKeys,$dataType)
+   {
+        $this->dbCommands[5] = ''; // for multiple indexes we should define here
+        for ($i=0; $i < sizeof($unbracketsColTypes); $i++) 
+        { 
+            switch ($unbracketsColTypes[$i]) 
+            {
+                case '_null':
+                    $this->addNull();
+                    break;
+                case '_auto_increment':
+                    $this->addIncrement();
+                    break;
+                case '_unsigned':
+                    $this->addUnsigned();
+                    break;
+                case '_not_null':
+                    $this->addNotNull();
+                    break;
+
+                case '_default':
+                    $this->addDefault($unbracketsColTypes[$i],$schemaKeys[$i]);
+                    break;
+            }
+    }
+        $this->dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' CHANGE '.$this->quoteValue($this->columnName).' '.$this->quoteValue('$NEW NAME');
+        $this->addDataType($dataType);
+        
+        return $this->sqlOutput();
+   }
+
+    //-------------------------------------------------------------------------------------------------------------------------
 
     /**
     * Set schemaName
@@ -447,6 +467,23 @@ class Schema_Builder_Mysql extends Schema_Builder
     public function setSchemaName($schemaName)
     {
         $this->schemaName = $schemaName;
+    } 
+
+    //-------------------------------------------------------------------------------------------------------------------------
+
+    /**
+   * [sqlOutput Build Sql Output]
+   * @return [string] [Sql Output]
+   */
+    public function sqlOutput()
+    {
+        ksort($this->dbCommands);
+        $this->dbCommands = array_values($this->dbCommands);
+        for ($i = 0; $i < sizeof($this->dbCommands); $i++) 
+        { 
+            $this->dbCommand.= $this->dbCommands[$i];
+        }
+        return $this->dbCommand;
     }
 
     //-------------------------------------------------------------------------------------------------------------------------

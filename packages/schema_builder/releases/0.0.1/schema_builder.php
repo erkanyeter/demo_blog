@@ -83,7 +83,7 @@ Abstract class Schema_Builder
     * Drop Column
     * @return string
     */
-   abstract function dropColumn ();
+   abstract function dropColumn();
 
 
     // --------------------------------------------------------------------
@@ -94,6 +94,19 @@ Abstract class Schema_Builder
     * @return string
     */
    abstract function modifyColumn($newColType);
+
+
+   /**
+     * [dropAttribute creates sql query for drop attribute]
+     * @param  [string] $attributeType [native Column Types]
+     * @param  [string] $colType       [Column Type]
+     * @param  [string] $dataType      [Data Type]
+     * @return [string]                [Sql Query for drop attribute]
+     */
+   abstract function renameColumn($attributeTypes,$colType,$dataType);
+
+
+
    
 }
 

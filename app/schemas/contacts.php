@@ -28,11 +28,6 @@ $contacts = array(
 		'types' => '_not_null|_int(11)|_default(0)|_unsigned',
 		'rules' => 'required|xssClean',
 		),
-	'contact_creation_date' => array(
-		'label' => 'Contact Creation Date',
-		'types' => '_not_null|_int(11)|_default(0)|_unsigned',
-		'rules' => '',
-		),
 );
  
 /* End of file contacts.php */
