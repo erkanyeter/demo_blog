@@ -461,10 +461,12 @@ Class Validator {
 
                 if ( ! isset($this->_error_messages[$type]))
                 {
+                    $line = lingo($type);  
+
                     if (hasLingo($type) == false)
                     {
                         $line = 'The field was not set';
-                    }                            
+                    }
                 }
                 else
                 {
@@ -621,6 +623,8 @@ Class Validator {
             {            
                 if ( ! isset($this->_error_messages[$rule]))
                 {
+                    $line = lingo($rule);
+
                     if (hasLingo($rule) == false)
                     {
                         $line = 'Unable to translation access an error message corresponding to your field name.';
