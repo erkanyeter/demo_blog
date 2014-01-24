@@ -1,5 +1,7 @@
 <?php
 
+// http://us.php.net/manual/tr/book.intl.php
+
 /**
  * Culture Class ( Language Initializer )
  *
@@ -16,20 +18,22 @@ Class Culture {
     public $langArray;
     public $langDefault;
 
-    public $cookie_name;
-    public $uri_get_name;       // Uri query string name e.g. http://example.com/home?langCode=en
-    public $uri_segment_number; // Uri segment number    e.g. http://example.com/home/en
-    public $uri;                // Uri object
+    public $cookie_langName_key;    // $_COOKIE['langName']
+    public $cookie_langCode_key;    // $_COOKIE['langCode']
+    public $uri_get_name;           // Uri query string name e.g. http://example.com/home?langCode=en
+    public $uri_segment_number;     // Uri segment number    e.g. http://example.com/home/en
+    public $uri;                    // Uri object
 
     public function __construct()
     {
         if ( ! extension_loaded('intl')) 
         {
             throw new Exception(sprintf(
-                '%s component requires the intl PHP extension',
+                '%s package requires the intl PHP extension',
                 __CLASS__
             ));
         }
+
         if( ! isset(getInstance()->culture))
         { 
             getInstance()->culture = $this;  // Make available it in the controller $this->culture->method();
@@ -96,6 +100,22 @@ Class Culture {
             }
         }
 
+    }
+
+    // ------------------------------------------------------------------------
+
+    // http://us.php.net/manual/tr/book.intl.php
+    public function setDefault($locale = 'en-US')
+    {
+        locale_set_default((string)$locale)
+    }
+
+    // ------------------------------------------------------------------------
+    
+    // http://us.php.net/manual/tr/book.intl.php
+    public function getDefault()
+    {
+        return locale_get_default();
     }
 
     // ------------------------------------------------------------------------

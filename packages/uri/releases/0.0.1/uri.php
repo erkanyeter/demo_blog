@@ -12,12 +12,12 @@
 
 Class Uri
 {
-    public $keyval       = array();
+    public $keyval        = array();
     public $uri_string;
-    public $segments     = array();
-    public $rsegments    = array();
-    public $extension    = '';
-    public $uri_protocol = 'REQUEST_URI';
+    public $segments      = array();
+    public $rsegments     = array();
+    public $uri_extension = 'null';
+    public $uri_protocol  = 'REQUEST_URI';
     
     public static $instance;
 
@@ -50,7 +50,7 @@ Class Uri
 
         if( ! function_exists('Uri\Src\\'.$method))
         {
-            require PACKAGES .$package. DS .'releases'. DS .$packages['dependencies'][$package]['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .$package. DS .'releases'. DS .$packages['dependencies'][$package]['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Uri\Src\\'.$method, $arguments);
@@ -58,6 +58,11 @@ Class Uri
 
     // --------------------------------------------------------------------
     
+    /**
+     * Get Instance of Uri
+     * 
+     * @return object
+     */
     public static function getInstance()
     {
        if( ! self::$instance instanceof self)
@@ -70,6 +75,11 @@ Class Uri
     
     // --------------------------------------------------------------------
 
+    /**
+     * Set Instance of Uri
+     * 
+     * @param object
+     */
     public static function setInstance($object)
     {
         if(is_object($object))
@@ -90,11 +100,11 @@ Class Uri
     */
     public function clear()
     {
-        $this->keyval     = array();
-        $this->uri_string = '';
-        $this->segments   = array();
-        $this->rsegments  = array();
-        $this->extension  = 'php';
+        $this->keyval        = array();
+        $this->uri_string    = '';
+        $this->segments      = array();
+        $this->rsegments     = array();
+        $this->uri_extension = 'null';
     }
 
     // --------------------------------------------------------------------
@@ -125,7 +135,8 @@ Class Uri
             // Is there a PATH_INFO variable?
             // Note: some servers seem to have trouble with getenv() so we'll test it two ways
             $path = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : @getenv('PATH_INFO');
-            if (trim($path, '/') != '' && $path != "/".SELF)
+
+            if (trim($path, '/') != '' AND $path != "/".SELF)
             {
                 $this->uri_protocol = 'PATH_INFO';
                 $this->setUriString($path);
@@ -142,14 +153,13 @@ Class Uri
             }
 
             // As a last ditch effort lets try using the $_GET array
-            if (is_array($_GET) AND count($_GET) == 1 AND trim(key($_GET), '/') != '')
+            if (is_array($_GET) AND count($_GET) == 1 AND trim(key($_GET), '/') != '') 
             {
                 $this->setUriString(key($_GET));
                 return;
             }
 
-            // We've exhausted all our options...
-            $this->uri_string = '';
+            $this->uri_string = ''; // We've exhausted all our options...
             return;
         }
 
@@ -241,16 +251,16 @@ Class Uri
     {
         if(strpos($segment, '.') !== false)
         {
-            $allowed_extensions = config('uri_extensions');
+            $allowed_extensions = config('allowed_extensions');
+
+            $extension     = explode('.', $segment);
+            $uri_extension = end($extension);
             
-            $extension = explode('.', $segment);
-            $extension = end($extension);
-            
-            if(in_array($extension, $allowed_extensions))        
+            if(in_array('.'.$uri_extension, $allowed_extensions))
             {
-                $this->extension = $extension;
-                
-                return str_replace('.'.$extension, '', $segment);
+                $this->uri_extension = $uri_extension;  // set extension 
+
+                return preg_replace('#\.'.$uri_extension.'$#','', $segment); // remove extension from end of the uri segment
             }
         }
 
@@ -269,7 +279,8 @@ Class Uri
     public function _filterUri($str)
     {
         // defined STDIN FOR task requests
-        // we should not prevent some characters in CLI mode
+        // we should not prevent "base64encode" characters in CLI mode
+        // the "sync" task controller and schema libraries use "base64encode" function
 
     	if ($str != '' AND config('permitted_uri_chars') != '' AND config('enable_query_strings') == false  AND  ! defined('STDIN')) 
         {
@@ -299,9 +310,9 @@ Class Uri
      */
     public function _removeUrlSuffix()
     {
-        if  (config('url_suffix') != "")
+        if  (config('url_suffix') != '')
         {
-            $this->uri_string = preg_replace("|".preg_quote(config('url_suffix'))."$|", "", $this->uri_string);
+            $this->uri_string = preg_replace("|".preg_quote(config('url_suffix'))."$|", '', $this->uri_string);
         }
     }
 
@@ -316,7 +327,7 @@ Class Uri
      */
     public function _explodeSegments()
     {
-        foreach(explode("/", preg_replace("|/*(.+?)/*$|", "\\1", $this->uri_string)) as $val)
+        foreach(explode('/', preg_replace("|/*(.+?)/*$|", "\\1", $this->uri_string)) as $val)
         {
             $val = trim($this->_filterUri($val)); // Filter segments for security
 

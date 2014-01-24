@@ -78,7 +78,7 @@ Class Database_Crud {
 
         if( ! function_exists('Database_Pdo\Src\Crud\\'.$method))
         {
-            require PACKAGES .'database_pdo'. DS .'releases'. DS .$packages['dependencies']['database_pdo']['version']. DS .'src'. DS .'crud'. DS .strtolower($method). EXT;
+            require PACKAGES .'database_pdo'. DS .'releases'. DS .$packages['dependencies']['database_pdo']['version']. DS .'src'. DS .'crud'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Database_Pdo\Src\Crud\\'.$method, $arguments);

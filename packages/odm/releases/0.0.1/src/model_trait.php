@@ -4,7 +4,7 @@ namespace Odm\Src {
     trait Model_Trait
     {
         private $_modelMethods = array();
-        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','put');
+        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace');
 
         // --------------------------------------------------------------------
 
@@ -112,7 +112,7 @@ namespace Odm\Src {
 
             foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
             {
-                if($k != '_controllerAppMethods' AND $k != $modelKey AND $k != \Db::$var) // Do not assign again reserved variables
+                if(is_object($v) AND $k != $modelKey AND $k != \Db::$var) // Do not assign again reserved variables
                 {
                     getInstance()->$modelKey->{$k} = getInstance()->$k;
                 }

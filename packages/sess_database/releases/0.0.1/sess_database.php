@@ -40,7 +40,7 @@ Class Sess_Database {
 
         if( ! function_exists('Sess_Database\Src\\'.$method))
         {
-            require (PACKAGES .'sess_database'. DS .'releases'. DS .$packages['dependencies']['sess_database']['version']. DS .'src'. DS .strtolower($method). EXT);
+            require (PACKAGES .'sess_database'. DS .'releases'. DS .$packages['dependencies']['sess_database']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
         }
 
         return call_user_func_array('Sess_Database\Src\\'.$method, $arguments);

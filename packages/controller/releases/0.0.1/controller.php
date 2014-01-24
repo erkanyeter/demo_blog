@@ -13,8 +13,10 @@
 
 Class Controller {
 
-    public static $instance;   // Controller instance
-    public $_controllerAppMethods = array();  // Controller user defined methods. ( @private )
+    public static $instance;                        // Controller instance
+    public $_controllerAppMethods       = array();  // Controller user defined methods. ( @private )
+    public $_controllerAppPublicMethods = array();  // Controller user defined methods. ( @private )
+
     public $config, $router, $uri, $lingo, $response; // Component instances
         
     // ------------------------------------------------------------------------
@@ -38,7 +40,11 @@ Class Controller {
         $this->lingo    = getComponentInstance('lingo');
         $this->response = getComponentInstance('response');
 
-        $currentRoute = $this->router->fetchDirectory().'/'.$this->router->fetchClass().'/'.$this->router->fetchMethod();
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+        $currentRoute   = $this->router->fetchDirectory().'/'.$this->router->fetchClass().'/'.$this->router->fetchMethod();
+
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         // Initialize to Autorun
         // ------------------------------------
@@ -60,6 +66,7 @@ Class Controller {
             foreach($autorun['routes'] as $route => $funcVal)
             {
                 $uriRoute = trim($route, '/');
+
                 if($currentRoute == $uriRoute AND count($funcVal) > 0)
                 {
                     foreach($funcVal as $funcRouteName)
@@ -116,7 +123,7 @@ Class Controller {
         // "One Public Method Per Controller" Rule
         //-----------------------------------------------------
         
-        if(strncmp($methodName, '_', 1) !== 0) // if it is not a private method control the "One public method per controller"
+        if(strncmp($methodName, '_', 1) !== 0) // if it is not a private method control the "One Public Method Per Controller" rule
         {
             $this->_controllerAppPublicMethods[$method] = $methodName;
 
@@ -137,7 +144,7 @@ Class Controller {
     // ------------------------------------------------------------------------
 
     /**
-     * Set controller method
+     * Call the controller method
      * 
      * @param  string $methodName method
      * @param  array $args  closure function arguments

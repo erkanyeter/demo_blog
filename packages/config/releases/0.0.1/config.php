@@ -46,7 +46,7 @@ Class Config
 
         if( ! function_exists('Config\Src\\'.$method))
         {
-            require PACKAGES .$package. DS .'releases'. DS .$packages['dependencies'][$package]['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .$package. DS .'releases'. DS .$packages['dependencies'][$package]['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Config\Src\\'.$method, $arguments);

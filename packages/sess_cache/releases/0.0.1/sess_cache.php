@@ -40,7 +40,7 @@ Class Sess_Cache {
 
         if( ! function_exists('Sess_Cache\Src\\'.$method))
         {
-            require (PACKAGES .'sess_cache'. DS .'releases'. DS .$packages['dependencies']['sess_cache']['version']. DS .'src'. DS .strtolower($method). EXT);
+            require (PACKAGES .'sess_cache'. DS .'releases'. DS .$packages['dependencies']['sess_cache']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
         }
 
         return call_user_func_array('Sess_Cache\Src\\'.$method, $arguments);

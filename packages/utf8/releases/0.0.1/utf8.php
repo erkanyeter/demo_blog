@@ -64,7 +64,7 @@ Class Utf8 {
 
         if( ! function_exists('Utf8\Src\\'.$method))
         {
-            require PACKAGES .'utf8'. DS .'releases'. DS .$packages['dependencies']['utf8']['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .'utf8'. DS .'releases'. DS .$packages['dependencies']['utf8']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Utf8\Src\\'.$method, $arguments);

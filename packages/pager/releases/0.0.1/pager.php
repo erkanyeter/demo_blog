@@ -18,7 +18,6 @@ Class Pager
     * Sets the variables for options.
     * 
     * @param array $options
-    * @version   0.1
     * @access    public
     * @return    void
     */

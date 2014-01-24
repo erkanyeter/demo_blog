@@ -17,9 +17,9 @@
 |
 |	 'default' => function($file)
 |	 {
-		 $this->set('header', getInstance()->tpl('header',false))
+|		 $this->set('header', $this->tpl('header',false))
 |	     $this->set('content', $file);
-|	     $this->set('footer', getInstance()->tpl('footer',false));
+|	     $this->set('footer', $this->tpl('footer',false));
 |	 },
 | );
 |
@@ -29,9 +29,9 @@ $scheme = array(
 
 	'default' => function()
 	{
-		$this->set('header', getInstance()->view->tpl('header',false));
-		$this->set('sidebar', getInstance()->view->tpl('sidebar',false));
-	    $this->set('footer', getInstance()->view->tpl('footer',false));
+		$this->set('header', $this->tpl('header',false));
+		$this->set('sidebar', $this->tpl('sidebar',false));
+	    $this->set('footer', $this->tpl('footer',false));
 	},
 );
 

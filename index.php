@@ -133,7 +133,7 @@ require (DATA .'cache'. DS .'packages.cache');
 | Framework Component
 |--------------------------------------------------------------------------
 */
-$core = strtolower($packages['components']['core']);  // * ( All Components are Replaceable )
+$core = mb_strtolower($packages['components']['core']);  // * ( All Components are Replaceable )
 
 require (PACKAGES .$core. DS .'releases'. DS .$packages['dependencies'][$core]['version']. DS .$core. EXT);
 

@@ -1174,7 +1174,7 @@ $users = array(
         'Berlin',
         'Istanbul'
         ),
-    'func' => function(){   // Render _enum options as $key => $value
+    'func' => function(){   // Map _enum options as $key => $value
         $users   = getSchema('users');
         $options = array();
         foreach($users['cities']['_enum'] as $val)

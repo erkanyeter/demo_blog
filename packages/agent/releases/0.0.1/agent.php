@@ -16,24 +16,25 @@ Class Agent {
     public $is_browser   = false;
     public $is_robot     = false;
     public $is_mobile    = false;
+
     public $languages    = array();
     public $charsets     = array();
     public $platforms    = array();
     public $browsers     = array();
     public $mobiles      = array();
     public $robots       = array();
-    public $platform     = '';
-    public $browser      = '';
+
+    public $platform     = array();
+    public $browser      = array();
     public $version      = '';
-    public $mobile       = '';
-    public $robot        = '';
+    public $mobile       = array();
+    public $robot        = array();
     
     /**
      * Constructor
      *
      * Sets the User Agent and runs the compilation routine
      *
-     * @version   0.1
      * @access    public
      * @return    void
      */
@@ -156,6 +157,7 @@ Class Agent {
                 {
                     $this->platform['key'] = $key;
                     $this->platform['val'] = $val;
+
                     return true;
                 }
             }
@@ -179,10 +181,12 @@ Class Agent {
             {
                 if (preg_match("|".preg_quote($key).".*?([0-9\.]+)|i", $this->agent, $match))
                 {
-                    $this->is_browser = true;
-                    $this->version = $match[1];
+                    $this->is_browser     = true;
+                    $this->version        = $match[1];
+                    
                     $this->browser['key'] = $key;
                     $this->browser['val'] = $val;
+
                     $this->_setMobile();
                     return true;
                 }
@@ -207,14 +211,10 @@ Class Agent {
             {
                 if (preg_match("|".preg_quote($key)."|i", $this->agent))
                 {
-                    $this->is_robot = true;
-<<<<<<< HEAD
-                    $this->robot    = $val;
-                    
-=======
+                    $this->is_robot     = true;
                     $this->robot['key'] = $key;
                     $this->robot['val'] = $val;
->>>>>>> 3afa4bce7dcef02347e54a7c365bb5055175ca1e
+
                     return true;
                 }
             }
@@ -238,9 +238,10 @@ Class Agent {
             {
                 if (false !== (strpos(mb_strtolower($this->agent, config('charset')), $key)))
                 {
-                    $this->is_mobile = true;
+                    $this->is_mobile     = true;
                     $this->mobile['key'] = $key;
                     $this->mobile['val'] = $val;
+
                     return true;
                 }
             }

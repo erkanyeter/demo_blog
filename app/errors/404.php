@@ -33,7 +33,7 @@ margin:             0 0 8px 0;
 </head>
 <body>
 <div id="content">
-    <h1><?php echo $heading ?></h1> The url <?php echo $message ?> you requested was not found.
+    <h1><?php echo $heading ?></h1> The url <b><?php echo $message ?></b> you requested was not found.
 </div>
 </body>
 </html>

@@ -9,7 +9,7 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Db;
-	new Date_Get;
+	new Date_Format;
 	new Tag_Cloud;
     new View;
 });

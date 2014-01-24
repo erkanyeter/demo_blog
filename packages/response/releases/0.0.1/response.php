@@ -226,7 +226,7 @@ Class Response {
 
         if( ! function_exists('Response\Src\\'.$method))
         {
-            require PACKAGES .'response'. DS .'releases'. DS .$packages['dependencies']['response']['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .'response'. DS .'releases'. DS .$packages['dependencies']['response']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Response\Src\\'.$method, $arguments);

@@ -21,6 +21,7 @@ $c = new Controller(function(){
 });
 
 $c->func('index', function($level = ''){
+
     if($level == '')
     {
         $this->_displayLogo();
@@ -30,6 +31,7 @@ $c->func('index', function($level = ''){
     {
         $this->_follow(DATA .'logs'. DS .'log-'.date('Y-m-d').'.php', $level);
     }
+
 });
     
 // ------------------------------------------------------------------------
@@ -43,17 +45,7 @@ echo "\33[1;36m".'
        |______||____||_____||_||_||____|
 
         Welcome to Log Manager v2.0 (c) 2014
-Display logs [$php task log], to filter logs [$php task log $level]'."\n\033[0m";
-});
-
-// ------------------------------------------------------------------------
-
-/**
- * Set level of debug filter.
- * @param string $level
- */   
-$c->func('level', function($level = 'all'){
-    $this->index($level);
+Display logs [$php task log], to filter logs [$php task log index $level]'."\n\033[0m";
 });
 
 // ------------------------------------------------------------------------

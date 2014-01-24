@@ -12,7 +12,8 @@
 
 Class Request {
     
-    protected $headers; // Request Headers
+    protected $headers;       // Request Headers
+    private static $instance;
 
     /**
      * Constructor
@@ -21,7 +22,7 @@ Class Request {
     {
         if( ! isset(getInstance()->request))
         {
-            getInstance()->request = $this; // Make available it in the controller $this->request->method();
+            getInstance()->request = $this; // Make available it in the controller $this->get->method();
         }
 
         logMe('debug', 'Request Class Initialized');
@@ -202,6 +203,23 @@ Class Request {
     public function isXmlHttp()
     {
         if( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Check the request is Hmvc
+     * 
+     * @return boolean
+     */
+    public function isHmvc()
+    {
+        if(isset($_SERVER['HMVC_REQUEST']))
         {
             return true;
         }

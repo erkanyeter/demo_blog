@@ -55,8 +55,6 @@ Class Auth {
             getInstance()->auth = $this->init($config); // Make available it in the controller.
         }
 
-        $this->db = getInstance()->{Db::$var};
-
         logMe('debug', "Auth Class Initialized");
     }
     

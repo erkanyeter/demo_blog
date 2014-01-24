@@ -29,7 +29,7 @@ Class Html {
 
         if( ! function_exists('Html\Src\\'.$method))
         {
-            require PACKAGES .'html'. DS .'releases'. DS .$packages['dependencies']['html']['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .'html'. DS .'releases'. DS .$packages['dependencies']['html']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Html\Src\\'.$method, $arguments);

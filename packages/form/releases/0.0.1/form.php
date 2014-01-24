@@ -11,7 +11,8 @@
 
 Class Form {
 
-    public static $template = 'default';  // Default form template
+    public static $template     = 'default';   // Default form template
+    public $_callback_functions = array();     // Store __callback_func* validation methods
 
     /**
      * Constructor
@@ -30,6 +31,14 @@ Class Form {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Flexible Call for 
+     * Form and Validator objects.
+     * 
+     * @param  string $method
+     * @param  array $arguments 
+     * @return string
+     */
     public function __call($method, $arguments)
     {
         global $packages;
@@ -41,9 +50,16 @@ Class Form {
             return call_user_func_array(array(getInstance()->validator, $method), $arguments);
         }
 
+        if(isset($this->_callback_functions[$method])) // _callback functions for form validations
+        {            
+            $this->__assignObjects();   // Assign all objects for and make it available $this->package->method() .. in the callback functions.
+
+            return call_user_func_array(Closure::bind($this->_callback_functions[$method], $this, get_class()), array());
+        }
+
         if( ! function_exists('Form\Src\\'.$method))    // Call Form Class functions
         {
-            require (PACKAGES .'form'. DS .'releases'. DS .$packages['dependencies']['form']['version']. DS .'src'. DS .strtolower($method). EXT);
+            require (PACKAGES .'form'. DS .'releases'. DS .$packages['dependencies']['form']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
 
             logMe('debug', 'Form Class '.ucfirst($method).' Executed');
         }
@@ -185,18 +201,6 @@ Class Form {
     }
 
     // ------------------------------------------------------------------------
-    
-    /**
-     * Grab the Validator Instance
-     * 
-     * @return type
-     */
-    public function validatorGetInstance()
-    {
-        return getInstance()->validator;
-    }
-    
-    // ------------------------------------------------------------------------
 
     /**
     * Validation Object
@@ -237,6 +241,56 @@ Class Form {
         }
 
         return $form;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Run the form validation
+     * 
+     * @param  string  $group defined validation group
+     * @return boolean
+     */
+    public function isValid($group = '')
+    {
+        getInstance()->validator->set('_callback_object', $this);
+
+        return getInstance()->validator->isValid($group);
+    }
+    
+    // ------------------------------------------------------------------------
+
+    /**
+     * Create a callback function
+     * for validator
+     * 
+     * @param  string $func
+     * @param  closure $closure
+     * @return void
+     */
+    public function func($func, $closure)
+    {
+        $this->_callback_functions[$func] = $closure;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Assign all objects.
+     * 
+     * @return void
+     */
+    private function __assignObjects()
+    {
+        $modelKey = strtolower(get_class());
+
+        foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
+        {
+            if(is_object($v)) // Do not assign again reserved variables
+            {
+                $this->{$k} = getInstance()->$k;
+            }
+        }
     }
 
 }

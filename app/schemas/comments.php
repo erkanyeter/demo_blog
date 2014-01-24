@@ -52,11 +52,6 @@ $comments = array(
 		'types' => '_null|_default(0)|_enum',
 		'rules' => '',
 		),
-	'comment_comment' => array(
-		'label' => 'Comment Comment',
-		'types' => '_not_null|_text',
-		'rules' => '',
-		),
 );
  
 /* End of file comments.php */

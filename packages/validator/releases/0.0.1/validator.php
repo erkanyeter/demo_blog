@@ -50,7 +50,7 @@ Class Validator {
     {
         global $packages;
 
-        $file = PACKAGES .'validator'. DS .'releases'. DS .$packages['dependencies']['validator']['version']. DS .'src'. DS .strtolower($method). EXT;
+        $file = PACKAGES .'validator'. DS .'releases'. DS .$packages['dependencies']['validator']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
 
         if(file_exists($file))
         {
@@ -533,6 +533,11 @@ Class Validator {
                 else 
                 {
                     $classMethods = get_class_methods($this->_this);
+
+                    if(isset($this->_this->_callback_functions)) // is the Form _callback functions exists ?
+                    {
+                        $classMethods = array_merge($classMethods, array_keys($this->_this->_callback_functions));
+                    }
                 }
 
                 if ( ! in_array($rule, $classMethods)) // Check method exists in callback object.

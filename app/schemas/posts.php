@@ -15,7 +15,7 @@ $posts = array(
 		),
 	'post_title' => array(
 		'label' => 'Post Title',
-		'types' => '_varchar(50)|_not_null',
+		'types' => '_not_null|_varchar(255)',
 		'rules' => 'required|maxLen(255)',
 		),
 	'post_content' => array(

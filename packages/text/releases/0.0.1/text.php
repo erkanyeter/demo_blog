@@ -20,7 +20,7 @@ Class Text {
 
         if( ! function_exists('Text\Src\\'.$method))
         {
-            require PACKAGES .'text'. DS .'releases'. DS .$packages['dependencies']['text']['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .'text'. DS .'releases'. DS .$packages['dependencies']['text']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Text\Src\\'.$method, $arguments);

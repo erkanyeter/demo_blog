@@ -18,7 +18,7 @@ namespace Form\Src {
 
         if(empty($id))
         {
-            $id = strtolower($label_text);
+            $id = mb_strtolower($label_text);
         }
 
         $label .= " for=\"$id\"";

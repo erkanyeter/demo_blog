@@ -52,7 +52,7 @@
         $_POST = cleanInputData($_POST);  // Clean $_POST Data
         $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
 
-        if (config('csrf_protection'))  // CSRF Protection check
+        if (config('csrf_protection'))    // CSRF Protection check
         {
             getComponentInstance('security')->csrfVerify();
         }
@@ -115,7 +115,7 @@
 
         require($controller);  // call the controller.
 
-        // $c variable Available in HERE !!!
+        // $c variable now Available in HERE Whuhu !!!
 
         if ( strncmp($router->fetchMethod(), '_', 1) == 0 // Do not run private methods. ( _output, _remap, _getInstance .. )
                 OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
@@ -134,8 +134,15 @@
             $hooks->_callHook('post_controller_constructor');
         }
 
-        // Check method exist or not 
-        if ( ! in_array(strtolower($router->fetchMethod()), array_keys($c->_controllerAppMethods)))
+        /*
+         * ------------------------------------------------------
+         *  Is "$c" a Web Service controller or Web Controller ?
+         * ------------------------------------------------------
+         */
+        $_storedMethods = (get_class($c)) == 'Controller' ? array_keys($c->_controllerAppMethods) : array_keys($c->_webServiceAppMethods);
+
+        // Check method exist or not
+        if ( ! in_array(strtolower($router->fetchMethod()), $_storedMethods)) 
         {
             $response->show404($pageUri);
         }
@@ -458,8 +465,8 @@
         }
 
         global $packages;
-
-        $parts = explode('\\', $packageRealname);
+        
+        $parts           = explode('\\', $packageRealname);
         $packageFilename = mb_strtolower($parts[0], config('charset'));
 
         //--------------- PACKAGE LOADER ---------------//

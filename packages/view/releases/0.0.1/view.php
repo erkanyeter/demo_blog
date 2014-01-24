@@ -76,7 +76,7 @@ Class View {
 
         ob_start();   // Please open short tags in your php.ini file. ( short_tag = On ).
 
-        include($__vPath. $__vFilename . EXT);
+        include_once($__vPath. $__vFilename . EXT);
 
         $output = ob_get_clean();
 
@@ -102,7 +102,7 @@ Class View {
     {
         $val = $this->_isCallable($val);
 
-        if(is_string($val))
+        if(is_string($val) OR is_int($val))
         {
             $this->_string[$key] = $val;
         }

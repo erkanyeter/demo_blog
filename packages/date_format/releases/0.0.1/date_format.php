@@ -41,7 +41,7 @@ Class Date_Format {
 
         if( ! function_exists('Date_Format\Src\\'.$method))
         {
-            require PACKAGES .'date_format'. DS .'releases'. DS .$packages['dependencies']['date_format']['version']. DS .'src'. DS .strtolower($method). EXT;
+            require PACKAGES .'date_format'. DS .'releases'. DS .$packages['dependencies']['date_format']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
         }
 
         return call_user_func_array('Date_Format\Src\\'.$method, $arguments);

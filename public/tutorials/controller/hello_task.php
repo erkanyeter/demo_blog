@@ -16,7 +16,7 @@ $c->func('index',function($mode = '') use($c){
 
     if($mode == 'help')
     {
-        $output = $this->task->run('start/help', true);  // use without true when you go live.
+        $output = $this->task->run('help/index', true);  // use without true when you go live.
         echo '<pre>'.$output.'</pre>';
     }
     else

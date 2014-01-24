@@ -46,6 +46,11 @@ Class Router {
     
     // --------------------------------------------------------------------
     
+    /**
+     * Get Instance of Router
+     * 
+     * @return object
+     */
     public static function getInstance()
     {
        if( ! self::$instance instanceof self)
@@ -58,6 +63,11 @@ Class Router {
     
     // --------------------------------------------------------------------
     
+    /**
+     * Set Instance of Router for Hmvc
+     * 
+     * @param object
+     */
     public static function setInstance($object)
     {
         if(is_object($object))
@@ -180,7 +190,7 @@ Class Router {
             // re-index the routed segments array so it starts with 1 rather than 0
             // $this->uri->_reindex_segments();
 
-            logMe('debug', "No URI present. Default controller set.");
+            logMe('debug', 'No URI present. Default controller set.');
             
             return;
         }
@@ -346,25 +356,20 @@ Class Router {
         }
         
         $uri = implode('/', $this->uri->segments);
-        
-        // Is there a literal match?  If so we're done
-        if (isset($this->routes[$uri]))
+
+        if (isset($this->routes[$uri]))  // Is there a literal match?  If so we're done
         { 
             $this->_setRequest(explode('/', $this->routes[$uri]));
             return;
         }
 
-        // Loop through the route array looking for wild-cards
-        foreach ($this->routes as $key => $val)
+        foreach ($this->routes as $key => $val) // Loop through the route array looking for wild-cards
         {
-            // Convert wild-cards to RegEx
-            $key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key));
+            $key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key)); // Convert wild-cards to RegEx
 
-            // Does the RegEx match?
-            if (preg_match('#^'.$key.'$#', $uri))
+            if (preg_match('#^'.$key.'$#', $uri))  // Does the RegEx match?
             {
-                // Do we have a back-reference?
-                if (strpos($val, '$') !== false AND strpos($key, '(') !== false)
+                if (strpos($val, '$') !== false AND strpos($key, '(') !== false)  // Do we have a back-reference ?
                 {
                     $val = preg_replace('#^'.$key.'$#', $val, $uri);
                 }
