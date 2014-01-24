@@ -33,19 +33,6 @@ $users = array(
 		'types' => '_not_null|_varchar(50)',
 		'rules' => '',
 		),
-<<<<<<< HEAD
-=======
-	'user_name' => array(
-		'label' => 'User Name',
-		'types' => '_not_null|_varchar(50)',
-		'rules' => '',
-		),
-	'user_test' => array(
-		'label' => 'User Test',
-		'types' => '_null|_int(11)|_key(user_test)(user_test)',
-		'rules' => '',
-		),
->>>>>>> 8ff07a3fe1eea2d38af0d19300ce3c1b2019fc25
 );
  
 /* End of file users.php */

@@ -6,20 +6,20 @@
  */
 $c = new Controller(function(){
     // __construct
-});
-
-$c->func('index',function() use($c){
     
     new Html;
     new Url;
+    new View;
+});
+
+$c->func('index',function() {
     
-    $c->tpl('default', function() use($c) {
+    $this->view->get('hello_scheme', function() {
 
         $this->set('name', 'Obullo');
         $this->set('title', 'Hello Scheme World !');
-        $this->set('head', $this->html->css('welcome.css'));
 
-        $this->getScheme($c->view('hello_scheme', false));
+        $this->getScheme('welcome');
     });
 });
 

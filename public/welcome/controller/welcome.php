@@ -8,13 +8,15 @@ $c = new Controller(function(){
     // __construct
 	new Url;
 	new Html;
+	new View;
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
-    $c->view('welcome', function() use($c) {
+    $this->view->get('welcome', function() {
+
         $this->set('name', 'Obullo');
-        $this->set('footer', $c->tpl('footer', false));
+        $this->set('footer', $this->tpl('footer', false));
     });
     
 });

@@ -33,6 +33,11 @@ $scheme = array(
 		$this->set('sidebar', $this->tpl('sidebar',false));
 	    $this->set('footer', $this->tpl('footer',false));
 	},
+
+	'welcome' => function()
+	{
+        $this->set('footer', $this->tpl('footer',false));
+	},
 );
 
 /* End of file scheme.php */

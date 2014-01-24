@@ -9,6 +9,7 @@ $c = new Controller(function(){
     new Get;
     new Url;
     new Html;
+    new View;
 });
 
 $c->func('index', function() use($c){  
@@ -29,10 +30,10 @@ $c->func('index', function() use($c){
         }
     }
 
-    $c->view('hello_validator', function() use($c) {
+    $this->view->get('hello_validator', function(){
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $c->tpl('footer', false));
+        $this->set('footer', $this->tpl('footer', false));
 
     });
 
