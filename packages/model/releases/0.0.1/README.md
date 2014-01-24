@@ -134,6 +134,33 @@ $this->user->save();
 ?>
 ```
 
+### Multiple Schema Validation & Save ( Schema Join )
+
+If you have more than one validation for two or more tables you can merge schema files in the same form.
+
+Using dot "." in your field data you can join them. e.g. $this->user->data['second_tablename.fieldname']
+
+```
+<?php
+
+$this->user->data['order_type']        = '2';   
+$this->user->data['order_description'] = 'blablabla';
+$this->user->data['invoices.inovice_email_address'] = 'test@example.com';
+
+$this->user->func('insert',function() {
+        $this->db->insert('orders', $this);
+        $this->db->insert('invoices', $this);
+        return true;
+});
+
+if($this->user->insert())
+{
+    $this->form->setNotice('Order inserted successfully !', SUCCESS);
+    $this->url->redirect('/home');
+}
+?>
+```
+
 This is the same as other crud operations.
 
 ```

@@ -95,7 +95,7 @@ function submitAjax(formId){
         <h1>Hello Ajax</h1>
         <section>
             <?php
-            echo $this->form->open('tutorials/hello_ajax/dopost.json', array('method' => 'POST', 'id' => 'odm_tutorial')) ?>
+            echo $this->form->open('tutorials/hello_ajax/index', array('method' => 'POST', 'id' => 'odm_tutorial')) ?>
 
                 <table width="100%">
                     <tr>

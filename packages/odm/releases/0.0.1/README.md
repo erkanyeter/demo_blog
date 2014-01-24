@@ -93,7 +93,7 @@ If you provide the schema in array format schema driver also will create the dat
 ### Model Reference
 
 ```php
-new Model(string $var, mixed $schemaOrTable = '', string $dbVar = 'db');
+new Model(string $variableName, mixed $schemaOrTable = '', string $dbVar = 'db');
 ```
 
 * <b>First Parameter:</b> This parameter specifies the controller variable, you can access it like $this->var->method();
@@ -133,6 +133,36 @@ Then you can call your method.
 $this->user->save();
 ?>
 ```
+
+### Multiple Schema Validation & Save ( Schema Join )
+
+If you have more than one validation for two or more tables you can merge schema files in the same form.
+
+Using dot "." in your field data you can join them. e.g. $this->user->data['second_tablename.fieldname']
+
+```
+<?php
+
+$this->user->data['order_type']        = '2';   
+$this->user->data['order_description'] = 'blablabla';
+$this->user->data['invoices.inovice_email_address'] = 'test@example.com';
+
+$this->user->func('insert',function() {
+        $this->db->insert('orders', $this);
+        $this->db->insert('invoices', $this);
+        return true;
+});
+
+if($this->user->insert())
+{
+    $this->form->setNotice('Order inserted successfully !', SUCCESS);
+    $this->url->redirect('/home');
+}
+?>
+```
+
+Above the operation will insert data to orders and invoices tables and also it do validation each of them.
+
 
 This is the same as other crud operations.
 

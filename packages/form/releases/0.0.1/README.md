@@ -13,31 +13,6 @@ $this->form->method();
 
 The following functions are available:
 
-#### $this->form->setSchema($schemaName);
-
-Sets a database schema for update operations.
-
-```php
-<?php
-$this->db->where('post_id', $post_id); // get db data
-$this->db->get('posts');
-
-$row = $this->db->getRow();  // get one post
-
-echo $this->form->getNotice();
-echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST'));
-
-echo $this->form->label('Title');
-echo $this->form->error('title');
-echo $this->form->input('title', $row); // Set a row object for schema sync.
-
-echo $this->form->label('Content');
-echo $this->form->error('content');
-echo $this->form->textarea('content', $row, ' rows="15" cols="80" size="50" style="width:50%" ');
-
-echo $this->form->close();
-```
-
 #### $this->form->open()
 
 Creates an opening form tag with a base URL <b>built from your config preferences</b>. It will optionally let you add form attributes and hidden input fields.
@@ -551,6 +526,14 @@ $this->form->method();
 
 The following functions are available:
 
+#### $this->form->func('callback_function', function(){});
+
+Creates a callback function for form validations.
+
+```php
+
+```
+
 #### $this->form->open()
 
 Creates an opening form tag with a base URL <b>built from your config preferences</b>. It will optionally let you add form attributes and hidden input fields.
@@ -919,10 +902,6 @@ Add html (break) using your default form template.
 // gives <div style="padding:10px;">&nbsp;</div>
 ```
 
-#### $this->form->validatorGetInstance()
-
-Get the Validator Class instance.
-
 #### $this->form->setRules($field, $rules = '');
 
 Set form validation rules.
@@ -968,3 +947,7 @@ $this->form->getNotice('error','test'); // get specific key
 #### $this->form->getNotice($key or Null);
 
 Get the stored notification message(s) from current session.
+
+#### And all Validator Functions Available in the Form Class
+
+All Validator functions available in form class because of if a function not available it calls from the Validator class using php _call magic method.
