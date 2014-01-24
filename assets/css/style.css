@@ -23,6 +23,13 @@ body
 	margin-top:15px;
 	margin-left:20px;
 }
+.logo a {
+	text-decoration: none;
+	color: #000;
+}
+.logo a:hover {
+	color: #006857;
+}
 #menu
 {
 	width:960px;
@@ -30,8 +37,6 @@ body
 	margin:0 auto;
 	font-size: 12px;
 	background-image: url("../images/headermenu.png");
-
-
 }
 #menu ul
 {

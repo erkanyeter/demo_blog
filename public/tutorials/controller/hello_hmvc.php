@@ -2,25 +2,27 @@
 
 /**
  * $c hello_hmvc
+ * 
  * @var Controller
  */
 $c = new Controller(function(){
     // __construct
-});
-
-$c->func('index',function() use($c){
     
     new Url;
     new Html;
-	new Web_Request;
-    
-    $c->view('hello_hmvc', function() use($c){
+    new View;
+    new Web;
+});
 
-        $this->set('response_a', $this->web_request->get('tutorials/hello_dummy/test/1/2/3'));
-        $this->set('response_b', $this->web_request->get('tutorials/hello_dummy/test/4/5/6'));
+$c->func('index',function() {
+
+    $this->view->get('hello_hmvc', function() {
+
+        $this->set('response_a', $this->web->get('tutorials/hello_dummy/test/1/2/3'));
+        $this->set('response_b', $this->web->get('tutorials/hello_dummy/test/4/5/6'));
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $c->tpl('footer', false));
+        $this->set('footer', $this->tpl('footer', false));
 
     });
 });

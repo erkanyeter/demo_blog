@@ -15,8 +15,8 @@
         
         <h1>Hmvc Tutorial</h1>
  
-<pre>$this->request->get('tutorials/hello_dummy/test/1/2/3'));
-$this->request->get('tutorials/hello_dummy/test/4/5/6'));</pre>
+<pre>$this->web->get('tutorials/hello_dummy/test/1/2/3'));
+$this->web->get('tutorials/hello_dummy/test/4/5/6'));</pre>
 
         <p><?php echo $response_a ?></p>
         <p><?php echo $response_b ?></p>

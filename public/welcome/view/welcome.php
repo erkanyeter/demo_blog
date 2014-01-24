@@ -57,7 +57,13 @@
                 <li><?php echo $this->url->anchor('/tutorials/hello_ajax', 'Hello Ajax') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_task', 'Hello Task') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_hmvc', 'Hello Hmvc') ?></li>
-                <li><?php echo $this->url->anchor('/tutorials/hello_uform', 'Hello Uform') ?></li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Real World Application</h2>
+            <ol>
+                <li><?php echo $this->url->anchor('/home', 'Demo Blog') ?></li>
             </ol>
         </section>
 

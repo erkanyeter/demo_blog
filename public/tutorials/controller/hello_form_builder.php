@@ -9,10 +9,16 @@ $c = new Controller(function(){
     new Get;      
     new Url;
     new Html;
-    new Uform;
+    new Form_Builder;
     new View;
     
     new Model('user', 'users'); 
+
+    /**
+     * FORM BUILDER VERSION IS @ALPHA
+     * IT IS NOT RELEASES YET !!
+     */
+
 });
 
 $c->func('index', function(){
@@ -41,7 +47,7 @@ $c->func('index', function(){
         }
     }
     */
-    $this->uform->open('/tutorials/hello_uform', array('method' => 'post'), function() {
+    $this->form_builder->open('/tutorials/hello_form_builder', array('method' => 'post'), function() {
 
         $this->addRow();
         $this->setPosition('label', 'left');
@@ -74,15 +80,15 @@ $c->func('index', function(){
             'input' => $this->submit('dopost', 'Do Post', ' id="dopost" '),
         ));
     });
-    $this->uform->close();
+    $this->form_builder->close();
 
     if($this->get->post('dopost'))
     {
-        $this->uform->isValid();
-        $this->uform->render();
+        $this->form_builder->isValid();
+        $this->form_builder->render();
     }
 
-    $this->view->get('hello_uform', function() {
+    $this->view->get('hello_form_builder', function() {
 
         $this->set('name', 'Obullo');
         $this->set('footer', $this->tpl('footer', false));

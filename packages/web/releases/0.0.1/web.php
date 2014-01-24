@@ -8,7 +8,7 @@
 * directory.
 * 
 * @package       packages
-* @subpackage    mambo
+* @subpackage    web
 * @category      web_service
 * @link
 */
@@ -90,30 +90,62 @@ Class Web {
 
     // ------------------------------------------------------------------------
     
-    public function get()
+    /**
+     * Hmvc Get Request
+     * 
+     * @param  string $uri    
+     * @param  array  $params 
+     * @param  string $ttl    
+     * @return string         
+     */
+    public function get($uri, $params = array(), $ttl = '0')
     {
-        return $this->exec('get', func_get_args());
+        return $this->exec('get', $uri, $params, $ttl);
     }
     
     // ------------------------------------------------------------------------
 
-    public function post()
+    /**
+     * Hmvc Post Request
+     * 
+     * @param  string $uri    
+     * @param  array  $params 
+     * @param  string $ttl    
+     * @return string         
+     */
+    public function post($uri, $params = array(), $ttl = '0')
     {
-        return $this->exec('post', func_get_args());
+        return $this->exec('post', $uri, $params, $ttl);
     }
 
     // ------------------------------------------------------------------------
 
-    public function put()
+    /**
+     * Hmvc Put Request
+     * 
+     * @param  string $uri    
+     * @param  array  $params 
+     * @param  string $ttl    
+     * @return string         
+     */
+    public function put($uri, $params = array(), $ttl = '0')
     {
-        return $this->exec('put', func_get_args());
+        return $this->exec('put', $uri, $params, $ttl);
     }
 
     // ------------------------------------------------------------------------
 
-    public function delete()
+    /**
+     * Hmvc Delete Request
+     * 
+     * @param  string $uri    
+     * @param  array  $params 
+     * @param  string $ttl    
+     * @return string
+     */
+    public function delete($uri, $params = array(), $ttl = '0')
     {
-        return $this->exec('delete', func_get_args());
+        return $this->exec('delete', $uri, $params, $ttl);
     }
 
     // ------------------------------------------------------------------------
