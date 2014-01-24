@@ -20,13 +20,18 @@ $contacts = array(
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
-		'types' => '_not_null|_varchar(255)|_default(true)|_key(asdsa3)(contact_subject)|_unique_key(asdsad4)(contact_subject)|_key(asdsa6543)(contact_subject)|_unique_key(asdsad4456)(contact_subject)',
+		'types' => '_not_null|_varchar(255)|_default(true)',
 		'rules' => 'required|maxLen(160)',
 		),
 	'contact_body' => array(
 		'label' => 'Contact Body',
-		'types' => '_not_null|_int(11)|_default(0)|_unsigned',
+		'types' => '_null|_text',
 		'rules' => 'required|xssClean',
+		),
+	'contact_creation_date' => array(
+		'label' => 'Contact Creation Date',
+		'types' => '_null|_datetime',
+		'rules' => '',
 		),
 );
  

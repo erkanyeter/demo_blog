@@ -55,6 +55,8 @@ Class Auth {
             getInstance()->auth = $this->init($config); // Make available it in the controller.
         }
 
+        $this->db = $this->db->connect(); // connect to database and assign db object.
+
         logMe('debug', "Auth Class Initialized");
     }
     
