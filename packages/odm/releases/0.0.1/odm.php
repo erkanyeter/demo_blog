@@ -467,7 +467,7 @@ Class Odm {
 
         if(is_string($e))
         {
-            $errorMessage = (lingo($e) != '') ? lingo($e) : $e;
+            $errorMessage = (hasLingo($e)) ? lingo($e) : $e; // Is Translated ?
         }
 
         $this->_odmMessages[$this->_odmTable]['messages'] = array(

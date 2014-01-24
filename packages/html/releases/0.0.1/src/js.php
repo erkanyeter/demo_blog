@@ -83,6 +83,8 @@ namespace Html\Src {
         $link .= $arguments;
         $link .= "></script>\n";
        
+        $link = str_replace(DS, '/', $link);
+
         return $link;
     }
 

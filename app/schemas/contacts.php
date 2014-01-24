@@ -20,16 +20,16 @@ $contacts = array(
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
-		'types' => '_not_null|_default(true)|_varchar(255)',
-		'rules' => 'required|maxLen(160)',
-		),
-	'contact_body' => array(
-		'label' => 'Contact Body',
-		'types' => '_not_null|_int(11)|_default(0)|_unsigned',
-		'rules' => 'required|xssClean',
+		'types' => '_not_null|_default(true)|_varchar(255)|_key(asdsa3)(contact_subject)|_key(asdsa6543)(contact_subject)|_unique_key(asdsad4)(contact_subject)|_unique_key(asdsad4456)(contact_subject)',
+		'rules' => '',
 		),
 	'contact_creation_date' => array(
 		'label' => 'Contact Creation Date',
+		'types' => '_not_null|_default(0)|_unsigned|_int(11)',
+		'rules' => '',
+		),
+	'contact_body' => array(
+		'label' => 'Contact Body',
 		'types' => '_not_null|_default(0)|_unsigned|_int(11)',
 		'rules' => '',
 		),

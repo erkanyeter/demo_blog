@@ -12,7 +12,6 @@
 Class Sess_Database {
     
     public $db;
-    public $database;
     public $get;
     public $request;
     public $encrypt_cookie       = false;
@@ -50,7 +49,7 @@ Class Sess_Database {
 
     function init($params = array())
     {        
-        foreach (array('database','get','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
+        foreach (array('db','get','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
@@ -71,8 +70,7 @@ Class Sess_Database {
         
         $this->get     = &$this->get;         // Set Get object
         $this->request = &$this->request;     // Set Request object
-        $database      = &$this->database;    // Set Database object
-        $this->db      = $database->connect();
+        $this->db      = $this->db->connect(); // Set Database object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.

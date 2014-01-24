@@ -102,6 +102,8 @@ namespace Html\Src {
         }
 
         $link .= "/>\n";
+
+        $link = str_replace(DS, '/', $link);
         
         return $link;
     }    

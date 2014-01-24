@@ -33,8 +33,6 @@ Class Db {
      */
     public function __construct($dbVar = 'db')
     {
-        self::$config = getConfig('database'); // Get configuration
-
         $this->connect(strtolower($dbVar));
         
         logMe('debug', 'Db Class Initialized');
@@ -49,11 +47,13 @@ Class Db {
      * @return object
      */
     public function connect($dbVar = 'db')
-    {   
+    {        
         if(isset(getInstance()->{$dbVar}) AND is_object(getInstance()->{$dbVar}))
         {
             return getInstance()->{$dbVar};   // Lazy Loading.  
         }
+
+        self::$config = getConfig('database'); // Get configuration
 
         if( ! isset(self::$config[$dbVar]))
         {
@@ -63,7 +63,8 @@ Class Db {
         self::$var = $dbVar;  // Store current database key.
                               // We use it in active record class.
 
-        $db = self::$config[$dbVar];
+
+        $db = self::$config[$dbVar];  // Get database object Pdo_Driver(); Class
         $db->connect();
 
         getInstance()->{$dbVar} = &$db;
