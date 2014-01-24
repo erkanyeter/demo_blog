@@ -86,7 +86,7 @@ Class Schema_Mysql {
 
 		if($schemaContent != false)
 		{           
-			$sync_mysql = new Schema_Sync($schemaContent, $this->schemaObject);
+			$sync_mysql = new Schema_Sync_Mysql($schemaContent, $this->schemaObject); // Schema_Sync_Mysql
             $sync_mysql->run(); 
             
 			if($sync_mysql->collisionExists())
@@ -264,6 +264,17 @@ Class Schema_Mysql {
        	return false;
 	}
 
+    // /**
+    //  * Get the schema driver name
+    //  * 
+    //  * @return string
+    //  */
+    // public function getDriverName()
+    // {
+    //     $dbConfig = getConfig('database');
+    //     $exp = explode('_', get_class($dbConfig[Db::$var]));
+    //     return 'Schema_Sync_'.ucfirst($exp[1]);
+    // }
     
 }
 

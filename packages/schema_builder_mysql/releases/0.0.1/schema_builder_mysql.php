@@ -422,13 +422,15 @@ class Schema_Builder_Mysql extends Schema_Builder
 
     //-------------------------------------------------------------------------------------------------------------------------
     
-       /**
-    * Rename Column
-    * @param type $newColType 
-    * @return type
-    */
-   public function renameColumn($unbracketsColTypes,$schemaKeys,$dataType)
-   {
+    /**
+     * [renameColumn Rename Column]
+     * @param  [array] $unbracketsColTypes [Native Column Types without brackets]
+     * @param  [array] $schemaKeys         [Schema Keys]
+     * @param  [string] $dataType           [Data Type]
+     * @return [string]                     [description]
+     */
+    public function renameColumn($unbracketsColTypes,$schemaKeys,$dataType)
+    {
         $this->dbCommands[5] = ''; // for multiple indexes we should define here
         for ($i=0; $i < sizeof($unbracketsColTypes); $i++) 
         { 
@@ -456,7 +458,77 @@ class Schema_Builder_Mysql extends Schema_Builder
         $this->addDataType($dataType);
         
         return $this->sqlOutput();
-   }
+   } 
+
+    //-------------------------------------------------------------------------------------------------------------------------
+    
+    /**
+    * Rename Column
+    * @param type $newColType 
+    * @return type
+    */
+    public function addToFile($colType,$fileSchema)
+    {
+        $schemaKeys = explode('|', $fileSchema[$this->columnName]);
+
+        $unbracketsFileColType  = preg_replace('#(\(.*?\))#','', $fileSchema[$this->columnName]); // Get pure column type withouth brackets
+        $unbracketsFileColTypes = explode('|',$unbracketsFileColType); // Array of unbracketsFileColType
+
+        if ($key = preg_grep('#'.$unbracketsFileColType.'#',$this->dataTypes)) // Search into datatypes with matches
+        {
+            $colFileKeyValue = array_values($key)[0];
+            $colkey  = array_search($colFileKeyValue,$unbracketsFileColTypes); // Find datatype location in matches 
+        }
+        $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
+        switch ($unbracketsColType) // types
+        {
+            case '_null':
+                    if (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) // if not null exists change it
+                    {
+                        $schemaKeys[$key] = '_null' ;
+                    }
+                    elseif (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) // if null exists change it
+                    {
+                        $schemaKeys[$key] = '_null' ;
+                    }
+                    else
+                    {
+                        $schemaKeys[] = $colType;   
+                    }
+                break;
+
+            case '_not_null':
+                    if (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) // if null exists change it
+                    {
+                        $schemaKeys[$key] = '_not_null' ;
+                    }
+                    elseif (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) // if _not_null exists change it
+                    {
+                        $schemaKeys[$key] = '_not_null' ;
+                    }
+                    else
+                    {
+                        $schemaKeys[] = $colType;   
+                    }
+                break;
+            case '_unsigned':
+            case '_primary_key':
+            case '_default':
+            case '_auto_increment':
+                is_numeric(($key = array_search($unbracketsColType,$unbracketsFileColTypes))) ? $schemaKeys[$key] = $colType : $schemaKeys[] = $colType; 
+                break;
+            case '_key':
+            case '_foreign_key':
+            case '_unique_key' : 
+                is_numeric(($key = array_search($unbracketsColType,$unbracketsFileColTypes))) ? $schemaKeys[] = $colType
+                 : $schemaKeys[] = $colType;
+                break;   
+            default:
+                isset($colkey) ?  $schemaKeys[$colkey] = $colType : $schemaKeys[] = $colType ;
+                break;
+        }
+        return $schemaKeys;
+    }
 
     //-------------------------------------------------------------------------------------------------------------------------
 
