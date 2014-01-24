@@ -411,6 +411,20 @@
 
     // --------------------------------------------------------------------
 
+    function hasLingo($item)
+    {        
+        $lingo = getComponentInstance('lingo');
+
+        if( isset($lingo->language[$item])) 
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // --------------------------------------------------------------------
+
     /**
      * Fetch the language item using sprintf().
      *
@@ -424,7 +438,11 @@
         $item  = $args[0];
         
         $lingo = getComponentInstance('lingo');
-        $item  = ($item == '' OR ! isset($lingo->language[$item])) ? false : $lingo->language[$item];
+        
+        if(hasLingo($item))
+        {
+            $item = $lingo->language[$item];
+        }
 
         if(count($args) > 1)
         {   

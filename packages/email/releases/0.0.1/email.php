@@ -1868,13 +1868,13 @@ Class Email {
     {
         getInstance()->lingo->load('email');
 
-        if (false === ($line = lingo($msg)))
+        if (hasLingo($msg) == false)
         {
             $this->_debug_msg[] = str_replace('%s', $val, $msg)."<br />";
         }
         else
         {
-            $this->_debug_msg[] = str_replace('%s', $val, $line)."<br />";
+            $this->_debug_msg[] = str_replace('%s', $val, lingo($msg))."<br />";
         }
     }
   

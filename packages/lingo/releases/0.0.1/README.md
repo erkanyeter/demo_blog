@@ -117,6 +117,13 @@ Once your desired language file is loaded you can access any line of text using 
 ```php
 lingo('language_key');
 ```
+lingo() function returns the translated line if language line exist in your file, otherwise it returns to default text that you are provide.
+
+### Checking a Line of Text
+
+hasLingo('language_key');
+
+haslingo() function returns to false if language line exists in your file otherwise true.
 
 ### Using Sprintf()
 
@@ -130,8 +137,6 @@ echo lingo('There are %d monkeys in the %s.',5,'tree');
 ```
 
 Where <samp>language_key</samp> is the array key corresponding to the line you wish to show.
-
-**Note:** This function simply returns the line. It does not echo it for you.
 
 ### Auto-loading Languages
 
