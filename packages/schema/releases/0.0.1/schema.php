@@ -285,7 +285,6 @@ Class Schema {
     {
         $dbConfig = getConfig('database');
         $exp = explode('_', get_class($dbConfig[Db::$var]));
-
         return 'Schema_'.ucfirst($exp[1]);
     }
 
