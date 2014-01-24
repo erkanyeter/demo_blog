@@ -1,11 +1,16 @@
 <?php
 
-
 /**
-* 
-*/
-class Schema_Sync_Mysql extends Schema_Sync
-{
+ * Schema Sync Mysql Class
+ *
+ * @package       packages
+ * @subpackage    schema_sync_mysql
+ * @category      schema
+ * @link
+ */
+
+Class Schema_Sync_Mysql extends Schema_Sync {
+
     public $builderObject;
     
     function __construct($schemaDBContent, $schemaObject)
@@ -26,6 +31,7 @@ class Schema_Sync_Mysql extends Schema_Sync
         unset($databaseSchema['*']);
 
         $this->builderObject = new Schema_Builder_Mysql();
+
         $this->dbSchema     = $this->_reformatSchemaTypes($databaseSchema); // Render schema, fetch just types.
         $this->fileSchema   = $this->_reformatSchemaTypes($newFileSchema, true);  // Get just types 
 
@@ -33,7 +39,6 @@ class Schema_Sync_Mysql extends Schema_Sync
         $this->schemaObject = $schemaObject; // Schema Object
         $this->debug        = false;
     }
-
 
      // --------------------------------------------------------------------
 
@@ -103,10 +108,10 @@ class Schema_Sync_Mysql extends Schema_Sync
 
     // --------------------------------------------------------------------
 
-
     /**
-     * [_dbDiff Calculate Db differencies]
-     * @return [void] 
+     * _dbDiff Calculate Db differencies
+     * 
+     * @return void
      */
     protected function _dbDiff()
     {
@@ -177,9 +182,9 @@ class Schema_Sync_Mysql extends Schema_Sync
     // --------------------------------------------------------------------
 
     /**
-     * [_schemaDiff Calculate schema differencies]
+     * _schemaDiff Calculate schema differencies
      * 
-     * @return [void]
+     * @return void
      */
     protected function _schemaDiff()
     {
@@ -369,19 +374,20 @@ class Schema_Sync_Mysql extends Schema_Sync
                     }
                 }
             }
-        } // end foreach
+        }  // end foreach
 
     } // end function
 
     // --------------------------------------------------------------------
 
     /**
-     * [createSchemaDiff description]
-     * @param  [type]  $key         [description]
-     * @param  [type]  $i           [description]
-     * @param  [type]  $diffMatches [description]
-     * @param  boolean $option      [description]
-     * @return [type]               [description]
+     * createSchemaDiff description
+     * 
+     * @param  string  $key         
+     * @param  integer $i           
+     * @param  array   $diffMatches 
+     * @param  boolean $option      
+     * @return void               
      */
     private function createSchemaDiff($key,$i,$diffMatches,$option = false)
     {
@@ -411,3 +417,8 @@ class Schema_Sync_Mysql extends Schema_Sync
     }
 
 }
+
+// END Schema_Sync_Mysql class
+
+/* End of file schema_sync_mysql.php */
+/* Location: ./packages/schema_sync_mysql/releases/0.0.1/src/schema_sync_mysql.php */

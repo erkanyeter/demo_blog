@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Schema Sync Class
+ *
+ * @package       packages
+ * @subpackage    schema_sync
+ * @category      schema
+ * @link
+ */
+
 Class Schema_Sync {
 
     public $queryWarning;               // Javascript query alert for dangerous mysql operations.
@@ -114,7 +123,6 @@ Class Schema_Sync {
         $sync_html = new Schema_Sync\Src\Schema_Sync_Html($this, $this->schemaObject);
         return $sync_html->writeOutput();
     }
-
 
     // --------------------------------------------------------------------
 
@@ -443,8 +451,9 @@ Class Schema_Sync {
         }
     }
 
+}
 
-} // end class
+// END Schema_Sync class
 
 /* End of file schema_sync.php */
 /* Location: ./packages/schema_mysql/releases/0.0.1/src/schema_sync.php */

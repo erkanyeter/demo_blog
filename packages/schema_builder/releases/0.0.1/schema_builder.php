@@ -1,12 +1,14 @@
 <?php
 
-
 /**
- * undocumented class
+ * Schema Builder Adapter Class
  *
- * @package default
- * @author 
- **/
+ * @package       packages
+ * @subpackage    schema_builder
+ * @category      schema
+ * @link
+ */
+
 Abstract class Schema_Builder
 {
     protected $_escape_char    = '`%s`';
@@ -53,11 +55,12 @@ Abstract class Schema_Builder
     // --------------------------------------------------------------------
 
     /**
-    * [dropAttribute creates sql query for drop attribute]
-    * @param  [string] $attributeType [native Column Type]
-    * @param  [string] $colType       [Column Type]
-    * @param  [string] $dataType      [Data Type]
-    * @return [string]                [Sql Query for drop attribute]
+    * dropAttribute creates sql query for drop attribute
+    * 
+    * @param  string $attributeType native Column Type
+    * @param  string $colType       Column Type
+    * @param  string $dataType      Data Type
+    * @return string                Sql Query for drop attribute
     */
     abstract function dropAttribute($attributeType,$colType,$dataType);
 
@@ -65,6 +68,7 @@ Abstract class Schema_Builder
 
     /**
     * Drop Column
+    * 
     * @return string
     */
     abstract function dropColumn();
@@ -73,50 +77,56 @@ Abstract class Schema_Builder
 
     /**
     * Changing old column type with new one  
+    * 
     * @param string $newColType 
     * @return string
     */
     abstract function modifyColumn($newColType);
 
     // --------------------------------------------------------------------
+    
     /**
-    * [dropAttribute creates sql query for drop attribute]
-    * @param  [string] $attributeType [native Column Types]
-    * @param  [string] $colType       [Column Type]
-    * @param  [string] $dataType      [Data Type]
-    * @return [string]                [Sql Query for drop attribute]
+    * dropAttribute creates sql query for drop attribute
+    * 
+    * @param  string $attributeType native Column Types
+    * @param  string $colType       Column Type
+    * @param  string $dataType      Data Type
+    * @return string                Sql Query for drop attribute
     */
     abstract function renameColumn($attributeTypes,$colType,$dataType);
 
     // --------------------------------------------------------------------
 
     /**
-    * Description
-    * @param type $columnType 
-    * @param type $fileSchema 
-    * @return type
+    * Creates schema file column array
+    * 
+    * @param string $columnType 
+    * @param string $fileSchema 
+    * @return array
     */
     abstract function addToFile($columnType,$fileSchema);
 
     // --------------------------------------------------------------------
 
-    // /**
-    //  * Description
-    //  * @return type
-    //  */
+    /**
+     * Set schema name
+     * 
+     * @param string $schemaName
+     */
     abstract function setSchemaName($schemaName);
 
     // --------------------------------------------------------------------
 
     /**
-    * Description
+    * Set column name
+    * 
     * @return type
     */
     abstract function setColName($columnName);
    
 }
 
+// END Abstract Class Schema_Builder
 
-
-// END abstract class Schema_Builder_Adapter
-
+/* End of file Schema_Builder */
+/* Location: ./packages/schema_builder/releases/0.0.1/schema_builder.php */

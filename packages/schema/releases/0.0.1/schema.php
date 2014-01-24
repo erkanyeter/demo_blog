@@ -561,11 +561,7 @@ Class Schema {
 
         return trim($label);
     }
-
-    public function __destruct()
-    {
-        $this->tablename = '';
-    }
+    
 }
 
 // END Schema class

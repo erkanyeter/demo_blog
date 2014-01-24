@@ -1,19 +1,21 @@
 <?php
 
-
 /**
- * undocumented class
+ * Schema Builder Mysql Class
  *
- * @package default
- * @author 
- **/
-class Schema_Builder_Mysql extends Schema_Builder
-{
+ * Builds sql query output for mysql and do "add-to-file" schema
+ * actions.
+ *
+ * @package       packages
+ * @subpackage    schema_builder_mysql
+ * @category      schema
+ * @link
+ */
 
-    public $dbCommand = '';
+Class Schema_Builder_Mysql extends Schema_Builder {
 
+    public $dbCommand   = '';
     private $schemaName = '';
-
     private $columnName = '';
 
     public $dataTypes  = array(        // defined mysql data types
@@ -50,7 +52,7 @@ class Schema_Builder_Mysql extends Schema_Builder
         '_set'
     );
 
-    public $attributeTypes = array(
+    public $attributeTypes = array(  // defined mysql data type attributes
         '_null',
         '_not_null',
         '_default',
@@ -69,21 +71,25 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addToDb description]
-     * @param [array] $unbracketsSchemaKeys [native Schema Keys]
-     * @param [array] $unbracketsColType    [native Column Type]
-     * @param [array] $schemaKeys           [Schema Keys with values]
+     * Add to db button function
+     * Creates MYSQL sql output using data types & attributes
+     * 
+     * @param array $unbracketsSchemaKeys [native Schema Keys]
+     * @param array $unbracketsColType    [native Column Type]
+     * @param array $schemaKeys           [Schema Keys with values]
      * @param [type] $colType              [Column Type with value]
      * @return array
      */
     public function addToDb($unbracketsSchemaKeys,$schemaKeys,$isNew = false,$colType,$unbracketsColType = null)
     {
         $this->dbCommands[5] = '';
-        $this->dbCommand = (! $isNew )  ? 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($this->columnName) : 'ALTER TABLE '.$this->quoteValue($this->schemaName);
+        $this->dbCommand     = ( ! $isNew )  ? 'ALTER TABLE '.$this->quoteValue($this->schemaName).' MODIFY COLUMN '.$this->quoteValue($this->columnName) : 'ALTER TABLE '.$this->quoteValue($this->schemaName);
+
         if ($unbracketsColType != null) 
         {
             $loop = sizeof($unbracketsSchemaKeys);
-            for ($k=0; $k < $loop ; $k++) 
+
+            for ($k = 0; $k < $loop ; $k++) 
             {
                 if ($unbracketsSchemaKeys[$k] == '_unique_key' || $unbracketsSchemaKeys[$k] == '_key' || $unbracketsSchemaKeys[$k] == '_foreign_key') 
                 {
@@ -91,16 +97,18 @@ class Schema_Builder_Mysql extends Schema_Builder
                     unset($schemaKeys[$k]);
                 }
             }
-            $schemaKeys[] = $colType;
+
+            $schemaKeys[]           = $colType;
             $unbracketsSchemaKeys[] = $unbracketsColType;
-            $unbracketsSchemaKeys = array_values($unbracketsSchemaKeys);
-            $schemaKeys = array_values($schemaKeys);
+            $unbracketsSchemaKeys   = array_values($unbracketsSchemaKeys);
+            $schemaKeys             = array_values($schemaKeys);
         }
+
         for ($i=0; $i < sizeof($unbracketsSchemaKeys); $i++) // for don't lose previous changes in db  
         { 
             if (in_array('_primary_key',$unbracketsSchemaKeys) AND $unbracketsColType != '_primary_key' AND ! $isNew) //if primary key defined in fileschema and request is not primary key
             {
-                $locationPK = array_search('_primary_key',$unbracketsSchemaKeys); //find location primary key in schemaArray
+                $locationPK           = array_search('_primary_key',$unbracketsSchemaKeys); //find location primary key in schemaArray
                 unset($unbracketsSchemaKeys[$locationPK]); 
                 $unbracketsSchemaKeys = array_values($unbracketsSchemaKeys);// reOrder Schema Array
 
@@ -114,7 +122,7 @@ class Schema_Builder_Mysql extends Schema_Builder
                     $this->addNull();
                     break;
                 case '_auto_increment':
-                    $this->addIncrement();
+                    $this->addAutoIncrement();
                     break;
                 case '_unsigned':
                     $this->addUnsigned();
@@ -149,7 +157,7 @@ class Schema_Builder_Mysql extends Schema_Builder
    //-------------------------------------------------------------------------------------------------------------------------
 
    /**
-    * [addNull description]
+    * Add Null
     */
     public function addNull()
     {
@@ -163,9 +171,10 @@ class Schema_Builder_Mysql extends Schema_Builder
      //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addDataType description]
-     * @param [type]  $schemaKey [description]
-     * @param boolean $isNew     [description]
+     * addDataType
+     * 
+     * @param string  $schemaKey
+     * @param boolean $isNew
      */
     public function addDataType($schemaKey,$isNew = false)
     {
@@ -193,7 +202,7 @@ class Schema_Builder_Mysql extends Schema_Builder
    //-------------------------------------------------------------------------------------------------------------------------
 
    /**
-    * [addNotNull Create a Sql Query]
+    * addNotNull Create a Sql Query
     */
     public function addNotNull()
     {
@@ -203,7 +212,7 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
    /**
-    * [addUnsigned Create a Sql Query]
+    * addUnsigned Create a Sql Query
     */
     public function addUnsigned()
     {
@@ -213,41 +222,44 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addDefault description]
-     * @param string $unbracketSchemaKey [description]
-     * @param string $schemaKey          [description]
-     * @param string $colType            [description]
+     * addDefault
+     * 
+     * @param string $unbracketSchemaKey
+     * @param string $schemaKey          
+     * @param string $colType            
      */
     public function addDefault($unbracketSchemaKey,$schemaKey)
     {
         if ( ! isset($this->dbCommands[2])) 
-            {
-                $defValues = $schemaKey; // if schema key and column type
-                preg_match('#\((([^\]])*)\)#',$defValues, $defaultValue);
-                $this->dbCommands[1] = 'NOT NULL ';
+        {
+            $defValues = $schemaKey; // if schema key and column type
+            preg_match('#\((([^\]])*)\)#',$defValues, $defaultValue);
 
-                if(is_numeric($defaultValue[1])) // quote support
-                {
-                    $this->dbCommands[3] = 'DEFAULT '.$defaultValue[1];
-                } 
-                else 
-                {
-                    $defaultStringValue = trim($defaultValue[1], '"');
-                    $this->dbCommands[3] = 'DEFAULT '."'".addslashes($defaultStringValue)."'";
-                }
-            }   
+            $this->dbCommands[1] = 'NOT NULL ';
+
+            if(is_numeric($defaultValue[1])) // quote support
+            {
+                $this->dbCommands[3] = 'DEFAULT '.$defaultValue[1];
+            } 
+            else 
+            {
+                $defaultStringValue  = trim($defaultValue[1], '"');
+                $this->dbCommands[3] = 'DEFAULT '."'".addslashes($defaultStringValue)."'";
+            }
+        }   
     }
 
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addKey add Unique Key and Key]
-     * @param [string] $unbracketsSchemaKey [description]
-     * @param [string] $colType             [description]
+     * addKey add Unique Key and Key
+     * 
+     * @param string $unbracketsSchemaKey 
+     * @param string $colType             
      */
     public function addKey($unbracketsSchemaKey,$colType)
     {
-        preg_match('#_key\((.*?)\)#',$colType,$matches);// Get Key Index Name
+        preg_match('#_key\((.*?)\)#',$colType,$matches); // Get Key Index Name
 
         $indexName = $matches[1];
 
@@ -277,6 +289,7 @@ class Schema_Builder_Mysql extends Schema_Builder
                     $implodeKeys = array($this->quoteValue($item));
                 }
             }
+
             $this->dbCommands[5] .= ',ADD'.strtoupper($this->removeUnderscore($unbracketsSchemaKey)).' '.$this->quoteValue($indexName).' ('.implode($implodeKeys, ",").')';
         }
         
@@ -285,9 +298,10 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addForeignKey description]
-     * @param [string] $unbracketsSchemaKey [Native Key _foreign_key]
-     * @param [string] $schemaKey           [Key with value _foreign_key(KeyName)(referencesTable)(ReferenceField)]
+     * addForeignKey
+     * 
+     * @param string $unbracketsSchemaKey [Native Key _foreign_key]
+     * @param string $schemaKey           [Key with value _foreign_key(KeyName)(referencesTable)(ReferenceField)]
      */
     public function addForeignKey($unbracketsSchemaKey,$schemaKey)
     {
@@ -313,9 +327,9 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addIncrement description]
+     * addAutoIncrement
      */
-    public function addIncrement()
+    public function addAutoIncrement()
     {
         if (isset($this->dbCommands[3])) 
         {
@@ -329,19 +343,22 @@ class Schema_Builder_Mysql extends Schema_Builder
 
     /**
      * [addPrimaryKey ]
-     * @param [string] $schemaKey [description]
+     * @param string $schemaKey 
      */
     public function addPrimaryKey($schemaKey)
     {
         preg_match('#(\(.*?\))#',$schemaKey, $pKColumns);
+
         $pkey = (isset($pKColumns[0])) ? $pKColumns[0] : '('.$this->quoteValue($this->columnName).')'; 
+
         $this->dbCommands[4] = ',ADD PRIMARY KEY '.$pkey.' ';
     }
 
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [changeDataTye desc]
+     * changeDataTye to new Type
+     * 
      * @param  string $newDataType new Data Type
      * @return string Sql Query for change data types
      */
@@ -354,6 +371,7 @@ class Schema_Builder_Mysql extends Schema_Builder
 
     /**
     * Drop Column
+    * 
     * @return string
     */
     public function dropColumn()
@@ -364,7 +382,8 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-    * Changing old column type with new one  
+    * Changing old column type with new one
+    * 
     * @param string $newColType 
     * @return string
     */
@@ -376,11 +395,12 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [dropAttribute creates sql query for drop attribute]
-     * @param  [string] $attributeType [native Column Type]
-     * @param  [string] $colType       [Column Type]
-     * @param  [string] $dataType      [Data Type]
-     * @return [string]                [Sql Query for drop attribute]
+     * dropAttribute creates sql query for drop attribute
+     * 
+     * @param  string $attributeType [native Column Type]
+     * @param  string $colType       [Column Type]
+     * @param  string $dataType      [Data Type]
+     * @return string                [Sql Query for drop attribute]
      */
     public function dropAttribute($attributeType,$colType,$dataType)
     {
@@ -397,11 +417,13 @@ class Schema_Builder_Mysql extends Schema_Builder
             case '_key':    
             case '_unique_key' : 
                 preg_match('#_key\((.*?)\)#',$colType,$matches);
+
                 $indexName = $matches[1];
                 $dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' DROP INDEX '.$this->quoteValue($indexName);
                 break;
             case '_foreign_key':
                     preg_match_all('#\((.*?)\)#',$colType,$matches);// Get Key Index Name
+
                     $indexName = $matches[1][0];
                     $dbCommand ='ALTER TABLE '.$this->quoteValue($this->schemaName).' DROP FOREIGN KEY `'.$indexName.'`';
                 break;
@@ -423,15 +445,17 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
     
     /**
-     * [renameColumn Rename Column]
-     * @param  [array] $unbracketsColTypes [Native Column Types without brackets]
-     * @param  [array] $schemaKeys         [Schema Keys]
-     * @param  [string] $dataType           [Data Type]
-     * @return [string]                     [description]
+     * renameColumn Rename Column
+     * 
+     * @param  array $unbracketsColTypes Native Column Types without brackets
+     * @param  array $schemaKeys         Schema Keys
+     * @param  string $dataType          Data Type
+     * @return string                     
      */
     public function renameColumn($unbracketsColTypes,$schemaKeys,$dataType)
     {
         $this->dbCommands[5] = ''; // for multiple indexes we should define here
+
         for ($i=0; $i < sizeof($unbracketsColTypes); $i++) 
         { 
             switch ($unbracketsColTypes[$i]) 
@@ -440,7 +464,7 @@ class Schema_Builder_Mysql extends Schema_Builder
                     $this->addNull();
                     break;
                 case '_auto_increment':
-                    $this->addIncrement();
+                    $this->addAutoIncrement();
                     break;
                 case '_unsigned':
                     $this->addUnsigned();
@@ -453,7 +477,8 @@ class Schema_Builder_Mysql extends Schema_Builder
                     $this->addDefault($unbracketsColTypes[$i],$schemaKeys[$i]);
                     break;
             }
-    }
+        }
+
         $this->dbCommand = 'ALTER TABLE '.$this->quoteValue($this->schemaName).' CHANGE '.$this->quoteValue($this->columnName).' '.$this->quoteValue('$NEW NAME');
         $this->addDataType($dataType);
         
@@ -464,6 +489,7 @@ class Schema_Builder_Mysql extends Schema_Builder
     
     /**
     * Rename Column
+    * 
     * @param type $newColType 
     * @return type
     */
@@ -477,12 +503,15 @@ class Schema_Builder_Mysql extends Schema_Builder
         if ($key = preg_grep('#'.$unbracketsFileColType.'#',$this->dataTypes)) // Search into datatypes with matches
         {
             $colFileKeyValue = array_values($key)[0];
-            $colkey  = array_search($colFileKeyValue,$unbracketsFileColTypes); // Find datatype location in matches 
+            $colkey          = array_search($colFileKeyValue,$unbracketsFileColTypes); // Find datatype location in matches 
         }
+        
         $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
+
         switch ($unbracketsColType) // types
         {
             case '_null':
+
                     if (is_numeric(($key = array_search('_not_null',$unbracketsFileColTypes)))) // if not null exists change it
                     {
                         $schemaKeys[$key] = '_null' ;
@@ -495,9 +524,11 @@ class Schema_Builder_Mysql extends Schema_Builder
                     {
                         $schemaKeys[] = $colType;   
                     }
+
                 break;
 
             case '_not_null':
+
                     if (is_numeric(($key = array_search('_null',$unbracketsFileColTypes)))) // if null exists change it
                     {
                         $schemaKeys[$key] = '_not_null' ;
@@ -510,6 +541,7 @@ class Schema_Builder_Mysql extends Schema_Builder
                     {
                         $schemaKeys[] = $colType;   
                     }
+
                 break;
             case '_unsigned':
             case '_primary_key':
@@ -534,6 +566,7 @@ class Schema_Builder_Mysql extends Schema_Builder
 
     /**
     * Set schemaName
+    * 
     * @param type $schemaName 
     */
     public function setSchemaName($schemaName)
@@ -544,17 +577,20 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-   * [sqlOutput Build Sql Output]
-   * @return [string] [Sql Output]
+   * sqlOutput Build Sql Output
+   * 
+   * @return string Sql Output
    */
     public function sqlOutput()
     {
         ksort($this->dbCommands);
         $this->dbCommands = array_values($this->dbCommands);
+
         for ($i = 0; $i < sizeof($this->dbCommands); $i++) 
         { 
             $this->dbCommand.= $this->dbCommands[$i];
         }
+
         return $this->dbCommand;
     }
 
@@ -562,6 +598,7 @@ class Schema_Builder_Mysql extends Schema_Builder
 
     /**
     * Set columnName
+    * 
     * @param type $columnName 
     */
     public function setColName($columnName)
@@ -572,7 +609,8 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Get Schema Name 
+     * Get Schema Name
+     * 
      * @return string Schema Name
      */
     public function getSchemaName()
@@ -583,7 +621,8 @@ class Schema_Builder_Mysql extends Schema_Builder
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Get Column Name 
+     * Get Column Name
+     * 
      * @return string Column Name
      */
     public function getColName()
@@ -591,4 +630,9 @@ class Schema_Builder_Mysql extends Schema_Builder
         return $this->columnName;
     }
 
-} // END class Schema_Builder_Class 
+}  
+
+// END Class Schema_Builder_Mysql
+
+/* End of file Schema_Builder_Mysql */
+/* Location: ./packages/schema_builder_mysql/releases/0.0.1/schema_builder_mysql.php */
