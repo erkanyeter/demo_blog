@@ -15,7 +15,7 @@
         
         <h1>Hello Ajax</h1>
         <section>
-        
+
             <?php
             echo $this->form->open('tutorials/hello_ajax/index', array('method' => 'POST', 'id' => 'odm_tutorial')) ?>
 
@@ -23,13 +23,13 @@
                     <tr>
                         <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
                         <td>
-                            <?php echo $this->form->input('email', $this->form->setValue('email'), " id='email' ");?>
+                            <?php echo $this->form->input('user_email', $this->form->setValue('user_email'), " id='user_email' ");?>
                         </td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Password') ?></td>
                         <td>
-                            <?php echo $this->form->password('password', '', " id='password' ") ?>
+                            <?php echo $this->form->password('user_password', '', " id='user_password' ") ?>
                         </td>
                     </tr>
                     <tr>
@@ -63,5 +63,8 @@
         <section>
             <p>&nbsp;</p>
         </section>
+
+<?php echo $footer ?>
+
     </body>
 </html>

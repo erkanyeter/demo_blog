@@ -9,7 +9,7 @@ $c = new Controller(function(){
     
     new Form;
     new Request;
-    
+
     new Model('user', 'users');
 });
 
@@ -20,8 +20,8 @@ $c->func('index', function(){
     {
         new Get;
 
-        $this->user->data['email']    = $this->get->post('email');
-        $this->user->data['password'] = $this->get->post('password');
+        $this->user->data['user_email']    = $this->get->post('user_email');
+        $this->user->data['user_password'] = $this->get->post('user_password');
 
         //--------------------- set non schema rules
         
@@ -45,7 +45,7 @@ $c->func('index', function(){
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json;charset=UTF-8');
 
-        echo json_encode($this->user->output());
+        echo json_encode($this->user->getOutput());
     } 
     else 
     {
@@ -53,7 +53,13 @@ $c->func('index', function(){
         new Html;
         new View;
 
-        $this->view->get('hello_ajax');
+        $this->view->get('hello_ajax', function(){
+                
+            $this->set('name', 'Obullo');
+            $this->set('title', 'Hello Ajax World !');
+
+            $this->getScheme('welcome');
+        });
     }
     
 });

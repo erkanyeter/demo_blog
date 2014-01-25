@@ -145,11 +145,11 @@ Class Odm {
                 //----------------------------
 
                 $this->_odmMessages[$table]['messages'] = array(
-                    'success' => 0, 
-                    'errorKey' => 'validationError',
-                    'errorCode'  => 10,
-                    'errorString' => 'There are some errors in the form fields.',
-                    'errorMessage' => lingo('There are some errors in the form fields.')
+                    'success'    => 0, 
+                    'key'        => 'validationError',
+                    'code'       => 10,
+                    'string'     => 'There are some errors in the form fields.',
+                    'translated' => lingo('There are some errors in the form fields.')
                     );
 
                 //----------------------------
@@ -272,7 +272,22 @@ Class Odm {
             return $this->_odmMessages[$this->_odmTable];
         }
 
-        return;
+        return array();
+    }
+
+    // --------------------------------------------------------------------
+    
+    /**
+     * WARNING !! Gives unsecure data !!!! 
+     * be carefull when you use the all output.
+     * 
+     * returns to all outputs of the post values.
+     * 
+     * @return array
+     */
+    public function getAllOutput()
+    {
+        return array_merge($this->getOutput(), array('values' => $this->getValues()));
     }
 
     // --------------------------------------------------------------------
@@ -471,11 +486,11 @@ Class Odm {
         }
 
         $this->_odmMessages[$this->_odmTable]['messages'] = array(
-        'success' => 0, 
-        'errorKey' => 'failure',
-        'errorCode'  => 12,
-        'errorString' => (is_string($e)) ? $e : $errorString,
-        'errorMessage' => $errorMessage,
+        'success'    => 0, 
+        'key'        => 'failure',
+        'code'       => 12,
+        'string'     => (is_string($e)) ? $e : $errorString,
+        'translated' => $errorMessage,
         );
     }
 

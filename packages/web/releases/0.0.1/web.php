@@ -15,11 +15,12 @@
 
 Class Web {
     
-    public $uri_extension      = 'json';    // response format
-    public $data               = array();   // request data
+    public $uri_extension       = 'json';    // response format
+    public $data                = array();   // request data
 
     // ------------------------------------------------------------------------
 
+    protected $raw_output;             // response raw output of current web request
     protected $web_service_directory;  // default web service directory
 
     // ------------------------------------------------------------------------
@@ -66,8 +67,8 @@ Class Web {
     {
         if(strpos($methodQueryString, '.') !== false)
         {
-            $extension           = explode('.', $segment);
-            $this->uri_extension = end($extension);
+            $extension           = explode('.', $methodQueryString);
+            $this->uri_extension = strtolower(end($extension));
         }
 
         return $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
@@ -146,7 +147,7 @@ Class Web {
      */
     public function exec($method = 'get', $request_uri = '', $data = '', $ttl = '0')
     {
-        logMe('debug', 'Web Class '.ucfirst($method).' Executed');
+        $method = strtoupper($method);
 
         if( ! in_array($method, array('GET','POST','PUT','DELETE'))) // allowed methods
         {
@@ -156,16 +157,15 @@ Class Web {
                 );
         }
 
-        if( ! is_callable($data))
+        if(is_callable($data))  // run closure data
         {
-            throw new Exception(
-                sprintf('Third paramater "%s" must be callable.'.
-                "\n<pre>\$this->web->query('post','example.method.json',function(){});</pre>", '$data')
-                );
+            call_user_func_array(Closure::bind($data, $this, get_class()), array());
+        } 
+        
+        if(is_array($data)) // if data is array
+        {
+            $this->data = array_merge($this->data, $data);
         }
-
-        // run closure data
-        call_user_func_array(Closure::bind($data, $this, get_class()), array());
 
         $hmvc = new Hmvc();
         $hmvc->clear();
@@ -173,10 +173,20 @@ Class Web {
         $hmvc->setRequestUrl($request_uri, $ttl);
         $hmvc->setMethod($method, $this->data);
         
-        $response   = $hmvc->exec();   // return to hmvc object
-        $this->data = array();       // Reset Query data
+        $this->raw_output = $hmvc->exec(); // return to hmvc object
+        
+        $this->clear();    // reset Object Variables
 
-        return $response;
+        logMe('debug', 'Web Class '.$method.' Executed');
+
+        return $this->raw_output;
+    }
+    
+    // ------------------------------------------------------------------------
+
+    public function isValid()
+    {
+        
     }
 
     // ------------------------------------------------------------------------
@@ -189,18 +199,40 @@ Class Web {
      */
     public function __call($method, $arguments)
     {
-        static $resultObject = null;
-
         if( ! method_exists($this, $method))  // Call the Validator object methods
         {   
-            if( ! is_object($restultObject))
-            {
-                $resultClass   = 'Web_Results_'.strtoupper($this->uri_extension);
-                $resultObject  = new $resultClass();
-            }
+            $resultClass   = 'Web_Results_'.ucfirst($this->uri_extension);
+            $resultObject  = new $resultClass($this->getRawOutput()); // Send raw output to result object.
 
             return call_user_func_array(array($resultObject, $method), $arguments);
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Clear variables after that
+     * for each execute of web request.
+     * 
+     * @return void
+     */
+    public function clear()
+    {
+        $this->uri_extension = 'json';
+        $this->data          = array();
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get raw output of the hmvc
+     * response.
+     * 
+     * @return string
+     */
+    public function getRawOutput()
+    {
+        return (string)$this->raw_output;
     }
 
 }

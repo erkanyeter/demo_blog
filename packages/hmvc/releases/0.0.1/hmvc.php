@@ -272,7 +272,8 @@ Class Hmvc
 
     /**
     * Parse Url if there is any possible query string like this
-    * hmvc->setRequest('welcome/test/index?foo=im_foo&bar=im_bar');
+    *
+    * $this->hmvc->setRequestUrl('welcome/test/index?foo=im_foo&bar=im_bar');
     *
     * @param  string $query_string
     * @return array  $segments
@@ -368,7 +369,7 @@ Class Hmvc
         
         // --------- End storage exists ----------- //
 
-        if ( strncmp($router->fetchMethod(), '_', 1) == 0 // Do not run private methods. ( _output, _remap, _getInstance .. )
+        if ( strncmp($router->fetchMethod(), '_', 1) == 0  // Do not run private methods. ( _output, _remap, _getInstance .. )
                 OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
             )
         {
@@ -392,18 +393,12 @@ Class Hmvc
         ob_start(); // Get the output.
 
         $arguments = array_slice($Uri->rsegments, 3);
-
-        if (method_exists($c, '_remap'))  // Is there a "remap" function? 
-        {
-            $c->_remap($router->fetchMethod(), $arguments);
-        }
-        else
-        {
-            // Call the requested method. Any URI segments present (besides the directory / class / method) 
-            // will be passed to the method for convenience
-            // directory = 0, class = 1, method = 2
-            call_user_func_array(array($c, $router->fetchMethod()), $arguments);
-        }
+    
+        // Call the requested method. Any URI segments present (besides the directory / class / method) 
+        // will be passed to the method for convenience
+        // directory = 0, class = 1, method = 2
+        call_user_func_array(array($c, $router->fetchMethod()), $arguments);
+        
 
         $content = ob_get_contents();
         if(ob_get_level() > 0) { ob_end_clean(); }
@@ -475,7 +470,7 @@ Class Hmvc
             list($em, $es) = explode(' ', microtime());
             $end_time = ($em + $es); 
 
-            logMe('info', 'Hmvc request: '.getInstance()->uri->getUriString().' time: '.number_format($end_time - self::$start_time, 4));
+            logMe('info', 'Hmvc request: '.$this->uri_string.' time: '.number_format($end_time - self::$start_time, 4));
 
         }
 

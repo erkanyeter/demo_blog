@@ -42,6 +42,7 @@ $c->func('index', function(){
     }
 
     $this->user->func('insert', function(){
+
         if ($this->isValid()){  // Validate schema
 
             $bcrypt = new Bcrypt; // use bcrypt
@@ -61,6 +62,9 @@ $c->func('index', function(){
                 $this->setFailure($e);  // Set rollback message to error messages.
             }
         }
+
+        $this->setFailure('sd');
+
         return false;
     });
 
@@ -70,6 +74,6 @@ $c->func('index', function(){
 
     //---------------------------------------------
 
-    echo json_encode($this->user->getOutput());
+    echo json_encode($this->user->getAllOutput());
 
 });

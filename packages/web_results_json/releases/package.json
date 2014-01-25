@@ -1,0 +1,44 @@
+{
+  "name": "web_results_json",
+  "description": "Generates 'web' class query results using json format.",
+  "version": "0.0.1",
+  "releases": ["0.0.1"],
+  "author": {
+    "name": "Obullo Team",
+    "email": "obulloframework@gmail.com",
+    "url": "https://github.com/obullo"
+  },
+  "component" : "library",
+  "dependencies": {
+    "log":"*",
+    "web":"*",
+  },
+  "keywords": [
+    "web",
+    "web_results_json",
+    "web_results",
+    "results",
+    "json",
+  ],
+  "homepage": "https://github.com/obullo/web_results_json",
+  "repo": {
+    "type": "git",
+    "url": "https://github.com/obullo/web_results_json.git",
+    "archive" : "zip",
+    "archive_url": "https://github.com/obullo/web_results_json/archive/master.zip"
+  },
+  "requires": {
+    "php": ">= 5.4.0",
+    "extensions": ["none"]
+  },
+  "bugs": {
+    "url": "https://github.com/obullo/web_results_json/issues",
+    "email": "obulloframework@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
+}

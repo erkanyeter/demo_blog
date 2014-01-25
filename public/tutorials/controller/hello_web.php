@@ -16,11 +16,18 @@ $c->func('index', function(){
     echo $this->uri->getExtension();
     echo '<br>';
 
-    $this->web->query('post','members.create_one.xml',function(){
+    $this->web->query('post','members.create_one.json',function(){
         $this->data['user_username'] = 'test';
+
+        $this->isValid();
     });
 
-    $this->web->getResult();
+
+    // $this->web->isValid();
+
+
+    var_dump($this->web->getResultArray());
+
 
     echo '<br>';
     echo '<br>';

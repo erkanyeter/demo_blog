@@ -4,7 +4,7 @@ namespace Odm\Src {
     trait Model_Trait
     {
         private $_modelMethods = array();
-        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace');
+        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','push','send');
 
         // --------------------------------------------------------------------
 
@@ -67,11 +67,11 @@ namespace Odm\Src {
                     }
 
                     $this->_odmErrors[$this->_odmTable]['messages'] = array(
-                    'success' => 1, 
-                    'errorKey' => $method.'Success',
-                    'errorCode'  => 11,
-                    'errorString' => $errorString,
-                    'errorMessage' => lingo($errorString)
+                    'success'    => 1, 
+                    'key'        => $method.'Success',
+                    'code'       => 11,
+                    'string'     => $errorString,
+                    'translated' => lingo($errorString)
                     );
 
                     // $this->clear();  

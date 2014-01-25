@@ -44,7 +44,7 @@ $users = array(
 + packages
 ```
 
-### Using Array Data for Types
+### Using "Enum" Types
 
 Some data types requires array type of values ( like _enum or _set ).
 
@@ -134,33 +134,6 @@ $this->user->save();
 ?>
 ```
 
-### Multiple Schema Validation & Save ( Schema Join )
-
-If you have more than one validation for two or more tables you can merge schema files in the same form.
-
-Using dot "." in your field data you can join them. e.g. $this->user->data['second_tablename.fieldname']
-
-```
-<?php
-
-$this->user->data['order_type']        = '2';   
-$this->user->data['order_description'] = 'blablabla';
-$this->user->data['invoices.inovice_email_address'] = 'test@example.com';
-
-$this->user->func('insert',function() {
-        $this->db->insert('orders', $this);
-        $this->db->insert('invoices', $this);
-        return true;
-});
-
-if($this->user->insert())
-{
-    $this->form->setNotice('Order inserted successfully !', SUCCESS);
-    $this->url->redirect('/home');
-}
-?>
-```
-
 Above the operation will insert data to orders and invoices tables and also it do validation each of them.
 
 
@@ -188,10 +161,12 @@ Available <b>CRUD operations</b> that we are support listed below. You can defin
 * replace
 * delete
 * remove
+* push
+* send
 * callback_ ( form validation callback_* functions )
 
 
-### Saving Data
+### Save
 
 Below the example we create a save function and call it on the fly.
 
@@ -218,7 +193,7 @@ else
 ```
 
 
-### Validating Data
+### isValid()
 
 Using <b>isValid()</b> function you can control the validator object.
 
@@ -230,21 +205,25 @@ $this->user->data['email']    = 'me@example.com';
 $this->user->data['password'] = '123456';
 
 // Set extra rule for none db fields.
-$this->user->setRules('confirm_password', array('label' => 'Confirm Password', 'rules' => 'required|matches(password)'));
-$this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'isInteger|required'));
+$this->user->setRules('confirm_password', 
+    array('label' => 'Confirm Password', 'rules' => 'required|matches(password)'));
+$this->user->setRules('agreement', 
+    array('label' => 'User Agreement', 'rules' => 'isInteger|required'));
 
-$this->user->func('save',function() {
+$this->user->func('insert',function() {
     if ($this->isValid())  // isValid() function do validation using your schema.
     {
-        $this->data['password'] = md5($this->getValue('password'));  // You can set again a value after the validation
+        // Setting a value after the validation
+        $this->data['password'] = md5($this->getValue('password'));  // get filtered value of password input
+        // Insert data to table using file schema
         return $this->db->insert('users', $this);
     }
     return false;
 });
 
-if($this->user->save())  // if save function success !
+if($this->user->insert())  // if save function success !
 {
-    echo 'User Saved.';
+    echo 'User Added.';
 } 
 else 
 {
@@ -272,7 +251,7 @@ $this->user->func('save',function($id) {
 $this->user->save(5);  // updated user id 5
 ?>
 ```
-### Deleting Data 
+### Delete 
 
 ```
 <?php
@@ -345,27 +324,52 @@ print_r($this->user->getMessages());
 /*
 Array
 (
-    [success] => 0
-    [errorKey] => validationError
-    [errorCode] => 10
-    [errorString] => There are some errors in the form fields.
-    [errorMessage] => There are some errors in the form fields.
+    [success] => 0  // 1
+    [key] => validationError // saveSuccess, updateSuccess, deleteSuccess .. ($method$Success), failure 
+    [code] => 10 // 11 // 12
+    [string] => There are some errors in the form fields.
+    [translated] => There are some errors in the form fields.
 )
 */
 $this->user->getMessage('success'); // gives you value of the success. 
 ```
 
-<b>$this->user->getMessage('key');</b> function gives you the value of the message. 
+<b>$this->user->getMessage('$key');</b> function gives you the value of the message. 
 
 #### Description Of Keys
 
-* <b>success</b> : If crud process success it returns to <b>1</b> otherwise <b>0</b>.
-* <b>errorKey</b> : Every error has a related error string for readability of them.
-* <b>errorCode</b> : Same as error keys you can use the error codes if you want.
-* <b>errorString</b> : Gives the error message as string.
-* <b>errorMessage</b> : Gives the translated error message using lingo() function. ( uses lingo package )
+<table>
+<thead>
+<tr>
+<th>errorKey</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>success</td>
+<td>If crud process success, it returns to <b>1</b> otherwise <b>0</b>.</td>
+</tr>
+<tr>
+<td>key</td>
+<td>Every error has a related error string for readability of them.</td>
+</tr>
+<tr>
+<td>code</td>
+<td>Same as error keys you can use the error codes if you want.</td>
+</tr>
+<tr>
+<td>string</td>
+<td>Gives the error message as string.</td>
+</tr>
+<tr>
+<td>translated</td>
+<td>Gives the translated error message using lingo() function. ( uses lingo package )</td>
+</tr>
+</tbody>
+</table>
 
-#### Description of Error Keys
+#### Description of <b>Error</b> Keys
 
 <table>
 <thead>
@@ -444,7 +448,36 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tbody>
 </table>
 
-### Using Transactions
+
+### Schema Join & Save
+
+If you have more than one validation for two or more tables you can merge schema files in the same form.
+
+Using dot "." in your field "key" you can join them. e.g. **$this->user->data['second_tablename.fieldname']**
+
+```
+<?php
+new Model('order', 'orders');
+
+$this->order->data['order_type']        = '2';   
+$this->order->data['order_description'] = 'blablabla';
+$this->order->data['invoices.inovice_email_address'] = 'test@example.com';
+
+$this->order->func('insert',function() {
+        $this->db->insert('orders', $this);
+        $this->db->insert('invoices', $this);
+        return true;
+});
+
+if($this->order->insert())
+{
+    $this->form->setNotice('Order inserted successfully !', SUCCESS);
+    $this->url->redirect('/home');
+}
+?>
+```
+
+### Transactions
 
 You can use the transactions if your table engine setted correctly as <b>INNODB</b>.
 
@@ -455,7 +488,7 @@ new Get;
 $this->user->data['email']    = $this->get->post('email');
 $this->user->data['password'] = $this->get->post('password');
 
-$this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'isInteger|required'));
+$this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'required'));
 
 $this->user->func('save',function() {
     if ($this->isValid()){
@@ -576,7 +609,8 @@ $this->user->data['password'] = $this->get->post('password');
 $this->user->func('callback_username', function($username){
     if(strlen($username) > 10)
     {
-        $this->setMessage('callback_username', 'Username must be less than 10 characters.');
+        $this->setMessage('callback_username', 
+            'Username must be less than 10 characters.');
         return false;
     }
     return true;
@@ -1177,7 +1211,7 @@ The following is a list of all the prepping functions that are available to use:
     </tbody>
 </table>
 
-### Creatig Schema Functions
+### Schema Functions ( Mapping )
 
 Schema functions allow to you manipulation data of schema field.
 
