@@ -9,6 +9,7 @@ $c = new Controller(function(){
     
     new Form;
     new Request;
+    
     new Model('user', 'users');
 });
 
