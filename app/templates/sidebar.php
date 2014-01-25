@@ -16,7 +16,8 @@
 		 		( <?php
 				 		$this->db->where('comment_status','0');
 		        		$this->db->get('comments');
-		        		echo $this->db->count();
+		        		
+		        		echo $this->db->getCount();
 		 		?> )
 		 	</span> <br>
 		 	<?php echo $this->url->anchor('/logout', 'Logout') ?> <br>

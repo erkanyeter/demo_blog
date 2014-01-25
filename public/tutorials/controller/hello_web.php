@@ -17,12 +17,12 @@ $c->func('index', function(){
     echo '<br>';
 
     echo $this->web->query('post','members.create_one.xml',function(){
-
-        $this->data['user_username'] = 'eguvenc@gmail.com';
-
+        $this->data['user_username'] = 'test';
     });
 
-    echo $this->uri->getExtension(); 
+    echo '<br>';
+    echo '<br>';
+    echo $this->uri->getExtension().'<br/>'; 
     echo '<br>';
 
     /*

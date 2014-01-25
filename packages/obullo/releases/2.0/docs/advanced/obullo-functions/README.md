@@ -105,6 +105,8 @@ logMe('info', 'The purpose of some variable is to provide some value.');
 
 ------
 
+#### hasLingo('item');
+
 #### lingo('item');
 
 Fetches the language item from valid lingo file.

@@ -8,7 +8,7 @@ namespace Database_Pdo\Src\Crud {
     *
     * @return  integer
     */
-    function count()
+    function getCount()
     {
 		$crud = getInstance()->{\Db::$var};
 

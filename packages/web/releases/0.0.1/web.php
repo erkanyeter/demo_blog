@@ -16,7 +16,7 @@
 Class Web {
     
     protected $web_service_directory; // default web service directory
-    public $data = array();  // database column keys & values *
+    public $data = array();           // database column keys & values *
 
     // ------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ Class Web {
             getInstance()->web = $this; // Make available it in the controller $this->mambo->method();
         }
 
-        logMe('debug', 'Mambo Class Initialized');
+        logMe('debug', 'Web Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -54,38 +54,16 @@ Class Web {
      * new Web ( Hmvc ) Request
      * 
      * @param  string  $methodString method.name
-     * @param  array $params         sending post query string data
-     * @param  integer $ttl          cache expiration time
+     * @param  closure $data        sending post query string data
+     * @param  integer $ttl         cache expiration time
      * @return object
      */
-    public function query($method = 'post', $methodQueryString, $params = array(), $ttl = 0)
+    public function query($method = 'post', $methodQueryString, $data = '', $ttl = 0)
     {
         $exp    = explode('.',$methodQueryString);
         $method = strtoupper($method);
 
-        if( ! in_array($method, array('GET','POST','PUT','DELETE'))) // allowed methods
-        {
-            throw new Exception(
-                sprintf('Method "%s" is not allowed available '.get_class().' methods listed below.'.
-                "\n<pre>GET\nPOST\nPUT\nDELETE\n</pre>", $method)
-                );
-        }
-
-        //------------- START HMVC PROCESS -----------//
-
-        $hmvc = new Hmvc();
-        $hmvc->clear();     // clear hmvc for multiple requests
-        $hmvc->noLoop();                 
-        $hmvc->setRequestUrl($this->web_service_directory.'/'.$methodQueryString, $ttl);
-        $hmvc->setMethod($method, array_merge(array('data' => $this->data), $params));
-
-        $response = $hmvc->exec();
-
-        //------------- END HMVC PROCESS -----------//
-
-        $this->data = array();  // Reset Query data ( database column names which are set by rest query method )
-
-        return $response;
+        return $this->exec($method, $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
     }
 
     // ------------------------------------------------------------------------
@@ -98,9 +76,9 @@ Class Web {
      * @param  string $ttl    
      * @return string         
      */
-    public function get($uri, $params = array(), $ttl = '0')
+    public function get($uri, $data = '', $ttl = '0')
     {
-        return $this->exec('get', $uri, $params, $ttl);
+        return $this->exec('get', $uri, $data, $ttl);
     }
     
     // ------------------------------------------------------------------------
@@ -113,9 +91,9 @@ Class Web {
      * @param  string $ttl    
      * @return string         
      */
-    public function post($uri, $params = array(), $ttl = '0')
+    public function post($uri, $data = '', $ttl = '0')
     {
-        return $this->exec('post', $uri, $params, $ttl);
+        return $this->exec('post', $uri, $data, $ttl);
     }
 
     // ------------------------------------------------------------------------
@@ -128,9 +106,9 @@ Class Web {
      * @param  string $ttl    
      * @return string         
      */
-    public function put($uri, $params = array(), $ttl = '0')
+    public function put($uri, $data = '', $ttl = '0')
     {
-        return $this->exec('put', $uri, $params, $ttl);
+        return $this->exec('put', $uri, $data, $ttl);
     }
 
     // ------------------------------------------------------------------------
@@ -143,9 +121,9 @@ Class Web {
      * @param  string $ttl    
      * @return string
      */
-    public function delete($uri, $params = array(), $ttl = '0')
+    public function delete($uri, $data = '', $ttl = '0')
     {
-        return $this->exec('delete', $uri, $params, $ttl);
+        return $this->exec('delete', $uri, $data, $ttl);
     }
 
     // ------------------------------------------------------------------------
@@ -159,45 +137,39 @@ Class Web {
      * @param int | array $cache_time_or_config
      * @return string
      */
-    public function exec($method = 'get', $request_uri = '', $params = array(), $ttl = '0')
+    public function exec($method = 'get', $request_uri = '', $data = '', $ttl = '0')
     {
         logMe('debug', 'Web Class '.ucfirst($method).' Executed');
 
-        $methods = array('GET' => '', 'POST' => '', 'PUT' => '', 'DELETE' => ''); // Supported request methods
-
-        if( ! isset($methods[strtoupper($method)]))
+        if( ! in_array($method, array('GET','POST','PUT','DELETE'))) // allowed methods
         {
-            if(is_numeric($params))
-            {
-                $cache_time_or_config = $params;
-            }
-            
-            if(is_array($request_uri))
-            {
-                $params  = $request_uri;
-            }
-
-            if($request_uri === false)  // Long Access request
-            {   
-                $hmvc = new Hmvc();   // Every hmvc request must create new instance.
-                $hmvc->clear();       // Clear variables for each request.
-                $hmvc->noLoop();
-                $hmvc->setRequestUrl($method);
-                
-                return $hmvc->exec();
-            }
-            
-            $request_uri = $method;
-            $method      = 'GET';   // Set default method
+            throw new Exception(
+                sprintf('Method "%s" is not allowed available '.get_class().' methods listed below.'.
+                "\n<pre>GET\nPOST\nPUT\nDELETE\n</pre>", $method)
+                );
         }
+
+        if( ! is_callable($data))
+        {
+            throw new Exception(
+                sprintf('Third paramater "%s" must be callable.'.
+                "\n<pre>\$this->web->query('post','example.method.json',function(){});</pre>", '$data')
+                );
+        }
+
+        // run closure data
+        call_user_func_array(Closure::bind($data, $this, get_class()), array());
 
         $hmvc = new Hmvc();
         $hmvc->clear();
         $hmvc->noLoop();                 
         $hmvc->setRequestUrl($request_uri, $ttl);
-        $hmvc->setMethod($method, $params);
-    
-        return $hmvc->exec();   // return to hmvc object
+        $hmvc->setMethod($method, $this->data);
+        
+        $response   = $hmvc->exec();   // return to hmvc object
+        $this->data = array();       // Reset Query data
+
+        return $response;
     }
 
 }

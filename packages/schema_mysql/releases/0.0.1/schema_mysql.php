@@ -256,7 +256,7 @@ Class Schema_Mysql {
 	{
         $this->db->query("SHOW TABLES LIKE '".$this->tablename."'");
 
-        if($this->db->count() > 0)
+        if($this->db->getCount() > 0)
         {
         	return true;
         }

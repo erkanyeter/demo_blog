@@ -8,25 +8,25 @@
 $c = new Web_Service('protected', function(){
 
     new Get;
-
     echo $this->uri->getExtension();
 
     new Request;
     echo $this->request->getMethod().'<br/>';
-
     echo $this->get->request('id').'<br/>';
 });
 
 $c->func('index', function(){
 
+    // print_r($_POST);
+
     new Model('user', 'users');
 
-    foreach($this->get->post('data') as $key => $val) // catch selected fields
+    foreach($_POST as $key => $val) // catch selected fields
     {
         $this->user->data[$key] = $val;
     }
     
-    if(isset($this->user->data['user_username']))  // if user_username selected do callback_username unique validation
+    if(isset($_POST['user_username']))  // if user_username selected do callback_username unique validation
     {
         $this->user->func('callback_username', function(){
             $this->db->where('user_username', $this->get->post('user_username', true));

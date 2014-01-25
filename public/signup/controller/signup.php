@@ -36,7 +36,7 @@ $c->func('index', function(){
             $this->db->where('user_username', $this->get->post('user_username', true));
             $this->db->get('users');
             
-            if($this->db->count() > 0) {  // unique control
+            if($this->db->getCount() > 0) {  // unique control
                 $this->form->setMessage('callback_username', 'This username is already used');
                 return false;
             }
