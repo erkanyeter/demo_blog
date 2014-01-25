@@ -7,19 +7,17 @@
 $c = new Controller(function(){
     // _construct
     
-    new Html;
-    new Url;
     new Form;
-    new Get;
-    new View;
+    new Request;
+    new Model('user', 'users');
 });
 
 
 $c->func('index', function(){
 
-    if($this->get->post('dopost'))
+    if($this->request->isXmlHttp()) // Is request Ajax ? 
     {
-        new Model('user', 'users');
+        new Get;
 
         $this->user->data['email']    = $this->get->post('email');
         $this->user->data['password'] = $this->get->post('password');
@@ -50,6 +48,10 @@ $c->func('index', function(){
     } 
     else 
     {
+        new Url;
+        new Html;
+        new View;
+
         $this->view->get('hello_ajax');
     }
     

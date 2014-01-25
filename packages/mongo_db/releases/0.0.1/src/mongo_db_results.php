@@ -37,18 +37,6 @@ Class Mongo_Db_Results {
 	 */
 	public function getResult()
 	{
-		return $this->resultObject();
-	}
-	
-    // ------------------------------------------------------------------------
-
-	/**
-	 * resultObject alias of result().
-	 * 
-	 * @return array
-	 */
-	public function getResultObject()
-	{
 		$rows = array();
 
 		foreach($this->rows as $row)
@@ -58,7 +46,7 @@ Class Mongo_Db_Results {
 
 		return $rows;
 	}
-
+	
     // ------------------------------------------------------------------------
 
 	/**

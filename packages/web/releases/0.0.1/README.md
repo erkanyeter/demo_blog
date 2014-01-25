@@ -66,7 +66,7 @@ echo $this->web->get('api/?query=SELECT * FROM users LIMIT 100');
  */
 $c = new Controller(function(){
     // __construct
-    new web;
+    new Web;
 });
 
 $c->func('index', function(){
@@ -80,3 +80,26 @@ $c->func('test', function($arg1, $arg2, $arg3){
 /* End of file hello_web.php */
 /* Location: .public/tutorials/controller/hello_web.php */
 ```
+
+
+### Function Reference of Query Results
+
+------
+
+#### $this->db->getResult()
+
+This function returns the query result as object.
+
+#### $this->db->getResultArray();
+
+This function returns the query result as a pure array, or an empty array when no result is produced.
+
+#### $this->db->getRow();
+
+This function fetch one item and returns query result as object or false on failure.
+
+#### $this->db->getRowArray();
+
+Identical to the above row() function, except it returns an array.
+
+#### $this->db->getCount();

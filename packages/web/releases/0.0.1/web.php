@@ -15,8 +15,12 @@
 
 Class Web {
     
-    protected $web_service_directory; // default web service directory
-    public $data = array();           // database column keys & values *
+    public $uri_extension      = 'json';    // response format
+    public $data               = array();   // request data
+
+    // ------------------------------------------------------------------------
+
+    protected $web_service_directory;  // default web service directory
 
     // ------------------------------------------------------------------------
 
@@ -38,7 +42,7 @@ Class Web {
     // ------------------------------------------------------------------------
 
     /**
-     * Set data for Rest CRUD data
+     * Set $_REQUEST Data
      * 
      * @param string $key
      * @param string $val
@@ -60,10 +64,13 @@ Class Web {
      */
     public function query($method = 'post', $methodQueryString, $data = '', $ttl = 0)
     {
-        $exp    = explode('.',$methodQueryString);
-        $method = strtoupper($method);
+        if(strpos($methodQueryString, '.') !== false)
+        {
+            $extension           = explode('.', $segment);
+            $this->uri_extension = end($extension);
+        }
 
-        return $this->exec($method, $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
+        return $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
     }
 
     // ------------------------------------------------------------------------
@@ -170,6 +177,30 @@ Class Web {
         $this->data = array();       // Reset Query data
 
         return $response;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Generate query results using
+     * Web_Results_$driver
+     * 
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        static $resultObject = null;
+
+        if( ! method_exists($this, $method))  // Call the Validator object methods
+        {   
+            if( ! is_object($restultObject))
+            {
+                $resultClass   = 'Web_Results_'.strtoupper($this->uri_extension);
+                $resultObject  = new $resultClass();
+            }
+
+            return call_user_func_array(array($resultObject, $method), $arguments);
+        }
     }
 
 }

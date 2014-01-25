@@ -16,9 +16,11 @@ $c->func('index', function(){
     echo $this->uri->getExtension();
     echo '<br>';
 
-    echo $this->web->query('post','members.create_one.xml',function(){
+    $this->web->query('post','members.create_one.xml',function(){
         $this->data['user_username'] = 'test';
     });
+
+    $this->web->getResult();
 
     echo '<br>';
     echo '<br>';

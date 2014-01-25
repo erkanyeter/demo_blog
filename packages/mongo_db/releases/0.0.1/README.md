@@ -507,3 +507,25 @@ Removes a gridfs file using mongo instance.
 $gridFS = $this->db->getInstance()->getGridFS();
 $gridFS->remove(array('user_id' => new MongoId($this->auth->getIdentity('_id')), 'filegroup' => 'profile-picture'));
 ```
+
+### Function Reference of Query Results
+
+------
+
+#### $this->db->getResult()
+
+This function returns the query result as object.
+
+#### $this->db->getResultArray();
+
+This function returns the query result as a pure array, or an empty array when no result is produced.
+
+#### $this->db->getRow();
+
+This function fetch one item and returns query result as object or false on failure.
+
+#### $this->db->getRowArray();
+
+Identical to the above row() function, except it returns an array.
+
+#### $this->db->getCount();
