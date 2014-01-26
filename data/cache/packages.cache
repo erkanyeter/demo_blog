@@ -68,6 +68,7 @@ $packages['dependencies']['sess_cache']           = array('version' => '0.0.1');
 $packages['dependencies']['sess_native']          = array('version' => '0.0.1');
 $packages['dependencies']['sess_database']        = array('version' => '0.0.1');
 $packages['dependencies']['tag_cloud']            = array('version' => '0.0.1');
+$packages['dependencies']['trigger']              = array('version' => '0.0.1');
 $packages['dependencies']['view']                 = array('version' => '0.0.1');
 $packages['dependencies']['string']               = array('version' => '0.0.1');
 $packages['dependencies']['shmop']                = array('version' => '0.0.1');

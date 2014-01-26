@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `comment_comment` text NOT NULL,
   `comment_creation_date` datetime DEFAULT NULL,
   `comment_modification_date` datetime DEFAULT NULL,
-  `comment_status` enum('0','1') DEFAULT '0',
+  `comment_status` bit(1) DEFAULT 0,
   PRIMARY KEY (`comment_id`),
   KEY `comment_post_id` (`comment_post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

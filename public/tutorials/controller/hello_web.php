@@ -22,9 +22,7 @@ $c->func('index', function(){
         $this->isValid();
     });
 
-
     // $this->web->isValid();
-
 
     var_dump($this->web->getResultArray());
 

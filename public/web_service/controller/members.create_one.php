@@ -5,8 +5,9 @@
  * 
  * @var Controller
  */
-$c = new Web_Service('protected', function(){
-
+$c = new Web_Service('protected', function(){   // If you declare a web service controller as protected, 
+                                                // aynone couldn't access this web controller using Curl from outside. 
+                                                // Just Hmvc Requests ( using Web Class ) allowed.
     new Get;
     echo $this->uri->getExtension();
 

@@ -23,6 +23,7 @@ You can set authentication options in <dfn>app/config/auth.php</dfn> file.
 
 ```php
 <?php
+
 /*
 |--------------------------------------------------------------------------
 | Auth Package Configuration
@@ -32,35 +33,36 @@ You can set authentication options in <dfn>app/config/auth.php</dfn> file.
 */
 $auth = array(
     
-    'db' => new Db(),      // Set Database,
-    'session_prefix' => 'auth_',      // Set a prefix to prevent collisions with original session object.
-    'username_col' => 'user_email',   // Table field name that contains the username.
-    'password_col' => 'user_password', // Table field name that contains the password.
-    'login_url'   => '/login',        // Redirect Url for Unsuccessfull logins
-    'dashboard_url' => '/dashboard',  // Redirect Url Successfull logins
-
+    'db'                 => new Db,      // Set Database,
+    'sess'               => new Sess,  // Session Object
+    'get'                => new Get,    // Input Object
+    'bcrypt'             => new Bcrypt,  // Bcrypt password hash / verify object
+    'session_prefix'     => 'auth_',      // Set a prefix to prevent collisions with original session object.
+    'password_col'       => 'user_password', // The name of the database table field that contains the password.
+    'login_url'          => '/login',        // Redirect Url for Unsuccessfull logins
+    'dashboard_url'      => '/home',  // Redirect Url Successfull logins
     // Security Settings
-    'password_salt_str'   => '',        // Password salt string for more strong passwords. * Leave it blank if you don't want to use it.
-    'algorithm'           => 'bcrypt',  // Whether to use "bcrypt" or "sha256" or "sha512" hash. ( Do not use md5 )
-    'allow_login'         => true,      // Whether to allow logins to be performed on login form.
-    'xss_clean'           => true,      // Whether to enable the xss clean.
-    'regenerate_sess_id'  => false,     // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
+    'password_salt_str'  => '',        // Password salt string for more strong passwords. * Leave it blank if you don't want to use it.
+    'algorithm'          => 'bcrypt',  // Whether to use "bcrypt" or "sha256" or "sha512" hash. ( Do not use md5 )
+    'allow_login'        => true,      // Whether to allow logins to be performed on login form.
+    'regenerate_sess_id' => false,     // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
+    'xss_clean'          => true,      // Do xss clean for username 
 );
 
 // Auth Query
 // Build your sql ( or nosql query ) using db or crud oject.
 
-$auth['query'] = array(function($username) use($auth)
+$auth['query'] = function($username)
 {
     $this->db->prep();
-    $this->db->select('user_id, user_firstname, user_lastname, user_email');
-    $this->db->where($auth['username_col'], ':username');
+    $this->db->select('user_id, user_username, user_password, user_email');
+    $this->db->where('user_email', ':username');
     $this->db->get('users');
     $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),
     $this->db->exec();
     
     return $this->db->getRow();  // return to object.
-});
+};
 ```
 
 ### Sending Data to Auth Query
@@ -71,30 +73,18 @@ $auth['query'] = array(function($username) use($auth)
 <?php
 new Auth;
 
-$this->auth->attemptQuery(
-    
-    $_POST['email'],
-    $_POST['password'],
-
-);
+$row = $this->auth->query($_POST['email'], $_POST['password']);
         
-if($this->auth->isValid())
+if($row !== false) // validate the auth !
 {
-    $row = $this->auth->getRow();
+    $this->auth->authorizeMe(); // Authorize to user
+    $this->auth->setIdentity('username', $row->user_username);    // Set user identity items.
+    $this->auth->setIdentity('email', $row->user_email);
 
-    if($row)
-    {
-        $this->auth->authorizeMe(); // Authorize to user
-        $this->auth->setIdentity('username', $row->user_username);    // Set user identity items.
-        $this->auth->setIdentity('email', $row->user_email);
-
-        $this->url->redirect('/dashboard');
-    } 
-    else 
-    {
-       $this->url->redirect('/login');
-    }
+    $this->url->redirect('/dashboard');
 }
+
+$this->url->redirect('/login');
 ```
 
 ### Checking Identity
@@ -111,25 +101,11 @@ if($this->auth->hasIdentity())
 }
 ```
 
-
-### Checking Auth Using Quick Access
-
-------
-
-```php
-<?php
-
-if($this->auth->hasIdentity())
-{
-     echo 'Great you are authorized to view this page !'; 
-}
-```
-
 ### Checking Identity and Redirect
 
 ------
 
-Redirect user to <kbd>dashboard_url</kbd> (<b>/dashboard</b>) page that is configurable in your <dfn>app/config/auth.php</dfn> file.
+Redirect user to <kbd>dashboard_url</kbd> using url object.
 
 ```php
 <?php
@@ -138,8 +114,6 @@ if($this->auth->hasIdentity())
 {
     $this->url->redirect('/dashboard');
 }
-
-It's redirect request to /dashboard url as default.
 ```
 
 ### Getting User Data From Sessions
@@ -176,15 +150,17 @@ Using query config variable in <kbd>app/config/auth.php</kbd>, you can build you
 
 
 ```php
-$auth['db']['query'] = array(function()
+$auth['query'] = function($username)
 {
-    $this->db->select(implode(',', $this->select_data));
-    $this->db->where($this->username_col, $this->username);
-    $this->db->limit(1);
-    $this->db->get($this->tablename);
-
-    return $this->db->getRow();
-});
+    $this->db->prep();
+    $this->db->select('user_id, user_username, user_password, user_email');
+    $this->db->where('user_email', ':username');
+    $this->db->get('users');
+    $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),
+    $this->db->exec();
+    
+    return $this->db->getRow();  // return to object.
+};
 ```
 
 ### Function Reference

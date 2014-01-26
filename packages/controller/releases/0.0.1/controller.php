@@ -27,7 +27,7 @@ Class Controller {
      * 
      * @param object $closure
      */
-    public function __construct($constructClosure = '')       
+    public function __construct($closure, $autorun = true)       
     {   
         self::$instance = &$this;
 
@@ -40,49 +40,12 @@ Class Controller {
         $this->lingo    = getComponentInstance('lingo');
         $this->response = getComponentInstance('response');
 
-        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-        $currentRoute   = $this->router->fetchDirectory().'/'.$this->router->fetchClass().'/'.$this->router->fetchMethod();
-
-        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-        // Initialize to Autorun
-        // ------------------------------------
-
-        $autorun = getConfig('autorun');
-
-        if(isset($autorun['controller']) AND count($autorun['controller']) > 0)
-        {
-            foreach($autorun['controller'] as $funcName)
-            {
-                call_user_func_array(Closure::bind($autorun['func'][$funcName], $this, get_class()), array());
-            }
-            
-            logMe('debug', 'Autorun Closure Initialized');
-        } 
-
-        if(isset($autorun['routes'])) // Autorun for routes
-        {
-            foreach($autorun['routes'] as $route => $funcVal)
-            {
-                $uriRoute = trim($route, '/');
-
-                if($currentRoute == $uriRoute AND count($funcVal) > 0)
-                {
-                    foreach($funcVal as $funcRouteName)
-                    {
-                        call_user_func_array(Closure::bind($autorun['func'][$funcRouteName], $this, get_class()), array());
-                    }
-                }
-            }
-        }
-
         // Run Construct Method
         // ------------------------------------
 
-        if (is_callable($constructClosure))
+        if (is_callable($closure))
         {
-            call_user_func_array(Closure::bind($constructClosure, $this, get_class()), array());
+            call_user_func_array(Closure::bind($closure, $this, get_class()), array());
         }
     }
 

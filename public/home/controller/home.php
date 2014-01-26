@@ -12,12 +12,16 @@ $c = new Controller(function(){
 	new Date_Format;
 	new Tag_Cloud;
     new View;
+    new Sess;
+    new Auth;
+
+    new Trigger('public','header'); // run triggers
 });
 
 $c->func('index', function(){
 
     $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
-        WHERE posts.post_id = comment_post_id AND comment_status = '1' 
+        WHERE posts.post_id = comment_post_id AND comment_status = 1 
         GROUP BY posts.post_id LIMIT 1),0) as total_comment", false);
     
     $this->db->where('post_status', 'Published');

@@ -11,6 +11,10 @@ $c = new Controller(function(){
 	new Form;
     new Get;
     new View;
+    new Sess;
+    new Auth;
+
+    new Trigger('private','header');
 });
 
 $c->func('index', function(){

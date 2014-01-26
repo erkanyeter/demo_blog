@@ -131,6 +131,7 @@ Class Router {
         {
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
+            
             if (config('enable_query_strings') === true AND isset($_GET[config('controller_trigger')]) AND 
                     isset($_GET[config('directory_trigger')]))
             {
@@ -148,21 +149,20 @@ Class Router {
 
         // Set the default controller so we can display it in the event
         // the URI doesn't correlated to a valid controller.
+        
         $this->default_controller = ( ! isset($this->routes['default_controller']) OR $this->routes['default_controller'] == '') ? false : strtolower($this->routes['default_controller']);
 
-        // Fetch the complete URI string
-        $this->uri->_fetchUriString();
-
-        // Is there a URI string? If not, the default controller specified in the "routes" file will be shown.
-        if ($this->uri->uri_string == '')
-        {
+        $this->uri->_fetchUriString(); // Detect the complete URI string
+    
+        if ($this->uri->getUriString() == '')       // Is there a URI string? 
+        {                                           // If not, the default controller specified in the "routes" file will be shown.
             if ($this->default_controller === false)
             {
                 $this->response['404'] = 'Unable to determine what should be displayed. A default route has not been specified in the routing file.';
                 
-                if(isset($_SERVER['HMVC_REQUEST']))
+                if(isset($_SERVER['HMVC_REQUEST'])) // HMVC Connection
                 {
-                    return false;
+                    return false; // Returns to false if we have hmvc connection error.
                 }
 
                 $response = getComponentInstance('response');
@@ -171,13 +171,14 @@ Class Router {
 
             // Turn the default route into an array.  We explode it in the event that
             // the controller is located in a subfolder
+            
             $segments = $this->_validateRequest(explode('/', $this->default_controller));
 
             if(isset($_SERVER['HMVC_REQUEST']))
             {
-                if($segments === false)
+                if($segments === false) // HMVC Connection
                 {
-                    return false;
+                    return false; // Returns to false if we have hmvc connection error.
                 }
             }
 
@@ -238,13 +239,13 @@ Class Router {
         }
         else
         {
-            // This lets the "routed" segment array identify that the default
-            // index method is being used.
-            $segments[2] = $this->routes['index_method'];
+            $segments[2] = $this->routes['index_method'];   // This lets the "routed" segment array identify that the default
+                                                            // index method is being used.
         }
 
         $this->uri->rsegments = $segments;  // Update our "routed" segment array to contain the segments.
-        // Note: If there is no custom routing, this array will be         // identical to $this->uri->segments
+                                            // identical to $this->uri->segments
+                                            // Note: If there is no custom routing, this array will be         
     }
 
     // --------------------------------------------------------------------
@@ -274,14 +275,15 @@ Class Router {
             return $segments;
         }
         
-        ### tasks ###
+        // TASK OPERATIONS
+        //----------------------------
         
         if(defined('STDIN') AND ! isset($_SERVER['HMVC_REQUEST']))  // Command Line Request
         { 
             array_unshift($segments, 'tasks');
         }
 
-        ### tasks ###
+        //----------------------------
         
         $this->setDirectory($segments[0]); // Set first segment as a module
 
@@ -316,6 +318,7 @@ Class Router {
 
         // If we've gotten this far it means that the URI does not correlate to a valid
         // controller class.  We will now see if there is an override
+        
         if ( ! empty($this->routes['404_override']))
         {
             $x = explode('/', $this->routes['404_override']);
@@ -349,6 +352,7 @@ Class Router {
     { 
         // Do we even have any custom routing to deal with?
         // There is a default scaffolding trigger, so we'll look just for 1
+        
         if (count($this->routes) == 1)
         {
             $this->_setRequest($this->uri->segments);
@@ -381,6 +385,7 @@ Class Router {
         
         // If we got this far it means we didn't encounter a
         // matching route so we'll set the site default route
+        
         $this->_setRequest($this->uri->segments);
     }
 
@@ -454,7 +459,7 @@ Class Router {
     */
     public function setDirectory($dir)
     {
-        $this->directory = $dir;
+        $this->directory = (string)$dir;
     }
 
     // --------------------------------------------------------------------

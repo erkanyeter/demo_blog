@@ -161,10 +161,14 @@ Class Schema_Sync {
             $startArray = '$'.$this->schemaName.' = array(';
             $endArray   = ');';
             $disabled   = false;
+            
             //--------Send schema name and column name to the builder class------//
+            
             $this->builderObject->setSchemaName($this->schemaName);
             $this->builderObject->setColName($colName);
+
             //------------------------------------------------------------------//
+            
             switch ($command)
             {
                 case 'drop':   // Drop Type from Database
@@ -173,33 +177,30 @@ Class Schema_Sync {
                 
                     if ($isNew == true AND count($colTypeArray) > 1)  // If user want to drop this field run this process & coltype has more one
                     {
-                         //------- Drop column -------//
+                        //------- Drop column -------//
+                         
                         $dbCommand = $this->builderObject->dropColumn();
-                        //-------              -------//
+                        
+                        //---------------------------//
                     }
                     else // If this field exists in FileSchema
                     {
                         $unbracketsColType     = preg_replace('#(\(.*?\))#','', $colType); // Post data column types
-
                         $explodedColType       = explode('|',$unbracketsColType);
-
-                        $dataTypeNotExist = false;
+                        $dataTypeNotExist      = false;
 
                         if (isset($this->fileSchema[$colName])) 
                         {
                             $unbracketsFileColType = preg_replace('#(\(.*?\))#','', $this->fileSchema[$colName]); // File schema column types
                             $explodedFileColTypes  = explode('|',$unbracketsFileColType);
                                 
-                                
                             if ($dbcolKeys = preg_grep('#'.$unbracketsFileColType.'#',$this->builderObject->dataTypes)) // Check data type exists in FileSchema
                             {
                                 $colkey            = array_search(array_values($dbcolKeys)[0],$explodedFileColTypes);// ColType array position in file schema   
-                                $tempColKey        = $colkey; // temp column key for get datatype in fileschema if try to drop a previous data type
+                                $tempColKey        = $colkey;  // temp column key for get datatype in fileschema if try to drop a previous data type
                                 
                                 $fileSchemaArray   = explode('|',$this->fileSchema[$colName]);
-                                
                                 $dataType          = $fileSchemaArray;
-                                
                                 $dataType[$colkey] = $this->builderObject->removeUnderscore($dataType[$colkey]);// Remove Underscores from datatypes
 
                             }
@@ -208,7 +209,7 @@ Class Schema_Sync {
                                 $dataTypeNotExist = true;
                             }
 
-                            if (isset($this->dbSchema[$colName])) //if this column exists in DB
+                            if (isset($this->dbSchema[$colName])) // if this column exists in DB
                             {
                                 $unbracketsDbColType = preg_replace('#(\(.*?\))#','', $this->dbSchema[$colName]); // Db schema column types
                                 $explodedDbColTypes  = explode('|',$unbracketsDbColType); // Get column types from DBSchema to array 
@@ -253,7 +254,7 @@ Class Schema_Sync {
                         {
                             if ($colKeys = preg_grep('#'.$explodedColType[0].'#',$this->builderObject->dataTypes)) // Check in builder data types 
                             {
-                                $dataType[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {  // Dont uppercase data inside brackets
+                                $dataType[$colkey] = preg_replace_callback('#([a_-z]+(\())#', function($match) {   // Dont uppercase data inside brackets
                                     return strtoupper($match[0]); 
                                 }, $dataType[$colkey]);
 
@@ -261,14 +262,18 @@ Class Schema_Sync {
                                 {
                                     unset($dataType[$colkey]);
                                 }
+                                
                                 //------ if any data type set in fileschema change with old one else drop column ------//
+                                
                                 $dbCommand =  (isset($dataType[$colkey])) ? $this->builderObject->modifyColumn($dataType[$colkey]) : $this->builderObject->dropColumn();
                                 //-------------------------------------------------------------------------------------//
                             }
                             else
                             {
                                 //--------------------Drop attribute from column -----------------------//
+                                
                                 $dbCommand =  $this->builderObject->dropAttribute($explodedColType[0],$colType,$dataType[$colkey]); // DROP COLUMN ATTRIBUTE
+                                
                                 //---------------------------------------------------------------------//
                             }
                         }
@@ -316,7 +321,9 @@ Class Schema_Sync {
                             }
                                
                             //-------------------- Change Data Type from column ---------------------//
+                            
                             $dbCommand = $this->builderObject->changeDataType($schemaKeys[$colkey]); 
+
                             //----------------------------------------------------------------------//
                         }
                         else
@@ -324,14 +331,15 @@ Class Schema_Sync {
                             $unbracketsSchemaKeys = preg_replace('#(\(.*?\))#','', $schemaKeys);// we'r using unbracketSchemaKeys to get unbracket field names  for don't lose previous changes in db 
 
                             //---------- Add Attribute don't lose previous changes in db ---------//
+                            
                             $dbCommand = $this->builderObject->addToDb($unbracketsSchemaKeys,$schemaKeys,false,$colType,$unbracketsColType);
+                            
                             //-------------------------------------------------------------------//
                         }
                     }
                     else    // New 
                     {
-                       
-                        $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
+                        $unbracketsColType    = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
                         $unbracketsSchemaKeys = preg_replace('#(\(.*?\))#','', $schemaKeys);
 
                         if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->builderObject->dataTypes))
@@ -347,7 +355,9 @@ Class Schema_Sync {
                             $columnType  = $this->builderObject->removeUnderscore($schemaKeys[$colkey]);
                             
                             //---------- Add Attribute  ---------//
+                            
                             $dbCommand = $this->builderObject->addToDb($unbracketsSchemaKeys,$schemaKeys,true,$colType);
+                            
                             //----------------------------------//
 
                         }   
@@ -372,7 +382,9 @@ Class Schema_Sync {
                     else
                     {
                         //---------------- Add to File ----------------//
-                        $schemaKeys = $this->builderObject->addToFile($colType,$this->fileSchema);
+                        
+                        $schemaKeys = $this->builderObject->addToFile($colType, $this->fileSchema);
+
                         //---------------------------------------------//
                     }
                     
@@ -389,28 +401,33 @@ Class Schema_Sync {
                     break;
 
                 case 'rename':
-                    $schemaKeys = explode('|',$colType);
+
+                    $schemaKeys         = explode('|',$colType);
                     $unbracketsColType  = preg_replace('#(\(.*?\))#','', $colType);// Get pure column type withouth brackets
                     $unbracketsColTypes = explode('|',$unbracketsColType); // Create pure column types without brackets and variables 
+
                     if ( ! $columnType = preg_grep('#'.$unbracketsColType.'#', $this->builderObject->dataTypes))
                     {
                         $dbCommand = 'You have to define a datatype in your file schema.';
-                        $disabled = true;
+                        $disabled  = true;
                     }
                     else
                     {
                         $colKeyValue = array_values($columnType)[0];
                         $colkey      = array_search($colKeyValue, $unbracketsColTypes);//Get Data Type position in Array
-                        
-                        $dataType  = $schemaKeys[$colkey];
+                        $dataType    = $schemaKeys[$colkey];
+
                         //---------------- Create Rename Column Sql Query ----------------//
+                        
                         $dbCommand = $this->builderObject->renameColumn($unbracketsColTypes,$schemaKeys,$dataType);
+
                         //---------------- ----------------------------- ----------------//
                     }
 
                     echo $this->schemaObject->displaySqlQueryForm($dbCommand, $this->queryWarning,$disabled); // Show sql query to developer to confirmation.
 
                        break;
+
                 case 'remove-from-file':
 
                     if(array_key_exists($colName, $this->fileSchema)) // new Field

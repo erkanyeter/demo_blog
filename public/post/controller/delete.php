@@ -9,7 +9,10 @@ $c = new Controller(function(){
     new Url;
     new Html;
     new Form;
+    new Sess;
+    new Auth;
 
+    new Trigger('private','header');
     new Model('post', 'posts');
 });
 

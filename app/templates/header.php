@@ -1,24 +1,28 @@
 <?php
-	$menu        = $this->config->getItem('menu');
-	$segment     = $this->uri->getSegment(0);
-	
-	$currentPage = (empty($segment)) ? 'home' : $segment;
+
+	// Header Uri functions
+
+	$menuConfig     = $this->config->getItem('menu'); // Get menu array
+	$firstSegment   = $this->uri->getSegment(0);	   // Get first segnment
+	$currentSegment = (empty($firstSegment)) ? 'home' : $firstSegment;  // Set current segment as "home" if its empty
+
 ?>
 
 <div id="header"> 
 	<h1 class="logo"><?php echo $this->url->anchor('/home', 'Blog Demo') ?></h1>
+
 	<div id="menu">
 		<ul>
-			<?php 
-			$hasIdentity = $this->auth->hasIdentity();
+			<?php
+			$userHasIdentity = $this->auth->hasIdentity(); // get auth Identity of user
 			
-			foreach ($menu as $key => $value)
+			foreach ($menuConfig as $key => $value)
 			{
-				$active = ($currentPage == $key) ? ' id="active" ' : '';
+				$active = ($currentSegment == $key) ? ' id="active" ' : '';
 
-				if(($key == 'login' OR $key == 'signup') AND $hasIdentity)
+				if(($key == 'login' OR $key == 'signup') AND $userHasIdentity == true)
 				{
-					// don't show login
+					// don't show login button
 				} 
 				else 
 				{
@@ -28,4 +32,5 @@
 			?>
 		</ul>
 	</div>
+	
 </div>

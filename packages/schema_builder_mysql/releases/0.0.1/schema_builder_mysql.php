@@ -17,6 +17,7 @@ Class Schema_Builder_Mysql extends Schema_Builder {
     public $dbCommand   = '';
     private $schemaName = '';
     private $columnName = '';
+    public  $currentDataType = '';
 
     public $dataTypes  = array(        // defined mysql data types
         '_bit',
@@ -176,18 +177,21 @@ Class Schema_Builder_Mysql extends Schema_Builder {
      * @param string  $schemaKey
      * @param boolean $isNew
      */
-    public function addDataType($schemaKey,$isNew = false)
+    public function addDataType($schemaKey, $isNew = false)
     {
-         if (strpos($schemaKey,'(')) 
+        if (strpos($schemaKey,'(')) 
         {
             $schemaKey = preg_replace_callback('#([a_-z]+(\())#', function($match) { 
-                return strtoupper($this->removeUnderscore($match[0])); 
+                return strtoupper(trim($match[0], '_')); 
             }, $schemaKey);
+
+            $this->currentDataType = $schemaKey;
         }
         else
         {
             $schemaKey = strtoupper($this->removeUnderscore($schemaKey));
         }
+
         if ( ! $isNew) 
         {
             $this->dbCommand .= $schemaKey.' ';
@@ -196,7 +200,6 @@ Class Schema_Builder_Mysql extends Schema_Builder {
         {
             $this->dbCommand .= ' ADD COLUMN '.$this->quoteValue($this->columnName).$schemaKey.' ';
         }
-        
     }  
 
    //-------------------------------------------------------------------------------------------------------------------------
@@ -237,14 +240,27 @@ Class Schema_Builder_Mysql extends Schema_Builder {
 
             $this->dbCommands[1] = 'NOT NULL ';
 
-            if(is_numeric($defaultValue[1])) // quote support
+            if(is_numeric($defaultValue[1]))
             {
-                $this->dbCommands[3] = 'DEFAULT '.$defaultValue[1];
-            } 
-            else 
+                $this->dbCommands[3] = "DEFAULT $defaultValue[1]";
+            }
+            else // string
             {
+                $currentType = $this->getCurrentDataType();
+
+                if(strpos($currentType, 'BIT') == 0) // add b for bit values
+                {
+                     // DEFAULT b'0'
+                    $this->dbCommands[3] = "DEFAULT $defaultValue[1]";
+                    return;
+                }
+
+                // sanitize from " double quotes
+                // sanitize from ' quote
                 $defaultStringValue  = trim($defaultValue[1], '"');
-                $this->dbCommands[3] = 'DEFAULT '."'".addslashes($defaultStringValue)."'";
+                $defaultStringValue  = trim($defaultStringValue, "'");
+
+                $this->dbCommands[3] = "DEFAULT '".addslashes($defaultStringValue)."'";
             }
         }   
     }
@@ -268,7 +284,7 @@ Class Schema_Builder_Mysql extends Schema_Builder {
         if (strpos($newColType, ')(') > 0) 
         {
             $newColType = trim($newColType,')');
-            $exp     = explode(')(', $newColType);
+            $exp        = explode(')(', $newColType);
 
             $keyIndex  = $exp[0];
             unset($exp[0]);
@@ -307,13 +323,13 @@ Class Schema_Builder_Mysql extends Schema_Builder {
     {
         preg_match_all('#\((.*?)\)#',$schemaKey,$matches);// Get Key Index Name
 
-        $indexName = $matches[1][1];
+        $indexName  = $matches[1][1];
         $newColType = trim($schemaKey, '_');
 
         if (strpos($schemaKey, ')(') > 0) 
         {
             $newColType = trim($newColType,')');
-            $exp     = explode(')(', $newColType);
+            $exp        = explode(')(', $newColType);
             unset($exp[0]);
             
             $refField = array_values($exp);
@@ -328,6 +344,8 @@ Class Schema_Builder_Mysql extends Schema_Builder {
 
     /**
      * addAutoIncrement
+     *
+     * @return  void
      */
     public function addAutoIncrement()
     {
@@ -335,14 +353,16 @@ Class Schema_Builder_Mysql extends Schema_Builder {
         {
             unset($this->dbCommands[3]);
         }
-            $this->dbCommands[1] = 'NOT NULL ';
-            $this->dbCommands[2] = 'AUTO_INCREMENT ';
+        
+        $this->dbCommands[1] = 'NOT NULL ';
+        $this->dbCommands[2] = 'AUTO_INCREMENT ';
     }
 
     //-------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * [addPrimaryKey ]
+     * addPrimaryKey
+     * 
      * @param string $schemaKey 
      */
     public function addPrimaryKey($schemaKey)
@@ -559,6 +579,7 @@ Class Schema_Builder_Mysql extends Schema_Builder {
                 isset($colkey) ?  $schemaKeys[$colkey] = $colType : $schemaKeys[] = $colType ;
                 break;
         }
+
         return $schemaKeys;
     }
 
@@ -628,6 +649,16 @@ Class Schema_Builder_Mysql extends Schema_Builder {
     public function getColName()
     {
         return $this->columnName;
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Get current data type
+     */
+    public function getCurrentDataType()
+    {
+        return $this->currentDataType;
     }
 
 }  

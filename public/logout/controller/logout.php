@@ -7,9 +7,11 @@
 $c = new Controller(function(){
     // __construct
 	new Url;
+	new Sess;
+	new Auth;
 });
 
-$c->func('index', function() use($c){
+$c->func('index', function(){
 
 	$this->auth->clearIdentity();  // remove auth data
 	$this->url->redirect('/login');

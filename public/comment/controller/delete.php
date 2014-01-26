@@ -7,6 +7,10 @@
 $c = new Controller(function(){
     // __construct
 	new Url;
+	new Sess;
+	new Auth;
+
+	new Trigger('private','header');
 });
 
 $c->func('index', function($comment_id){

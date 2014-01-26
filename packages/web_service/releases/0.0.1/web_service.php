@@ -42,7 +42,7 @@ Class Web_Service extends Controller {
                 break;
         }
 
-        parent::__construct($closure);
+        parent::__construct($closure, false); // Close autoruns
     }
 
     // ------------------------------------------------------------------------

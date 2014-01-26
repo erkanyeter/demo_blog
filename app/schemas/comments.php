@@ -45,11 +45,7 @@ $comments = array(
 		),
 	'comment_status' => array(
 		'label' => 'Comment Status',
-		'_enum' => array(
-			'0',
-			'1',
-		),
-		'types' => '_null|_default(0)|_enum',
+		'types' => '_not_null|_bit(1)|_default(b\'0\')',
 		'rules' => '',
 		),
 );

@@ -18,9 +18,11 @@
 | 	};
 |
 */
-$hooks['pre_controller'] = function(){
+$hooks['pre_controller']              = function(){};
+$hooks['post_controller']             = function(){};
+$hooks['post_controller_constructor'] = function(){};
+$hooks['post_system']                 = function(){};
 
-};
 
 /* End of file hooks.php */
 /* Location: ./app/config/hooks.php */

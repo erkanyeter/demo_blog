@@ -1316,4 +1316,8 @@ Fetches the <b>filtered secure</b> value of the input.
 
 #### $this->model->getOutput();
 
-Returns all outputs of the model for debugging.
+Returns messages & error data outputs of the model.
+
+#### $this->model->getAllOutput();
+
+Returns all outputs ( messages, errors, values ) of the model.

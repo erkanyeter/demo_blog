@@ -9,6 +9,10 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new View;
+	new Sess;
+	new Auth;
+
+	new Trigger('public','header'); // run triggers
 });
 
 $c->func('index', function(){

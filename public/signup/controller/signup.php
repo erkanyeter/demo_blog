@@ -6,13 +6,15 @@
  */
 $c = new Controller(function(){
     // __construct
-    
 	new Url;
 	new Html;
 	new Form;
 	new Get;
     new View;
+    new Sess;
+    new Auth;
 
+    new Trigger('public','header');
     new Model('user', 'users');
 });
 

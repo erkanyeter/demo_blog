@@ -142,8 +142,8 @@ Class Web {
      * @param string $method
      * @param string $request_uri
      * @param array $params
-     * @param int | array $cache_time_or_config
-     * @return string
+     * @param int $ttl expire time
+     * @return string | boolean false
      */
     public function exec($method = 'get', $request_uri = '', $data = '', $ttl = '0')
     {
@@ -179,14 +179,27 @@ Class Web {
 
         logMe('debug', 'Web Class '.$method.' Executed');
 
+        if(empty($this->raw_output)) // return false if output is empty.
+        {
+            return false;
+        }
+
         return $this->raw_output;
     }
     
     // ------------------------------------------------------------------------
 
+    /**
+     * Parse outputs and do validation
+     * then set error & and values
+     * 
+     * to Form object
+     * 
+     * @return boolean
+     */
     public function isValid()
     {
-        
+
     }
 
     // ------------------------------------------------------------------------

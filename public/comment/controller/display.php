@@ -11,7 +11,10 @@ $c = new Controller(function(){
 	new Form;
     new Date_Format;
     new View;
+	new Sess;
+	new Auth;
 
+	new Trigger('private','header');
 	new Model('post', 'posts');
 });
 

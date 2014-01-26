@@ -8,13 +8,15 @@ $c = new Controller(function(){
     // __construct
 	new Url;
 	new Html;
-	new Db;
 	new Date_Format;
 	new Tag_Cloud;
     new Form;
     new Get;
     new View;
-
+    new Sess;
+    new Auth;
+    
+    new Trigger('public','header');
     new Model('comment', 'comments');
 });
 
@@ -57,8 +59,8 @@ $c->func('index', function($id){
 
     // get comments
     $this->db->where('comment_post_id',$id);
-    $this->db->where('comment_status', '1');
-    $this->db->get('comments'); // reset query
+    $this->db->where('comment_status', 1);
+    $this->db->get('comments');  // reset query
     
     $comments = $this->db->getResult();
 

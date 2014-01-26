@@ -22,10 +22,7 @@ Class Auth {
     public $get;    // Input Object
     public $bcrypt; // Password hash / verify object
     public $session_prefix     = 'auth_';
-    public $username_col       = 'username';  // The name of the table field that contains the username.
     public $password_col       = 'password';  // The name of the table field that contains the password.
-    public $post_username      = '';     // The name of the form field that contains the username to authenticate.
-    public $post_password      = '';     // The name of the form field that contains the password to authenticate.
     public $login_url          = '/login';
     public $dashboard_url      = '/dashboard';
     public $fields             = array();
@@ -88,9 +85,10 @@ Class Auth {
     * 
     * @param string $username  manually login username
     * @param string $password  manually login password
-    * @return mixed
+    * 
+    * @return boolean | object  If auth is fail it returns to false otherwise "Object"
     */
-    public function attemptQuery($username = '', $password = '')
+    public function query($username = '', $password = '')
     {
         if($this->getItem('allow_login') == false)
         {
@@ -183,25 +181,6 @@ Class Auth {
 
         return false;
     }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Check attempt query is valid.
-     * 
-     * @return boolean
-     */
-    public function isValid()
-    {
-        $row = $this->getRow();
-
-        if(is_object($row) AND $this->isValid === true)
-        {
-            return TRUE;
-        }
-        
-        return FALSE;
-    }
     
     // ------------------------------------------------------------------------    
     
@@ -233,18 +212,6 @@ Class Auth {
         }
         
         $this->sess->set($key, $val, $this->session_prefix);
-    }
-    
-    // ------------------------------------------------------------------------
-    
-    /**
-     * Get validated user sql query result object
-     *
-     * @return type 
-     */
-    public function getRow()
-    {
-        return $this->row;
     }
     
     // ------------------------------------------------------------------------

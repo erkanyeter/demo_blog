@@ -15,11 +15,9 @@
 			 
 			<div id="content">
 				<?php 
-
 				if(count($posts) > 0)
 				{
-					foreach($posts as $row) { 
-						?>
+					foreach($posts as $row) {  ?>
 
 					<div id="post">		
 						<div id="title"><h2><?php echo $this->url->anchor('/post/detail/'.$row['post_id'], $row['post_title']) ?></h2></div>
@@ -36,7 +34,7 @@
 
 						<?php 
 						echo $this->url->anchor('/post/detail/'.$row['post_id'], 'Comments ('.$row['total_comment'].')') ?>
-							 | Last Updated On December 15,2013
+							 | Last Updated On <?php echo $this->date_format->getDate("%F %d,%Y %H:%i", strtotime($row['post_modification_date'])) ?>
 						</div>
 					</div>
 

@@ -11,35 +11,34 @@ $c = new Controller(function(){
 	new Form;
 	new Get;
 	new View;
+	new Sess;
+	new Auth;
+
+	new Trigger('public','header'); // run triggers
 });
 
 $c->func('index', function(){
 
-	if($this->get->post('dopost'))  // check login button is submit ?
+	if($this->get->post('dopost'))  // login button is submit ?
 	{
     	$this->form->setRules('email', 'Email', 'required|validEmail');
     	$this->form->setRules('password', 'Password', 'required');
 
-        if($this->form->isValid())  // check form validation
+        if($this->form->isValid())  // form is valid ?
         {	
-			$this->auth->attemptQuery(	 // login, query
-
-			    $_POST['email'],
-			    $_POST['password']
-			    
-			);
-
-			if($this->auth->isValid())  // check auth is success
-			{
-			    $row = $this->auth->getRow();
-		        $this->auth->authorizeMe(); // Authorize to user
-
+			$row = $this->auth->query($_POST['email'], $_POST['password']); // send post data to auth
+          
+          	if($row !== false) // validate the auth !
+            {
+		        $this->auth->authorizeMe();   // Authorize to user
 		        $this->auth->setIdentity('user_username', $row->user_username); // Set user data to auth container
 		        $this->auth->setIdentity('user_email', $row->user_email);
 		        $this->auth->setIdentity('user_id', $row->user_id);
 
 		        $this->url->redirect('/home'); // Success redirect
-			} 
+			}
+
+			//----------- End Auth Data ---------//
 
 			$this->form->setNotice('Wrong username / password combination.', ERROR);
 			$this->url->redirect('/login');

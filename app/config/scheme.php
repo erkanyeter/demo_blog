@@ -1,5 +1,4 @@
 <?php
-
 /*
 | -------------------------------------------------------------------------
 | Schemes
@@ -30,7 +29,7 @@ $scheme = array(
 	'default' => function()
 	{
 		$this->set('header', $this->tpl('header',false));
-		$this->set('sidebar', $this->tpl('sidebar',false));
+		$this->set('sidebar',$this->tpl('sidebar',false));
 	    $this->set('footer', $this->tpl('footer',false));
 	},
 

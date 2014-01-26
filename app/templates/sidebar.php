@@ -14,7 +14,7 @@
 		 	<?php echo $this->url->anchor('/post/manage', 'Manage Posts') ?> <br>
 		 	<?php echo $this->url->anchor('/comment/display', 'Approve Comments') ?> <span class="approve_comments">
 		 		( <?php
-				 		$this->db->where('comment_status','0');
+				 		$this->db->where('comment_status', 0);
 		        		$this->db->get('comments');
 		        		
 		        		echo $this->db->getCount();

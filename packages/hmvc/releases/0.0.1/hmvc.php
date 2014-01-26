@@ -15,7 +15,6 @@ Class Hmvc
     public $_this            = null;  // Clone original getInstance();
 
     // Request, Response, Reset
-    public $uri_string       = '';
     public $query_string     = '';
     public $response         = '';
     public $request_keys     = array();
@@ -104,27 +103,36 @@ Class Hmvc
             #######################################
             
             $this->cache_time = $ttl;
-            $this->uri_string = $uriString;
 
-            if(strpos($this->uri_string, '?') > 0)
+            //----------------------------------------------
+            // Set Uri String to Uri Object
+            //----------------------------------------------
+
+            if(strpos($uriString, '?') > 0)
             {
-                $uri_part = explode('?', urldecode($this->uri_string));  // support any possible url encode operation
-
+                $uri_part           = explode('?', urldecode($uriString));  // support any possible url encode operation
                 $this->query_string = $uri_part[1]; // .json?id=2
 
                 $Uri->setUriString($uri_part[0], false); // false null filter
             }
             else
             {
-                $Uri->setUriString($this->uri_string);
+                $Uri->setUriString($uriString);
             }
-                    
-            $this->connection = $Router->_setRouting();
+            
+            // Set uri string to $_SERVER GLOBAL        
+            //----------------------------------------------
+            
+            $_SERVER['HMVC_REQUEST_URI'] = $uriString;
+
+            //----------------------------------------------
+
+            $this->connection = $Router->_setRouting(); // Returns false if we have hmvc connection error.
+
+            //----------------------------------------------
 
             return $this;
         }
-
-        // $this->uri_string = '';
 
         return ($this);
     }
@@ -141,9 +149,7 @@ Class Hmvc
     {
         // General
         $this->_conn_string    = '';
-        $this->uri_string      = '';
         $this->query_string    = '';
-        $this->cache_time      = '';
         $this->reponse         = '';
         $this->request_keys    = array();
         $this->connection      = true;
@@ -263,7 +269,6 @@ Class Hmvc
 
         $_SERVER['REQUEST_METHOD']   = $method;  // Set request method ..
         $_SERVER['HMVC_REQUEST']     = true;
-        $_SERVER['HMVC_REQUEST_URI'] = $this->uri_string;
         
         return ($this);
     }
@@ -323,7 +328,11 @@ Class Hmvc
         list($sm, $ss) = explode(' ', microtime());
         self::$start_time = ($sm + $ss);
 
-        if($this->connection === false)
+        //----------------------------
+        // Check the Connection
+        //----------------------------
+
+        if($this->connection === false)  // If router dispatch is fail ?
         {
             if($router->getResponse() != false)
             {
@@ -340,11 +349,16 @@ Class Hmvc
             return $this->getResponse();
         }
         
+        //----------------------------------------------------------------------------
+        //  Create an uniq HMVC Uri
         //  A Hmvc uri must be unique otherwise
-        //  may collission with standart uri, also we need it for caching.
-        
-        $Uri->setUriString(rtrim($Uri->uri_string, '/').'/_id_'. $this->_getId()); // create uniq HMVC URL
-        
+        //  may collission with standart uri, also we need it for caching feature.
+        //  --------------------------------------------------------------------------
+
+        $Uri->setUriString(rtrim($Uri->getUriString(), '/').'/conn_id_'. $this->_getId()); // Create an uniq HMVC Uri
+
+        //  --------------------------------------------------------------------------
+
         $hmvc_uri   = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
         $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .'controller'. DS .$router->fetchClass(). EXT;
 
@@ -378,10 +392,16 @@ Class Hmvc
             
             return $this->getResponse();
         }
-        
+         
+        // Detect The Application ( Web or Web Service )
+        //----------------------------
+
         $_storedMethods = (get_class($c)) == 'Controller' ? array_keys($c->_controllerAppMethods) : array_keys($c->_webServiceAppMethods);
 
+        //----------------------------
         // Check method exist or not
+        //----------------------------
+        
         if ( ! in_array(strtolower($router->fetchMethod()), $_storedMethods))
         {
             $this->setResponse('404 - Hmvc request not found: '.$hmvc_uri);
@@ -390,26 +410,40 @@ Class Hmvc
             return $this->getResponse();
         }
 
-        ob_start(); // Get the output.
-
+        // Slice Arguments
+        //----------------------------
+        
         $arguments = array_slice($Uri->rsegments, 3);
+
+        //----------------------------
+
+        ob_start(); // Start the output buffer.
     
         // Call the requested method. Any URI segments present (besides the directory / class / method) 
         // will be passed to the method for convenience
         // directory = 0, class = 1, method = 2
         call_user_func_array(array($c, $router->fetchMethod()), $arguments);
         
+        //----------------------------
 
-        $content = ob_get_contents();
-        if(ob_get_level() > 0) { ob_end_clean(); }
-                                        
+        $content = ob_get_contents(); // Get the contents of the output buffer
+        
+        //----------------------------
+
+        ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
+                      
+        //----------------------------
+
         $this->setResponse($content); 
         $this->_resetRouter();    
                        
-        // Store classes to storage container
+        //--------------------------------------
+        // Store classes to $storage container
+        //--------------------------------------
 
-        $storage[$router->fetchClass()] = $c; // Store class names to storage. We will fetch it if its available in storage.
+        $storage[$router->fetchClass()] = $c; // Store class names to storage. We fetch it if its available in storage.
 
+        //----------------------------
         // End storage
 
         $response = $this->getResponse();
@@ -430,9 +464,10 @@ Class Hmvc
     * @return   void
     */
     protected function _resetRouter($no_loop = false)
-    {
-        $GLOBALS['PUT'] = $_SERVER = $_POST = $_GET = $_REQUEST = array();
-        
+    {              
+        $currentUriString = $_SERVER['HMVC_REQUEST_URI'];
+        $GLOBALS['PUT']   = $_SERVER = $_POST = $_GET = $_REQUEST = array();
+
         # Assign global variables we copied before ..
         ######################################
         
@@ -457,6 +492,8 @@ Class Hmvc
         # Assign Framework global variables ..
         ######################################
 
+        $lastRequestURi = ''; // $_SERVER['HMVC_REQUEST_URI'];
+  
         $this->clear();  // reset all HMVC variables.
         
         ######################################
@@ -470,7 +507,7 @@ Class Hmvc
             list($em, $es) = explode(' ', microtime());
             $end_time = ($em + $es); 
 
-            logMe('info', 'Hmvc request: '.$this->uri_string.' time: '.number_format($end_time - self::$start_time, 4));
+            logMe('info', 'Hmvc request: '.$currentUriString.' time: '.number_format($end_time - self::$start_time, 4));
 
         }
 
@@ -592,6 +629,7 @@ Class Hmvc
     }
 
 }
+
 // END Hmvc Class
 
 /* End of file hmvc.php */
