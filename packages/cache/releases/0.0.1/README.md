@@ -4,7 +4,7 @@ The following functions are available:
 
 ### Creating Cache
 
-Default ayarlarla en basit haliyle cache oluşturmak.
+The easiest way to create cache with default settings
 ```
 new Cache();
 $id   = "test";
@@ -12,11 +12,11 @@ $data = "cache test";
 $ttl  = 20; // default 60 seconds
 $this->cache->save($id,$data,$ttl);
 ```
-Cache oluşturulan veriyi çekmek.
+Getting the cached value.
 ```
 $this->cache->get('test');
 ```
-Default bağlantı ayarlarını config dosyasından ayarlayabilirsiniz.
+Connection settings can be configured within the config file.
 
 ##### Directory of Config File
 
@@ -38,9 +38,9 @@ $cache = array(
 			   );
 ```
 
-Multi bağlantı için <kbd>servers</kbd> array içine yeni bağlantıyı array olarak ekleyebilirsiniz.
+For multi-connection, a new connection as a new array(inside the <kbd>servers</kbd> array)  can be included to the <kbd>servers</kbd> array  
 
-Example
+Example:
 ```
 $cache = array(
 			   'driver'	 => 'memcache',
@@ -64,13 +64,13 @@ $cache = array(
 
 For more information on APC, please see [http://php.net/apc](http://php.net/apc)
 
-Config de ki driver tanımlamasını <kbd>apc</kbd> olarak değiştirmeniz gerekmektedir.
+The driver definition in the config file needs to be replaced with <kbd>apc</kbd>.
 ```
 'driver'  => 'apc'
 ```
 
 #### File Cache
-Classa configi kendiniz gönderiyorsanız, cache_path değişkenini doğru bir şekilde tanımladığından emin olmalısınız.
+If you send the config to the class yourself, you need to be sure that the cache_path variable is defined correctly.
 
 Example
 ```
@@ -81,7 +81,7 @@ $myConfig = array(
 
 new Cache($myConfig);
 ```
-Cache klasörüne yazma izni <kbd>chmod 777</kbd> vermeniz gerekmektedir.
+The cache folder should be given the write permission <kbd>chmod 777</kbd>. 
 
 ##### Temp Cache Directory
 ```php
@@ -97,7 +97,7 @@ Cache klasörüne yazma izni <kbd>chmod 777</kbd> vermeniz gerekmektedir.
 ```
 
 #### Connect configuration for Memcache or Memcached
-Config dosyasında ki geçerli bağlantı ayarlarını kullanmadan bağlantı kurmak isterseniz
+If you want to establish a connection without the default settings in the config
 
 ```php
 $myConnection = array(
@@ -110,7 +110,7 @@ $myConnection = array(
 					 );
 new Cache($myConnection);
 ```
-Servers arrayı altında iç içe dizi oluştururak multi bağlantı yapabilirsiniz.
+Under the array servers, you can create multi connection creating nested arrays. 
 ```php
 $myConnection = array(
 					  'driver' => 'memcached',
@@ -127,7 +127,7 @@ $myConnection = array(
 					 );
 ```
 
-####Aşağıda ki methodlar tüm driverlar için geçerlidir.
+####The methods below ara available for all drivers.
 ---
 
 ### Set function
@@ -137,43 +137,43 @@ $this->cache->set('test','cache test', 20); // default 60 seconds
 ```
 
 ### Get function
-Save yapılan değerleri bu methodla çekebilirsiniz.
+You can get the saved values using this function.
 
 ```php
-$this->cache->get($id);
+$this->cache->get($key);
 ```
 
 ### Get Meta Data
-Datanın meta bilgilerine bu fonksiyonla ulaşabilirsiniz.
+You can reach the meta information of data with this function.
 
 ```php
-$this->cache->getMetaData($id);
+$this->cache->getMetaData($key);
 ```
 ### Delete
 
-Belirtilen id'ye ait veriyi siler.
+Deletes the data of the specified key.
 
 ```php
 $this->cache->delete($key);
 ```
 
 ### Clean function
-Hafızayı tamamen boşaltmak için kullanacağınız fonksiyondur.
+Cleans the memory completely.
 
 ```php
 $this->cache->clean();
 ```
 ### Complete Example Config
-Default ayarlarımızla <kbd>memcached</kbd> cache kullanarak bir örnek oluşturuyoruz.
+Using <kbd>memcached</kbd> cache, we make a sample with the default settings:
 ```php
 new Cache();
 $id 	= "test";
 $data 	= "cache test";
 $ttl  	= 20; // default 60 seconds
 
-$this->cache->save($id,$data,$ttl);
-$this->cache->get($id);
-$this->cache->delete($id);
+$this->cache->save($key,$data,$ttl);
+$this->cache->get($key);
+$this->cache->delete($key);
 $this->cache->clean();
 ```
 ### Complete Example Manuel Connection
@@ -202,18 +202,19 @@ $this->cache->clean(); // destroy all keys
 
 #### $this->cache->get($key);
 
-Get data
+Gets data
 
 #### $this->cache->set($key, $data, $expiration_time);
 
-Save data
+Saves data
 
 #### $this->cache->delete($key);
 
-Deletes the selected ID.
+Deletes the selected key.
 
 #### $this->cache->replace($key, $value, $expiration_time);
 
+Replaces the values and expiration time of the given key
 
 #### $this->cache->clean();
 
@@ -221,10 +222,10 @@ Clears all of the data.
 
 #### $this->cache->getMetaData($key);
 
-Seçilen key ait meta data ları çeker. 
+Gets the meta information of data of the chosen key.
 
 #### $this->cache->getAllKeys();
 
-Tüm key leri getirir sadece memcached driver ile uyumludur
+Gets the all keys, however, only suitable with memcached.
 
 
