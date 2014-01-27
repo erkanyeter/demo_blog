@@ -1,7 +1,7 @@
 ## FTP Class
 
 
-FTP Class permits files to be transfered to a remote server. Remote files can also be moved, renamed, and deleted. The FTP class also includes a "mirroring" function that permits an entire local directory to be recreated remotely via FTP.
+FTP Class permits files to be transferred to a remote server. Remote files can also be moved, renamed, and deleted. The FTP class also includes a "mirroring" function that permits an entire local directory to be recreated remotely via FTP.
 
 **Note:**  SFTP and SSL FTP protocols are not supported, only standard FTP.
 
