@@ -52,7 +52,7 @@ If you want load language files from your <b>app</b> folder create your language
             contact.php 
 ```
 
-This function load a language file from your <kbd>app/lingo</kbd> folder.
+This function loads a language file from your <kbd>app/lingo</kbd> folder.
 
 ```php
 new Cookie;
@@ -98,7 +98,7 @@ Core packages will load framework language files which are located in <kbd>app/l
             ...
 ```
 
-This function load the <b>welcome</b> language file from your <kbd>app/lingo/spanish</kbd> folder.
+This function loads the <b>welcome</b> language file from your <kbd>app/lingo/spanish</kbd> folder.
 
 ```php
 $this->lingo->load('welcome', 'spanish'); 
@@ -117,7 +117,7 @@ Once your desired language file is loaded you can access any line of text using 
 ```php
 lingo('language_key');
 ```
-lingo() function returns the translated line if language line exist in your file, otherwise it returns to default text that you are provide.
+lingo() function returns the translated line if language line exists in your file, otherwise it returns to default text that you are provide.
 
 ### Checking a Line of Text
 
