@@ -17,7 +17,7 @@ The following functions are available:
 
 #### $this->date_format->getNow()
 
-Returns the current time as a Unix timestamp, referenced either to your server's local time or GMT, based on the "time reference" setting in your config file. If you do not intend to set your master time reference to GMT (which you'll typically do if you run a site that lets each user set their own timezone settings) there is no benefit to using this function over PHP's time() function.
+Returns the current time as a Unix timestamp, referenced either to your server's local time or GMT, based on the "time reference" setting in your config file. If you do not intend to set your master time reference to GMT (which you'll typically do if you run a site that lets each user set their own timezone settings) there is no advantage of using this function over PHP's time() function.
 
 #### $this->date_format->getDate()
 
@@ -223,7 +223,7 @@ Generates a pull-down menu of timezones, like this one:
 
 This menu is useful if you run a membership site in which your users are allowed to set their local timezone value.
 
-The first parameter lets you set the "selected" state of the menu. For example, to set Pacific time as the default you will do this:
+The first parameter lets you set the "selected" state of the menu. For example, to set Pacific time by default you will do this:
 
 ```php
 echo $this->date_format->getTimezoneMenu('UM8');
