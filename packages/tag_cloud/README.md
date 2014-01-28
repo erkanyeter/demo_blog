@@ -1,10 +1,9 @@
 ## Tag Cloud Class
-Tag Cloud iki tip <kbd>Array</kbd> ve <kbd>Html</kbd> olarak geri dönüş sağlamaktadır.
+Tag Cloud returns <kbd>Array</kbd> and <kbd>Html</kbd>. 
 
 
 ### Array
-Oluşturulan taglar istediğiniz yapıda kullanabilmeniz için geriye array olarak dönmektedir.
-
+Generated tags are returned as arrays so that you can use them in the way you want.
 ##### Creating Tag Cloud
 The simplest way to create a tag.
 ```php
@@ -25,7 +24,7 @@ Array
  */
 ```
 #### Auto Url
-<kbd>addTag()</kbd> fonksiyonun ikinci alanı url alanıdır. Auto url 'in tetiklenmesi için example;
+ The seconda part of the <kbd>addTag()</kbd> function is url field. An example of triggering Auto url:
 ```php
 $this->tag_cloud->addTag('tag name');
 // OR
@@ -45,9 +44,9 @@ Array
 )
  */
 ```
-Kendi URL yapınızı kullanmak isterseniz, tagdan sonra urliniz girebilirsiniz.
+If you want to use your own url, you can enter your url after the tag.
 
-Example
+Example:
 ```php
 $this->tag_cloud->addTag('tag test', 'my-url-tag-test');
 /**
@@ -63,7 +62,7 @@ Array
 )
  */
 ```
-Otomatik Url ayarları config dosyasından ayarlanabilir.
+Auto URL Settings can be configured in the config file.
 ###### Directory of Config File
 ```php
 - app
@@ -83,20 +82,20 @@ $tag_cloud['formatting']  = array(
 								);
 ```
 #### Attribute
-<kbd>addTag()</kbd> fonksiyonun üçüncü alanı attribute alanıdır. Attribute alanına istediğiniz gibi attribute ekleyebilirsiniz.
+The third part of the <kbd>addTag()</kbd> function is the attribute field. You can put attributes here as you want.
 
 Example
 ```php
 $this->tag_cloud->addTag('tag test', 'my-url-tag-test', 'class="tags" id="#test"');
 ```
-Eğer otomatik url yapısını kullanıp attribute eklemek isterseniz, url alanına kesinlikle <kbd>''</kbd> or <kbd>false</kbd> eklemeniz gerekmektedir. Aksi takdirde girmiş olduğunuz attributes geriye url alanında dönecektir.
+If you want to add attributes while using the Auto URL Structure, you should absolutely add <kbd>''</kbd> or <kbd>false</kbd> to  the url field. Otherweise, The attribute you add will return as if it is in the url field.
 ```php
 $this->tag_cloud->addTag('tag test', '', 'class="tags" id="#test"');
 // OR
 $this->tag_cloud->addTag('tag test', false, 'class="tags" id="#test"');
 ```
 #### Multi Tag
-Multi tag oluşturmak istediğiniz de <kbd>addTag()</kbd> fonksiyonunu tekrar çalıştırmanız gerekmektedir.
+ To create a multi tag, just run the function <kbd>addTag()</kbd>
 
 Example:
 ```php
@@ -148,14 +147,14 @@ print_r($rendered); // Output will be as follows.
 	<a href="/index.php/tag/tag_test_3">tag test 3</a>
  */
 ```
-Her refresh ile birlikte taglar shuffle olarak dönecektir.
+Tags will be shuffled at every refresh.
 #### Shuffle
-Default olarak <kbd>true</kbd> dönmektedir. Shuffle kapatmak isterseniz <kbd>render()</kbd> false değeri girmeniz gerekmektedir.
+By default if returns <kbd>true</kbd>. To close the shuffle, you need to enter false to the <kbd>render()</kbd>.
 ```php
 $this->tag_cloud->render('html',false);  // default true
 ```
 #### Color
-Tagları auto olarak renklendirir. <kbd>dark, light and mixed</kbd> olmak üzere 3 tane color types bulunmaktadır.
+Automatically color the tags. There are three color types: <kbd>dark, light and mixed</kbd>.
 ```php
 $this->tag_cloud->setColor('dark');
 /*
@@ -186,12 +185,12 @@ print_r($rendered); // Output will be as follows.
 
 #### $this->tag_cloud->addTag($tag_name, $tag_url, $attribute);
 
-Add Tag
+Adds Tag
 
 #### $this->tag_cloud->setColor($color_type);
 
-Set Color
+Sets Color
 
 #### $this->tag_cloud->render($type, true OR false);
 
-Render
+Renders
