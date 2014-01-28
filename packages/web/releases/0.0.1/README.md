@@ -154,7 +154,7 @@ var_dump($this->web->getCount()); 		// decodes all json rows and returns to coun
 
 #### $this->db->getRow();
 
-This function fetch one item and returns query result as object or false on failure.
+This function fetches one item and returns query result as object or false on failure.
 
 #### $this->db->getRowArray();
 
