@@ -88,7 +88,7 @@ Example
 ```php
 $this->tag_cloud->addTag('tag test', 'my-url-tag-test', 'class="tags" id="#test"');
 ```
-If you want to add attributes while using the Auto URL Structure, you should absolutely add <kbd>''</kbd> or <kbd>false</kbd> to  the url field. Otherweise, The attribute you add will return as if it is in the url field.
+If you want to add attributes while using the Auto URL Structure, you should absolutely add <kbd>''</kbd> or <kbd>false</kbd> to  the URL field. Otherweise, The attribute you add will return as if it is in the URL field.
 ```php
 $this->tag_cloud->addTag('tag test', '', 'class="tags" id="#test"');
 // OR
@@ -100,7 +100,7 @@ $this->tag_cloud->addTag('tag test', false, 'class="tags" id="#test"');
 Example:
 ```php
 $this->tag_cloud->addTag('tag test', 'tag_test');
-$this->tag_cloud->addTag('tag test 2', '', 'class="tags"'); // ikinci alan boş olduğu için oto url
+$this->tag_cloud->addTag('tag test 2', '', 'class="tags"'); // Auto URL because the second field is empty
 $rendered = $this->tag_cloud->render();
 print_r($rendered);
 /*

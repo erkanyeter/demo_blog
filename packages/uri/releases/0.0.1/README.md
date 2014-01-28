@@ -94,7 +94,7 @@ Returns:
 
 #### $this->uri->getSlashRoutedSegment(n)
 
-This function is identical to the previous one, except that it lets you add slashes a specific segment from your re-routed URI in the event you are using Obullo's URI Routing <kbd>/docs/advanced/uri-routing</kbd> feature.
+This function is identical to the previous one, except that it lets you add slashes to a specific segment from your re-routed URI in the event you are using Obullo's URI Routing <kbd>/docs/advanced/uri-routing</kbd> feature.
 
 #### $this->uri->getUriToAssoc(n)
 
@@ -229,7 +229,7 @@ switch($this->uri->getExtension())
 
 #### $this->uri->getProtocol()
 
-Get the current protocol, function returns any protocol listed below.
+Gets the current protocol, function returns any protocol listed below.
 
 * REQUEST_URI
 * QUERY_STRING

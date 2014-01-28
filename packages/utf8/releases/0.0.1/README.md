@@ -111,4 +111,4 @@ Replaces special/accented UTF-8 characters by ASCII-7 "equivalents".
 
 #### $this->utf8->toUnicode($array);
 
-Takes an UTF-8 string and returns an array of its representing the Unicode characters.
+Takes an UTF-8 string and returns an array of its representing Unicode characters.

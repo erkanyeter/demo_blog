@@ -1104,8 +1104,8 @@ Permits you to display radio buttons in the state they were submitted. This func
 
 #### $this->form->setNotice($message);
 
-Set a flash notice for the general form error or success.
+Sets a flash notice for the general form error or success.
 
 #### $this->form->getNotice();
 
-Get the stored notification message from current session.
+Gets the stored notification message from current session.

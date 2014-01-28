@@ -35,7 +35,7 @@ The second segment is the text you would like the link to say. If you leave it b
 
 The third parameter can contain a list of attributes you would like to add to the link. The attributes can be a simple string or an associative array.
 
-If you set before url suffix (like .html) in config.php using fourth parameter **$suffix = false** you can switch off suffix for current site url.
+If you set url suffix (like .html) in config.php using fourth parameter **$suffix = false** you can switch off suffix for current site url.
 
 Here are some examples:
 
@@ -131,7 +131,7 @@ if ($loggedin == false)
 $this->url->redirect('news/article/13', 'location', 301);
 ```
 
-If you set before url suffix (like .html) in config.php using fourth parameter $suffix = false you can switch off suffix for current site url.
+If you set URL suffix (like .html) in config.php using fourth parameter $suffix = false you can switch off suffix for current site url.
 
 **Note:** In order for this function to work it must be used before anything is outputted to the browser since it utilizes server headers.
 
