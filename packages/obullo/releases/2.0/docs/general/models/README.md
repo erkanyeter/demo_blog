@@ -64,7 +64,7 @@ Class Users
 
 ### Creating Schemas Automatically ( Only Mysql )
 
-When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it is not exists. 
+When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exist. 
 Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current validation rules.
 
 If you provide the schema object in array format schema driver also will create the database table if its not exists.

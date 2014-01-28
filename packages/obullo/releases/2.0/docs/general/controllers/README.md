@@ -25,7 +25,7 @@ Consider this URI:
 example.com/index.php/blog/start
 ```
 
-In the above example, framework would attempt to find a MODULE named <kbd>/blog</kbd> in the PUBLIC folder and it attempt the find a controller named <kbd>start.php</kbd> in the /controller folder and load it.
+In the above example, framework would attempt to find a MODULE named <kbd>/blog</kbd> in the PUBLIC folder and it attempts to find a controller named <kbd>start.php</kbd> in the /controller folder and load it.
 
 **When a controller's name matches the second segment of a URI, it will be loaded.**
 
@@ -73,7 +73,7 @@ $c->func('index', function(){
 
 Then save the file to your <kbd>public/blog/controllers/</kbd> folder.
 
-Now visit the your site using a URL similar to this:
+Now visit your site using a URL similar to this:
 
 ```php
 demo-blog.com/index.php/blog/start
@@ -113,7 +113,7 @@ $c->func('comment', function(){
 });
 ```
 
-Now load the following URL to see the <kbd>commen</kbd> function:
+Now load the following URL to see the <kbd>comments</kbd> function:
 
 ```php
 demo-blog.com/index.php/comments/
@@ -163,7 +163,7 @@ Framework can be told to load a default controller when a URI is not present, as
 $route['default_controller'] = 'blog/start';
 ```
 
-Where <var>Blog</var> is the name of the <kbd>directory</kbd> and <var>Start</var> controller class you want used. If you now load your main index.php file without specifying any URI segments you'll see your Hello World message by default.
+Where <var>Blog</var> is the name of the <kbd>directory</kbd> and <var>Start</var> controller class you want to use. If you now load your main index.php file without specifying any URI segments you'll see your Hello World message by default.
 
 ### Remapping Function Calls <a name="remapping-function-calls"></a>
 

@@ -76,10 +76,10 @@ $users = array(
 
 ### Creating Schemas Automatically ( Only Mysql )
 
-When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exists. 
+When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exist. 
 Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current validation rules.
 
-If you provide the schema in array format schema driver also will create the database table if it does not exists.
+If you provide the schema in array format schema driver also will create the database table if it does not exist.
 
 **Note:** At this time we have just <b>Mysql Schema Driver</b>. if you want a write schema driver for other database types, please search on the net how to <b>submit a package</b> to Obullo.
 

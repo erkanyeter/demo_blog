@@ -60,8 +60,8 @@ echo $name // gives Obullo
 
 ### Using Schemes
 
-Scheme functions help you to write less coding using php anonymous functions.
-To using a scheme before you need to add it your scheme file in <b>app/config/scheme.php</b>.
+Scheme functions help you to write less code using php anonymous functions.
+To use a scheme before you need to add it your scheme file in <b>app/config/scheme.php</b>.
 
 ```php
 $scheme['general'] = function($filename){
@@ -262,16 +262,16 @@ echo view('subfolder/sub/filename');
 
 #### view('filename', $include = true, $data = array());
 
-Get the file from local directory e.g. <kbd>/modules/welcome/view</kbd>
+Gets the file from local directory e.g. <kbd>/modules/welcome/view</kbd>
 
 #### tpl('filename', $include = true, $data = array());
 
-Get the file from templates directory e.g. <kbd>/modules/templates</kbd>
+Gets the file from templates directory e.g. <kbd>/modules/templates</kbd>
 
 #### $this->set('key', $val = '');
 
-Set a view variable ( Variable types can be String, Array or Object ), this method <kbd>automatically detects</kbd> the variable types.
+Sets a view variable ( Variable types can be String, Array or Object ), this method <kbd>automatically detects</kbd> the variable types.
 
 #### $this->scheme('scheme_key', $filename = '');
 
-Use scheme function that is defined in your <kbd>app/config/scheme.php</kbd>.
+Uses scheme function that is defined in your <kbd>app/config/scheme.php</kbd>.

@@ -179,7 +179,7 @@ example.com/index.php/shop/products/view/shoes.html
 
 ------
 
-In some cases you might prefer to use query strings URLs:
+In some cases you might prefer to use query strings in URLs:
 
 ```php
 index.php?d=shop&c=products&m=view&id=345
