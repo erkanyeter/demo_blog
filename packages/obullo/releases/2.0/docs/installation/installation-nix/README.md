@@ -116,7 +116,7 @@ After editing the <b>package.json</b> you need to run <kbd>obm update</kbd>.
 #### Replacing Core Components
 
 The components 
-if available, you can replace the core components with third-party packages from the obm repository. ( http://obm.obullo.com ). Below the example we set the <b>log</b> component to <b>Thirdparty_Logwrite</b> package.
+if available, you can replace the core components with third-party packages from the [obm repository]( http://obm.obullo.com ). Below the example we set the <b>log</b> component to <b>Thirdparty_Logwrite</b> package.
 
 ```php
 {
