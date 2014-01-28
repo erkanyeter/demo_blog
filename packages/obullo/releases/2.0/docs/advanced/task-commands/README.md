@@ -50,7 +50,7 @@ root@localhost:/var/www/framework$ php task clear
 
 #### Export ( Export The Project )
 
-When you upload project files to your live server you need export it. Export command removes all .svn and .git files and saves the project to export folder.
+When you upload project files to your live server you need to export it. Export command removes all .svn and .git files and saves the project to export folder.
 
 ```php
 root@localhost:/var/www/framework$ php task export  

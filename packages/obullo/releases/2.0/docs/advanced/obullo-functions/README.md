@@ -53,7 +53,7 @@ If component is a library it returns to instance of the component.
 
 #### getInstance()
 
-This function returns the <b>Controller</b> object. Normally from within your controller functions you will call any of the available framework functions using the <b>$this</b> variable. <b>$this</b>, however, only works directly within your controllers, models and <b>not</b> your libraries. If you would like to use Obullo's classes within your own custom classes do so as follows:
+This function returns the <b>Controller</b> object. Normally from within your controller functions you will call any of the available framework functions using the <b>$this</b> variable. <b>$this</b>, however, only works directly within your controllers, models but <b>not</b> your libraries. If you would like to use Obullo's classes within your own custom classes do so as follows:
 
 First, assign the <b>Controller</b> object to a variable:
 
@@ -136,7 +136,7 @@ Generates <b>404 Page Not Found</b> errors.
 
 #### $this->response->showError($message, $status_code = 500, $heading = 'An Error Was Encountered');
 
-Manually show an error to users.
+Manually shows an error to users.
 
 #### $this->response->setHttpResponse(code, 'text');
 

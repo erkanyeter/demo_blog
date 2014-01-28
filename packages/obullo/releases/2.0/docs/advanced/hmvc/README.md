@@ -6,7 +6,7 @@
 
 #### Hierarchical-Model-View-Controller (HMVC)
 
-The HMVC pattern decomposes the client tier into a hierarchy of parent-child MVC layers. The repetitive application of this pattern allows for a structured client-tier architecture. Obullo has a simple HMVC library and Obullo's simple HMVC library support <b>internal requests</b> at this time.
+The HMVC pattern decomposes the client tier into a hierarchy of parent-child MVC layers. The repetitive application of this pattern allows for a structured client-tier architecture. Obullo has a simple HMVC library and it supports <b>internal requests</b> at this time.
 
 ```php
 MVC    
