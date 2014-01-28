@@ -3,7 +3,7 @@
 ------
 
 Obullo currently supports <b>PHP 5.3.0</b> and newer versions and recommends the most current release of [PHP]("http://www.php.net/") for critical security and performance enhancements.
-Obullo currently use <kbd>Database_Pdo</kbd> component <b>PDO</b> for database operations. <b>Mysql</b> and <b>SQLite</b> drivers is enabled by default as of PHP 5.3.0 and newer versions.
+Obullo currently use <kbd>Database_Pdo</kbd> component <b>PDO</b> for database operations. <b>Mysql</b> and <b>SQLite</b> drivers are enabled by default as of PHP 5.3.0 and newer versions.
 
 Un-comment the PDO database file pdo.ini
 
@@ -17,7 +17,7 @@ and un-comment your driver file <b>pdo_mysql.ini</b>
 extension=pdo_mysql.so
 ```
 
-Look at for more details http://www.php.net/manual/en/pdo.installation.php
+For more details look at http://www.php.net/manual/en/pdo.installation.php
 
 **Tip:** To edit your <dfn>app/config/database.php</dfn> , choose your <u>Obullo Connection Name</u> bottom of the table and change it like below the example.
 
@@ -115,7 +115,7 @@ Framework has a config file that lets you store your database connection values 
 
 <kbd>app/config/database.php</kbd>
 
-The configuration are stored in a multi-dimensional array with this prototype:
+The configuration is stored in a multi-dimensional array with this prototype:
 
 ```php
 $database['db']['hostname'] = "localhost";
