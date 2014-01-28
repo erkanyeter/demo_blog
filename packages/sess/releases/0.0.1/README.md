@@ -8,7 +8,7 @@ The Session Helper permits you to maintain a user's "state" and track their acti
 
 ------
 
-Sessions will typically run globally with each page load, so the session helper must either be initialized in your  controller constructors, or it can be auto-load by the system. See the <kbd>(/docs/advanced/auto-loading)</kbd> for more details.
+Sessions will typically run globally with each page load, so the session helper must either be initialized in your  controller constructors, or it can be auto-loaded by the system. See the <kbd>(/docs/advanced/auto-loading)</kbd> for more details.
 
 For the most part the session helper will run unattended in the background, so simply initializing the helper file will cause it to read, create, and update sessions.
 
@@ -192,7 +192,7 @@ To read a flashdata variable:
 $this->sess->getFlash('item', $prefix = '' , $suffix = '');
 ```
 
-If flash **data empty** $this->sess->getFlash() function will return an empty string otherwise it will retun the flash data value with $prefix and $suffix codes.
+If flash **data is empty** $this->sess->getFlash() function will return an empty string otherwise it will retun the flash data value with $prefix and $suffix codes.
 
 ```php
 echo $this->sess->getFlash('item',  '<p class="example">' ,  '</p>');
@@ -251,7 +251,7 @@ To clear the current session:
 $this->sess->destroy();
 ```
 
-**Note:** This function should be the last one called, and even flash variables will no longer be available. If you only want some items destroyed and not all, use <kbd>$this->sess->remove()</kbd>.
+**Note:** This function should be the last one called, and even flash variables will no longer be available. If you want only some items to be destroyed and instead of all, use <kbd>$this->sess->remove()</kbd>.
 
 ### Session Preferences
 
@@ -348,7 +348,7 @@ Gets stored session from session container.
 
 #### $this->sess->getAllData()
 
-Gets stored all session data.
+Gets all stored session data.
 
 #### $this->sess->remove($data = mixed, $prefix = '')
 
@@ -356,11 +356,11 @@ Unsets a stored session data from session container. You can send array data for
 
 #### $this->sess->setFlash($newdata = array(), $newval = '')
 
-Addd or changes flashdata, only available until the next request
+Add or changes flashdata, only available until the next request
 
 #### $this->sess->keepFlash($key)
 
-Keeps existing flashdata available to next request.
+Keeps existing flashdata available to the next request.
 
 #### $this->sess->getFlash()
 
