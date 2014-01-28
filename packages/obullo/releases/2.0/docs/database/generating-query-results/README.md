@@ -14,7 +14,7 @@ This function returns the query result as a pure array, or an empty array when n
 
 #### $this->db->getRow();
 
-This function fetch one item and returns query result as object or false on failure.
+This function fetches one item and returns query result as object or false on failure.
 
 #### $this->db->getRowArray();
 
@@ -22,7 +22,7 @@ Identical to the above row() function, except it returns an array.
 
 #### $this->db->getCount();
 
-Returns to number of rows.
+Returns the number of rows.
 
 ```php
 $this->db->query('YOUR QUERY');

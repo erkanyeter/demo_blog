@@ -4,7 +4,7 @@
 
 ------
 
-Framework offers PDO <b>bindValue</b> and <b>bindParam</b> functionalities, using to bind operations will help you about the application <b>performance</b> and <b>security</b>.
+Framework offers PDO <b>bindValue</b> and <b>bindParam</b> functionalities, using the bind operations will help you improve the application <b>performance</b> and <b>security</b>.
 
 ### Bind Types
 
@@ -140,7 +140,7 @@ As you can see above the example <b>bindParam</b> is a very secure function, for
 
 #### Using Secure Like Conditions
 
-When using query bind functionality you must use <b>$this->db->escapeLike()</b> for secure queries because of pdo query bind does not allow to use escape like function automatically.
+When using query bind functionality you must use <b>$this->db->escapeLike()</b> for secure queries because pdo query bind does not allow to use escape like function automatically.
 
 <b>both</b>
 

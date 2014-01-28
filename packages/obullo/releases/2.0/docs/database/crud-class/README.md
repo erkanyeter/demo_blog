@@ -225,9 +225,6 @@ $this->db->orWhere('id >', $id);
 
 **Note:** orWhere() was formerly known as orwhere(), which has been deprecated.
 
-#### $this->db->whereIn();
-
-**Note:** orWhere() was formerly known as orwhere(), which has been deprecated.
 
 #### $this->db->whereIn();
 
@@ -388,7 +385,7 @@ $this->db->get('table');
 
 #### $this->db->having();
 
-Permits you to write the HAVING portion of your query. There are 2 possible syntaxe, 1 argument or 2:
+Permits you to write the HAVING portion of your query. There are 2 possible syntaxes, 1 argument or 2:
 
 ```php
 $this->db->having('user_id = 45');
@@ -425,7 +422,6 @@ Identical to having(), only separates multiple clauses with <b>OR</b>
 
 Lets you set an ORDER BY clause. The first parameter contains the name of the column you would like to order by. The second parameter lets you set the direction of the result. Options are <kbd>asc</kbd> or <kbd>desc</kbd>
 
-Lets you set an ORDER BY clause. The first parameter contains the name of the column you would like to order by. The second parameter lets you set the direction of the result. Options are asc or desc
 
 ```php
 $this->db->orderBy("title", "desc");

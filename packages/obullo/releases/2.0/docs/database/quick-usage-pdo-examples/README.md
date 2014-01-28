@@ -1,6 +1,6 @@
 ## Quick Usage: PDO Examples <a name="quick-usage-pdo-examples"></a>
 
-Why Obullo use PDO for database operations ? , download this [document](http://ilia.ws/files/quebec_PDO.pdf) it will give you some introductory information about PDO.
+Why does Obullo use PDO for database operations ? Download this [document](http://ilia.ws/files/quebec_PDO.pdf) it will give you some introductory information about PDO.
 
 The following page contains example code showing how the database class is used. For complete details please read the individual pages describing each function.
 
@@ -36,7 +36,7 @@ echo 'Total Results: ' . $this->db->getCount();  // Pdo does not supported some 
 rowCount func via SELECT statement .(Mysql is ok.) 
 ```
 
-The above <dfn>getResult()</dfn> function returns an array of <strong>objects</strong>. Example: $row->title
+Above the <dfn>getResult()</dfn> function returns an array of <strong>objects</strong>. Example: $row->title
 
 ### Grabbing Database Object
 
@@ -49,7 +49,7 @@ $db = $database->connect();
 print_r($db->get('users')->getResultArray());
 ```
 
-The above the example returns to Database Instance if you want to grab it.
+Above the example returns to Database Instance if you want to grab it.
 
 ### Standard Query With Multiple Results (Array Version)
 
@@ -66,7 +66,7 @@ foreach ($this->db->getResultArray() as $row)
 }
 ```
 
-The above <dfn>getResultArray()</dfn> function returns an array of standard array indexes. Example: $row['title']
+Above the <dfn>getResultArray()</dfn> function returns an array of standard array indexes. Example: $row['title']
 
 ### Testing for Results
 
@@ -148,7 +148,7 @@ echo $affected_rows;
 
 <strong>$this->db->escape()</strong> function just alias of <strong>PDO::quote($str, PDO::PARAM_STR);</strong> function.
 
-We use <strong>execQuery()</strong> function for, insert, delete, update operations... It return to affected rows automatically.
+We use <strong>execQuery()</strong> function for, insert, delete, update operations... It returns the affected rows automatically.
 
 ### High Secure Insert
 
@@ -167,7 +167,7 @@ $affected_rows = $this->db->execQuery($sql);
 echo $affected_rows;
 ```
 
-When you use native <strong>(string)</strong> ,<strong> (int)</strong> types front of your $variables it do filter automatically.
+When you use native <strong>(string)</strong> ,<strong> (int)</strong> types front of your $variables it does filter automatically.
 
 ### CRUD ( Active Record ) Query
 

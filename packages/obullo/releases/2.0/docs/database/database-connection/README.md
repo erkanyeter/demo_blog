@@ -4,7 +4,7 @@
 
 ------
 
-Db class use <strong>PDO (Php Data Objects)</strong> (<kbd>Database Pdo</kbd> Component) for database operations. <strong>Mysql</strong> and <strong>SQLite</strong> drivers is enabled by default as of PHP 5.1.0 and newer versions.If you want to use another Database driver you must enable related PDO Driver from your php.ini file.
+Db class uses <strong>PDO (Php Data Objects)</strong> (<kbd>Database Pdo</kbd> Component) for database operations. <strong>Mysql</strong> and <strong>SQLite</strong> drivers is enabled by default as of PHP 5.1.0 and newer versions.If you want to use another Database driver you must enable related PDO Driver from your php.ini file.
 
 Un-comment the PDO database file pdo.ini
 
@@ -312,7 +312,7 @@ $this->db3->query(  ....  );
 
 #### Dsn Connection
 
-If you are provide a <strong>dsn</strong> connection string you don't need to provide other parameters into <samp>$config</samp> data. This is the also same for the config file connection.
+If you provide a <strong>dsn</strong> connection string you don't need to provide other parameters into <samp>$config</samp> data. This is the also same for the config file connection.
 
 ```php
 $config = array(
@@ -334,4 +334,4 @@ $config = getConfig();
 echo $config['database']['db2']['hostname']; // gives localhost 
 ```
 
-This give you password parameter of second database setting which is defined in <kbd>app/debug/config.php</kbd> file.
+This gives you the password parameter of second database setting which is defined in <kbd>app/debug/config.php</kbd> file.
