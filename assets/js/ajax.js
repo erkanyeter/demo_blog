@@ -6,7 +6,6 @@
  * @type Object
  */
 
-var process = false;
 var ajax = {
     post : function(url, closure, params){
         var xmlhttp;
@@ -45,25 +44,6 @@ function parseNode(obj, element, i){
     var inputError = document.getElementById(i+'_inputError');
 
     //-------------------------------------------------------
-    // No Response
-    if(typeof obj.messages == 'undefined'){
-        console.log('Data connection lost, no response data.');
-        return false;
-    }
-    //-------------------------------------------------------
-    // Success
-    if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '1'){
-        if(typeof obj.messages['redirect'] !== 'undefined' && process == false){
-            window.location.replace(obj.messages['redirect']);
-            process = true; // Set process done.
-        }
-        if(typeof obj.messages['alert'] !== 'undefined' && process == false){
-            alert(obj.messages['alert']);
-            process = true; // Set process done.
-            return false;
-        }
-    }
-    //-------------------------------------------------------
     // Errors
     if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '0'){
         if(typeof obj.errors[name] !== 'undefined'){
@@ -94,6 +74,25 @@ function submitAjax(formId){
 
         ajax.post( myform.getAttribute('action'), function(json){
             var obj = JSON.parse(json);
+
+            //-------------------------------------------------------
+            // No Response
+            if(typeof obj.messages == 'undefined'){
+                console.log('Data connection lost, no response data.');
+                return false;
+            }
+            //-------------------------------------------------------
+            // Success
+            if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '1'){
+                if(typeof obj.messages['redirect'] !== 'undefined'){
+                    window.location.replace(obj.messages['redirect']);
+                }
+                if(typeof obj.messages['alert'] !== 'undefined'){
+                    alert(obj.messages['alert']);
+                    return false;
+                }
+            }
+
             for (var i = 0; i < elements.length; i++){
                 var elemets2 = new Array();
                     elemets2 = elements[i];
