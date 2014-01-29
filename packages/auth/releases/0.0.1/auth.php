@@ -63,7 +63,7 @@ Class Auth {
 
         foreach($config as $key => $val)
         {
-            $this->{$key} = $val;
+            $this->{$key} = $val; // assign config items
         }
 
         return ($this);
@@ -88,12 +88,17 @@ Class Auth {
 
         // Get query function.
         $row = call_user_func_array(Closure::bind($closure, $this, get_class()), array());
+        
+        if($row == false) // If query is not object.
+        {
+            return false;
+        }
 
         if(empty($this->database_password))
         {
-            throw new Exception('Auth class requries database password string for verifiying the password.Use <pre>$this->setPassword(string $password);</pre>');
+            throw new Exception('Auth class requries database password string for verifiying the password. <pre>$this->setPassword(string $password);</pre>');
         }
-        
+
         if($this->verifyPassword($password, $this->database_password))
         {
             return $row;
@@ -127,7 +132,8 @@ Class Auth {
         switch($this->algorithm)
         {
             case 'bcrypt':{
-                $hash = $this->bcrypt->hashPassword($password);
+                $bcrypt = new Bcrypt;
+                $hash = $bcrypt->hashPassword($password);
                 break;
             }
             case 'md5':
@@ -158,7 +164,8 @@ Class Auth {
         switch($this->algorithm)
         {
             case 'bcrypt':{
-                return $this->bcrypt->verifyPassword($password, $dbPassword);
+                $bcrypt = new Bcrypt;
+                return $bcrypt->verifyPassword($password, $dbPassword);
                 break;
             }
             case 'md5':

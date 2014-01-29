@@ -15,7 +15,7 @@ namespace Form\Src {
     * @param    string
     * @return   string
     */
-    function errors($field = '', $prefix = '', $suffix = '')
+    function getErrors($field = '', $prefix = '', $suffix = '')
     {       
         $form = \Form::getFormConfig();
 
@@ -33,13 +33,13 @@ namespace Form\Src {
         {
             if(empty($field)) // return to all form errors
             {
-                return $OBJ->errors($field, $prefix, $suffix);
+                return $OBJ->getErrors($field, $prefix, $suffix);
             }
 
-            return sprintf($form['notifications']['error'], $OBJ->errors($field, '', ''));
+            return sprintf($form['notifications']['error'], $OBJ->getErrors($field, '', ''));
         }
 
-        return $OBJ->errors($field, $prefix, $suffix);
+        return $OBJ->getErrors($field, $prefix, $suffix);
     }
 
 }

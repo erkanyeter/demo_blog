@@ -116,12 +116,18 @@ Class Model {
         {
             eval('Class '.$modelName.' extends Odm { 
                 use Odm\Src\Model_Trait;
-                public $data = array();
                 function __construct($schemaArray, $dbObject) {
                     parent::__construct($schemaArray, $dbObject); 
                 }
+                function __set($k, $v){
+                    if( ! is_object($v) AND $k != "data"){  // Only data variable allowed !
+                        throw new Exception(sprintf("Only \"data\" variable allowed in model class.
+                            <pre>this->%s->data = \'\';</pre>", \''.$modelName.'\'));    
+                    }
+                    $this->$k = $v;
+                }
                 function __assignColumns(){
-                    if(sizeof($this->data) > 0){
+                    if(isset($this->data) AND sizeof($this->data) > 0){
                         foreach($this->data as $k => $v){
                             if(strpos($k, ".") > 0){     // Column join support
                                 unset($this->data[$k]);  // remove join "." data

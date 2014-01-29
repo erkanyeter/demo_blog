@@ -12,7 +12,7 @@ namespace Validator\Src {
      * @param    string    the field name
      * @return   void
      */    
-    function errors($field = '', $prefix = '', $suffix = '')
+    function getErrors($field = '', $prefix = '', $suffix = '')
     {    
         $validator = getInstance()->validator;
 

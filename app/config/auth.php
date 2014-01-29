@@ -11,7 +11,6 @@ $auth = array(
 
     'db'             => new Db,          // Set Database,
     'sess'           => new Sess,        // Session Object
-    'bcrypt'         => new Bcrypt,      // Bcrypt password hash / verify object
     'session_prefix' => 'auth_',         // Set a prefix to prevent collisions with original session object.
 
     // Security Settings

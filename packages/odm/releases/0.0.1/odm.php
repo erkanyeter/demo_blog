@@ -78,9 +78,9 @@ Class Odm {
 
         $validator->set('_callback_object', $this);
 
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // ----------------------------------------
         // @ Column join
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // ----------------------------------------
 
         $joinSchemaFields = array();
         foreach($this->_odmColumnJoins as $tablename => $columns)
@@ -144,7 +144,7 @@ Class Odm {
             {
                if(isset($validator->_field_data[$key]['error']))
                {
-                   $error = $validator->errors($key, null, null);
+                   $error = $validator->getErrors($key, null, null);
 
                    if( ! empty($error))
                    {
@@ -154,13 +154,18 @@ Class Odm {
 
                 //----------------------------
 
+                $form = Form::getFormConfig();
+
+                $translated = lingo('There are some errors in the form fields.');
+
                 $this->_odmMessages[$table]['messages'] = array(
                     'success'    => 0, 
-                    'key'        => 'validationError',
+                    'key'        => 'validation',
                     'code'       => 10,
                     'string'     => 'There are some errors in the form fields.',
-                    'translated' => lingo('There are some errors in the form fields.')
-                    );
+                    'translated' => $translated,
+                    'message'    => sprintf($form['notifications']['errorMessage'], $translated),
+                );
 
                 //----------------------------
 
@@ -342,20 +347,12 @@ Class Odm {
      * @param  string $suffix
      * @return mixed
      */
-    public function getMessage($key = 'errorMessage', $prefix = '', $suffix = '')
+    public function getMessage($key = 'message')
     {
         $table = $this->_odmTable;
 
         if(isset($this->_odmMessages[$table]['messages'][$key]))
         {
-            if(in_array($key, array('error','errorMessage','successMessage','infoMessage')))
-            {
-                $form     = Form::getFormConfig();
-                $template = empty($prefix) ? $form['notifications'][$key] : $prefix.'%s'.$suffix;
-
-                return sprintf($template, $this->_odmMessages[$table]['messages'][$key]);
-            }
-
             return $this->_odmMessages[$table]['messages'][$key];
         }
 
@@ -501,12 +498,15 @@ Class Odm {
             $errorMessage = (hasLingo($e)) ? lingo($e) : $e; // Is Translated ?
         }
 
+        $form = Form::getFormConfig();
+
         $this->_odmMessages[$this->_odmTable]['messages'] = array(
         'success'    => 0, 
         'key'        => 'failure',
         'code'       => 12,
         'string'     => (is_string($e)) ? $e : $errorString,
         'translated' => $errorMessage,
+        'message'    => sprintf($form['notifications']['errorMessage'], $errorMessage),
         );
     }
 

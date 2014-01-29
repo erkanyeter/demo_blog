@@ -22,7 +22,7 @@ $form = array(
 
 	// Settings
 	'use_template' => false,
-	'get' => new Get,    		  // Input Object
+	'post' => new Post,    		  // Input Object
 	'validator' => new Validator, // Validator Object
 
 	// Form Templates

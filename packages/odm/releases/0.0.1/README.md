@@ -117,8 +117,10 @@ Use <b>$this->model->func();</b> method to build model functions.
 
 ```
 <?php
-$this->user->data['email']    = 'test@example.com';
-$this->user->data['password'] = '123456';
+$this->user->data = array(
+    'email'    => 'me@example.com',
+    'password' => '123456',
+);
 
 $this->user->func('save',function() {
         return $this->db->insert('users', $this);
@@ -174,8 +176,10 @@ Below the example we create a save function and call it on the fly.
 <?php
 new Model('user', 'users');
 
-$this->user->data['email']    = 'me@example.com';
-$this->user->data['password'] = '123456';
+$this->user->data = array(
+    'email'    => 'me@example.com',
+    'password' => '123456',
+);
 
 $this->user->func('save',function() {
     return $this->db->insert('users', $this);
@@ -201,8 +205,10 @@ Using <b>isValid()</b> function you can control the validator object.
 <?php
 new Model('user', 'users');
 
-$this->user->data['email']    = 'me@example.com';
-$this->user->data['password'] = '123456';
+$this->user->data = array(
+    'email'    => 'me@example.com',
+    'password' => '123456',
+);
 
 // Set extra rule for none db fields.
 $this->user->setRules('confirm_password', 
@@ -325,10 +331,11 @@ print_r($this->user->getMessages());
 Array
 (
     [success] => 0  // 1
-    [key] => validationError // saveSuccess, updateSuccess, deleteSuccess .. ($method$Success), failure 
+    [key] => validation // save, update, delete, failure ..
     [code] => 10 // 11 // 12
     [string] => There are some errors in the form fields.
     [translated] => There are some errors in the form fields.
+    ['message']  => <div class="notification error">There are some errors in the form fields.</div>
 )
 */
 $this->user->getMessage('success'); // gives you value of the success. 
@@ -459,9 +466,11 @@ Using dot "." in your field "key" you can join them. e.g. **$this->user->data['s
 <?php
 new Model('order', 'orders');
 
-$this->order->data['order_type']        = '2';   
-$this->order->data['order_description'] = 'blablabla';
-$this->order->data['invoices.inovice_email_address'] = 'test@example.com';
+$this->order->data = array(
+    'order_type'                     => '2',
+    'order_description'              => 'blablabla',
+    'invoices.inovice_email_address' => 'test@example.com',
+);
 
 $this->order->func('insert',function() {
         $this->db->insert('orders', $this);
@@ -485,8 +494,10 @@ You can use the transactions if your table engine setted correctly as <b>INNODB<
 <?php
 new Get;
 
-$this->user->data['email']    = $this->get->post('email');
-$this->user->data['password'] = $this->get->post('password');
+$this->user->data = array(
+    'email'    => $this->get->post('email'),
+    'password' => $this->get->post('password'),
+);
 
 $this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'required'));
 
@@ -545,8 +556,10 @@ $users[] = array('email' => 'hasan@gmail', 'password' => '');
 foreach ($users as $row)
 {
     $this->user->clear();  // you need to do clear for per request.    
-    $this->user->data['email']    = $row['email'];
-    $this->user->data['password'] = $row['password'];
+    $this->user->data = array(
+        'email'    => $row['email'],
+        'password' => $row['password'],
+    );
 
     if($this->user->save())
     {
@@ -554,7 +567,7 @@ foreach ($users as $row)
     } 
     else 
     {
-        $errors[] = $this->user->getErrors();
+        $errors[] = $this->user->getErrors(); // errors
     }
 }
 

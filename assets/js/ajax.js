@@ -6,6 +6,7 @@
  * @type Object
  */
 
+var process = false;
 var ajax = {
     post : function(url, closure, params){
         var xmlhttp;
@@ -42,16 +43,40 @@ var ajax = {
 function parseNode(obj, element, i){
     var name = element.name;
     var inputError = document.getElementById(i+'_inputError');
-     if(typeof obj.errors[name] !== 'undefined'){
-        if(inputError){
-            document.getElementById(i+'_inputError').innerHTML = obj.errors[name];
-        } else{
-            e.innerHTML = obj.errors[name];
-            element.parentNode.appendChild(e);
+
+    //-------------------------------------------------------
+    // No Response
+    if(typeof obj.messages == 'undefined'){
+        console.log('Data connection lost, no response data.');
+        return false;
+    }
+    //-------------------------------------------------------
+    // Success
+    if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '1'){
+        if(typeof obj.messages['redirect'] !== 'undefined' && process == false){
+            window.location.replace(obj.messages['redirect']);
+            process = true; // Set process done.
         }
-    } else{
-        if(inputError){
-            document.getElementById(i+'_inputError').remove(); 
+        if(typeof obj.messages['alert'] !== 'undefined' && process == false){
+            alert(obj.messages['alert']);
+            process = true; // Set process done.
+            return false;
+        }
+    }
+    //-------------------------------------------------------
+    // Errors
+    if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '0'){
+        if(typeof obj.errors[name] !== 'undefined'){
+            if(inputError){
+                document.getElementById(i+'_inputError').innerHTML = obj.errors[name];
+            } else{
+                e.innerHTML = obj.errors[name];
+                element.parentNode.appendChild(e);
+            }
+        } else {
+            if(inputError){
+                document.getElementById(i+'_inputError').remove(); 
+            }
         }
     }
 }
@@ -65,6 +90,8 @@ function submitAjax(formId){
 
         var elementsClass = document.getElementsByClassName('_inputError');
         
+        //--------------- AJAX ----------------//
+
         ajax.post( myform.getAttribute('action'), function(json){
             var obj = JSON.parse(json);
             for (var i = 0; i < elements.length; i++){
@@ -73,8 +100,8 @@ function submitAjax(formId){
                 for(var ii = 0; ii < elemets2.length; ii++){
                     e = document.createElement('div');
                     e.className = '_inputError';
-                    errorInputNameId =i.toString() + ii.toString();
-                    e.id =errorInputNameId + '_inputError';
+                    errorInputNameId = i.toString() + ii.toString();
+                    e.id = errorInputNameId + '_inputError';
                     if (elemets2[ii].type != 'submit'){
                         if ( elemets2[ii].type != 'hidden') 
                         {

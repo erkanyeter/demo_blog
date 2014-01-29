@@ -80,7 +80,7 @@ Create a directory in directories folder called **form_example.**
 Using a text editor, create a form called myform.php. In it, place this code and save it to your <samp>.public/form_example/view/</samp> folder:
 
 ```php
-<?php echo $this->form->errorString(); ?>
+<?php echo $this->form->getErrorString(); ?>
 
 <?php echo $this->form->open('form_example/form'); ?>
 
@@ -164,7 +164,7 @@ It uses a <kbd>form helper</kbd> to create the form opening. Technically, this i
 At the top of the form you'll notice the following function call:
 
 ```php
-<?php echo $this->form->errorString() ?>
+<?php echo $this->form->getErrorString() ?>
 ```
 
 This function will return any error messages sent back by the validator. If there are no messages it returns an empty string.
@@ -315,7 +315,7 @@ Open your <kbd>myform.php</kbd> view file and update the **value** in each field
 **Don't forget to include each. field name in the** <kbd>setValue()</kbd> **functions!**
 
 ```php
-<?php echo $this->form->errorString(); ?>
+<?php echo $this->form->getErrorString(); ?>
 
 <?php echo $this->form->open('form_example/form'); ?>
 
@@ -488,7 +488,7 @@ By default, the Validator Class adds a paragraph tag (
 Or:
 
 ```
-<?php echo $this->form->errorString('<div class="error">', '</div>'); ?>
+<?php echo $this->form->getErrorString('<div class="error">', '</div>'); ?>
 ```
 
 ### Showing Errors Individually <a name="showing-errors-individually"></a>
@@ -1050,12 +1050,12 @@ echo $this->form->isError('username', 'error');  //  "error" string
 ?>
 ```
 
-#### $this->form->errorString()
+#### $this->form->getErrorString()
 
 Shows all error messages as a string: Example:
 
 ```php
-<?php echo $this->form->errorString(); ?>
+<?php echo $this->form->getErrorString(); ?>
 ```
 
 The error delimiters can be optionally specified. See the [Changing the Error Delimiters](#changing-the-error-delimiters) section above.

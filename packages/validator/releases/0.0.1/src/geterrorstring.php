@@ -13,7 +13,7 @@ namespace Validator\Src {
      * @param    string
      * @return   str
      */    
-    function errorString($prefix = '', $suffix = '')
+    function getErrorString($prefix = '', $suffix = '')
     {
         $form      = \Form::getFormConfig();
         $validator = getInstance()->validator;

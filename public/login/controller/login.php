@@ -40,16 +40,18 @@ $c->func('index', function(){
 
 			        $row = $this->db->getRow();
 
-			        //-------- Set password for verify password hash ------------//
+			        if($row !== false)
+			        {
+				        //-------- Set password for verify ------------//
 
-			        $this->setPassword($row->user_password); 
+				        $this->setPassword($row->user_password); 
 
-			        //------------------------------------------------
+				        //------------------------------------------------
+			        }
 
 		        	return $row;   // return to database row
 			});
 
-          
           	if($row !== false) // validate the auth !
             {
 		        $this->auth->authorize(function() use($row){ 	// Authorize to user
@@ -57,8 +59,7 @@ $c->func('index', function(){
 			        $this->setIdentity('user_username', $row->user_username); // Set user data to auth container
 			        $this->setIdentity('user_email', $row->user_email);
 			        $this->setIdentity('user_id', $row->user_id);
-
-		        });   
+		        });
 
 		        $this->url->redirect('/home'); // Success redirect
 			}

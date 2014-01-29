@@ -13,19 +13,20 @@ $c = new Controller(function(){
     new Model('user', 'users');
 });
 
-
 $c->func('index', function(){
 
     if($this->request->isXmlHttp()) // Is request Ajax ? 
     {
-        new Get;
+        new Post;
 
-        $this->user->data['user_email']    = $this->get->post('user_email');
-        $this->user->data['user_password'] = $this->get->post('user_password');
+        $this->user->data = array(
+            'user_email'    => $this->post->get('user_email'),
+            'user_password' => $this->post->get('user_password'),
+        );
 
         //--------------------- set non schema rules
         
-        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
+        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
         $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
         
         //---------------------
@@ -39,7 +40,11 @@ $c->func('index', function(){
             return false;
         });
 
-        $this->user->save();
+        if($this->user->save()) // Call save function
+        {
+            $this->user->setMessage('alert', 'Data Saved !');
+            // $this->user->setMessage('redirect', 'http://google.com/');
+        }
 
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -57,7 +62,6 @@ $c->func('index', function(){
                 
             $this->set('name', 'Obullo');
             $this->set('title', 'Hello Ajax World !');
-
             $this->getScheme('welcome');
         });
     }

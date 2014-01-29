@@ -17,7 +17,7 @@ namespace Form\Src {
     */
     function error($field = '', $prefix = '', $suffix = '')
     {       
-        return getInstance()->form->errors($field, $prefix, $suffix);
+        return getInstance()->form->getErrors($field, $prefix, $suffix);
     }
 
 }

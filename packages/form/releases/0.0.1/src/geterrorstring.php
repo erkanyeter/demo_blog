@@ -14,14 +14,14 @@ namespace Form\Src {
     * @param	string
     * @return	string
     */
-    function errorString($prefix = '', $suffix = '')
+    function getErrorString($prefix = '', $suffix = '')
     {
         if (false === ($OBJ = getInstance()->form->_getValidatorObject()))
         {
             return '';
         }
 
-        return $OBJ->errorString($prefix, $suffix);
+        return $OBJ->getErrorString($prefix, $suffix);
     }
 
 }

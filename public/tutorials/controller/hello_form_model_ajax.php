@@ -69,7 +69,7 @@ $c->func('index', function(){
 		 */
 	}
 
-    $this->view->get('hello_form_model', function(){
+    $this->view->get('hello_form_model_ajax', function(){
     	
         $this->set('name', 'Obullo');
         $this->set('footer', $this->tpl('footer', false));

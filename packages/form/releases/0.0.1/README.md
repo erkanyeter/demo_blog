@@ -397,12 +397,12 @@ echo $this->form->close($string);
 </div></div>
 ```
 
-#### $this->form->errorString($prefix = '', $suffix = '')
+#### $this->form->getErrorString($prefix = '', $suffix = '')
 
 Returns all validation errors of Validator Class. Using prefix and suffix parameters you can use custom html tags.
 
 ```php
-echo $this->form->errorString($prefix = '<div class="notification">' , $suffix = '</div>');
+echo $this->form->getErrorString($prefix = '<div class="notification">' , $suffix = '</div>');
 ```
 
 #### $this->form->message($model, $formMsg = '')
@@ -825,12 +825,12 @@ echo $this->form->close($string);
 </div></div>
 ```
 
-#### $this->form->errorString($prefix = '', $suffix = '')
+#### $this->form->getErrorString($prefix = '', $suffix = '')
 
 Returns all validation errors of Validator Class. Using prefix and suffix parameters you can use custom html tags.
 
 ```php
-echo $this->form->errorString($prefix = '<div class="notification">' , $suffix = '</div>');
+echo $this->form->getErrorString($prefix = '<div class="notification">' , $suffix = '</div>');
 ```
 
 Using optional second parameter you can provide custom errors or success messages otherwise it returns to validation errors of Validator Class.
@@ -902,13 +902,17 @@ Add html (break) using your default form template.
 // gives <div style="padding:10px;">&nbsp;</div>
 ```
 
+#### $this->form->func('callback_functionname', function(){});
+
+Sets a custom callback function to form validation rules.
+
 #### $this->form->setRules($field, $rules = '');
 
 Sets form validation rules.
 
 #### $this->form->isValid();
 
-Runs the form validation.
+Runs the form validation using validator .
 
 #### $this->form->setNotice($message, ERROR);
 

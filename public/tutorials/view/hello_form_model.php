@@ -8,7 +8,7 @@
 
     <body>
         <header>
-            <a href="/"><img src="/assets/images/logo.png" alt="logo" border="0" /></a>
+            <?php echo $this->url->anchor('/', $this->html->img('logo.png', ' alt="Obullo" ')) ?>
         </header>
 
         <h1>Hello Form Model ( No Schema )</h1>
@@ -17,14 +17,13 @@
             <?php echo $this->form->getNotice() ?>
         </section>
         
-        <section><?php echo $this->user->getMessage('string') ?></section>
+        <section><?php echo $this->user->getMessage('message') ?></section>
 
         <section>
-            <?php echo $this->form->errorString() ?>
+            <?php echo $this->form->getErrorString() ?>
         </section>
 
-            <?php
-            echo $this->form->open('tutorials/hello_form_model/index', array('method' => 'POST')) ?>
+        <?php echo $this->form->open('tutorials/hello_form_model/index', array('method' => 'POST')) ?>
 
                 <table width="100%">
                     <tr>
@@ -49,7 +48,7 @@
                     <tr>
                         <td colspan="2">&nbsp;</td>
                     </tr>
-                    </table>
+                </table>
 
         <?php echo $this->form->close() ?>
 

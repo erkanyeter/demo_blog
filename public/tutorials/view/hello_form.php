@@ -18,7 +18,7 @@
         </section>
         
         <section>
-            <?php echo $this->form->errorString() ?>
+            <?php echo $this->form->getErrorString() ?>
         </section>
 
         <section>
@@ -72,10 +72,10 @@
 
                         <section>
                             <h3>$this->form->error('email')</h3>
-                            <pre><?php echo $this->form->errors('email') ?></pre>
+                            <pre><?php echo $this->form->getErrors('email') ?></pre>
 
-                            <h3>print_r($this->form->errorString())</h3>
-                            <pre><?php print_r($this->form->errorString()) ?></pre>
+                            <h3>print_r($this->form->getErrorString())</h3>
+                            <pre><?php print_r($this->form->getErrorString()) ?></pre>
 
                             <h3>print_r($this->form->getValue('email'))</h3>
                             <pre><?php print_r($this->form->getValue('email')) ?></pre>

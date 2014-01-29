@@ -25,7 +25,7 @@ namespace Odm\Src {
             }
 
             $this->__assignObjects(); // Assign all objects of Contoller to Model.
-            $this->__assignColumns(); // Render column names & detects the column joins to another schema.
+            $this->__assignColumns(); // Render column names & detects the column join request to another schema.
 
             if ( ! is_callable($methodCallable)) // @todo throw new InvalidArgumentException
     	    {
@@ -55,23 +55,21 @@ namespace Odm\Src {
                 if($return) // Set Success Message
                 {
                     $errorString = 'Operation succesfull.';
-
-                    if($method == 'delete' || $method == 'remove')
+                    
+                    if(in_array($method, $this->_modelDefinedMethods))
                     {
                         $errorString = 'Data '.$method.'d succesfully.';
-                    } 
-                    
-                    if(in_array($method, array('save','update','insert','replace','put')))
-                    {
-                        $errorString = 'Data saved succesfully.';
                     }
+                    
+                    $form = \Form::getFormConfig();
 
-                    $this->_odmErrors[$this->_odmTable]['messages'] = array(
+                    $this->_odmMessages[$this->_odmTable]['messages'] = array(
                     'success'    => 1, 
-                    'key'        => $method.'Success',
+                    'key'        => $method,
                     'code'       => 11,
                     'string'     => $errorString,
-                    'translated' => lingo($errorString)
+                    'translated' => lingo($errorString),
+                    'message'    => sprintf($form['notifications']['successMessage'], lingo($errorString)),
                     );
 
                     // $this->clear();  
