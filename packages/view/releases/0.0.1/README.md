@@ -232,7 +232,7 @@ Message:  <?php echo $message; ?>
 
 ------
 
-There is a second optional parameter lets you change the behavior of the function so that it load file as include instead of return to string. This can be useful if you want to process the data in some way. If you set the parameter to false (boolean) it will load file as string.
+There is a second optional parameter that lets you change the behavior of the function so that it loads file as include instead of return to string. This can be useful if you want to process the data in some way. If you set the parameter to false (boolean) it will load file as string.
 
 ### View as String
 

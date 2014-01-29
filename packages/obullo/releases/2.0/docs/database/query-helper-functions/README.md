@@ -26,7 +26,7 @@ echo $this->db->version(); // output like 5.0.45 or returns to null if server do
 
 #### $this->db->isConnected()
 
-Check the database connection is active or not
+Checks the database connection is active or not
 
 ```php
 echo $this->db->isConnected(); // output 1 or 0
@@ -50,7 +50,7 @@ $str = $this->db->lastQuery(true);
 
 #### $this->db->setAttribute($key, $val);
 
-Set PDO connection attribute.
+Sets PDO connection attribute.
 
 ```php
 $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
@@ -64,7 +64,7 @@ $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // restore e
 
 #### $this->db->getErrors();
 
-Get the database errors in pdo slient mode instead of getting pdo exceptions.
+Gets the database errors in pdo slient mode instead of getting pdo exceptions.
 
 The following two functions help simplify the process of writing database INSERTs and UPDATEs.
 

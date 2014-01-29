@@ -190,7 +190,7 @@ $js = 'id="shirts" onChange="someFunction();"';
 echo $this->form->dropdown('shirts', $options, 'large', $js);
 ```
 
-If the array passed as $options is a multidimensional array, $this->form->dropdown() will produce an with the array key as the label.
+If the array passed as $options is a multidimensional array, $this->form->dropdown() will return the array keys as the label.
 
 #### Using Your Schema for Dropwdowns
 
@@ -307,7 +307,7 @@ echo $this->form->fieldsetClose();
 
 #### $this->form->fieldsetClose()
 
-Produces a closing <b>fieldset</b> tag. The only advantage to using this function is it permits you to pass data to it which will be added below the tag. For example:
+Produces a closing <b>fieldset</b> tag. The only advantage of using this function is it permits you to pass data to it which will be added below the tag. For example:
 
 ```php
 $string = "</div></div>";
@@ -384,7 +384,7 @@ echo $this->form->button('mybutton', 'Click Me', $js);
 
 #### $this->form->close()
 
-Produces a closing tag. The only advantage to using this function is it permits you to pass data to it which will be added below the tag. For example:
+Produces a closing tag. The only advantage of using this function is it permits you to pass data to it which will be added below the tag. For example:
 
 ```php
 $string = "</div></div>";
@@ -399,7 +399,7 @@ echo $this->form->close($string);
 
 #### $this->form->errorString($prefix = '', $suffix = '')
 
-Return to all validation errors of Validator Class. Using prefix and suffix parameters you can use custom html tags.
+Returns all validation errors of Validator Class. Using prefix and suffix parameters you can use custom html tags.
 
 ```php
 echo $this->form->errorString($prefix = '<div class="notification">' , $suffix = '</div>');
@@ -407,7 +407,7 @@ echo $this->form->errorString($prefix = '<div class="notification">' , $suffix =
 
 #### $this->form->message($model, $formMsg = '')
 
-Return a heading message at top of the current form using the <b>Odm object</b>.
+Returns a heading message at top of the current form using the <b>Odm object</b>.
 
 ```php
 echo $this->form->message($model, $formMsg = '')
@@ -486,11 +486,11 @@ Add html (break) using your default form template.
 
 #### $this->form->validatorGetInstance()
 
-Get the Validator Class instance.
+Gets the Validator Class instance.
 
 #### $this->form->setNotice($message, ERROR);
 
-Set a flash notice for the general form errors.
+Sets a flash notice for the general form errors.
 
 <b>Multi Usage Example</b>
 
@@ -510,7 +510,7 @@ $this->form->getNotice();   // get all messages
 
 #### $this->form->getNotice($key OR null);
 
-Get the stored notification message(s) from current session. If you don't provide a key you can get all notices.
+Ges the stored notification message(s) from current session. If you don't provide a key you can get all notices.
 ## Form Class
 
 The Form Class file contains functions that assist in working with forms.
@@ -812,7 +812,7 @@ echo $this->form->button('mybutton', 'Click Me', $js);
 
 #### $this->form->close()
 
-Produces a closing tag. The only advantage to using this function is it permits you to pass data to it which will be added below the tag. For example:
+Produces a closing tag. The only advantage of using this function is it permits you to pass data to it which will be added below the tag. For example:
 
 ```php
 $string = "</div></div>";
@@ -827,7 +827,7 @@ echo $this->form->close($string);
 
 #### $this->form->errorString($prefix = '', $suffix = '')
 
-Return to all validation errors of Validator Class. Using prefix and suffix parameters you can use custom html tags.
+Returns all validation errors of Validator Class. Using prefix and suffix parameters you can use custom html tags.
 
 ```php
 echo $this->form->errorString($prefix = '<div class="notification">' , $suffix = '</div>');
@@ -904,15 +904,15 @@ Add html (break) using your default form template.
 
 #### $this->form->setRules($field, $rules = '');
 
-Set form validation rules.
+Sets form validation rules.
 
 #### $this->form->isValid();
 
-Run the form validation.
+Runs the form validation.
 
 #### $this->form->setNotice($message, ERROR);
 
-Set a flash notice for the general form errors.
+Sets a flash notice for the general form errors.
 
 <b>Multi Usage Example</b>
 
@@ -946,8 +946,8 @@ $this->form->getNotice('error','test'); // get specific key
 ```
 #### $this->form->getNotice($key or Null);
 
-Get the stored notification message(s) from current session.
+Gets the stored notification message(s) from current session.
 
 #### And all Validator Functions Available in the Form Class
 
-All Validator functions available in form class because of if a function not available it calls from the Validator class using php _call magic method.
+All Validator functions are available in form class because if a function is not available it is called from the Validator class by php _call magic method.

@@ -5,7 +5,7 @@
 
 -----
 
-Any Any software application requires some effort to learn. We have done our best to minimize the learning curve while making the process as enjoyable as possible.The first step is to install Obullo, then read all the topics in the Introduction section of the Chapters.
+Any software application requires some effort to learn. We have done our best to minimize the learning curve while making the process as enjoyable as possible.The first step is to install Obullo, then read all the topics in the Introduction section of the Chapters.
 
 ### Your Application Always Up to Date
 

@@ -6,12 +6,12 @@ The Xss Helper file contains security related functions.
 
 ------
 
-It does the following:
+It does:
 
 <ul>
-    <li>Destroys the global GET array. Since framework does not utilize GET strings, there is no reason to allow it.</li>
-    <li>Filters the POST/COOKIE array keys, permitting only alpha-numeric (and a few other) characters.</li>
-    <li>Provides XSS (Cross-site Scripting Hacks) filtering. This can be enabled globally, or upon request.</li>
+    <li>Destroy the global GET array. Since framework does not utilize GET strings, there is no reason to allow it.</li>
+    <li>Filter the POST/COOKIE array keys, permitting only alpha-numeric (and a few other) characters.</li>
+    <li>Provide XSS (Cross-site Scripting Hacks) filtering. This can be enabled globally, or upon request.</li>
 </ul>
 
 ### XSS Filtering

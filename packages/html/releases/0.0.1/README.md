@@ -32,7 +32,7 @@ echo $this->html->js('jquery/*');
 
 ### Exclude Files
 
-Sets exclude files if you don't want to load all contents of the folder.
+Sets excluded files if you don't want to load all contents of the folder.
 
 ```php
 echo $this->html->js('jquery/*^(jquery.livequery.js)');
@@ -139,12 +139,12 @@ echo $this->html->css('js/subfolder/example.css');
 
 #### $this->html->css($filename, $title = '', $media = '', $rel = 'stylesheet', $index_page = false)
 
-Load .css files from <kbd>assets/css</kbd> folder.
+Loads .css files from <kbd>assets/css</kbd> folder.
 
 #### $this->html->js($src, $arguments = '', $type = 'text/javascript', $index_page = false)
 
-Load .js files from <kbd>assets/js</kbd> folder.
+Loads .js files from <kbd>assets/js</kbd> folder.
 
 #### $this->html->img($src = '', $attributes = '', $index_page = false)
 
-Load image files from <kbd>assets/images</kbd> folder.
+Loads image files from <kbd>assets/images</kbd> folder.

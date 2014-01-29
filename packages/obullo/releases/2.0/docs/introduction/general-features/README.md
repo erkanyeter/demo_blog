@@ -8,7 +8,7 @@ Obullo is a package based php framework that helps you quickly write mvc applica
 
 ### Best Performance
 
-Obullo is really fast. The core system requires only <b>Obullo Package</b> and a few core <b>components</b>. Everytime we do improvements on the core to catch the best performance. Please look at our speed tests for more details.
+Obullo is really fast. The core system requires only <b>Obullo Package</b> and a few core <b>components</b>. We always do improvements on the core to catch the best performance. Please look at our speed tests for more details.
 
 ### Hhvm ( Hiphop ) Compatible
 
@@ -27,7 +27,7 @@ Obullo %100 compatible with hiphop virtual machine. [http://www.hiphop-php.com/b
 
 ------
 
-Package can be a helper or a library. The package manager <b>(Odm)</b> helps your packages to be always up to date. Using your <b>package.json</b> you can easily add new packages or replace the core components.
+Package can be a helper or a library. The package manager <b>(Obm)</b> helps your packages to be always up to date. Using your <b>package.json</b> you can easily add new packages or replace the core components.
 
 
 ### Components

@@ -46,7 +46,7 @@ $captcha['expiration'] = 180; // seconds
 
 ### Test Mode
 
-Before the creating of your captcha you can test all fonts and methods with the functions below.
+Before creating your captcha you can test all fonts and methods with the functions below.
 
 ```php
 $this->captcha->fontTest();
@@ -325,7 +325,7 @@ Sets image font.
 
 #### $this->captcha->excludeFont($string or $array);
 
-Substracts font(s) from available fonts.
+Excludes font(s) from available fonts.
 
 #### $this->captcha->setFontSize($int);
 
@@ -345,11 +345,11 @@ Sets the number of characters of image.
 
 #### $this->captcha->setWave(true or false);
 
-Start and stop the text wave.
+Starts and stops the text wave.
 
 #### $this->captcha->create();
 
-Starts to create a captcha element.
+Starts creating a captcha element.
 
 #### $this->captcha->getImageUrl();
 

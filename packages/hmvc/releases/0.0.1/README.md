@@ -14,7 +14,7 @@ new Hmvc;
 $this->hmvc->method();
 ```
 
-Here is a very simple example showing you how to call a hmvc request using Hmvc class.
+Here is a very simple example showing you how to call an hmvc request using Hmvc class.
 
 ```php
 new Hmvc();
@@ -55,4 +55,4 @@ Some times advanced users use the HMVC requests when extending a custom Controll
 
 #### $this->hmvc->exec();
 
-Executes hmvc call and returns to response as string.
+Executes hmvc call and returns the response as string.

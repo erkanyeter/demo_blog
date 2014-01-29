@@ -163,7 +163,7 @@ $row = $docs->getNext();
 
 #### $this->db->from()
 
-Especially before the find operations we use the from method setting the collection name as parameter.
+Especially before finding operations we use the from method setting the collection name as parameter.
 
 ```php
 <?php
@@ -522,7 +522,7 @@ This function returns the query result as a pure array, or an empty array when n
 
 #### $this->db->getRow();
 
-This function fetch one item and returns query result as object or false on failure.
+This function fetches one item and returns query result as object or false on failure.
 
 #### $this->db->getRowArray();
 

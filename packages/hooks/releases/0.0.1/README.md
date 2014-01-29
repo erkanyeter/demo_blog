@@ -44,6 +44,6 @@ Called immediately after your controller is instantiated, but prior to any metho
 * <b>post_controller</b>
 Called immediately after your controller is fully executed.
 * <b>display_override</b>
-Overrides the _display() function, used to send the finalized page to the web browser at the end of system execution. This permits you to use your own display methodology. Note that you will need get the Controller Instance with getInstance() and then the finalized data will be available by calling getInstance()->output->getOutput();
+Overrides the _display() function, used to send the finalized page to the web browser at the end of system execution. This permits you to use your own display methodology. Note that you will need to get the Controller Instance with getInstance() and then the finalized data will be available by calling getInstance()->output->getOutput();
 * <b>post_system</b>
 Called after the final rendered page is sent to the browser, at the end of system execution after the finalized data is sent to the browser.

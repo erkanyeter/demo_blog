@@ -20,7 +20,7 @@ $query = $this->db->query('YOUR QUERY HERE');
 
 ------
 
-This query type same as direct query just it returns to $affected_rows automatically. You should use **execQuery** function for INSERT, UPDATE, DELETE operations.
+This query type same as direct query just it returns the $affected_rows automatically. You should use **execQuery** function for INSERT, UPDATE, DELETE operations.
 
 ```php
 $affected_rows = $this->db->execQuery('INSERT QUERY'); 

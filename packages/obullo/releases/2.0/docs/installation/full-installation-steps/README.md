@@ -1,6 +1,6 @@
 ## Full Installation Steps <a name="installation-steps"></a>
 
-This documentation will help you to <b>starting a project with Obullo</b> on unixy systems. This is a througly documentation prepared for <kbd>MacOS \ Ubuntu</kbd> and <kbd>Debian</kbd> based OS.
+This documentation will help you to <b>start a project with Obullo</b> on unixy systems. This is a througly documentation prepared for <kbd>MacOS \ Ubuntu</kbd> and <kbd>Debian</kbd> based OS.
 
 ### Installing Php & MySQL
 
@@ -106,7 +106,7 @@ Open <b>myproject</b> vhost file and edit it.
 sudo vi myproject
 ```
 
-You need do below the changes in <b>myproject</b> vhost file.
+You need to do below the changes in <b>myproject</b> vhost file.
 
 * Replace all <b>AllowOverride None</b> lines to <b>AllowOverride All</b>.
 * Add <b>ServerName myproject</b> after first line ( ServerAdmin webmaster@localhost ).
@@ -149,7 +149,7 @@ You need do below the changes in <b>myproject</b> vhost file.
 
 ### Enabling Your Virtual Host
 
-Below the command will a create symbolic link in <kbd>/etc/apache2/sites-enabled</kbd> folder. All enabled sites is located in this folder.
+Below the command will create a symbolic link in <kbd>/etc/apache2/sites-enabled</kbd> folder. All enabled sites is located in this folder.
 
 ```php
 sudo a2ensite myproject
@@ -221,7 +221,7 @@ $config['index_page'] = "";
 
 ##### Forbidden Error
 
-When you visit the <kbd>http://myproject/</kbd> you might probably faced the same following error
+When you visit the <kbd>http://myproject/</kbd> you might have probably faced the same following error
 
 ```php
 Forbidden
@@ -237,7 +237,7 @@ sudo chmod 755 -R /var/www/myproject/
 
 ##### Apache Errors
 
-You might probably faced the same following error while you were restarting the Apache server.
+You might have probably faced the same following error while you were restarting the Apache server.
 
 ```php
 * Restarting web server apache2
@@ -318,7 +318,7 @@ If you use short open php tags like below
     </head>
 ```
 
-You might probably faced the php syntax errors while you were browsing your application.
+You might have probably faced the php syntax errors while you were browsing your application.
 
 To fix that problem open your php.ini file and set <kbd>short_open_tag</kbd> value to <kbd>On</kbd>.
 
@@ -404,7 +404,7 @@ After editing the <b>package.json</b> you need to run <kbd>obm update</kbd>.
 
 #### Updating your packages
 
-The <b>asterisks ( * )</b> mean getting the <kbd>latest version</kbd> of the package. If you need a previous stable version remove the asterisk ( * ) and set it to a specific number. ( e.g. auth: "0.0.2" ).
+The <b>asterisks ( * )</b> means getting the <kbd>latest version</kbd> of the package. If you need a previous stable version remove the asterisk ( * ) and set it to a specific number. ( e.g. auth: "0.0.2" ).
 
 ```php
 {

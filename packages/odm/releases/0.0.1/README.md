@@ -4,7 +4,7 @@
 
 Bye bye to traditional models which kill productivity of developers we create models <b>on the fly</b> using <b>Schemas</b>.
 
-<kbd>Odm</kbd> is a model that does <kbd>validate</kbd> and do <kbd>crud</kbd> operations using your validation schemas.
+<kbd>Odm</kbd> is a model that does <kbd>validate</kbd> and <kbd>crud</kbd> operations using your validation schemas.
 
 ### Creating a Schema
 
@@ -652,7 +652,7 @@ You can set custom errors.
 $this->model->setError($field = '', $message = '');
 ```
 
-Set message to messages output.
+Sets message to messages output.
 
 ```php
 $this->model->setMessage($key, $message);
@@ -1268,7 +1268,7 @@ Defines crud functions for your model.
 
 #### $this->model->isValid();
 
-Validate the schema using schema rules.
+Validates the schema using schema rules.
 
 #### $this->model->getValidation();
 
@@ -1292,7 +1292,7 @@ Returns all errors in array format.
 
 #### $this->model->getError($field);
 
-if you provide any fieldname it gives it's error
+if you provide any fieldname it gives its error
 
 #### $this->model->setError($field, $error);
 
@@ -1304,7 +1304,7 @@ Builds Httpd GET friendly errors using query strings.
 
 #### $this->model->setFailure($message);
 
-Sets custom failure messages, you can use it when your transaction is fail.
+Sets custom failure messages, you can use it when your transaction is failed.
 
 #### $this->model->getValues();
 

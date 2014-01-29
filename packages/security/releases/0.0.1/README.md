@@ -44,6 +44,6 @@ Framework provides the following functions to assist in this process:
 Framework comes with a Cross Site Scripting filter. This filter looks for commonly used techniques to embed malicious Javascript into your data, or other types of code that attempt to hijack cookies or do other malicious things. The XSS Filter is described here <kbd>/docs/packages/xss</kbd>
     
 * Validate the data, framework has a Validator Class <kbd>/docs/packages/validator</kbd> that assists you in validating, filtering, and prepping your data.
-* If you want a more robust structure use Odm ( Object Data Model ) <kbd>/docs/packages/odm</kbd> Instead of Validator Class, Odm validate and save the data using your validation schemas.
+* If you want a more robust structure use Odm ( Object Data Model ) <kbd>/docs/packages/odm</kbd> Instead of Validator Class, Odm validates and saves the data using your validation schemas.
 * Escape all data before database insertion
 * Never insert information into your database without escaping it. Please see the section that discusses running queries at <kbd>/obullo/docs/database/running-and-escaping-queries</kbd> for more information.

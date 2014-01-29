@@ -74,7 +74,7 @@ $users = array(
 When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exist. 
 Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current validation rules.
 
-If you provide the schema in array format schema driver also will create the database table if its not exists.
+If you provide the schema in array format schema driver also will create the database table if its does not exist.
 
 **Note:** At this time we have just <b>Mysql Schema Driver</b>. if you want a write schema driver for other database types, please search on the net how to <b>submit a package</b> to Obullo.
 
@@ -132,7 +132,7 @@ Available <b>CRUD operations</b> that we recommend are listed below. You can def
 
 ------
 
-Type casting functions sets your variables to right type. The following is a list of all the type functions that are available to use:
+Type casting functions set your variables to right type. The following is a list of all the type functions that are available to use:
 
 <table>
     <thead>
@@ -323,6 +323,6 @@ if($this->order->insert())
 ?>
 ```
 
-Above the operation will insert data to orders and invoices tables and also it do validation each of them.
+Above the operation will insert data to orders and invoices tables and also does validation on each of them.
 
 **Note:** Look at <kbd>Odm Package</kbd> docs for more details.

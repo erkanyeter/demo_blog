@@ -3,7 +3,7 @@
 This class allows you to create a completely working form without writing any html tag even those which are used to coordinate the form, so you just write code and then the class will automatically generate all HTML tags.
 Uform uses the same Obullo helpers for form & inputs so it will not be something new to you.
 
-You just write your php code to generate the form , then just call 'print' function where ever you want. The output will be formated by 'div' elements and 'css', which will give you the availabilty to to modify it easly.
+You just write your php code to generate the form , then just call 'print' function where ever you want. The output will be formated by 'div' elements and 'css', which will give you the availabilty to modify it easly.
 
 <ul>
 <li><a href='#createForm'>Create a Form</a></li>
@@ -25,8 +25,8 @@ $this->uform->method();
 
 ------
 
-The main used method to create the form is 'create' function, within this function we will pass all the propereties and methods which will shape our form.
-All parametes will be provided throw a closure function.
+The main used method to create the form is 'create' function, within this function we will pass all the properties and methods which will shape our form.
+All parametes provided will throw a closure function.
 
 ```php
 <?php $this->uform->create(function(){ /* Form */ }); ?>
@@ -109,14 +109,14 @@ $this->uform->create('table', function() {
 ?>
 ```
 
-First we added the form properties throw '$this->addForm'. Then we added a new row '$this->addRow', all the columns which will be added after it will be grouped in the in the same row unless you add another new row and start a new group.
+First we open the form tag and specify its properties using '$this->addForm'. Then we add a new row '$this->addRow', all the columns added after '$this->addRow' will be grouped in the same row. unless you add another row and start a new group.
 
 <strong>addCol</strong> function accepts an array , this array declare the label of the column, the input field and the validation rules.
 As we mentioned before that this class is using the same functions of Obullo form package.
 
-'the following code must be in passed throw $this->addCol(array(/*here*/)) function' :
+'the following code must be passed to $this->addCol(array(/*here*/)) function' :
 
-For Radios & Checkboxs you have to add a label for each checkbox or radio element, & a general label for the column ie :
+For Radios & Checkboxs you have to add a label for each checkbox or radio element, & a general label for the column i.e :
 
 ```php
 <?php
@@ -144,7 +144,7 @@ After creating the form you just need to decide where to print the form and then
 
 ------
 
-Uform uses 'div' as a wrapper for all elements, so the 'row' is a 'division' , as well the column, label and the error message, moreover Uform uses css classes to coordinate the output, these css styles are written in uform.css, so this gives you the availability to update the output depending on your needs, howe its recommended to override the styles in a separate css file.
+Uform uses 'div' as a wrapper for all elements, so the 'row' is a 'division' , as well the column, label and the error message, moreover Uform uses css classes to coordinate the output, these css styles are written in uform.css, so this gives you the availability to update the output depending on your needs, however it is recommended to keep the styles in a separate css file.
 Example from uform.css :
 
 ```css
@@ -183,7 +183,7 @@ Example from uform.css :
 
 ------
 
-After you set the rules for each column on the "creat function", you just have to run the validation. This will validate all the fields and return true or false :
+After you set the rules for each column on the "create function", you just have to run the validation. This will validate all the fields and return true or false :
 
 ```php
 $this->uform->isValid();

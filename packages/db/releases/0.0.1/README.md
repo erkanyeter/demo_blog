@@ -18,7 +18,7 @@ and un-comment your driver file pdo_mysql.ini
 extension=pdo_mysql.so
 ```
 
-Look at for more details http://www.php.net/manual/en/pdo.installation.php
+For more details Look at http://www.php.net/manual/en/pdo.installation.php
 
 **Tip:** To edit your <kbd>app/debug/config.php</kbd> , choose your <u>Connection Name</u> bottom of the table and change it like below the example.
 
@@ -214,8 +214,8 @@ You can add more attributes in your option array like this.
 * database - The name of the database you want to connect to.
 * dbdriver - The database type. ie: mysql, postgres, odbc, etc. Must be specified in lower case.
 * dbh_port - The database port number.
-* char_set - The character set used in communicating with the database.
-* dsn - Data source name.If you want to use dsn, you will not need to supply other parameters.
+* char_set - The character set used to communicate with the database.
+* dsn - Data source name. If you want to use dsn, you will not need to supply other parameters.
 * options - Pdo set attribute options.
 
 <strong>Note:</strong> Depending on what database platform you are using (MySQL, Postgres, etc.) not all values will be needed. For example, when using SQLite you will not need to supply a username or password, and the database name will be the path to your database file. The information above assumes you are using MySQL.

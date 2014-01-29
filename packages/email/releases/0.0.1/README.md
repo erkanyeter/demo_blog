@@ -120,7 +120,7 @@ $this->email->replyTo('you@example.com', 'Your Name');
 
 #### $this->email->to()
 
-Sets the email address(s) of the recipient(s). Can be a single email, a comma-delimited list or an array:
+Sets the email address(es) of the recipient(s). Can be a single email, a comma-delimited list or an array:
 
 ```php
 $this->email->to('someone@example.com'); 
@@ -171,7 +171,7 @@ This is an optional message string which can be used if you send HTML formatted 
 
 #### $this->email->clear()
 
-Initializes all the email variables to an empty state. This function is intended for use if you run the email sending function in a loop, permitting the data to be reset between cycles.
+Initializes all the email variables to an empty state. This function is intended to use if you run the email sending function in a loop, permitting the data to be reset between cycles.
 
 ```php
 new Email();
@@ -235,4 +235,4 @@ More text that will be
 wrapped normally.
 ```
 
-Place the item you do not want word-wrapped between: <var>{unwrap} {/unwrap}</var>
+Place the item you do not want to be wrapped between: <var>{unwrap} {/unwrap}</var>
