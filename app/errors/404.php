@@ -33,7 +33,13 @@ margin:             0 0 8px 0;
 </head>
 <body>
 <div id="content">
-    <h1><?php echo $heading ?></h1> The url <b><?php echo $message ?></b> you requested was not found.
+    <h1><?php echo $heading ?></h1> The url <b><?php 
+
+    if(ENV == 'DEBUG' OR ENV == 'TEST') // Don't show page url to any one.
+    { 
+    	echo $message;
+    }
+?></b> you requested was not found.
 </div>
 </body>
 </html>

@@ -16,6 +16,7 @@ $c = new Controller(function(){
     new Auth;
 
     new Trigger('public','header'); // run triggers
+
 });
 
 $c->func('index', function(){

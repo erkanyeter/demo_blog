@@ -35,10 +35,7 @@
 
 						<div id="commentlink"><a href="#">#<?php echo $row->comment_id?></a></div>
 						
-						<small class="pending left"><?php 
-						$approval = ($row->comment_status == 0) ? 'Pending approval |' : ' ';
-						echo $approval;
-						?>
+						<small class="pending left"><?php  echo ($row->comment_status == 0) ? 'Pending approval |' : ' '; ?>
 						<?php 
 
 						$approve = ($row->comment_status == 1) ? $this->url->anchor('/comment/update/'.$row->comment_id.'/unapprove', 'Unapprove') : $this->url->anchor('/comment/update/'.$row->comment_id.'/approve', 'Approve');

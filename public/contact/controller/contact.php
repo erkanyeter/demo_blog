@@ -9,26 +9,28 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
-    new Get;
     new View;
     new Sess;
     new Auth;
+    new Post;
 
     new Trigger('public','header');
+    
 	new Model('contact', 'contacts');
 });
 
 $c->func('index', function(){
 
-
-    if($this->get->post('dopost')) // if do post click
+    if($this->post->get('dopost')) // if do post click
     {
-        $this->contact->data['contact_name']          = $this->get->post('contact_name');
-        $this->contact->data['contact_email']         = $this->get->post('contact_email');
-        $this->contact->data['contact_subject']       = $this->get->post('contact_subject');
-        $this->contact->data['contact_body']          = $this->get->post('contact_body');
-        $this->contact->data['contact_creation_date'] = date('Y-m-d H:i:s');
-        
+        $this->contact->data = array(
+            'contact_name'          => $this->post->get('contact_name'),
+            'contact_email'         => $this->post->get('contact_email'),
+            'contact_subject'       => $this->post->get('contact_subject'),
+            'contact_body'          => $this->post->get('contact_body'),
+            'contact_creation_date' => date('Y-m-d H:i:s'),
+        );
+
         $this->contact->func('save', function() {
             if ($this->isValid()){
                 return $this->db->insert('contacts', $this);
@@ -38,7 +40,7 @@ $c->func('index', function(){
 
         if($this->contact->save())  // save post
         {        
-            $this->form->setNotice('Post saved successfully.', 'success');
+            $this->form->setNotice('Post saved successfully.', SUCCESS);
             $this->url->redirect('/contact');
         }
     }

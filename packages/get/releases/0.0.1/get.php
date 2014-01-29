@@ -1,8 +1,7 @@
 <?php
 
 /**
-* GET Class ( Get the Super Globals Items
-* $_GET, $_POST, $_SERVER ).
+* GET Class ( Fetch data from superglobal $_GET variable ).
 *
 * @package       packages
 * @subpackage    get
@@ -13,8 +12,6 @@
 
 Class Get
 {
-    public static $method;  // Request method.
-
     /**
      * Constructor
      */
@@ -31,84 +28,31 @@ Class Get
     // --------------------------------------------------------------------
 
     /**
-     * Call defined methods POST, GET, SERVER, REQUEST, COOKIE
-     * executes the 
-     * 
-     *    -> _method($method, $arguments)
-     * 
-     * @param  string $method Request Method
-     * @param  array $arguments
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        global $packages;
-
-        self::$method = $method;
-
-        return call_user_func_array(array('Get', '_method'), $arguments);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-    * Fetch an item from either the POST array or the GET
+    * Fetch an item from the GET array
     *
     * @access   public
-    * @param    string  The index key
-    * @param    bool    XSS cleaning
-    * @param    bool    Use global post values instead of HMVC values.
+    * @param    string
+    * @param    bool
+    * @param    bool    Use global post values instead of HMVC scope.
     * @return   string
     */
-    private function _method($index = '', $xss_clean = false, $use_global_var = false)
+    public function get($index = NULL, $xss_clean = FALSE, $use_global_var = false)
     {
-        $prefix = ''; // Cookie prefix.
+        $VAR = ($use_global_var) ? $GLOBALS['_GET_BACKUP'] : $_GET;   // People may want to use hmvc or app superglobals.
 
-        $REQUEST_VAR['post']    = $_POST;
-        $REQUEST_VAR['get']     = $_GET;
-        $REQUEST_VAR['server']  = $_SERVER;
-        $REQUEST_VAR['request'] = $_REQUEST;
-        $REQUEST_VAR['cookie']  = $_COOKIE;
-
-        switch (self::$method)
+        if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
         {
-            case 'post':
-                $VAR = ($use_global_var) ? $GLOBALS['_POST_BACKUP']: $_POST;  // If you want to use hmvc's _POST_BACKUP variable
-                break;
-            case 'get':
-                $VAR = ($use_global_var) ? $GLOBALS['_GET_BACKUP']: $_GET; 
-                break;
-            case 'server':
-                $VAR = ($use_global_var) ? $GLOBALS['_SERVER_BACKUP']: $_SERVER;  
-                break;
-            case 'request':
-                $VAR = ($use_global_var) ? $GLOBALS['_REQUEST_BACKUP']: $_REQUEST; 
-                break;
-            case 'cookie':
-                if ( ! isset($_COOKIE[$index]) AND config('cookie_prefix') != '')
-                {
-                    $prefix = config('cookie_prefix');
-                }                
-                break;
-        }
-
-        if ($index === null AND ! empty($VAR)) // Check if a field has been provided
-        {
-            $request = array();
-            foreach (array_keys($VAR) as $key) // Loop through the full _POST or _GET array and return it
+            $get = array();
+            
+            foreach (array_keys($VAR) as $key)  // loop through the full _GET array
             {
-                $request[$key] = self::fetchFromArray($VAR, $key, $xss_clean);
+                $get[$key] = self::fetchFromArray($VAR, $key, $xss_clean);
             }
 
-            return $request;
+            return $get;
         }
 
-        if(self::$method == 'post' AND isset($VAR[$index])) // First check $_POST variable otherwise use $_GET
-    	{
-            return self::fetchFromArray($VAR, $index, $xss_clean);
-    	} 
-
-        return self::fetchFromArray($REQUEST_VAR[self::$method], $prefix.$index, $xss_clean);
+        return self::fetchFromArray($VAR, $index, $xss_clean);
     }
 
     // --------------------------------------------------------------------
@@ -139,6 +83,7 @@ Class Get
 
         return $array[$index];
     }
+
 }
 
 // END Get Class

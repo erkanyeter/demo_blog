@@ -122,7 +122,7 @@ Class Controller {
             return call_user_func_array($this->_controllerAppMethods[$method], $args);
         }
 
-        throw new Exception('Controller '.get_class().' error: There is no method "'.$method.'()" to call.');
+        throw new Exception(get_class().' error: There is no method "'.$method.'()" to call.');
     }
 
 }

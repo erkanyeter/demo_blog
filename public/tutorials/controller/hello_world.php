@@ -11,7 +11,7 @@ $c = new Controller(function(){
 });
 
 $c->func('index', function(){
-	
+
     $this->view->get('hello_world', function(){
     	
         $this->set('name', 'Obullo');

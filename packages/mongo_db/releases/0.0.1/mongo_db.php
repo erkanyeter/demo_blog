@@ -1105,7 +1105,7 @@ Class Mongo_Db {
             $connection_string .= "{$this->host}";
         }
 
-        $this->connection_string = trim($connection_string);
+        $this->connection_string = trim($connection_string).'/'.$this->dbname;
     }
 
     // --------------------------------------------------------------------

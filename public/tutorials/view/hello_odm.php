@@ -14,7 +14,7 @@
         <h1>Hello Odm</h1>
         <h2><?php echo $this->url->anchor('tutorials/hello_ajax', 'Ajax Tutorial') ?></h2>
 
-        <section><?php echo $this->user->getMessage('errorMessage') ?></section>
+        <section><?php echo $this->user->getMessage('string') ?></section>
         <section><?php echo $this->form->getNotice() ?></section>
         
         <section>

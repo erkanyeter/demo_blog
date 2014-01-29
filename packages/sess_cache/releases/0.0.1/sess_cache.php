@@ -13,7 +13,7 @@ Class Sess_Cache {
     
     public $db;
     public $database;
-    public $get;
+    public $cookie;
     public $request;
     public $encrypt_cookie       = false;
     public $expiration           = '7200';
@@ -50,7 +50,7 @@ Class Sess_Cache {
 
     function init($params = array())
     {        
-        foreach (array('database','get','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
+        foreach (array('database','cookie','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
@@ -61,6 +61,7 @@ Class Sess_Cache {
         $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : config('cookie_prefix');
         
         $this->now = $this->_getTime();
+        
         if ($this->expiration == 0) // Set the expiration two years from now.
         {
             $this->expiration = (60 * 60 * 24 * 365 * 2);
@@ -68,7 +69,7 @@ Class Sess_Cache {
 
         $this->cookie_name = $this->cookie_prefix . $this->cookie_name; // Set the cookie name
         
-        $this->get     = &$this->get;         // Set Get request object
+        $this->cookie  = &$this->cookie;      // Set Cookie object
         $this->request = &$this->request;     // Set Request object
         $this->db      = &$this->database;    // Set Database object
 
@@ -101,7 +102,7 @@ Class Sess_Cache {
     */
     function _read()
     {
-        $session = $this->get->cookie($this->cookie_name); // Fetch the cookie
+        $session = $this->cookie->get($this->cookie_name); // Fetch the cookie
 
         if ($session === false)  // No cookie?  Goodbye cruel world!...
         {               
@@ -153,7 +154,7 @@ Class Sess_Cache {
             return false;
         }
         
-        if ($this->match_useragent == true AND trim($session['user_agent']) != trim(substr($this->get->server('HTTP_USER_AGENT'), 0, 50)))
+        if ($this->match_useragent == true AND trim($session['user_agent']) != trim(substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50)))
         {
             $this->destroy();       // Does the User Agent Match?
 
@@ -266,7 +267,7 @@ Class Sess_Cache {
         $this->userdata = array(
                                 'session_id'     => md5(uniqid($sessid, true)),
                                 'ip_address'     => $this->request->getIpAddress(),
-                                'user_agent'     => substr($this->get->server('HTTP_USER_AGENT'), 0, 50),
+                                'user_agent'     => substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50),
                                 'last_activity'  => $this->now
                                 );
 
@@ -285,7 +286,7 @@ Class Sess_Cache {
     */
     function _update()
     {
-        $cookie  = $this->get->cookie($this->cookie_name);
+        $cookie  = $this->cookie->get($this->cookie_name);
         $session = $this->_unserialize($cookie);
 
         if (($this->userdata['last_activity'] + $this->time_to_update) >= $this->now) // We only update the session every five minutes by default

@@ -29,12 +29,6 @@ Class Hmvc
     public $uri    = '';
     public $router = '';
     public $config = '';
-        
-    // Global variables
-    public $_GET_BACKUP     = '';
-    public $_POST_BACKUP    = '';
-    public $_REQUEST_BACKUP = '';
-    public $_SERVER_BACKUP  = '';
 
     // Cache and Connection
     public $connection         = true;
@@ -154,7 +148,7 @@ Class Hmvc
         $this->request_keys    = array();
         $this->connection      = true;
         
-        // Clone objects
+        // Clear clone data
         $this->uri             = '';
         $this->router          = '';
         $this->config          = '';
@@ -162,11 +156,10 @@ Class Hmvc
         $this->_this           = '';
         $this->request_method  = 'GET';
         
-        // Global variables
-        $this->_GET_BACKUP     = '';
-        $this->_POST_BACKUP    = '';
-        $this->_REQUEST_BACKUP = '';
-        $this->_SERVER_BACKUP  = '';
+        $GLOBALS['_GET_BACKUP']     = array();    // Reset global variables
+        $GLOBALS['_POST_BACKUP']    = array();
+        $GLOBALS['_SERVER_BACKUP']  = array();
+        $GLOBALS['_REQUEST_BACKUP'] = array();
 
         unset($_SERVER['HMVC_REQUEST']);
         unset($_SERVER['HMVC_REQUEST_URI']);
@@ -201,15 +194,14 @@ Class Hmvc
             }
         }
 
-        $GLOBALS['_GET_BACKUP']    = $_GET;    // Original request variables
-        $GLOBALS['_POST_BACKUP']   = $_POST;
-        $GLOBALS['_SERVER_BACKUP'] = $_SERVER;
-        $GLOBALS['_SERVER_BACKUP'] = $_REQUEST;
+        //-------- BACKUP GLOBALS ( We need them in Get Class ) ---------//
         
-        $this->_GET_BACKUP     = $_GET;         // Overload to $_REQUEST variables ..
-        $this->_POST_BACKUP    = $_POST;
-        $this->_SERVER_BACKUP  = $_SERVER;
-        $this->_REQUEST_BACKUP = $_REQUEST;
+        $GLOBALS['_GET_BACKUP']     = $_GET;    // Original request variables
+        $GLOBALS['_POST_BACKUP']    = $_POST;
+        $GLOBALS['_SERVER_BACKUP']  = $_SERVER;
+        $GLOBALS['_REQUEST_BACKUP'] = $_REQUEST;
+        
+        //--------- 
 
         $GLOBALS['PUT'] = $_POST = $_GET = $_REQUEST = array();   // reset global variables
         
@@ -360,7 +352,7 @@ Class Hmvc
         //  --------------------------------------------------------------------------
 
         $hmvc_uri   = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
-        $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .'controller'. DS .$router->fetchClass(). EXT;
+        $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .$router->getControllerDirectory(). DS .$router->fetchClass(). EXT;
 
         if ( ! file_exists($controller))   // Check the controller exists or not
         {
@@ -471,10 +463,10 @@ Class Hmvc
         # Assign global variables we copied before ..
         ######################################
         
-        $_GET     = $this->_GET_BACKUP;         
-        $_POST    = $this->_POST_BACKUP;
-        $_SERVER  = $this->_SERVER_BACKUP;
-        $_REQUEST = $this->_REQUEST_BACKUP;
+        $_GET     = $GLOBALS['_GET_BACKUP'];   // Set back original request variables
+        $_POST    = $GLOBALS['_POST_BACKUP'];
+        $_SERVER  = $GLOBALS['_SERVER_BACKUP'];
+        $_REQUEST = $GLOBALS['_REQUEST_BACKUP'];
 
         # Set original objects foreach HMVC requests we backup before  ..
         ######################################
@@ -492,8 +484,6 @@ Class Hmvc
         # Assign Framework global variables ..
         ######################################
 
-        $lastRequestURi = ''; // $_SERVER['HMVC_REQUEST_URI'];
-  
         $this->clear();  // reset all HMVC variables.
         
         ######################################

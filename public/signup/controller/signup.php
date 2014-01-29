@@ -9,23 +9,26 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
-	new Get;
     new View;
     new Sess;
     new Auth;
+    new Post;
 
     new Trigger('public','header');
+
     new Model('user', 'users');
 });
 
 $c->func('index', function(){
 
-    if($this->get->post('dopost')) // if do post click
+    if($this->post->get('dopost')) // if do post click
     {
-        $this->user->data['user_username']      = $this->get->post('user_username');
-        $this->user->data['user_email']         = $this->get->post('user_email');
-        $this->user->data['user_password']      = $this->get->post('user_password');
-        $this->user->data['user_creation_date'] = date('Y-m-d H:i:s');
+        $this->user->data = array(
+            'user_username'      => $this->post->get('user_username'),
+            'user_email'         => $this->post->get('user_email'),
+            'user_password'      => $this->post->get('user_password'),
+            'user_creation_date' => date('Y-m-d H:i:s'),
+        );
 
         //--------------------- set non schema rules
 
@@ -35,7 +38,7 @@ $c->func('index', function(){
         //---------------------
         
         $this->user->func('callback_username', function(){
-            $this->db->where('user_username', $this->get->post('user_username', true));
+            $this->db->where('user_username', $this->post->get('user_username', true));
             $this->db->get('users');
             
             if($this->db->getCount() > 0) {  // unique control
@@ -46,9 +49,10 @@ $c->func('index', function(){
         });
 
         $this->user->func('save', function() {
+
             if ($this->isValid()){
-                $bcrypt = new Bcrypt; // use bcrypt
-                $this->data['user_password'] = $bcrypt->hashPassword($this->getValue('user_password'), 8);
+         
+                $this->data['user_password'] = $this->auth->hashPassword($this->getValue('user_password'), 8);
 
                 try
                 {

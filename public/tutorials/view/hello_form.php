@@ -11,7 +11,7 @@
             <?php echo $this->url->anchor('/', $this->html->img('logo.png', ' alt="Obullo" ')) ?>
         </header>
         
-        <h1>Hello Validator</h1>
+        <h1>Hello Form</h1>
 
         <section>
             <?php echo $this->form->getNotice() ?>
@@ -24,7 +24,7 @@
         <section>
 
             <?php
-            echo $this->form->open('tutorials/hello_validator/index', array('method' => 'POST')) ?>
+            echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
 
                 <table width="100%">
                     <tr>

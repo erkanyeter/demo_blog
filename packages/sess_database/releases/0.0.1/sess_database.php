@@ -12,7 +12,7 @@
 Class Sess_Database {
     
     public $db;
-    public $get;
+    public $cookie;
     public $request;
     public $encrypt_cookie       = false;
     public $expiration           = '7200';
@@ -49,7 +49,7 @@ Class Sess_Database {
 
     function init($params = array())
     {        
-        foreach (array('db','get','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
+        foreach (array('db','cookie','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
@@ -68,8 +68,8 @@ Class Sess_Database {
 
         $this->cookie_name = $this->cookie_prefix . $this->cookie_name; // Set the cookie name
         
-        $this->get     = &$this->get;         // Set Get object
-        $this->request = &$this->request;     // Set Request object
+        $this->cookie  = &$this->cookie;       // Set Cookie object
+        $this->request = &$this->request;      // Set Request object
         $this->db      = $this->db->connect(); // Set Database object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
@@ -85,8 +85,8 @@ Class Sess_Database {
         $this->_flashdataMark();  // Mark all new flashdata as old (data will be deleted before next request)
         $this->_gC();             // Delete expired sessions if necessary
 
-        logMe('debug', "Session Database Driver Initialized"); 
-        logMe('debug', "Session routines successfully run"); 
+        logMe('debug', 'Session Database Driver Initialized'); 
+        logMe('debug', 'Session routines successfully run'); 
 
         return true;
     }
@@ -101,7 +101,7 @@ Class Sess_Database {
     */
     function _read()
     {
-        $session = $this->get->cookie($this->cookie_name); // Fetch the cookie
+        $session = $this->cookie->get($this->cookie_name); // Fetch the cookie
 
         if ($session === false)  // No cookie?  Goodbye cruel world!...
         {               
@@ -155,7 +155,7 @@ Class Sess_Database {
             return false;
         }
         
-        if ($this->match_useragent == true AND trim($session['user_agent']) != trim(substr($this->get->server('HTTP_USER_AGENT'), 0, 50)))
+        if ($this->match_useragent == true AND trim($session['user_agent']) != trim(substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50)))
         {
             $this->destroy();       // Does the User Agent Match?
 
@@ -270,7 +270,7 @@ Class Sess_Database {
         $this->userdata = array(
                             'session_id'     => md5(uniqid($sessid, true)),
                             'ip_address'     => $this->request->getIpAddress(),
-                            'user_agent'     => substr($this->get->server('HTTP_USER_AGENT'), 0, 50),
+                            'user_agent'     => substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50),
                             'last_activity'  => $this->now
                             );
 

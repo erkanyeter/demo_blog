@@ -11,7 +11,7 @@
 
 Class Sess_Native {
     
-    public $get;
+    public $cookie;
     public $request;
     public $now;
     public $encrypt_cookie       = false;
@@ -32,18 +32,18 @@ Class Sess_Native {
 
     function init($params = array())
     {        
-        foreach (array('encrypt_cookie','get','request','expiration','expire_on_close','match_ip', 
+        foreach (array('encrypt_cookie','cookie','request','expiration','expire_on_close','match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$ke] : config($key, 'sess');
+            $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
         }
 
         $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : config('cookie_path');
         $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : config('cookie_domain');
         $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : config('cookie_prefix');
 
-        $this->get     = &$this->get;     // Set Get object
-        $this->request = &$this->request; // Set Request object
+        $this->cookie  = &$this->cookie;   // Set Get object
+        $this->request = &$this->request;  // Set Request object
 
         if($this->expire_on_close)  // Expire on close 
         {
@@ -104,7 +104,7 @@ Class Sess_Native {
     */
     function _read()
     {
-        $session = $this->get->cookie($this->cookie_name.'_userdata'); // Fetch the cookie
+        $session = $this->cookie->get($this->cookie_name.'_userdata'); // Fetch the cookie
 
         if ($session === false)  // No cookie?  Goodbye cruel world!...
         {
@@ -159,7 +159,7 @@ Class Sess_Native {
         }
         
         if ($this->match_useragent == true 
-            AND trim($session['user_agent']) != trim(substr($this->get->server('HTTP_USER_AGENT'), 0, 50)))
+            AND trim($session['user_agent']) != trim(substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50)))
         {
             $this->destroy();       // Does the User Agent Match?
 
@@ -201,7 +201,7 @@ Class Sess_Native {
         $this->userdata = array(
                             'session_id'     => session_id(),
                             'ip_address'     => $this->request->getIpAddress(),
-                            'user_agent'     => substr($this->get->server('HTTP_USER_AGENT'), 0, 50),
+                            'user_agent'     => substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50),
                             'last_activity'  => $this->now
                             );
 

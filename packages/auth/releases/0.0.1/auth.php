@@ -18,24 +18,15 @@ Class Auth {
    
     public $db;     // Databasse object
     public $sess;   // Session Object
-    public $table;  // Database table
-    public $get;    // Input Object
     public $bcrypt; // Password hash / verify object
     public $session_prefix     = 'auth_';
-    public $password_col       = 'password';  // The name of the table field that contains the password.
     public $login_url          = '/login';
     public $dashboard_url      = '/dashboard';
-    public $fields             = array();
-    public $password_salt_str  = '';     // Password salt string.
     public $algorithm          = 'sha256'; // Set algorithm you want to use.
     public $allow_login        = true;     // Whether to allow logins to be performed on this page.
-    public $xss_clean          = true;   // Whether to enable the xss clean features.
     public $regenerate_sess_id = false;  // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
-    public $row                = false;  // SQL Query result as row
-    private $isValid           = false;  // Auth validation variable
 
-    public $username;
-    protected $password;
+    protected $database_password; // password string comes from databas column
     
     /**
     * Constructor
@@ -88,38 +79,39 @@ Class Auth {
     * 
     * @return boolean | object  If auth is fail it returns to false otherwise "Object"
     */
-    public function query($username = '', $password = '')
+    public function query($password, $closure)
     {
         if($this->getItem('allow_login') == false)
         {
             return 'disabled';
         }
-        
-        $password = ($this->password_salt_str != '') ? ($this->password_salt_str.trim($password)) : trim($password);
-
-        $this->username = (string)$username;
-        $this->password = (string)$password;
-
-        if($this->getItem('xss_clean')) // if xss clean filter enabled
-        {
-            $this->username = getComponentInstance('security')->xssClean($this->username);
-        }
 
         // Get query function.
-        $this->row = call_user_func_array(Closure::bind($this->query, $this, get_class()), array($this->username));
+        $row = call_user_func_array(Closure::bind($closure, $this, get_class()), array());
 
-        $password_col = $this->password_col;
-
-        if(is_object($this->row) AND isset($this->row->{$password_col}))
+        if(empty($this->database_password))
         {
-            if($this->verifyPassword($this->password, $this->row->{$password_col}))
-            {
-                $this->isValid = true;
-                return $this->row;
-            }
+            throw new Exception('Auth class requries database password string for verifiying the password.Use <pre>$this->setPassword(string $password);</pre>');
         }
-      
+        
+        if($this->verifyPassword($password, $this->database_password))
+        {
+            return $row;
+        }
+
         return false;
+    }
+
+    //---------------------------------------------------------------------
+
+    /**
+     * Set database password for verification
+     * 
+     * @param string $password
+     */
+    private function setPassword($password)
+    {
+        $this->database_password = $password; 
     }
     
     // --------------------------------------------------------------------
@@ -166,7 +158,7 @@ Class Auth {
         switch($this->algorithm)
         {
             case 'bcrypt':{
-                return $this->bcrypt->verifyPassword($password,$dbPassword);
+                return $this->bcrypt->verifyPassword($password, $dbPassword);
                 break;
             }
             case 'md5':
@@ -185,13 +177,18 @@ Class Auth {
     // ------------------------------------------------------------------------    
     
     /**
-     * Authorize the User
+     * Authorize to User
      * 
-     * @return type
+     * @return void
      */
-    public function authorizeMe()
+    public function authorize($closure)
     {
-        $this->sess->set('identity', 'yes', $this->session_prefix);  // Authenticate the user.
+        if (is_callable($closure))
+        {
+            call_user_func_array(Closure::bind($closure, $this, get_class()), array());
+        
+            $this->sess->set('hasIdentity', 'yes', $this->session_prefix);  // Authenticate the user.
+        }
     }
     
     // ------------------------------------------------------------------------
@@ -224,7 +221,7 @@ Class Auth {
      */
     public function hasIdentity()
     {
-        if($this->sess->get('identity', $this->session_prefix) == 'yes')  // auth is ok ?
+        if($this->sess->get('hasIdentity', $this->session_prefix) == 'yes')  // auth is ok ?
         {
             return true;
         }
@@ -304,25 +301,23 @@ Class Auth {
     // ------------------------------------------------------------------------
     
     /**
-    * Logout user, destroy the sessions.
+    * Remove the identity of user
     * 
-    * @param bool $destroy - whether to use session destroy function
     * @return void 
     */
     public function clearIdentity()
     {
-        $this->sess->remove('identity', $this->session_prefix);
-        $this->sess->remove($this->getAllIdentityData());
+        $this->sess->remove($this->getAllIdentities());
     }
     
     // ------------------------------------------------------------------------
 
     /**
-     * Get user all identity data
+     * Get all identity data
      * 
      * @return type
      */
-    public function getAllIdentityData()
+    public function getAllIdentities()
     {
         $identityData = array();
         foreach($this->sess->getAllData() as $key => $val)

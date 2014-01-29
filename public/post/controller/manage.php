@@ -9,24 +9,24 @@ $c = new Controller(function(){
 	new Url;
 	new Html;
 	new Form;
-    new Get;
     new View;
     new Sess;
     new Auth;
+    new Post;
 
     new Trigger('private','header');
 });
 
 $c->func('index', function(){
 
-    if($this->get->post('post_title'))
+    if($this->post->get('post_title'))
     {
-        $this->db->like('post_title', $this->get->post('post_title'));
+        $this->db->like('post_title', $this->post->get('post_title'));
     }
 
-    if($this->get->post('post_status'))
+    if($this->post->get('post_status'))
     {
-        $this->db->like('post_status', $this->get->post('post_status'));
+        $this->db->like('post_status', $this->post->get('post_status'));
     }
 
     $this->db->get('posts');

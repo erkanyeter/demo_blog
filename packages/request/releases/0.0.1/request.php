@@ -31,6 +31,62 @@ Class Request {
     // --------------------------------------------------------------------
 
     /**
+    * Fetch an item from the POST array
+    *
+    * @access   public
+    * @param    string
+    * @param    bool
+    * @param    bool    Use global post values instead of HMVC scope.
+    * @return   string
+    */
+    public function get($index = NULL, $xss_clean = FALSE, $use_global_var = false)
+    {
+        $VAR = ($use_global_var) ? $GLOBALS['_REQUEST_BACKUP'] : $_REQUEST;  // People may want to use hmvc or app superglobals.
+
+        if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
+        {
+            $request = array();
+            
+            foreach (array_keys($VAR) as $key)  // loop through the full _REQUEST array
+            {
+                $request[$key] = Get::fetchFromArray($VAR, $key, $xss_clean);
+            }
+
+            return $request;
+        }
+
+        return Get::fetchFromArray($VAR, $index, $xss_clean);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get data from $_SERVER variable
+     * 
+     * @return string | bool
+     */
+    public function getServer($index = NULL, $xss_clean = FALSE, $use_global_var = false)
+    {
+        $VAR = ($use_global_var) ? $GLOBALS['_SERVER_BACKUP'] : $_SERVER;  // People may want to use hmvc or app superglobals.
+
+        if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
+        {
+            $server = array();
+            
+            foreach (array_keys($VAR) as $key)  // loop through the full _REQUEST array
+            {
+                $server[$key] = Get::fetchFromArray($VAR, $key, $xss_clean);
+            }
+
+            return $request;
+        }
+
+        return Get::fetchFromArray($VAR, $index, $xss_clean);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Get server request method 
      * 
      * @return string | bool

@@ -16,7 +16,7 @@ Class Uri
     public $uri_string;
     public $segments      = array();
     public $rsegments     = array();
-    public $uri_extension = 'null';
+    public $uri_extension = '';
     public $uri_protocol  = 'REQUEST_URI';
     
     public static $instance;
@@ -104,7 +104,7 @@ Class Uri
         $this->uri_string    = '';
         $this->segments      = array();
         $this->rsegments     = array();
-        $this->uri_extension = 'null';
+        $this->uri_extension = '';
     }
 
     // --------------------------------------------------------------------
@@ -251,12 +251,16 @@ Class Uri
     {
         if(strpos($segment, '.') !== false)
         {
-            $allowed_extensions = config('allowed_extensions');
+            //----------- Web Service Response Format -------------//
+
+            $web_service_extensions = config('web_service_extensions');
+
+            //-----------------------------------------------------//
 
             $extension     = explode('.', $segment);
             $uri_extension = end($extension);
             
-            if(in_array('.'.$uri_extension, $allowed_extensions))
+            if(in_array('.'.$uri_extension, $web_service_extensions))
             {
                 $this->uri_extension = $uri_extension;  // set extension 
 

@@ -656,7 +656,7 @@ Class Validator {
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Translate a field name
      *
@@ -670,9 +670,9 @@ Class Validator {
         {
             $line = substr($fieldname, 6);   // Grab the variable
 
-            if (hasLingo($line) == false) // Were we able to translate the field name? If not we use $line.
+            if (hasLingo($line)) // Were we able to translate the field name? If not we use $line.
             {
-                return $line;
+                return lingo($line);
             }
         }
 
@@ -682,6 +682,10 @@ Class Validator {
     // --------------------------------------------------------------------
     
     /**
+     * !! WARNING Don't move this function to 
+     * src because of Form class __call this function 
+     * magically.
+     * 
      * Set Error Message
      *
      * Lets users set their own error messages on the fly.  Note:  The key

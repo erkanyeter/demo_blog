@@ -9,11 +9,11 @@ namespace Form\Src {
     * Returns the error for a specific form field.  This is a helper for the
     * form validation class.
     *
-    * @access	public
-    * @param	string | object
-    * @param	string
-    * @param	string
-    * @return	string
+    * @access   public
+    * @param    string | object
+    * @param    string
+    * @param    string
+    * @return   string
     */
     function errors($field = '', $prefix = '', $suffix = '')
     {       
@@ -31,6 +31,11 @@ namespace Form\Src {
 
         if($prefix == '' AND $suffix == '')
         {
+            if(empty($field)) // return to all form errors
+            {
+                return $OBJ->errors($field, $prefix, $suffix);
+            }
+
             return sprintf($form['notifications']['error'], $OBJ->errors($field, '', ''));
         }
 

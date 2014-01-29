@@ -13,13 +13,14 @@
 Class Router {
 
     public $uri;
-    public $response            = array();
-    public $routes              = array();
-    public $error_routes        = array();
-    public $class               = '';
-    public $method              = 'index';
-    public $directory           = '';
-    public $uri_protocol        = 'auto';
+    public $response             = array();
+    public $routes               = array();
+    public $error_routes         = array();
+    public $class                = '';
+    public $method               = 'index';
+    public $directory            = '';
+    public $uri_protocol         = 'auto';
+    public $controller_directory = 'controller';
     public $default_controller;
     
     public static $instance;
@@ -92,12 +93,13 @@ Class Router {
         
         // route config dont't reset "$this->routes" there cause some isset errors
         
-        $this->error_routes        = array();
-        $this->class               = '';
-        $this->method              = 'index';
-        $this->directory           = '';
-        $this->uri_protocol        = 'auto';
-        $this->default_controller  = '';
+        $this->error_routes         = array();
+        $this->class                = '';
+        $this->method               = 'index';
+        $this->directory            = '';
+        $this->uri_protocol         = 'auto';
+        $this->controller_directory = 'controller';
+        $this->default_controller   = '';
     }
 
     // --------------------------------------------------------------------
@@ -153,7 +155,7 @@ Class Router {
         $this->default_controller = ( ! isset($this->routes['default_controller']) OR $this->routes['default_controller'] == '') ? false : strtolower($this->routes['default_controller']);
 
         $this->uri->_fetchUriString(); // Detect the complete URI string
-    
+
         if ($this->uri->getUriString() == '')       // Is there a URI string? 
         {                                           // If not, the default controller specified in the "routes" file will be shown.
             if ($this->default_controller === false)
@@ -185,8 +187,7 @@ Class Router {
             $this->setClass($segments[1]);
             $this->setMethod($this->routes['index_method']);  // index
 
-            // Assign the segments to the URI class
-            $this->uri->rsegments = $segments;
+            $this->uri->rsegments = $segments;  // Assign the segments to the URI class
 
             // re-index the routed segments array so it starts with 1 rather than 0
             // $this->uri->_reindex_segments();
@@ -260,8 +261,6 @@ Class Router {
     *       0      1           2
     * module / controller /  method  /
     *
-    * @author   Ersin Guvenc
-    * @author   CJ Lazell
     * @access   public
     * @param    array
     * @version  Changed segments[0] as segments[1]
@@ -283,19 +282,44 @@ Class Router {
             array_unshift($segments, 'tasks');
         }
 
+        // WEB SERVICE REQUEST
         //----------------------------
-        
+
+        if($this->uri->getExtension() != '' AND ! defined('STDIN'))
+        {
+            // $backup_directory = $this->controller_directory;  // Backup for task operations.
+            // $backup_segments  = $segments;
+
+            $this->controller_directory = $segments[1];
+            unset($segments[1]);
+            $segments = array_values($segments);
+        }
+
+        // SET DIRECTORY
+        //----------------------------
+
         $this->setDirectory($segments[0]); // Set first segment as a module
 
         if( ! empty($segments[1]))
-        {              
-            if (file_exists(PUBLIC_DIR .$this->fetchDirectory(). DS .'controller'. DS .$segments[1]. EXT))
-            {  
+        {
+            if (file_exists(PUBLIC_DIR .$this->fetchDirectory(). DS .$this->getControllerDirectory(). DS .$segments[1]. EXT))
+            {   
                 return $segments; 
             }
         }
         
-        if(file_exists(PUBLIC_DIR .$this->fetchDirectory(). DS .'controller'. DS .$this->fetchDirectory(). EXT))
+        // WEB SERVICE REQUEST TASK ( Restore segments & controller dir for Cli mode )
+        //----------------------------
+        /*
+        if(defined('STDIN')) // Web request backup for task operations.
+        {
+            $segments                   = $backup_segments;
+            $this->controller_directory = $backup_directory;
+        }
+        */
+        //----------------------------
+
+        if(file_exists(PUBLIC_DIR .$this->fetchDirectory(). DS .$this->getControllerDirectory(). DS .$this->fetchDirectory(). EXT))
         {
             array_unshift($segments, $this->fetchDirectory());
 
@@ -307,6 +331,9 @@ Class Router {
             return $segments;
         }
 
+        // HMVC 404
+        //----------------------------
+        
         if(isset($_SERVER['HMVC_REQUEST']))
         {
             $this->response['404'] = 'Request not found.';
@@ -315,6 +342,9 @@ Class Router {
 
             return false;
         }
+
+        // HTTP 404
+        //----------------------------
 
         // If we've gotten this far it means that the URI does not correlate to a valid
         // controller class.  We will now see if there is an override
@@ -473,6 +503,18 @@ Class Router {
     public function fetchDirectory()
     {
         return $this->directory;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Fetches the current controller directory name
+     * 
+     * @return string
+     */
+    public function getControllerDirectory()
+    {
+        return $this->controller_directory;
     }
 
     // --------------------------------------------------------------------

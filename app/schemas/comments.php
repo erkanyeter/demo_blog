@@ -45,7 +45,7 @@ $comments = array(
 		),
 	'comment_status' => array(
 		'label' => 'Comment Status',
-		'types' => '_not_null|_bit(1)|_default(b\'0\')',
+		'types' => '_not_null|_tinyint(1)|_default(0)',
 		'rules' => '',
 		),
 );

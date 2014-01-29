@@ -10,16 +10,17 @@ $c = new Controller(function(){
     new Url;
     new Html;
     new View;
+    new Post;
 
     new Model('user', 'users');
 });
 
 $c->func('index', function(){
 
-    if($this->get->post('dopost'))
+    if($this->post->get('dopost'))
     {
-        $this->user->data['user_email']    = $this->get->post('user_email');
-        $this->user->data['user_password'] = $this->get->post('user_password');
+        $this->user->data['user_email']    = $this->post->get('user_email');
+        $this->user->data['user_password'] = $this->post->get('user_password');
 
         //--------------------- set non schema rules
         

@@ -2,7 +2,6 @@
 
 /**
  * $c hello_web "web service"
- * 
  * @var Controller
  */
 $c = new Controller(function(){
@@ -13,13 +12,11 @@ $c = new Controller(function(){
 
 $c->func('index', function(){
 
-    echo $this->uri->getExtension();
-    echo '<br>';
-
-    $this->web->query('post','members.create_one.json',function(){
+    $this->web->query('post','members/create.one.json?a=8',function(){
         $this->data['user_username'] = 'test';
-
-        $this->isValid();
+       
+        // $this->isValid();
+        
     });
 
     // $this->web->isValid();

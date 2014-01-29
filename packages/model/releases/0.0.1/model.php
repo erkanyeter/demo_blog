@@ -15,7 +15,7 @@ Class Model {
      * Create Models on the fly.
      * 
      * @param string  $modelName  Model Name
-     * @param array | string | null $schemaOrTable Schema Object 
+     * @param array | string | null | boolean $schemaOrTable Schema Object 
      * @param string $dbVar database object variable
      */
     public function __construct($modelName, $schemaOrTable = '', $dbVar = 'db')
@@ -51,27 +51,32 @@ Class Model {
         {
             $tablename = strtolower(key($schemaOrTable));
         } 
-        else
+        else // if boolean
         {
             $tablename = strtolower($modelName); // If schema and table not provided use modelname as tablename.
         }
 
         //------------- Build Schema & Get Schema array ------------------//
 
-        if($schemaOrTable == '' OR is_string($schemaOrTable))  // If schema provided as string , we understand its tablename ?
+        if($schemaOrTable === '' OR is_string($schemaOrTable))  // If schema provided as string , we understand its tablename ?
         {
             // ** Auto sync enabled in "debug" mode.
 
             if(config('model_auto_sync')) // Create new schema if not exists.
             {
-                $requestUri = urlencode(getInstance()->uri->getRequestUri());
-                $postData   = base64_encode(serialize($_POST));
+                $requestUri = base64_encode(getInstance()->uri->getRequestUri());
+                
+                $postData   = 'false';
+                if(sizeof($_POST) > 0) // Don't send empty post data
+                {
+                    $postData = base64_encode(serialize($_POST));
+                }
 
-                $task = new Task;
-                $tablename =  isset($_POST['lastCurrentSchema']) ? $_POST['lastCurrentSchema'] : $tablename ;
-                $output = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
+                $task      = new Task;    // Get tablename from "sync form" if we have sync request otherwise use current tablename.
+                $tablename = isset($_POST['lastCurrentSchema']) ? $_POST['lastCurrentSchema'] : $tablename ;
+                $output    = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
 
-                // print_r($_POST); // debug On / Off
+                // print_r($_POST); exit; // debug On / Off
 
                 if( ! empty($output))
                 {
@@ -89,13 +94,21 @@ Class Model {
             }
 
             $schemaArray = getSchema($tablename); // Get schema configuration.
+            
+            $schemaArray['*']['_tablename']  = $tablename; 
+            $schemaArray['*']['_use_schema'] = true;
         } 
-        else 
+        
+        if(is_array($schemaOrTable))
         {
-            $schemaArray = (array)$schemaOrTable;
+            $schemaArray['*']['_tablename']  = $tablename;  // Set tablename to schemaArray settings, we need it in the user's model class.
+            $schemaArray['*']['_use_schema'] = true;
+        } 
+        elseif(is_bool($schemaOrTable))
+        {
+            $schemaArray['*']['_tablename']  = $tablename; 
+            $schemaArray['*']['_use_schema'] = false;       // Send boolean to Odm object
         }
-
-        $schemaArray['*']['_tablename'] = $tablename;  // Set tablename to schemaArray settings, we need it the user's model class.
 
         //---------------------- Build Model Class -----------------------//
 
@@ -103,7 +116,7 @@ Class Model {
         {
             eval('Class '.$modelName.' extends Odm { 
                 use Odm\Src\Model_Trait;
-                public $data;
+                public $data = array();
                 function __construct($schemaArray, $dbObject) {
                     parent::__construct($schemaArray, $dbObject); 
                 }

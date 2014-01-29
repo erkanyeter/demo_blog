@@ -25,7 +25,7 @@ $c = new Controller(function(){
  * @param string $requestUri  urlencoded string ( current page url )
  * @param string $postData base64 encoded serialized string $_POST data
  */
-$c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postData = '')
+$c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postData = 'false')
 {
     if( ! isset(getInstance()->{$dbVar}))
     {
@@ -37,12 +37,17 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
         $dbObject = getInstance()->{$dbVar};
     }
 
-    $schema     = new Schema($tablename, $modelName, $dbObject, urldecode($requestUri));
+    $schema     = new Schema($tablename, $modelName, $dbObject, base64_decode($requestUri));
     $schemaPath = $schema->getPath();
 
-    if( ! empty($postData))
-    {        
-        $_POST = unserialize(base64_decode($postData));  // Convert encoded raw post data to array format
+    if($postData != 'false')
+    {
+        $base64_data = base64_decode($postData);
+
+        if($this->_is_serialized($base64_data)) // check data is Serialized ?
+        {
+            $_POST = unserialize($base64_data);  // Convert encoded raw post data to array format
+        }
     }
 
     if( ! file_exists($schemaPath)) // If schema file exists ?
@@ -65,6 +70,43 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
         }
     }
     
+});
+
+$c->func('_is_serialized', function($data){
+
+        if ( ! is_string( $data ) )  // if it isn't a string, it isn't serialized
+        {
+            return false;
+        }
+
+        $data = trim( $data );
+        if ( 'N;' == $data )
+        {
+            return true;
+        }
+        
+        if ( ! preg_match( '/^([adObis]):/', $data, $badions ) )
+        {
+            return false;
+        }
+
+        switch ( $badions[1] )
+        {
+            case 'a' :
+            case 'O' :
+            case 's' :
+                if ( preg_match( "/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data ) )
+                    return true;
+                break;
+            case 'b' :
+            case 'i' :
+            case 'd' :
+                if ( preg_match( "/^{$badions[1]}:[0-9.E-]+;\$/", $data ) )
+                    return true;
+                break;
+        }
+
+        return false;
 });
 
 

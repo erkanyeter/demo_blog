@@ -13,17 +13,18 @@ $c = new Controller(function(){
     new Auth;
 
     new Trigger('private','header');
-    new Model('post', 'posts');
+
+    new Model('posts');
 });
 
 $c->func('index', function($id) use($c){
 
-    $this->post->func('delete', function() use($id) {
+    $this->posts->func('delete', function() use($id) {
         $this->db->where('post_id', $id);
         return $this->db->delete('posts', $this);
     });
 
-    if($this->post->delete())  // save post
+    if($this->posts->delete())  // save post
     {        
         $this->form->setNotice('Post deleted successfully.',SUCCESS); // set flash notice
         $this->url->redirect('/post/manage');

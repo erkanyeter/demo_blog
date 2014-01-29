@@ -13,7 +13,7 @@ Class Odm {
 
     use Odm\Src\Model_Trait;
 
-    public $_odmSchema       = null;      // User schema
+    public $_odmSchema       = array();   // User schema
     public $_odmTable        = '';        // Table name ( model name )
     public $_odmConfig       = array();   // Odm configuration variable
     public $_odmMessages     = array();   // Validation errors and transactional ( Insert, Update, delete ) messages
@@ -22,29 +22,39 @@ Class Odm {
     public $_odmValidator;
     public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
     public $_odmColumnJoins  = array();   // Do join foreach columns with related schema
+    public $_odmUseSchema    = true;      // Use schema file as default
 
-    public $get;                          // Get package object
+    public $post;                         // Post package object
     public $form;                         // Form package object
     
     // --------------------------------------------------------------------
 
     /**
-    * Construct the valid schema items
-    * 
-    * @return void
-    */
-    public function __construct(array $schemaArray, $dbObject)
+     * Constructor
+     * 
+     * @param mixed $schemaArray  array or booelan type
+     * @param object $dbObject
+     */
+    public function __construct($schemaArray, $dbObject)
     {
         $this->_odmConfig    = getConfig('odm');   // Initialize to Validator Object.
         $this->_odmValidator = getInstance()->validator; 
 
         $this->clear();            // Clear the validator.
-        $this->_odmTable = strtolower($schemaArray['*']['_tablename']);
+
+        $this->_odmTable     = strtolower($schemaArray['*']['_tablename']);
+        $this->_odmUseSchema = $schemaArray['*']['_use_schema'];
         unset($schemaArray['*']);  // Remove settings
 
         $this->_odmSchema = $schemaArray;
+
+        if($this->_odmUseSchema == false)   // reset schema variable if its disabled.
+        {
+            $this->_odmSchema = array();
+        }
+
         $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
-        $this->get  = (isset(getInstance()->get)) ? getInstance()->get : $odm['get'];
+        $this->post = (isset(getInstance()->post)) ? getInstance()->post : $odm['post'];
 
         getInstance()->lingo->load('odm');  // Load Odm package language file.
 
@@ -114,7 +124,7 @@ Class Odm {
             {
                 if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key])) 
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key));
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));
                 }
             }
             
@@ -156,7 +166,7 @@ Class Odm {
 
                 if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key]))  // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->get->post($key)); 
+                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key)); 
                 }
             }
             
@@ -419,6 +429,12 @@ Class Odm {
     */
     public function setMessage($key, $message)
     {
+        if(strpos($key, 'callback_') === 0) // if user want to setMessage using Form Object
+        {                                   // call the $form->setMessage() function because of we have same function in here.
+            
+            return getInstance()->validator->setMessage($key, $message);
+        }
+
         $this->_odmMessages[$this->_odmTable]['messages'][$key] = $message;
     }
 

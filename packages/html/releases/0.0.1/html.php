@@ -70,7 +70,7 @@ Class Html {
         $assets_url = str_replace(DS, '/', ASSETS);
         $assets_url = str_replace(ROOT, '', ASSETS);
 
-        return getInstance()->uri->getBaseUrl('', false) .$assets_url. $extra_path . $folder . $sub_path . $file;
+        return getInstance()->uri->getAssetsUrl('', false) .$assets_url. $extra_path . $folder . $sub_path . $file;
     }
 }
 

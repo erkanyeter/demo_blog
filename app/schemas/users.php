@@ -20,7 +20,7 @@ $users = array(
 		),
 	'user_creation_date' => array(
 		'label' => 'User Creation Date',
-		'types' => '_null|_datetime',
+		'types' => '_datetime|_null',
 		'rules' => '',
 		),
 	'user_modification_date' => array(
