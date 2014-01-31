@@ -35,7 +35,7 @@ Class Sess {
 
         static $logged = null;
 
-        if($logged == null AND config('log_threshold') > 0)
+        if($logged == null AND $config['log_threshold'] > 0)
         {
             logMe('debug', '$_SESSION: '.preg_replace('/\n/', '', print_r(self::$driver->getAllData(), true)));
         }
@@ -55,17 +55,19 @@ Class Sess {
     {
         static $sessionStart = null;
 
+        $config = getConfig('sess');
+
         if ($sessionStart == null)
         {
-            $driver   = (isset($params['driver'])) ? $params['driver'] : config('driver', 'sess');
-            $database = (isset($params['database'])) ? $params['database'] : config('database', 'sess');
+            $driver   = (isset($params['driver'])) ? $params['driver'] : $config['driver'];
+            $database = (isset($params['database'])) ? $params['database'] : $config['database'];
 
             self::$driver = $driver;      // Driver object.
             self::$driver->init($params); // Start the sessions
 
             if(get_class($driver) != 'Sess_Database' AND is_object($database))
             {
-                logMe('error', 'Please check sess.php config file database item should be set to "null" if you don\'t use it.');
+                throw new Exception("Please check sess.php config file database item must be set to 'null' if you don't use it.<pre>\n'cookie' => new Cookie,\n'request' => new Request,\n<b>'db' => null</b></pre>");
             }
 
             $sessionStart = true;

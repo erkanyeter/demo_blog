@@ -232,11 +232,13 @@ Class Agent {
      */
     public function _setMobile()
     {
+        $config = getConfig();
+
         if (is_array($this->mobiles) AND count($this->mobiles) > 0)
         {
             foreach ($this->mobiles as $key => $val)
             {
-                if (false !== (strpos(mb_strtolower($this->agent, config('charset')), $key)))
+                if (false !== (strpos(mb_strtolower($this->agent, $config['charset']), $key)))
                 {
                     $this->is_mobile     = true;
                     $this->mobile['key'] = $key;
@@ -246,6 +248,7 @@ Class Agent {
                 }
             }
         }
+        
         return false;
     }
 

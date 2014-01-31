@@ -53,6 +53,8 @@ Class Captcha {
 			global $packages;
 
 			$this->config = getConfig('captcha'); // config->captcha.php config
+			$this->sess   = $this->config['sess'];
+
 			$this->init();
  			
 			$this->img_path          = ROOT .str_replace('/', DS, trim($this->config['img_path'], '/')). DS;
@@ -62,7 +64,7 @@ Class Captcha {
 
 			if( ! isset(getInstance()->captcha))
 			{
-				getInstance()->captcha = $this; // Make available it in the controller $this->catpcha->method();
+				getInstance()->captcha = $this; // Make available it in the controller $this->captcha->method();
 			}
 
 			if (mt_rand(1, $this->del_rand) == 1)
@@ -310,13 +312,15 @@ Class Captcha {
 		{
 			if($this->debugFlag == 'random')
 			{
+				$config = getConfig();
+
 				$possible = $this->char_pool[$this->set_pool];
 				$this->code = '';
 				$i          = 0;
 
 				while ($i < $this->char)
 				{
-					$this->code.= mb_substr($possible, mt_rand(0, mb_strlen($possible, config('charset'))-1), 1, config('charset'));
+					$this->code.= mb_substr($possible, mt_rand(0, mb_strlen($possible, $config['charset'])-1), 1, $config['charset']);
 					$i++;
 				}
 			}
@@ -375,7 +379,9 @@ Class Captcha {
 			$textbox          = imagettfbbox($this->font_size, 0, $font_path, $this->code) or die ('Error in imagettfbbox function');
 			$x                = ($this->width  - $textbox[4]) / 2;
 			$y                = ($this->height - $textbox[5]) / 2;
-			$this->sessionKey = md5(Sess::get('session_id').uniqid(time()));
+			
+			$this->sessionKey = md5($this->sess->get('session_id').uniqid(time()));
+
 			$imgName          = $this->sessionKey.'.'.$this->image_type;
 			$this->imageUrl   = $this->img_url.$imgName;
 
@@ -400,7 +406,7 @@ Class Captcha {
 			imagepng($this->image, $this->img_path.$imgName);
 			imagedestroy($this->image);
 
-			Sess::set($this->sessionKey, $this->code);
+			$this->sess->set($this->sessionKey, $this->code);
 		}
 
 		// ------------------------------------------------------------------------
@@ -465,9 +471,10 @@ Class Captcha {
 		 */
 		public function gc()
 		{
+			$config = getConfig();
 			$expire = time() - $this->expiration;
 
-			if ( ! $this->img_path OR mb_strlen($this->img_path, config('charset')) < 2)
+			if ( ! $this->img_path OR mb_strlen($this->img_path, $config['charset']) < 2)
 			{	
 				return; // safety guard
 			}
@@ -482,7 +489,7 @@ Class Captcha {
 
 						$sessionKey = str_replace('.'.$this->image_type,'',$file->getFilename());
 
-						Sess::remove($sessionKey);	// Remove expired captcha
+						$this->sess->remove($sessionKey);	// Remove expired captcha
 					}
 				}
 			}

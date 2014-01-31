@@ -21,6 +21,8 @@ Class Captcha_Quicktest {
 	 */
 	public function fontTest()
 	{
+        $config = getConfig();
+
         $images = '';
         $captcha = getInstance()->captcha;
 
@@ -30,7 +32,7 @@ Class Captcha_Quicktest {
         {
         	$captcha->setHeight('50');
         	$captcha->setFontSize('25');
-        	$captcha->setChar(mb_strlen($captcha->char_pool['random'], config('charset')));
+        	$captcha->setChar(mb_strlen($captcha->char_pool['random'], $config['charset']));
         	$captcha->setColor('cyan');
         	$captcha->setNoiseColor('cyan');
         	$captcha->setFont($key);

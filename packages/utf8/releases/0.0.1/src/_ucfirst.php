@@ -12,12 +12,7 @@ namespace Utf8\Src {
     */
     function _ucfirst($str)
     {
-        $utf8 = getInstance()->utf8;
-
-        if(strpos($str, 'i') === 0)  // i - I problem in Turkish Characters .
-        {
-            $str = 'İ'. $utf8->_substr($str, 1);
-        }
+        $utf8   = getInstance()->utf8;
         
         if($utf8->isAscii($str))
         {

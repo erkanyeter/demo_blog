@@ -25,6 +25,8 @@ Class Log_Write {
     */
     function dump($level = 'error', $msg = '')
     {   
+        $config = getConfig();
+
         // Convert new lines to a temp symbol, than we replace it and read for console debugs.
         $msg = trim(preg_replace('/\n/', '[@]', $msg), "\n");
 
@@ -35,8 +37,8 @@ Class Log_Write {
         $level     = strtoupper($level);
 
         $logPath         = DATA .'logs'. DS;
-        $log_threshold   = config('log_threshold');
-        $log_date_format = config('log_date_format');
+        $log_threshold   = $config['log_threshold'];
+        $log_date_format = $config['log_date_format'];
 
         if (defined('STDIN') AND defined('TASK'))   // Internal Task Request
         {

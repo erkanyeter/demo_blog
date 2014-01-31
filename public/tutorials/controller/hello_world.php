@@ -8,6 +8,10 @@ $c = new Controller(function(){
     // __construct
 
 	new View;
+	// new International;
+	
+	$this->translator->load('date_format');
+	
 });
 
 $c->func('index', function(){

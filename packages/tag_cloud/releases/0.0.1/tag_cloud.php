@@ -30,8 +30,8 @@ Class Tag_Cloud {
 	/**
 	 * _formatTag
 	 * 
-	 * @param  [type] $str [description]
-	 * @return [type]      [description]
+	 * @param  string $str
+	 * @return string closure output
 	 */
 	private function _formatTag($str)
 	{

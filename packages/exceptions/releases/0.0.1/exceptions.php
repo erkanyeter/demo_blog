@@ -13,11 +13,11 @@ Class Exceptions {
 
     function __construct()
     {
-        logMe('debug', "Exceptions Class Initialized");
+        logMe('debug', 'Exceptions Class Initialized');
     }
 
     // --------------------------------------------------------------------
-
+    
     /**
     * Display all errors
     * 
@@ -30,14 +30,16 @@ Class Exceptions {
     {
         global $packages;
 
-        $error = new Error;
-        $core  = strtolower($packages['components']['core']);
-        $type  = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
+        $config = getConfig();
+
+        $error  = new Error;
+        $core   = strtolower($packages['components']['core']);
+        $type   = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
         
         // If user want to close error_reporting in some parts of the application.
         //-----------------------------------------------------------------------
         
-        if(config('error_reporting') == '0')
+        if($config['error_reporting'] == '0')
         {
             logMe('info', 'Error reporting is Off, check the config.php file "error_reporting" item to display errors.');
             
@@ -53,6 +55,7 @@ Class Exceptions {
         //-----------------------------------------------------------------------
         
         $code = $e->getCode();
+
         $lastQuery = '';
         if(isset(getInstance()->db))
         {
@@ -98,7 +101,7 @@ Class Exceptions {
         // Displaying Errors
         //-----------------------------------------------------------------------            
         
-        $level = config('error_reporting');
+        $level = $config['error_reporting'];
         
         if(is_numeric($level)) 
         {

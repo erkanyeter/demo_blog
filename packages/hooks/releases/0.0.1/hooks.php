@@ -25,8 +25,10 @@ Class Hooks {
      */
     public function __construct()
     {
-        if (config('enable_hooks') == FALSE)  // If hooks are not enabled in the config
-        {                                     // file there is nothing else to do
+        $config = getConfig();
+
+        if ($config['enable_hooks'] == FALSE)  // If hooks are not enabled in the config
+        {                                            // file there is nothing else to do
             return;
         }
 

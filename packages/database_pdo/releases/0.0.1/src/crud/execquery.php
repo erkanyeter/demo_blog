@@ -14,7 +14,8 @@ namespace Database_Pdo\Src\Crud {
     */
     function execQuery($sql)
     {
-		$crud = getInstance()->{\Db::$var};
+        $config = getConfig();
+        $crud   = getInstance()->{\Db::$var};
 
         $crud->last_sql = $sql;
 
@@ -30,7 +31,7 @@ namespace Database_Pdo\Src\Crud {
 
         //------------------------------------
 
-        if(config('log_queries'))
+        if($config['log_queries'])
         {
             if(sizeof($crud->prep_queries) > 0)
             {

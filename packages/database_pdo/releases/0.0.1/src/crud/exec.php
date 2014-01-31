@@ -6,7 +6,6 @@ namespace Database_Pdo\Src\Crud {
     /**
     * Execute prepared query
     *
-    * @author   Ersin Guvenc
     * @param    array   $array bound, DEFAULT MUST BE null.
     * @param    string  $bind_value
     * @return   object  | void
@@ -35,7 +34,9 @@ namespace Database_Pdo\Src\Crud {
         
         //------------------------------------
         
-        if(config('log_queries'))
+        $config = getConfig();
+    
+        if($config['log_queries'])
         {
             if(sizeof($crud->prep_queries) > 0)
             {

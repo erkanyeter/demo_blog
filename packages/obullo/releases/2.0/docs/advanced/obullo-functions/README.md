@@ -4,20 +4,6 @@ Framework uses lots of functions for its operation that are <b>globally defined<
 
 ### General Functions
 
-#### config('item_key', $filename = '')
-
-The Config library is the preferred way of accessing configuration information, however <kbd>config()</kbd> can be used to retrieve single keys. See Config library documentation for more information.
-
-```php
-echo config('base_url'); /* output http://example.com */
-```
-
-If you want to get an item belonging to configuration of another file, use it like this.
-
-```php
-echo config('html4-trans', 'doctypes'); 
-```
-
 #### getConfig($config_filename, $variable = '')
 
 getConfig is a pretty function to get configuration variables from <kbd>app/config</kbd> folder.
@@ -42,6 +28,12 @@ print_r($myconfig);
 ```
 
 **Note:** You can't grab diffrerent multiple variables in one config file via *getConfig()* function. Each file must have only one config variable where its name is the same with the file name.
+
+## Config Subfolders
+
+```php
+$transliteration = getConfig('i18n/en_US/transliteration');
+```
 
 #### getComponent('name');
 
@@ -105,26 +97,26 @@ logMe('info', 'The purpose of some variable is to provide some value.');
 
 ------
 
-#### hasLingo('item');
+#### hasTranslate('item');
 
-#### lingo('item');
+#### translate('item');
 
-Fetches the language item from valid lingo file.
+Fetches the language item from valid translate file.
 
 ```php
-echo lingo('Data updated succesfully');  // Data updated succesfully.
+echo translate('Data updated succesfully');  // Data updated succesfully.
 ```
 
-<b>lingo()</b> function automatically supports <b>sprintf</b> functionality so you <b>don't</b> need to use sprintf.
+<b>translate()</b> function automatically supports <b>sprintf</b> functionality so you <b>don't</b> need to use sprintf.
 
 ```php
-echo lingo('There are %d monkeys in the %s.',5,'tree');
+echo translate('There are %d monkeys in the %s.',5,'tree');
 
 // There are 5 monkeys in the tree.
 
 ```
 
-Look at <kbd>lingo</kbd> package for more details.
+Look at <kbd>translate</kbd> package for more details.
 
 ### Error Functions and Headers
 

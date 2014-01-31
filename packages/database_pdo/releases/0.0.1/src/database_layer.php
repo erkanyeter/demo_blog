@@ -82,6 +82,8 @@ Class Database_Layer extends Database_Crud {
     */
     public function query($sql = null)
     {
+        $config = getConfig();
+
         $this->last_sql = $sql;
 
         if($this->prepare)
@@ -107,7 +109,7 @@ Class Database_Layer extends Database_Crud {
         
         //------------------------------------
         
-        if(config('log_queries'))
+        if($config['log_queries'])
         {
             logMe('debug', 'SQL: '.trim(preg_replace('/\n/', ' ', $sql), "\n").' time: '.number_format($end_time - $start_time, 4));   
         }

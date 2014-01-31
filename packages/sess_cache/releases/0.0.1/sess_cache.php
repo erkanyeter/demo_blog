@@ -50,15 +50,19 @@ Class Sess_Cache {
 
     function init($params = array())
     {        
+        $sess = getConfig('sess');
+
         foreach (array('database','cookie','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
         'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$key] : config($key, 'sess');
+            $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
         }
         
-        $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : config('cookie_path');
-        $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : config('cookie_domain');
-        $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : config('cookie_prefix');
+        $config = getConfig();
+
+        $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
+        $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
+        $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
         
         $this->now = $this->_getTime();
         

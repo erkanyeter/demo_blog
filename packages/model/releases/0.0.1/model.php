@@ -62,7 +62,9 @@ Class Model {
         {
             // ** Auto sync enabled in "debug" mode.
 
-            if(config('model_auto_sync')) // Create new schema if not exists.
+            $config = getConfig();
+
+            if($config['model_auto_sync']) // Create new schema if not exists.
             {
                 $requestUri = base64_encode(getInstance()->uri->getRequestUri());
                 

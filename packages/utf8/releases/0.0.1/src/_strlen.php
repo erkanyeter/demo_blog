@@ -14,7 +14,9 @@ namespace Utf8\Src {
     */
     function _strlen($str)
     {
-        return mb_strlen($str, config('charset'));
+        $config = getConfig();
+
+        return mb_strlen($str, $config['charset']);
     }
 
 }

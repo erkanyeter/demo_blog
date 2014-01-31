@@ -11,21 +11,23 @@
 $config = array(
 	
 	// @Uri Protocol
-	// If your links do not seem to work, try one of the other options: ( REQUEST_URI, QUERY_STRING, PATH_INFO )
-	// You can use parameters like http://example.com/login?param=1&param2=yes
+	// If your links do not seem to work and try to change your uri_protocol with one of these options: 
+	// ( REQUEST_URI, QUERY_STRING, PATH_INFO )
+	// Using parameters allowed e.g. http://example.com/login?param=1&param2=yes
 
-	'base_url'        => '/',    // Base Url "/" URL to your framework root, generally a '/' trailing slash.	
-	'assets_url'      => '/',    // Assets Url of your framework generally a '/' trailing slash.	
-	'uri_protocol'    => 'AUTO', // Uri Protocol auto detects the protocol * Default option is 'AUTO', other options: REQUEST_URI, QUERY_STRING, PATH_INFO.
-	'error_reporting' => 1,   	 // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
-	'debug_backtrace' => array('enabled' => 'E_ALL', 'padding' => 3), // Enabling advanced debug mode will help you to easy development.
+	'base_url'         => '/',    // Base Url "/" URL of your framework root, generally a '/' trailing slash.	
+	'assets_url'       => '/',    // Assets Url of your framework generally a '/' trailing slash.	
+	'uri_protocol'     => 'AUTO', // Auto detects the URI protocol * Default option is 'AUTO', other options: REQUEST_URI, QUERY_STRING, PATH_INFO.
+	'error_reporting'  => 1,   	 // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
+	'debug_backtrace'  => array('enabled' => 'E_ALL', 'padding' => 3), // Enabling advanced debug mode will help you to easy development.
+	'env_config_files' => array('routes','sess','database','mongo'),   // Defined config files for each environments.
 
 	// Models & Schemas
 	'model_auto_sync' => true, // Auto sync should be enabled in development mode.
 							   // Sync tool automatically show a sync edit screen for the schema & database synchronization.
 							   // In LIVE mode you need set it to "false" because of the performance & security.
 	// Logs
-	'log_threshold'   => 5,    // 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
+	'log_threshold'   => 0,    // 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
 	'log_queries'     => true, // If true ALL SQL Queries gets logged.
 	'log_benchmark'   => true, // If true ALL framework benchmarks gets logged.
 	'log_date_format' => 'Y-m-d H:i:s', // Date format for log date() function.
@@ -41,8 +43,10 @@ $config = array(
 	'web_service_extensions' => array('.json','.xml','.raw','.array'), 	 // e.g. : http://example.com/web_service/example.json
 
 	// Default Language 
-	'lingo'   => 'english', 	// This determines which set of language files should be used.
-						 		// Make sure there is an available translation if you intend to use something other than english.
+	'default_translation'   => 'en_US',  // This determines which set of language files should be used.
+						 				 // Make sure there is an available translation if you intend to use something other than english.
+						 
+
 	// Default Character Set
 	'charset' => 'UTF-8',  // This determines which character set is used by default in various methods that require a character set to be provided.
 

@@ -18,7 +18,8 @@ Class Uri
     public $rsegments     = array();
     public $uri_extension = '';
     public $uri_protocol  = 'REQUEST_URI';
-    
+
+    private $config;
     public static $instance;
 
     /**
@@ -32,6 +33,8 @@ Class Uri
     */
     public function __construct()
     {
+        $this->config = getConfig();
+
         logMe('debug', 'Uri Class Initialized'); // Warning : Don't load any library in __construct level you may get a Fatal Error.
     }
 
@@ -123,7 +126,7 @@ Class Uri
             return;
         }
 
-        if (strtoupper(config('uri_protocol')) == 'AUTO')
+        if (strtoupper($this->config['uri_protocol']) == 'AUTO')
         {
             if ($uri = $this->_detectUri()) // Let's try the REQUEST_URI first, this will work in most situations
             {
@@ -253,7 +256,7 @@ Class Uri
         {
             //----------- Web Service Response Format -------------//
 
-            $web_service_extensions = config('web_service_extensions');
+            $web_service_extensions = $this->config['web_service_extensions'];
 
             //-----------------------------------------------------//
 
@@ -286,11 +289,11 @@ Class Uri
         // we should not prevent "base64encode" characters in CLI mode
         // the "sync" task controller and schema libraries use "base64encode" function
 
-    	if ($str != '' AND config('permitted_uri_chars') != '' AND config('enable_query_strings') == false  AND  ! defined('STDIN')) 
+    	if ($str != '' AND $this->config['permitted_uri_chars'] != '' AND $this->config['enable_query_strings'] == false  AND  ! defined('STDIN')) 
         {
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
-            if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote(config('permitted_uri_chars'), '-')).']+$|i', $str))
+            if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote($this->config['permitted_uri_chars'], '-')).']+$|i', $str))
             {
                 $response = getComponentInstance('response');
                 $response->showError('The URI you submitted has disallowed characters.', 400);
@@ -314,9 +317,9 @@ Class Uri
      */
     public function _removeUrlSuffix()
     {
-        if  (config('url_suffix') != '')
+        if($this->config['url_suffix'] != '')
         {
-            $this->uri_string = preg_replace("|".preg_quote(config('url_suffix'))."$|", '', $this->uri_string);
+            $this->uri_string = preg_replace("|".preg_quote($this->config['url_suffix'])."$|", '', $this->uri_string);
         }
     }
 

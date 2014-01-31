@@ -129,20 +129,25 @@ Class Router {
     */
     public function _setRouting()
     {
+        $config = getConfig();
+
         if( ! isset($_SERVER['HMVC_REQUEST']))    // GET request valid for standart router requests not HMVC.
         {
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
             
-            if (config('enable_query_strings') === true AND isset($_GET[config('controller_trigger')]) AND 
-                    isset($_GET[config('directory_trigger')]))
-            {
-                $this->setDirectory(trim($this->uri->_filterUri($_GET[config('directory_trigger')])));
-                $this->setClass(trim($this->uri->_filterUri($_GET[config('controller_trigger')])));
+            $dt = $config['directory_trigger'];
+            $ct = $config['controller_trigger'];
+            $mt = $config['function_trigger'];
 
-                if (isset($_GET[config('function_trigger')]))
+            if ($config['enable_query_strings'] === true AND isset($_GET[$ct]) AND isset($_GET[$dt]))
+            {
+                $this->setDirectory(trim($this->uri->_filterUri($_GET[$dt])));
+                $this->setClass(trim($this->uri->_filterUri($_GET[$ct])));
+
+                if (isset($_GET[$mt]))
                 {
-                    $this->setMethod(trim($this->uri->_filterUri($_GET[config('function_trigger')])));
+                    $this->setMethod(trim($this->uri->_filterUri($_GET[$mt])));
                 }
 
                 return;

@@ -14,6 +14,8 @@ namespace Form\Src {
     */
     function open($action = '', $attributes = '', $hidden = array())
     {
+        $config = getConfig();
+        
         if ($attributes == '')
         {
             $attributes = 'method="post"';
@@ -24,8 +26,8 @@ namespace Form\Src {
         $form  = '<form action="'.$action.'"';
         $form .= \Form::_attributesToString($attributes, true);
         $form .= '>';
-        
-        if (config('csrf_protection') === true) // CSRF Support
+
+        if ($config['csrf_protection'] === true) // CSRF Support
         {
             $security = getComponentInstance('security');
             $hidden[$security->getCsrfTokenName()] = $security->getCsrfHash();

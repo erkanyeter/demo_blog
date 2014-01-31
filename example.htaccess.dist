@@ -10,7 +10,7 @@
     # Removes access to the Core folders by users.
     # previously this would not have been possible.
     
-    RewriteCond %{REQUEST_URI} ^(app|modules)\b.*
+    RewriteCond %{REQUEST_URI} ^(app|classes|data|packages|public)\b.*
     RewriteRule ^(.*)$ index.php/$1 [L]
 
     # Checks to see if the user is attempting to access a valid file,
@@ -23,6 +23,7 @@
 
     # This last condition enables access assets folder, and the robots.txt file
     RewriteCond $1 !^(index\.php|assets|robots\.txt)
+
     RewriteRule ^(.*)$ index.php/$1 [L,QSA]
     AddType text/x-component .htc
  

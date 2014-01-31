@@ -23,17 +23,14 @@ You can set advanced mongodb options using <kbd>app/config/mongo.php</kbd> file.
 <?php
 
 $mongo = array(
+  
   'host' => 'localhost',
   'port' => '27017',
   'database' => 'test',
   'username' => 'root',
   'password' => '123456',
   'dsn'      => '', // or dsn mongodb://connectionString
-
-  'query_safety' => array('w' => 0, 'j' => 1),
-
-   // Connection Flag
-  'dbname_flag' => false,
+  'options' => array('w' => 0, 'j' => 1),
 );
 ```
 
@@ -41,9 +38,10 @@ $mongo = array(
 <?php
 new Mongo_Db();
 
-$docs = $this->mongo->get('users');
+$this->mongo->get('users');
+$row = $this->db->getRowArray();
 
-if($docs->hasNext())
+if($row)
 {
     foreach($docs as $row)
     {
@@ -58,12 +56,15 @@ if($docs->hasNext())
 <?php
 $this->mongo->select();
 $this->mongo->where('username', 'bob');
-$docs = $this->mongo->get('users');
 
-if($docs ->hasNext())
+$row = $this->db->getRow();
+
+if($row)
 {
-   $row = (object)$docs->getNext();
-   echo $row->username;
+    foreach($docs as $row)
+    {
+        echo $row->username.'<br />';
+    }
 }
 ```
 
@@ -136,12 +137,8 @@ foreach($this->db->getResultArray() as $row)
 
 ```php
 <?php
-$docs = $this->db->get('users');
-
-if($docs->hasNext())
-{
-     $row = (object)$docs->getNext();
-}
+$this->db->get('users');
+$row = $this->db->getRow();
 
 echo $row->username;
 ```
@@ -157,23 +154,17 @@ echo $row['username'];
 
  // Also you can provide array.
 $this->db->select(array('username', 'user_firstname'));
-$docs = $this->db->get('users');
-$row = $docs->getNext();
+$this->db->get('users');
 ```
 
-#### $this->db->from()
+#### $this->db->aggregate();
 
-Especially before finding operations we use the from method setting the collection name as parameter.
+Aggregate function is a easy way to doing map / reduce functions. ( especially for group by and match operations )
 
 ```php
 <?php
-$this->db->from('users');
-$docs = $this->db->find(array('$or' => array(array('username' => 'john'), array('username' => 'bob'))));
-
-foreach($docs as  $row)
-{
-    echo $row->username. '<br />';
-}
+$this->db->agrregate('users', array('$or' => array(array('username' => 'john'), array('username' => 'bob'))));
+$this->db->getResult();
 ```
 
 #### $this->db->where()
@@ -181,13 +172,10 @@ foreach($docs as  $row)
 ```php
 <?php
 $this->db->where('username', 'bob');
-$docs = $this->db->get('users');
+$this->db->get('users');
 
-if($docs ->hasNext())
-{
-   $row = $docs->getNext();
-   echo $row['username'];
-}
+$row = $this->db->getRow();
+echo $row['username'];
 ```
 
 
@@ -321,7 +309,18 @@ $this->db->notLike('username', 'bob');
 $this->db->whereIn('username', array('bob', 'john', 'jenny'));
 $this->db->orderBy('username', 'ASC');
 
-$docs = $this->db->get('users');
+$this->db->get('users');
+$this->db->getResult();
+```
+
+#### $this->db->groupBy()
+
+```php
+<?php
+$this->db->groupBy('username', array('count' => 0) ,'function (obj, prev) {prev.count++;}');
+
+$this->db->get('users');
+$this->db->getResult();
 ```
 
 #### $this->db->limit()
@@ -332,7 +331,8 @@ $this->db->whereIn('username', array('bob', 'john', 'jenny'));
 $this->db->orderBy('username', 'ASC');
 $this->db->limit(10);
 
-$docs = $this->db->get('users');
+$this->db->get('users');
+$this->db->getResult();
 ```
 
 #### $this->db->offset()

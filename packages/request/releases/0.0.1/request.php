@@ -173,7 +173,8 @@ Class Request {
             return $ipAddress;
         }
 
-        $proxy_ips = config('proxy_ips');
+        $config    = getConfig();
+        $proxy_ips = $config['proxy_ips'];
 
         if ( ! empty($proxy_ips))
         {

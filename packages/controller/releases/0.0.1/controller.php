@@ -17,7 +17,7 @@ Class Controller {
     public $_controllerAppMethods       = array();  // Controller user defined methods. ( @private )
     public $_controllerAppPublicMethods = array();  // Controller user defined methods. ( @private )
 
-    public $config, $router, $uri, $lingo, $response; // Component instances
+    public $config, $router, $uri, $translator, $response; // Component instances
         
     // ------------------------------------------------------------------------
 
@@ -34,11 +34,11 @@ Class Controller {
         // Assign Core Libraries
         // ------------------------------------
         
-        $this->config   = getComponentInstance('config');
-        $this->router   = getComponentInstance('router');
-        $this->uri      = getComponentInstance('uri');
-        $this->lingo    = getComponentInstance('lingo');
-        $this->response = getComponentInstance('response');
+        $this->config     = getComponentInstance('config');
+        $this->router     = getComponentInstance('router');
+        $this->uri        = getComponentInstance('uri');
+        $this->translator = getComponentInstance('translator');
+        $this->response   = getComponentInstance('response');
 
         // Run Construct Method
         // ------------------------------------

@@ -24,7 +24,8 @@ namespace Utf8\Src {
 
         if ( ! $charset)
         {
-            $charset = config('charset');    // Use the application character set
+            $config  = getConfig();
+            $charset = $config['charset'];    // Use the application character set
         }
 
         if (is_array($var) OR is_object($var))

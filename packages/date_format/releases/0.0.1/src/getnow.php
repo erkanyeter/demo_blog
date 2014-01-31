@@ -11,7 +11,8 @@ namespace Date_Format\Src {
     */
     function getNow()
     {
-        $time_ref = config('time_reference');
+        $config   = getConfig();
+        $time_ref = $config['time_reference'];
         
         if (strtolower($time_ref) == 'gmt')
         {

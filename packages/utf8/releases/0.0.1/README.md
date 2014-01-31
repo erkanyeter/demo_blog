@@ -11,7 +11,7 @@ new Utf8();
 $this->utf8->method();
 ```
 
-Once loaded, the Upload object will be available using: $this->utf8->method();
+Once loaded, the Utf8 object will be available using: $this->utf8->method();
 
 ### Function Reference
 
@@ -73,7 +73,7 @@ Finds the position of last occurrence of a char in a UTF-8 string. This is a UTF
 
 Finds the length of the initial segment matching mask. This is a UTF8-aware version of (http://php.net/strspn).
 
-#### $this->utf8->_strtolower($str);
+#### $this->utf8->_strtolower($str, $locale = 'en-US');
 
 Makes a UTF-8 string lowercase. This is a UTF8-aware version of (http://php.net/strtolower).
 
@@ -105,9 +105,13 @@ Makes the first character of every word in a UTF-8 string uppercase. This is a U
 
 Takes an array of ints representing the Unicode characters and returns a UTF-8 string.
 
-#### $this->utf8->toAscii($str, $case = 0)
+#### $this->utf8->toAscii($str, $locale = 'tr_TR');
 
-Replaces special/accented UTF-8 characters by ASCII-7 "equivalents".
+Replaces special/accented UTF-8 characters by ASCII-7 "equivalents". The second parameter use the transliteration table config file which is defined in <kbd>app/i18n/tr_TR</kbd> folder. Default is **en_US**.
+
+```php
+echo $this->utf8->toAscii('your-Utf8-string', 'de_DE');
+```
 
 #### $this->utf8->toUnicode($array);
 

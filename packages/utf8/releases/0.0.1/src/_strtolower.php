@@ -14,12 +14,9 @@ namespace Utf8\Src {
     */
     function _strtolower($str)
     {
-        if(strpos($str, 'İ') !== false)  // İ - i problem in just one Turkish Character.
-        {
-            $str = str_replace('İ', 'i', $str);
-        }
-        
-        return mb_strtolower($str, config('charset')); 
+        $config = getConfig();
+
+        return mb_strtolower($str, $config['charset']);
     }
     
 }

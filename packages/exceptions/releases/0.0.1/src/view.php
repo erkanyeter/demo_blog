@@ -101,21 +101,26 @@ if(isset($sql))
 ?>
 <div class="errorFile errorLine"><?php echo $error->getSecurePath($e->getFile()).'  Line : '.$e->getLine().' ' ?></div>
 <?php 
-$debug = config('debug_backtrace');
+$config = getConfig();
+$debug  = $config['debug_backtrace'];
+
+// ------------------------------------------------------------------------
 
 if($debug['enabled'] === true OR $debug['enabled'] == 1)  // Covert to readable format
 {
     $debug['enabled'] = 'E_ALL';
 }
 
-$rules = $error->parseRegex($debug['enabled']);
-$allowedErrors = $error->getAllowedErrors($rules);
-$eCode = (isset($sql)) ? 'SQL' : $e->getCode();
+// ------------------------------------------------------------------------
 
-if(is_string($debug['enabled'])) 
+$rules         = $error->parseRegex($debug['enabled']);
+$allowedErrors = $error->getAllowedErrors($rules);
+$eCode         = (isset($sql)) ? 'SQL' : $e->getCode();
+
+// ------------------------------------------------------------------------
+
+if(is_string($debug['enabled']))     // Show source code for first exception trace
 {
-    // Show source code for first exception trace
-    // ------------------------------------------------------------------------
     $eTrace['file'] = $e->getFile();
     $eTrace['line'] = $e->getLine();
 

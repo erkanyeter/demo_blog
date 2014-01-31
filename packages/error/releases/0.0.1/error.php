@@ -78,6 +78,8 @@ Class Error {
     */
     public function dumpArgument(& $var, $length = 128, $level = 0)
     {
+        $config = getConfig();
+
         if ($var === null)
         {
             return '<small>null</small>';
@@ -108,7 +110,7 @@ Class Error {
                         }
                     }
 
-                    return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, config('charset'));
+                    return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, $config['charset']);
                 }
             }
             else
@@ -119,7 +121,7 @@ Class Error {
         elseif (is_string($var))
         {
             // Encode the string
-            $str = htmlspecialchars($var, ENT_NOQUOTES, config('charset'));
+            $str = htmlspecialchars($var, ENT_NOQUOTES, $config['charset']);
             
             return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
         }
@@ -156,7 +158,7 @@ Class Error {
                     if ($key === $marker) continue;
                     if ( ! is_int($key))
                     {
-                        $key = '"'.htmlspecialchars($key, ENT_NOQUOTES, config('charset')).'"';
+                        $key = '"'.htmlspecialchars($key, ENT_NOQUOTES, $config['charset']).'"';
                     }
 
                     $output[] = "$space$s$key => ".$this->dumpArgument($val, $length, $level + 1);
@@ -240,7 +242,7 @@ Class Error {
         }
         else
         {
-            return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, true), ENT_NOQUOTES, config('charset'));
+            return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, true), ENT_NOQUOTES, $config['charset']);
         }
     }
 
@@ -258,9 +260,10 @@ Class Error {
     */
     public function debugFileSource($trace, $key = 0, $prefix = '')
     {
-        $debug = config('debug_backtrace'); 
+        $config = getConfig();
+        $debug  = $config['debug_backtrace'];
         
-        $file  = $trace['file'];
+        $file        = $trace['file'];
         $line_number = $trace['line'];
             
         if ( ! $file OR ! is_readable($file))
@@ -268,14 +271,13 @@ Class Error {
             return false;   // Continuing will cause errors
         }
         
-        // Open the file and set the line position
-        $file = fopen($file, 'r');
+        $file = fopen($file, 'r');      // Open the file and set the line position
         $line = 0;
 
         // Set the reading range
         $range = array('start' => $line_number - $debug['padding'], 'end' => $line_number + $debug['padding']);
         
-        $format = '% '.strlen($range['end']).'d';    // Set the zero-padding amount for line numbers
+        $format = '% '.strlen($range['end']).'d';  // Set the zero-padding amount for line numbers
 
         $source = '';
         while (($row = fgets($file)) !== false)
@@ -285,7 +287,7 @@ Class Error {
 
             if ($line >= $range['start'])
             {
-                $row = htmlspecialchars($row, ENT_NOQUOTES, config('charset'));  // Make the row safe for output
+                $row = htmlspecialchars($row, ENT_NOQUOTES, $config['charset']);  // Make the row safe for output
 
                 $row = '<span class="number">'.sprintf($format, $line).'</span> '.$row;  // Trim whitespace and sanitize the row
 

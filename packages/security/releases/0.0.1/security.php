@@ -55,6 +55,12 @@ Class Security {
     private static $instance;
 
     /**
+     * framework getConfig()
+     * @var array
+     */
+    private $config;
+
+    /**
      * List of never allowed strings
      *
      * @var array
@@ -89,6 +95,8 @@ Class Security {
         "([\"'])?data\s*:[^\\1]*?base64[^\\1]*?,[^\\1]*?\\1?"
     );
 
+    // --------------------------------------------------------------------
+
     /**
      * Constructor
      *
@@ -96,23 +104,24 @@ Class Security {
      */
     public function __construct()
     {
-        if (config('csrf_protection') === TRUE)         // Is CSRF protection enabled?
+        $this->config = getConfig();
+
+        if ($this->config['csrf_protection'] === true)         // Is CSRF protection enabled?
         {
             foreach (array('csrf_expire', 'csrf_token_name', 'csrf_cookie_name') as $key)  // CSRF config
             {
-                if (FALSE !== ($val = config($key)))
+                if (false !== ($val = $this->config[$key]))
                 {
                     $this->{'_'.$key} = $val;
                 }
             }
 
-            if (config('cookie_prefix')) // Append application specific cookie prefix
+            if ($this->config['cookie_prefix']) // Append application specific cookie prefix
             {
-                $this->_csrf_cookie_name = config('cookie_prefix').$this->_csrf_cookie_name;
+                $this->_csrf_cookie_name = $this->config['cookie_prefix'].$this->_csrf_cookie_name;
             }
 
-            // Set the CSRF hash
-            $this->_csrfSetHash();
+            $this->_csrfSetHash();  // Set the CSRF hash
         }
 
         logMe('debug', "Security Class Initialized");
@@ -180,7 +189,7 @@ Class Security {
     public function csrfSetCookie()
     {
         $expire = time() + $this->_csrf_expire;
-        $secure_cookie = (config('cookie_secure') === TRUE) ? 1 : 0;
+        $secure_cookie = ($this->config['cookie_secure'] === TRUE) ? 1 : 0;
 
         if ($secure_cookie)
         {
@@ -196,7 +205,7 @@ Class Security {
             }
         }
 
-        setcookie($this->_csrf_cookie_name, $this->_csrf_hash, $expire, config('cookie_path'), config('cookie_domain'), $secure_cookie);
+        setcookie($this->_csrf_cookie_name, $this->_csrf_hash, $expire, $this->config['cookie_path'], $this->config['cookie_domain'], $secure_cookie);
 
         logMe('debug', "CRSF cookie Set");
 
@@ -781,7 +790,7 @@ Class Security {
      */
     protected function _decodeEntity($match)
     {
-        return $this->entityDecode($match[0], strtoupper(config('charset')));
+        return $this->entityDecode($match[0], strtoupper($this->config['charset']));
     }
 
     // --------------------------------------------------------------------
@@ -866,7 +875,7 @@ Class Security {
             // We don't necessarily want to regenerate it with
             // each page load since a page could contain embedded
             // sub-pages causing this feature to fail
-            if (isset($_COOKIE[$this->_csrf_cookie_name]) &&
+            if (isset($_COOKIE[$this->_csrf_cookie_name]) AND
                 preg_match('#^[0-9a-f]{32}$#iS', $_COOKIE[$this->_csrf_cookie_name]) === 1)
             {
                 return $this->_csrf_hash = $_COOKIE[$this->_csrf_cookie_name];

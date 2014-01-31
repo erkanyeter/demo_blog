@@ -17,13 +17,14 @@
 
         $router = getComponentInstance('router');
         $uri    = getComponentInstance('uri');
+        $config = getConfig();
 
         /*
          * ------------------------------------------------------
          *  Instantiate the hooks class
          * ------------------------------------------------------
          */
-        if(config('enable_hooks'))
+        if($config['enable_hooks'])
         {
             $hooks = getComponentInstance('hooks');
 
@@ -40,7 +41,7 @@
          *  Sanitize Inputs
          * ------------------------------------------------------
          */
-        if (config('enable_query_strings') == false) // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
+        if ($config['enable_query_strings'] == false) // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
         {
             $_GET = array();
         }
@@ -52,7 +53,7 @@
         $_POST = cleanInputData($_POST);  // Clean $_POST Data
         $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
 
-        if (config('csrf_protection'))    // CSRF Protection check
+        if ($config['csrf_protection'])    // CSRF Protection check
         {
             getComponentInstance('security')->csrfVerify();
         }
@@ -76,7 +77,7 @@
          *  Log inputs
          * ------------------------------------------------------
          */
-        if(config('log_threshold') > 0)
+        if($config['log_threshold'] > 0)
         {
             logMe('debug', '$_REQUEST_URI: '.$uri->getRequestUri());
             logMe('debug', '$_COOKIE: '.preg_replace('/\n/', '', print_r($_COOKIE, true)));
@@ -109,7 +110,7 @@
          *  Is there a "pre_controller" hook?
          * ------------------------------------------------------
          */
-        if (config('enable_hooks'))
+        if ($config['enable_hooks'])
         {
             $hooks->_callHook('pre_controller');
         }
@@ -130,7 +131,7 @@
          *  Is there a "post_controller_constructor" hook?
          * ------------------------------------------------------
          */
-        if (config('enable_hooks'))
+        if ($config['enable_hooks'])
         {
             $hooks->_callHook('post_controller_constructor');
         }
@@ -167,7 +168,7 @@
          *  Is there a "post_controller" hook?
          * ------------------------------------------------------
          */
-        if (config('enable_hooks'))
+        if ($config['enable_hooks'])
         {
             $hooks->_callHook('post_controller');
         }
@@ -177,7 +178,7 @@
          *  Send the final rendered output to the browser
          * ------------------------------------------------------
          */
-        if (config('enable_hooks'))
+        if ($config['enable_hooks'])
         {
             if($hooks->_callHook('display_override') === FALSE)
             {
@@ -194,7 +195,7 @@
          *  Is there a "post_system" hook?
          * ------------------------------------------------------
          */
-        if (config('enable_hooks'))
+        if ($config['enable_hooks'])
         {
             $hooks->_callHook('post_system');
         }
@@ -216,6 +217,8 @@
     */
     function cleanInputData($str)
     {
+        $config = getConfig();
+
         if (is_array($str))
         {
             $new_array = array();
@@ -234,7 +237,7 @@
 
         $str = removeInvisibleCharacters($str); // Remove control characters
 
-        if (config('global_xss_filtering')) // Should we filter the input data?
+        if ($config['global_xss_filtering']) // Should we filter the input data?
         {
             $str = getComponentInstance('security')->xssClean($str);
         }
@@ -278,7 +281,9 @@
     */
     function logMe($level = 'error', $message = '', $php_errors = true)
     {    
-        if (config('log_threshold') == 0)
+        $config = getConfig();
+
+        if ($config['log_threshold'] == 0)
         {
             return;
         }
@@ -311,11 +316,11 @@
         if ( ! isset($loaded[$key]))
         {
             require($folder. DS .$filename. $ext);
-        
+
             if($var == '') { $var = &$filename; }
 
             if ( ! isset($$var) OR ! is_array($$var))
-            {
+            {            
                 die('The configuration file '.$folder. DS .$filename. $ext.' variable name must be same with filename.');
             }
 
@@ -336,17 +341,30 @@
     * @param    string $var
     * @return   array
     */
-    function getConfig($filename = 'config', $var = '', $folder = '', $extension = '')
-    {
-        $ext    = ($extension == '') ? EXT : $extension;
+    function getConfig($filename = 'config', $var = '', $folder = '')
+    {   
         $folder = ($folder == '') ? APP .'config' : $folder;
 
         if(in_array($filename, array('config','routes','sess','database','mongo')))
         {
             $folder = APP .'config'. DS .strtolower(ENV);
+        } 
+        else 
+        {
+            $sub_path = DS;
+            if(strpos($filename, '/') > 0)  // sub folder support
+            {
+                $exp      = explode('/',$filename);
+                $filename = end($exp);
+                array_pop($exp);    // pop the last element end of the array
+             
+                $sub_path = DS .implode(DS, $exp). DS;
+            }
+
+            $folder = APP .'config'. $sub_path;
         }
 
-        return getStatic($filename, $var, $folder, $ext);
+        return getStatic($filename, $var, $folder, EXT);
     }
 
     // --------------------------------------------------------------------
@@ -484,9 +502,11 @@
         }
 
         global $packages;
+
+        $config = getConfig();
         
         $parts           = explode('\\', $packageRealname);
-        $packageFilename = mb_strtolower($parts[0], config('charset'));
+        $packageFilename = mb_strtolower($parts[0], $config['charset']);
 
         //--------------- PACKAGE LOADER ---------------//
         
@@ -499,7 +519,7 @@
         if(isset($packages['dependencies'][$packageFilename])) // check is it a Package ?
         {
             $version = $packages['dependencies'][$packageFilename]['version'];
-            $fileUrl = PACKAGES .$packageFilename. DS .'releases'. DS .$version. DS .$src. mb_strtolower(end($parts), config('charset')). EXT;
+            $fileUrl = PACKAGES .$packageFilename. DS .'releases'. DS .$version. DS .$src. mb_strtolower(end($parts), $config['charset']). EXT;
 
             require_once($fileUrl);
 
@@ -515,34 +535,6 @@
     }
 
     spl_autoload_register('autoloader', true);
-
-    // --------------------------------------------------------------------
-
-    /**
-    * Gets a config item
-    *
-    * @access    public
-    * @param     string $configName file name
-    * @return    mixed
-    */
-    function config($item, $configName = 'config')
-    {
-        static $configItem = array();
-
-        if ( ! isset($configItem[$item]))
-        {
-            $configName = getConfig($configName);
-
-            if ( ! isset($configName[$item]))
-            {
-                return false;
-            }
-
-            $configItem[$item] = $configName[$item];
-        }
-
-        return $configItem[$item];
-    }
 
     // --------------------------------------------------------------------
 
@@ -622,12 +614,13 @@
         $shutdownError = false;
         if(isset($shutdownErrors[$type]))  // We couldn't use any object for shutdown errors.
         {
-            $error = new Error; // Load error package.
-
+            $config = getConfig();
+            $error  = new Error; // Load error package.
+            
             $shutdownError = true;
-            $type  = ucwords(strtolower($type));
-            $code  = $e->getCode();
-            $level = config('error_reporting');
+            $type          = ucwords(strtolower($type));
+            $code          = $e->getCode();
+            $level         = $config['error_reporting'];
 
             if(defined('STDIN'))  // If Command Line Request.
             {
@@ -653,7 +646,8 @@
                     }   
                 }
 
-                $rules = $error->parseRegex($level); 
+                $rules = $error->parseRegex($level);
+
                 if($rules == false) 
                 {
                     return;

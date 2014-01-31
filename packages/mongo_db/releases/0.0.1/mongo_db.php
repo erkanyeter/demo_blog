@@ -8,8 +8,8 @@
  * @package       packages
  * @author        Alex Bilbie | www.alexbilbie.com | alex@alexbilbie.com ( Original Library )
  * @author        Ersin Güvenç ( Port to Obullo )
- * @license	      http://www.opensource.org/licenses/mit-license.php
- * @link	      http://alexbilbie.com
+ * @license       http://www.opensource.org/licenses/mit-license.php
+ * @link          http://alexbilbie.com
  * 
  */
 
@@ -30,6 +30,7 @@ Class Mongo_Db {
     public  $wheres   = array(); // Public to make debugging easier
     private $sorts    = array();
     public  $updates  = array(); // Public to make debugging easier
+    public  $groupBy  = array(); // Public to make debugging easier
     private $limit = 999999;
     private $offset = 0;
     private $insert_id = ''; // Last inserted id.
@@ -148,6 +149,7 @@ Class Mongo_Db {
      */
     public function from($collection = '')
     {
+
         $this->collection = $collection;
         
         return ($this);
@@ -176,12 +178,13 @@ Class Mongo_Db {
      */
     public function where($wheres, $value = null, $mongo_id = true)
     {
+        
         if(is_string($wheres) AND strpos(ltrim($wheres), ' ') > 0)
         {
             $array    = explode(' ', $wheres);
             $field    = $array[0];
             $criteria = $array[1];
-            
+          
             $this->_whereInit($field);
             
             switch ($criteria)
@@ -209,10 +212,10 @@ Class Mongo_Db {
                 default:
                     break;
             }
-            
+              
             return ($this);
         }
-        
+      
         if (is_array($wheres))
         {
             foreach ($wheres as $wh => $val)
@@ -224,7 +227,7 @@ Class Mongo_Db {
         {
             $this->wheres[$wheres] = $this->_isMongoId($wheres, $value);   
         }
-
+       
         return ($this);
     }
 
@@ -310,29 +313,29 @@ Class Mongo_Db {
     
      /**
      *
-     * 	Get the documents where the (string) value of a $field is like a value. The defaults
-     * 	allow for a case-insensitive search.
+     *  Get the documents where the (string) value of a $field is like a value. The defaults
+     *  allow for a case-insensitive search.
      *
-     * 	@param $flags
-     * 	Allows for the typical regular expression flags:
-     * 		i = case insensitive
-     * 		m = multiline
-     * 		x = can contain comments
-     * 		l = locale
-     * 		s = dotall, "." matches everything, including newlines
-     * 		u = match unicode
+     *  @param $flags
+     *  Allows for the typical regular expression flags:
+     *      i = case insensitive
+     *      m = multiline
+     *      x = can contain comments
+     *      l = locale
+     *      s = dotall, "." matches everything, including newlines
+     *      u = match unicode
      *
-     * 	@param $enable_start_wildcard
-     * 	If set to anything other than true, a starting line character "^" will be prepended
-     * 	to the search value, representing only searching for a value at the start of
-     * 	a new line.
+     *  @param $enable_start_wildcard
+     *  If set to anything other than true, a starting line character "^" will be prepended
+     *  to the search value, representing only searching for a value at the start of
+     *  a new line.
      *
-     * 	@param $enable_end_wildcard
-     * 	If set to anything other than true, an ending line character "$" will be appended
-     * 	to the search value, representing only searching for a value at the end of
-     * 	a line.
+     *  @param $enable_end_wildcard
+     *  If set to anything other than true, an ending line character "$" will be appended
+     *  to the search value, representing only searching for a value at the end of
+     *  a line.
      *
-     * 	@usage : $this->db->like('foo', 'bar', 'im', false, true);
+     *  @usage : $this->db->like('foo', 'bar', 'im', false, true);
      *
      *  @return object
      */
@@ -433,6 +436,28 @@ Class Mongo_Db {
         return ($this);
     }
     
+     // --------------------------------------------------------------------
+    
+    /**
+     * @usage : $this->db->groupBy('foo', array('count' => 0) ,'function (obj, prev) {}')->get('foobar');
+     * 
+     * @param  string $key group Initial value of the aggregation counter objectc
+     * @param  string $initial Initial value of the aggregation counter objectc
+     * @param  string $reduce  A function that takes two arguments (the current document and the aggregation to this point) and does the aggregation
+     * @return object
+     */
+    public function groupBy($key = NULL , $initial = array('count' => 0) ,$reduce ='function (obj, prev) { prev.count++;}' )
+    {
+        if($key != NULL)
+        {
+            $this->groupBy['keys'][$key] = true;
+            $this->groupBy['initial']    = $initial;
+            $this->groupBy['reduce']     = $reduce;
+        }
+
+        return ($this);
+    }
+
     // --------------------------------------------------------------------
     
     /**
@@ -487,8 +512,8 @@ Class Mongo_Db {
     public function get($collection = '')
     {
         $this->operation = 'read';  // Set operation for lastQuery output.
-
-        $collection = (empty($this->collection)) ? $collection : $this->collection;
+      
+        $collection = (empty($this->collection)) ? $collection :  $this->collection;
         
         if (empty($collection))
         {
@@ -508,21 +533,45 @@ Class Mongo_Db {
     private function _query($collection)
     {
         $rows = array();
-
-        $cursor = $this->db->{$collection}
-            ->find($this->wheres, $this->selects)
-            ->limit((int) $this->limit)
-            ->skip((int) $this->offset)
-            ->sort($this->sorts);
-        
-        while($row = $cursor->getNext())
+        if(count($this->groupBy) == 0)
         {
-            $rows[] = $row;
+
+            $cursor = $this->db->{$collection}
+                ->find($this->wheres, $this->selects)
+                ->limit((int) $this->limit)
+                ->skip((int) $this->offset)
+                ->sort($this->sorts);
+            while($row = $cursor->getNext())
+            {
+                $rows[] = $row;
+            }
+
         }
-        
-        $this->_resetSelect();         // Reset
-        
+        else
+        {
+            if($this->wheres)
+            {
+                $cond   = array( 'condition' => $this->wheres );
+                $cursor = $this->db->{$collection}->group(
+                                                        $this->groupBy['keys'],
+                                                        $this->groupBy['initial'],
+                                                        $this->groupBy['reduce'] ,
+                                                        $cond
+                                                    );
+            }
+            else
+            {
+                $cursor = $this->db->{$collection}->group(
+                                                        $this->groupBy['keys'],
+                                                        $this->groupBy['initial'],
+                                                        $this->groupBy['reduce']
+                                                    );   
+            }
+            $rows = $cursor['retval'];
+        }
+
         $this->resultObject = new Mongo_Db\Src\Mongo_Db_Results($rows); // Load db results
+        $this->_resetSelect();  // Reset
 
         return $this->resultObject;
     }
@@ -533,27 +582,27 @@ Class Mongo_Db {
      *  Perform an aggregation using the aggregation framework
      *  @link http://docs.mongodb.org/manual/aggregation/
      *  @link http://docs.mongodb.org/manual/reference/sql-aggregation-comparison/
-     *  WHERE	  $match
+     *  WHERE     $match
      *  GROUP BY  $group
-     *  HAVING 	  $match
-     *  SELECT	  $project
+     *  HAVING    $match
+     *  SELECT    $project
      *  ORDER BY  $sort
-     *  LIMIT	  $limit
-     *  SUM()	  $sum
-     *  COUNT()	  $sum
-     *  join	  No direct corresponding operator; however, the $unwind operator allows for 
+     *  LIMIT     $limit
+     *  SUM()     $sum
+     *  COUNT()   $sum
+     *  join      No direct corresponding operator; however, the $unwind operator allows for 
      *  somewhat similar functionality, but with fields embedded within the document.
      * 
+     * @param string $tablename
      * @param array $pipeline
      * @param array $options
      * @return object Mongo db result object
      * @throws Exception
      */
-    public function aggregate($pipeline, $options = null)
+    public function aggregate($collection, $pipeline, $options = null)
     {
         $rows = array();
-        $collection = $this->collection;
-        
+
         if (empty($collection))
         {
             throw new Exception('You need to set a collection name using $this->db->from(\'table\') method.');
@@ -572,9 +621,9 @@ Class Mongo_Db {
 
         $this->collection = ''; // reset from.
         
-        while($row = $cursor->getNext())
+        foreach ($cursor['result'] as $key => $value) 
         {
-            $rows[] = $row;
+            $rows[$key] = $value;
         }
         
         $this->resultObject = new Mongo_Db\Src\Mongo_Db_Results($rows); // Load db results
@@ -1119,13 +1168,14 @@ Class Mongo_Db {
 
         $this->selects    = array();
         $this->updates    = array();
+        $this->groupBy      = array();
         $this->wheres     = array();
         $this->limit      = 999999;
         $this->offset     = 0;
         $this->sorts      = array();
         $this->find       = false;
         $this->collection = '';
- 
+        
         $this->updateData = array();
         $this->operation  = null;
     }

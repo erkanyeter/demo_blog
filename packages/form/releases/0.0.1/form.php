@@ -126,7 +126,8 @@ Class Form {
     */
     public static function _attributesToString($attributes, $formtag = false)
     {
-        $form = \Form::getFormConfig();  // get form template
+        $form   = \Form::getFormConfig();  // get form template
+        $config = getConfig();
 
         if (is_string($attributes) AND strlen($attributes) > 0)
         {
@@ -139,7 +140,7 @@ Class Form {
 
             if (strpos($attributes, 'accept-charset=') === FALSE)
             {
-                $attributes.= ' accept-charset="'.strtolower(config('charset')).'"';
+                $attributes.= ' accept-charset="'.strtolower($config['charset']).'"';
             }
 
             if($formtag)
@@ -176,7 +177,7 @@ Class Form {
 
             if ( ! isset($attributes['accept-charset']) AND $formtag == true)
             {
-                $atts.= ' accept-charset="'.strtolower(config('charset')).'"';
+                $atts.= ' accept-charset="'.strtolower($config['charset']).'"';
             }
 
             if(isset($attributes['class']))

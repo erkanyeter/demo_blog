@@ -139,6 +139,8 @@ Class Response {
      */        
     public function _sendOutput($output = '')
     {
+        $config = getConfig();
+
         if ($output == '')  // Set the output data
         {
             $output =& $this->final_output;
@@ -147,7 +149,7 @@ Class Response {
         // Is compression requested?  
         // --------------------------------------------------------------------
         
-        if (config('compress_output'))
+        if ($config['compress_output'])
         {
             if (extension_loaded('zlib'))
             {             
@@ -198,11 +200,11 @@ Class Response {
         
         logMe('debug', "Final output sent to browser");
 
-        if (config('log_benchmark')) // Do we need to generate benchmark data ? If so, enable and run it.
+        if ($config['log_benchmark']) // Do we need to generate benchmark data ? If so, enable and run it.
         {
             $memory_usage = "memory_get_usage() function not found on your php configuration.";
 
-            if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
+            if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '')
             {
                 $memory_usage = number_format($usage)." bytes";
             }

@@ -63,13 +63,15 @@ Class Shmop {
      */
     public function set($storeKey, $data)
     {
+        $config = getConfig();
+
         $key    = crc32($storeKey);
-        $size   = mb_strlen($data, config('charset'));
+        $size   = mb_strlen($data, $config['charset']);
         $shm_id = shmop_open($key, 'c', 0755, $size);    // Create shared memory block with system id
 
         if ( ! $shm_id)
         {
-            throw new Exception('Couldn\'t create shared memory segment.');
+            throw new Exception(get_class().' couldn\'t create shared memory segment.');
         }
 
         $shmop_size = shmop_size($shm_id);                    // Get shared memory block's size
@@ -77,7 +79,7 @@ Class Shmop {
 
         if ($shm_bytes_written != $size)
         {
-            throw new Exception('Couldn\'t write the entire length of data.');
+            throw new Exception(get_class().' couldn\'t write the entire length of data.');
         }
 
         shmop_close($shm_id);  // close the connection

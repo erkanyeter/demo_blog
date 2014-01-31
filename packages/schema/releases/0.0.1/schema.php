@@ -485,7 +485,8 @@ Class Schema {
      */
     public function getRequestUri()
     {
-        $index_page = config('index_page');
+        $config     = getConfig();
+        $index_page = $config['index_page'];
 
         if(empty($index_page))
         {

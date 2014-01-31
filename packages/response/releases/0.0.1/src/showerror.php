@@ -13,10 +13,12 @@ namespace Response\Src {
     */
     function showError($message, $statusCode = 500, $heading = 'An Error Was Encountered')
     {
+        $config = getConfig();
+
+        header('Content-type: text/html; charset='.$config['charset']); // Some times we use utf8 chars in errors.
+        
         logMe('error', 'HTTP Error --> '.$message, false);
 
-        header('Content-type: text/html; charset='.config('charset')); // Some times we use utf8 chars in errors.
-        
         echo getComponentInstance('response')->showHttpError($heading, $message, 'general', $statusCode);
         exit();
     }

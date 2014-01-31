@@ -38,7 +38,7 @@ Class Web_Service extends Controller {
                 break;
 
             default:
-                throw new Exception('There is no access property called '.$visibility.'.');
+                throw new Exception('There is no visibility called '.$visibility.'.');
                 break;
         }
 
