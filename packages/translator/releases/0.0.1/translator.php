@@ -88,7 +88,7 @@ Class Translator {
 
         unset($lang);
 
-        logMe('debug', 'Translator file loaded: '. APP .'lingo'. DS .$idiom. DS .$filename. EXT);
+        logMe('debug', 'Translator file loaded: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
         
         return true;
     }
@@ -107,5 +107,5 @@ Class Translator {
 
 }
 
-/* End of file lingo.php */
-/* Location: ./packages/lingo/releases/0.0.1/lingo.php */
+/* End of file translator.php */
+/* Location: ./packages/translator/releases/0.0.1/translator.php */

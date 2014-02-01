@@ -80,7 +80,7 @@ Core packages will load framework language files which are located in <kbd>app/t
 -  app
     +config
     +errors
-    -translator
+    -translations
         -en_US
             date_get.php
             ftp.php

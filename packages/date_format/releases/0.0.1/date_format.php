@@ -13,7 +13,7 @@ Class Date_Format {
 
     function __construct()
     {
-        getInstance()->lingo->load('date_format');
+        getInstance()->translator->load('date_format');
 
         if( ! isset(getInstance()->date_format))
         {

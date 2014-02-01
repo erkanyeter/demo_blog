@@ -9,7 +9,7 @@ In order to keep the framework as light-weight as possible only the absolute min
 
 ```php
 $autorun[] = function() {
-	$this->lingo->load('spanish');
+	$this->translator->load('spanish');
 };
 ```
 
@@ -20,9 +20,9 @@ $autorun[] = function() {
 	
 	new Cookie;
 
-	if($this->cookie->get('lang') == 'spanish')
+	if($this->cookie->get('langName') == 'spanish')
 	{
-		$this->lingo->load('spanish');
+		$this->translator->load('spanish');
 	}
 };
 ```

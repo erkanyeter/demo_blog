@@ -18,7 +18,7 @@ $config = array(
 	'base_url'         => '/',    // Base Url "/" URL of your framework root, generally a '/' trailing slash.	
 	'assets_url'       => '/',    // Assets Url of your framework generally a '/' trailing slash.	
 	'uri_protocol'     => 'AUTO', // Auto detects the URI protocol * Default option is 'AUTO', other options: REQUEST_URI, QUERY_STRING, PATH_INFO.
-	'error_reporting'  => 1,   	 // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
+	'error_reporting'  => 1,   	  // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
 	'debug_backtrace'  => array('enabled' => 'E_ALL', 'padding' => 3), // Enabling advanced debug mode will help you to easy development.
 	'env_config_files' => array('routes','sess','database','mongo'),   // Defined config files for each environments.
 

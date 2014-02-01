@@ -26,7 +26,9 @@ Class Validator {
     {    
         $this->_config_rules = $rules;  // Validation rules can be stored in a config file.
 
-        mb_internal_encoding(config('charset'));
+        $config = getConfig();
+
+        mb_internal_encoding($config['charset']);
 
         if( ! isset(getInstance()->validator))
         {
@@ -248,7 +250,7 @@ Class Validator {
             }
         }
 
-        getInstance()->lingo->load('validator');     // Load Obullo language file.
+        getInstance()->translator->load('validator');     // Load Obullo language file.
 
         // Cycle through the rules for each field, match the 
         // corresponding $_REQUEST item and test for errors
@@ -461,9 +463,9 @@ Class Validator {
 
                 if ( ! isset($this->_error_messages[$type]))
                 {
-                    $line = lingo($type);  
+                    $line = translate($type);  
 
-                    if (hasLingo($type) == false)
+                    if (hasTranslate($type) == false)
                     {
                         $line = 'The field was not set';
                     }
@@ -622,9 +624,9 @@ Class Validator {
             {            
                 if ( ! isset($this->_error_messages[$rule]))
                 {
-                    $line = lingo($rule);
+                    $line = translate($rule);
 
-                    if (hasLingo($rule) == false)
+                    if (hasTranslate($rule) == false)
                     {
                         $line = 'Unable to translation access an error message corresponding to your field name.';
                     }                        
@@ -665,13 +667,13 @@ Class Validator {
      */    
     private function _translateFieldname($fieldname)
     {
-        if (substr($fieldname, 0, 6) == 'lingo:') // Do we need to translate the field name? 
+        if (substr($fieldname, 0, 6) == 'translate:') // Do we need to translate the field name? 
         {
             $line = substr($fieldname, 6);   // Grab the variable
 
-            if (hasLingo($line)) // Were we able to translate the field name? If not we use $line.
+            if (hasTranslate($line)) // Were we able to translate the field name? If not we use $line.
             {
-                return lingo($line);
+                return translate($line);
             }
         }
 

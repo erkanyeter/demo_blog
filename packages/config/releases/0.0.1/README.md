@@ -64,7 +64,7 @@ $this->config->getItem('itemname');
 Where <var>itemname</var> is the <dfn>$config<dfn> array index you want to retrieve. For example, to fetch your language choice you'll do this:
 
 ```php
-$lang = $this->config->getItem('lingo');
+$lang = $this->config->getItem('default_translations');
 ```
 
 The function returns false (boolean) if the item you are trying to fetch does not exist.

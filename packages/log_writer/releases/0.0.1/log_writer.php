@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Log Write Class
+ * Log Writer Class
  *
  * @package       packages
  * @subpackage    log_write
@@ -9,7 +9,7 @@
  * @link          
  */
 
-Class Log_Write {
+Class Log_Writer {
 
     // --------------------------------------------------------------------
     
@@ -115,7 +115,7 @@ Class Log_Write {
     
 }
 
-// END log_write class
+// END log_writer class
 
-/* End of file Log_Write.php */
-/* Location: ./packages/log_write/releases/0.0.1/log_write.php */
+/* End of file Log_Writer.php */
+/* Location: ./packages/log_writer/releases/0.0.1/log_writer.php */

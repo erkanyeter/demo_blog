@@ -410,7 +410,7 @@ You can also process the form data that is passed to your callback and return it
 
 ------
 
-All of the native error messages are located in the following language file: <kbd>app/lingo/english/obullo.php</kbd>
+All of the native error messages are located in the following language file: <kbd>app/translations/en-US/validator.php</kbd>
 
 To set your own custom message you can either edit that file, or use the following function:
 
@@ -440,10 +440,10 @@ $this->form->setMessage('required', 'Your custom message here');
 
 If you would like to store the "human" name you passed to the <kbd>setRules()</kbd> function in a language file, and therefore make the name able to be translated, here's how:
 
-First, prefix your "human" name with <kbd>lingo:</kbd>, as in this example:
+First, prefix your "human" name with <kbd>translate:</kbd>, as in this example:
 
 ```php
-$this->form->setRules('first_name', 'lingo:first_name', 'required');
+$this->form->setRules('first_name', 'translate:first_name', 'required');
 ```
 
 Then, store the name in one of your language file arrays (without the prefix):
@@ -455,7 +455,7 @@ $lang['first_name'] = 'First Name';
 **Note:** If you store your array item in a language file that is not loaded automatically by Framework, you'll need to remember to load it in your controller using:
 
 ```php
-$this->lingo->load('filename');
+$this->translator->load('filename');
 ```
 
 See the [Language Helper](#) page for more info regarding language files.

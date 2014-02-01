@@ -361,10 +361,24 @@
                 $sub_path = DS .implode(DS, $exp). DS;
             }
 
-            $folder = APP .'config'. $sub_path;
+            $folder = $folder.$sub_path;
         }
 
         return getStatic($filename, $var, $folder, EXT);
+    }
+
+    
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get the schema configuration.
+     * 
+     * @param  string $filename schema filename
+     * @return array  $schema array
+     */
+    function getSchema($filename)
+    {           
+        return getConfig($filename, '',  APP .'schemas');
     }
 
     // --------------------------------------------------------------------
@@ -430,11 +444,11 @@
 
     // --------------------------------------------------------------------
 
-    function hasLingo($item)
+    function hasTranslate($item)
     {        
-        $lingo = getComponentInstance('lingo');
+        $translator = getComponentInstance('translator');
 
-        if( isset($lingo->language[$item])) 
+        if( isset($translator->language[$item])) 
         {
             return true;
         }
@@ -451,16 +465,16 @@
      * @param string $item
      * @return string
      */
-    function lingo()
+    function translate()
     {
         $args  = func_get_args();
         $item  = $args[0];
         
-        $lingo = getComponentInstance('lingo');
+        $translator = getComponentInstance('translator');
         
-        if(hasLingo($item))
+        if(hasTranslate($item))
         {
-            $item = $lingo->language[$item];
+            $item = $translator->language[$item];
         }
 
         if(count($args) > 1)
@@ -470,19 +484,6 @@
         }
 
         return $item;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Get the schema configuration.
-     * 
-     * @param  string $filename schema filename
-     * @return array  $schema array
-     */
-    function getSchema($filename)
-    {
-        return getConfig($filename, '',  APP .'schemas');
     }
 
     // ------------------------------------------------------------------------

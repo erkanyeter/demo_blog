@@ -33,7 +33,7 @@ namespace Date_Format\Src {
         foreach (getInstance()->date_format->getTimeZones() as $key => $val)
         {
             $selected = ($default == $key) ? " selected='selected'" : '';
-            $menu .= "<option value='{$key}'{$selected}>".lingo($key)."</option>\n";
+            $menu .= "<option value='{$key}'{$selected}>".translate($key)."</option>\n";
         }
 
         $menu .= "</select>";

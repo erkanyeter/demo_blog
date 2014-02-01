@@ -56,7 +56,7 @@ Class Odm {
         $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
         $this->post = (isset(getInstance()->post)) ? getInstance()->post : $odm['post'];
 
-        getInstance()->lingo->load('odm');  // Load Odm package language file.
+        getInstance()->translator->load('odm');  // Load Odm package language file.
 
         $this->{Db::$var} = $dbObject; // Store database object
 
@@ -156,7 +156,7 @@ Class Odm {
 
                 $form = Form::getFormConfig();
 
-                $translated = lingo('There are some errors in the form fields.');
+                $translated = translate('There are some errors in the form fields.');
 
                 $this->_odmMessages[$table]['messages'] = array(
                     'success'    => 0, 
@@ -495,7 +495,7 @@ Class Odm {
 
         if(is_string($e))
         {
-            $errorMessage = (hasLingo($e)) ? lingo($e) : $e; // Is Translated ?
+            $errorMessage = (hasTranslate($e)) ? translate($e) : $e; // Is Translated ?
         }
 
         $form = Form::getFormConfig();

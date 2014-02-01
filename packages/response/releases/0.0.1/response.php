@@ -189,9 +189,9 @@ Class Response {
         
         // Does the controller contain a function named _output()?
         // If so send the output there.  Otherwise, echo it.
-        if (method_exists(getInstance(), '_output'))
+        if (method_exists(getInstance(), '_response'))
         {
-            getInstance()->_output($output);
+            getInstance()->_response($output);
         }
         else
         {

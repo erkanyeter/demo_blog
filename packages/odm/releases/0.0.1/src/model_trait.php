@@ -68,8 +68,8 @@ namespace Odm\Src {
                     'key'        => $method,
                     'code'       => 11,
                     'string'     => $errorString,
-                    'translated' => lingo($errorString),
-                    'message'    => sprintf($form['notifications']['successMessage'], lingo($errorString)),
+                    'translated' => translate($errorString),
+                    'message'    => sprintf($form['notifications']['successMessage'], translate($errorString)),
                     );
 
                     // $this->clear();  

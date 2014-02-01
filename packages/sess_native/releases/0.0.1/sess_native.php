@@ -34,8 +34,18 @@ Class Sess_Native {
     {        
         $sess = getConfig('sess');
 
-        foreach (array('encrypt_cookie','cookie','request','expiration','expire_on_close','match_ip', 
-        'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
+        foreach (array(
+            'cookie_name',
+            'expiration',
+            'expire_on_close',
+            'encrypt_cookie',
+            'cookie',
+            'request',
+            // 'db',
+            'table_name',
+            'match_ip',
+            'match_useragent',
+            'time_to_update') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
         }
@@ -64,7 +74,9 @@ Class Sess_Native {
             ini_set('session.gc_maxlifetime', ($this->expiration == 0) ? 7200 : $this->expiration);
         }
         
-        $this->now = $this->_getTime();
+        $this->now            = $this->_getTime();
+        $this->encryption_key = $config['encryption_key'];
+        $this->time_reference = $config['time_reference'];
 
         session_name($this->cookie_prefix . $this->cookie_name);
         

@@ -40,7 +40,7 @@ namespace Date_Format\Src {
 
         if ($years > 0)
         {	
-            $str .= $years.' '.lingo((($years > 1) ? 'date_years' : 'date_year')).', ';
+            $str .= $years.' '.translate((($years > 1) ? 'date_years' : 'date_year')).', ';
         }	
 
         $seconds -= $years * 31536000;
@@ -50,7 +50,7 @@ namespace Date_Format\Src {
         {
             if ($months > 0)
             {
-                $str .= $months.' '.lingo((($months > 1) ? 'date_months' : 'date_month')).', ';
+                $str .= $months.' '.translate((($months > 1) ? 'date_months' : 'date_month')).', ';
             }	
 
             $seconds -= $months * 2628000;
@@ -62,7 +62,7 @@ namespace Date_Format\Src {
         {
             if ($weeks > 0)
             {
-                $str .= $weeks.' '.lingo((($weeks > 1) ? 'date_weeks' : 'date_week')).', ';
+                $str .= $weeks.' '.translate((($weeks > 1) ? 'date_weeks' : 'date_week')).', ';
             }
 
             $seconds -= $weeks * 604800;
@@ -74,7 +74,7 @@ namespace Date_Format\Src {
         {
             if ($days > 0)
             {
-                $str .= $days.' '.lingo((($days	> 1) ? 'date_days' : 'date_day')).', ';
+                $str .= $days.' '.translate((($days	> 1) ? 'date_days' : 'date_day')).', ';
             }
 
             $seconds -= $days * 86400;
@@ -86,7 +86,7 @@ namespace Date_Format\Src {
         {
             if ($hours > 0)
             {
-                $str .= $hours.' '.lingo((($hours > 1) ? 'date_hours' : 'date_hour')).', ';
+                $str .= $hours.' '.translate((($hours > 1) ? 'date_hours' : 'date_hour')).', ';
             }
 
             $seconds -= $hours * 3600;
@@ -98,7 +98,7 @@ namespace Date_Format\Src {
         {
             if ($minutes > 0)
             {
-                $str .= $minutes.' '.lingo((($minutes > 1) ? 'date_minutes' : 'date_minute')).', ';
+                $str .= $minutes.' '.translate((($minutes > 1) ? 'date_minutes' : 'date_minute')).', ';
             }
 
             $seconds -= $minutes * 60;
@@ -106,7 +106,7 @@ namespace Date_Format\Src {
 
         if ($str == '')
         {
-            $str .= $seconds.' '.lingo((($seconds	> 1) ? 'date_seconds' : 'date_second')).', ';
+            $str .= $seconds.' '.translate((($seconds	> 1) ? 'date_seconds' : 'date_second')).', ';
         }
 
         return substr(trim($str), 0, -1);

@@ -51,8 +51,18 @@ Class Sess_Database {
     {        
         $sess = getConfig('sess');
 
-        foreach (array('db','cookie','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
-        'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
+        foreach (array(
+            'cookie_name',
+            'expiration',
+            'expire_on_close',
+            'encrypt_cookie',
+            'cookie',
+            'request',
+            'db',
+            'table_name',
+            'match_ip',
+            'match_useragent',
+            'time_to_update') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
         }
@@ -63,7 +73,9 @@ Class Sess_Database {
         $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
         $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
         
-        $this->now = $this->_getTime();
+        $this->now            = $this->_getTime();
+        $this->encryption_key = $config['encryption_key'];
+        $this->time_reference = $config['time_reference'];
 
         if ($this->expiration == 0) // Set the expiration two years from now.
         {

@@ -33,6 +33,8 @@ Class Sess {
 
         logMe('debug', "Sess Class Initialized");
 
+        $config = getConfig();
+
         static $logged = null;
 
         if($logged == null AND $config['log_threshold'] > 0)
@@ -55,12 +57,12 @@ Class Sess {
     {
         static $sessionStart = null;
 
-        $config = getConfig('sess');
+        $sess = getConfig('sess');
 
         if ($sessionStart == null)
         {
-            $driver   = (isset($params['driver'])) ? $params['driver'] : $config['driver'];
-            $database = (isset($params['database'])) ? $params['database'] : $config['database'];
+            $driver   = (isset($params['driver'])) ? $params['driver'] : $sess['driver'];
+            $database = (isset($params['db'])) ? $params['db'] : $sess['db'];
 
             self::$driver = $driver;      // Driver object.
             self::$driver->init($params); // Start the sessions

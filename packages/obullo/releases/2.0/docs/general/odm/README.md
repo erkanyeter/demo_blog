@@ -364,7 +364,7 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tr>
 <tr>
 <td>translated</td>
-<td>Gives the translated error message using lingo() function. ( uses lingo package )</td>
+<td>Gives the translated error message using translate() function. ( uses translator package )</td>
 </tr>
 </tbody>
 </table>
@@ -563,13 +563,13 @@ print_r($errors);
 
 ### Languages
 
-You can use <b>lingo</b> package functionality in schema labels. 
+You can use <b>translator</b> package functionality in schema labels. 
 
 ```php
-'email' => array('label' => 'lingo:Username', 'rules' => 'required|_string(60)|minLen(4)');
+'email' => array('label' => 'translate:Username', 'rules' => 'required|_string(60)|minLen(4)');
 ```
 
-To run this functionality you need to load your language file using <b>$this->lingo->load();</b> function. Look at lingo package for more details.
+To run this functionality you need to load your language file using <b>$this->translator->load();</b> function. Look at translator package for more details.
 
 ### Callback Functions
 
@@ -666,7 +666,7 @@ $this->model->setFailure($message = '');
 ```
 <b>Sending exception object "$e"</b>
 
-if you send exception object in <b>debug</b> and <b>test</b> mode it will give you <b>$e->getMessage()</b>, otherwise in <b>live</b> mode it will produce user friendly error message <b>( We couldn\'t do operation at this time please try again. )</b> which is defined in your <kbd>lingo/english/odm.php</kbd> language file.
+if you send exception object in <b>debug</b> and <b>test</b> mode it will give you <b>$e->getMessage()</b>, otherwise in <b>live</b> mode it will produce user friendly error message <b>( We couldn\'t do operation at this time please try again. )</b> which is defined in your <kbd>app/translations/en_US/odm.php</kbd> language file.
 ```php
 $this->model->setFailure($e);
 ```

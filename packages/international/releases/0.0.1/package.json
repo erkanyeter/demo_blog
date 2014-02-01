@@ -1,6 +1,6 @@
 {
-  "name": "log_write",
-  "description": "Log write package ( component for the logMe() function ).",
+  "name": "international",
+  "description": "This class sets the accepted language code ( en-US ), charsets ,language name, region and other things.",
   "version": "0.0.1",
   "releases": ["0.0.1"],
   "author": {
@@ -10,26 +10,28 @@
   },
   "component" : "library",
   "dependencies": {
-    "log": "*"
+    "log":"*"
   },
   "keywords": [
-    "log_write",
-    "logging",
-    "log"
+    "i18n",
+    "international",
+    "translation",
+    "localization",
+    "locale",
   ],
-  "homepage": "https://github.com/obullo/log_write",
+  "homepage": "https://github.com/obullo/translator",
   "repo": {
     "type": "git",
-    "url": "https://github.com/obullo/log_write.git",
+    "url": "https://github.com/obullo/translator.git",
     "archive" : "zip",
-    "archive_url": "https://github.com/obullo/log_write/archive/master.zip"
+    "archive_url": "https://github.com/obullo/translator/archive/master.zip"
   },
   "requires": {
     "php": ">= 5.4.0",
     "extensions": ["none"]
   },
   "bugs": {
-    "url": "https://github.com/obullo/log_write/issues",
+    "url": "https://github.com/obullo/translator/issues",
     "email": "obulloframework@gmail.com"
   },
   "licenses": [

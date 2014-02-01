@@ -52,8 +52,18 @@ Class Sess_Cache {
     {        
         $sess = getConfig('sess');
 
-        foreach (array('database','cookie','request','table_name', 'encrypt_cookie','expiration', 'expire_on_close', 'match_ip', 
-        'match_useragent','time_to_update', 'time_reference', 'encryption_key', 'cookie_name') as $key)
+        foreach (array(
+            'cookie_name',
+            'expiration',
+            'expire_on_close',
+            'encrypt_cookie',
+            'cookie',
+            'request',
+            'db',
+            'table_name',
+            'match_ip',
+            'match_useragent',
+            'time_to_update') as $key)
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
         }
@@ -64,8 +74,10 @@ Class Sess_Cache {
         $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
         $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
         
-        $this->now = $this->_getTime();
-        
+        $this->now            = $this->_getTime();
+        $this->encryption_key = $config['encryption_key'];
+        $this->time_reference = $config['time_reference'];
+
         if ($this->expiration == 0) // Set the expiration two years from now.
         {
             $this->expiration = (60 * 60 * 24 * 365 * 2);
@@ -75,7 +87,7 @@ Class Sess_Cache {
         
         $this->cookie  = &$this->cookie;      // Set Cookie object
         $this->request = &$this->request;     // Set Request object
-        $this->db      = &$this->database;    // Set Database object
+        $this->db      = &$this->db;          // Set Database object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.

@@ -13,7 +13,7 @@ namespace Utf8\Src {
     * @param   integer  offset
     * @param   integer  length limit
     * @return  string
-    * @uses    config('charset');
+    * @uses    getConfig();
     */
     function _substr($str, $offset, $length = null)
     {

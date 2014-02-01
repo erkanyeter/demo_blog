@@ -13,7 +13,7 @@ namespace Utf8\Src {
     * [!!] This method requires [Iconv](http://php.net/iconv)
     *
     * @param   mixed   variable to clean
-    * @param   string  character set, defaults to config('charset')
+    * @param   string  character set, defaults to getConfig()['charset'];
     * @return  mixed
     * @uses    $this->utf8->stripAsciiCtrl
     * @uses    $this->utf8->isAscii

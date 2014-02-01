@@ -13,7 +13,7 @@ $c = new Controller(function(){
     new Sess;
     new Auth;
     new Post;
-
+    
     new Trigger('public','header');
     
 	new Model('contact', 'contacts');

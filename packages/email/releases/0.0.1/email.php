@@ -11,22 +11,22 @@
  */
 Class Email {
 
-    public    $useragent       = "Obullo";
-    public    $mailpath        = "/usr/sbin/sendmail";    // Sendmail path
-    public    $protocol        = "mail";    // mail/sendmail/smtp
-    public    $smtp_host       = "";        // SMTP Server.  Example: mail.earthlink.net
-    public    $smtp_user       = "";        // SMTP Username
-    public    $smtp_pass       = "";        // SMTP Password
-    public    $smtp_port       = "25";        // SMTP Port
+    public    $useragent       = 'Obullo';
+    public    $mailpath        = '/usr/sbin/sendmail';    // Sendmail path
+    public    $protocol        = 'mail';    // mail/sendmail/smtp
+    public    $smtp_host       = '';        // SMTP Server.  Example: mail.earthlink.net
+    public    $smtp_user       = '';        // SMTP Username
+    public    $smtp_pass       = '';        // SMTP Password
+    public    $smtp_port       = '25';        // SMTP Port
     public    $smtp_timeout    = 5;        // SMTP Timeout in seconds
     public    $wordwrap        = true;        // true/false  Turns word-wrap on/off
-    public    $wrapchars       = "76";        // Number of characters to wrap at.
-    public    $mailtype        = "text";    // text/html  Defines email formatting
-    public    $charset         = "utf-8";    // Default char set: iso-8859-1 or us-ascii
-    public    $multipart       = "mixed";    // "mixed" (in the body) or "related" (separate)
+    public    $wrapchars       = '76';        // Number of characters to wrap at.
+    public    $mailtype        = 'text';    // text/html  Defines email formatting
+    public    $charset         = 'utf-8';    // Default char set: iso-8859-1 or us-ascii
+    public    $multipart       = 'mixed';    // "mixed" (in the body) or "related" (separate)
     public    $alt_message     = '';        // Alternative message for HTML emails
     public    $validate        = false;    // true/false.  Enables email validation
-    public    $priority        = "3";        // Default priority (1 - 5)
+    public    $priority        = '3';        // Default priority (1 - 5)
     public    $newline         = "\n";        // Default newline. "\r\n" or "\n" (Use "\r\n" to comply with RFC 822)
     public    $crlf            = "\n";        // The RFC 2045 compliant CRLF for quoted-printable is "\r\n".  Apparently some servers,
                                     // even on the receiving end think they need to muck with CRLFs, so using "\n", while
@@ -35,14 +35,14 @@ Class Email {
     public    $bcc_batch_mode    = false;    // true/false  Turns on/off Bcc batch feature
     public    $bcc_batch_size    = 200;        // If bcc_batch_mode = true, sets max number of Bccs in each batch
     public    $_safe_mode        = false;
-    public    $_subject          = "";
-    public    $_body             = "";
-    public    $_finalbody        = "";
-    public    $_alt_boundary     = "";
-    public    $_atc_boundary     = "";
-    public    $_header_str       = "";
-    public    $_smtp_connect     = "";
-    public    $_encoding         = "8bit";
+    public    $_subject          = '';
+    public    $_body             = '';
+    public    $_finalbody        = '';
+    public    $_alt_boundary     = '';
+    public    $_atc_boundary     = '';
+    public    $_header_str       = '';
+    public    $_smtp_connect     = '';
+    public    $_encoding         = '8bit';
     public    $_smtp_auth        = false;
     public    $_replyto_flag     = false;
     public    $_debug_msg        = array();
@@ -77,10 +77,10 @@ Class Email {
         else
         {
             $this->_smtp_auth = ($this->smtp_user == '' AND $this->smtp_pass == '') ? false : true;
-            $this->_safe_mode = ((boolean)@ini_get("safe_mode") === false) ? false : true;
+            $this->_safe_mode = ((boolean)@ini_get('safe_mode') === false) ? false : true;
         }
 
-        logMe('debug', "Email Class Initialized");
+        logMe('debug', 'Email Class Initialized');
     }
     
     
@@ -92,6 +92,7 @@ Class Email {
     public function init($config = array())
     {
         $this->clear();
+        
         foreach ($config as $key => $val)
         {
             if (isset($this->$key))
@@ -1866,7 +1867,7 @@ Class Email {
      */
     private function _setErrorMessage($msg, $val = '')
     {
-        getInstance()->lingo->load('email');
+        getInstance()->translator->load('email');
 
         if (hasLingo($msg) == false)
         {
@@ -1874,7 +1875,7 @@ Class Email {
         }
         else
         {
-            $this->_debug_msg[] = str_replace('%s', $val, lingo($msg))."<br />";
+            $this->_debug_msg[] = str_replace('%s', $val, translate($msg))."<br />";
         }
     }
   

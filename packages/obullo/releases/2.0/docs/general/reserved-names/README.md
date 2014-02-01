@@ -2,7 +2,7 @@
 
 ------
 
-In order to help out, Obullo uses a series of functions and names in its operation. Because of this, some names cannot be used by a developer. Following is a list of reserved names that cannot be used.
+In order to help out, Framework uses a series of functions and names in its operation. Because of this, some names cannot be used by a developer. Following is a list of reserved names that cannot be used.
 
 ### Class Names & Methods <a name="controller-names"></a>
 
@@ -12,7 +12,7 @@ Since your controller classes will extend the main application controller you mu
 
 - _getInstance()
 - _remap()
-- _output()
+- _response()
 - index()
 - Error
 - Exceptions
@@ -25,11 +25,12 @@ Since your controller classes will extend the main application controller you mu
 - Hmvc
 - Model
 - Model_Trait
+- Get
+- Post
 - Request
 - Response
 - Router
 - Uri
-- Obullo
 - Odm
 
 #### Functions
@@ -37,18 +38,16 @@ Since your controller classes will extend the main application controller you mu
 ------
 
 - autoloader()
-- config()
 - getConfig()
 - getComponent()
 - getComponentInstance()
 - getInstance()
 - getStatic()
-- lingo()
+- hasTranslate()
+- translate()
 - packageExists()
 - removeInvisibleCharacters()
 - runFramework()
-- tpl()
-- view()
 
 Look at your <kbd>obullo.php</kbd> file located in your <b>Obullo Package</b>.
 
@@ -59,8 +58,8 @@ Look at your <kbd>obullo.php</kbd> file located in your <b>Obullo Package</b>.
 - $this->config
 - $this->router
 - $this->uri
-- $this->output
-- $this->lingo
+- $this->response
+- $this->translator
 
 #### Constants
 

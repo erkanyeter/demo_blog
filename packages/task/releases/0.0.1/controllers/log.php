@@ -161,7 +161,7 @@ Display logs [$php task log], to filter logs [$php task log $level]'."\n\033[0m"
         }
         
         $locales = array();
-        foreach(getComponentInstance('lingo')->is_loaded as $lcl)
+        foreach(getComponentInstance('translator')->is_loaded as $lcl)
         { 
             $locales[] = Error::getSecurePath($lcl); 
         }

@@ -9,9 +9,6 @@ $c = new Controller(function(){
 
 	new View;
 	// new International;
-	
-	$this->translator->load('date_format');
-	
 });
 
 $c->func('index', function(){
