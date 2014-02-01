@@ -14,6 +14,9 @@ Class Form {
     public static $template     = 'default';   // Default form template
     public $_callback_functions = array();     // Store __callback_func* validation methods
 
+    private $_formMessages = array();  // Validation errors.
+    private $_formValues   = array();  // Filtered safe values.
+
     /**
      * Constructor
      */
@@ -254,9 +257,19 @@ Class Form {
      */
     public function isValid($group = '')
     {
-        getInstance()->validator->set('_callback_object', $this);
+        $validator = getInstance()->validator;
+        $validator->set('_callback_object', $this);
 
-        return getInstance()->validator->isValid($group);
+        $valid = $validator->isValid($group);
+
+        if($valid == false)
+        {
+            // $this->_formMessages['errors'] = $validator->_error_messages;
+            print_r($validator->_error_messages);
+            // print_r($validator->_error_array);
+        }
+
+        return $valid;
     }
     
     // ------------------------------------------------------------------------

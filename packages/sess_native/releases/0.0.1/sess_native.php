@@ -31,7 +31,9 @@ Class Sess_Native {
     // --------------------------------------------------------------------
 
     function init($params = array())
-    {        
+    {    
+        global $config;
+
         $sess = getConfig('sess');
 
         foreach (array(
@@ -49,8 +51,6 @@ Class Sess_Native {
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
         }
-
-        $config = getConfig();
 
         $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
         $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];

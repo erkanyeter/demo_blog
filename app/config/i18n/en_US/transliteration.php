@@ -60,7 +60,6 @@ $transliteration['general'] = array(
 	'/ĳ/'      => 'ij',
 	'/Œ/'      => 'OE',
 	'/ƒ/'      => 'f',
-	
 	'/ф/'   => 'f',
 	'/ж|Ж/' => 'zh',
 	'/щ|Щ/' => 'sch',

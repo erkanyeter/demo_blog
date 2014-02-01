@@ -13,11 +13,10 @@
  */
    function runFramework()
    {
-        global $packages;
+        global $packages, $config;
 
         $router = getComponentInstance('router');
         $uri    = getComponentInstance('uri');
-        $config = getConfig();
 
         /*
          * ------------------------------------------------------
@@ -200,7 +199,8 @@
             $hooks->_callHook('post_system');
         }
 
-    }  // end Run.
+    } 
+    // end Run.
 
     // Common Functions
     // ------------------------------------------------------------------------
@@ -217,22 +217,18 @@
     */
     function cleanInputData($str)
     {
-        $config = getConfig();
+        global $config;
 
         if (is_array($str))
         {
             $new_array = array();
+
             foreach ($str as $key => $val)
             {
                 $new_array[cleanInputKeys($key)] = cleanInputData($val);
             }
 
             return $new_array;
-        }
-
-        if (function_exists('get_magic_quotes_gpc') AND get_magic_quotes_gpc()) // We strip slashes if magic quotes is on to keep things consistent
-        {
-            $str = stripslashes($str);
         }
 
         $str = removeInvisibleCharacters($str); // Remove control characters
@@ -281,14 +277,14 @@
     */
     function logMe($level = 'error', $message = '', $php_errors = true)
     {    
-        $config = getConfig();
+        global $config;
 
         if ($config['log_threshold'] == 0)
         {
             return;
         }
         
-        $class = getComponent('log');
+        $class        = getComponent('log');
         $logComponent = new $class();
 
         return $logComponent->dump($level, $message);
@@ -343,9 +339,16 @@
     */
     function getConfig($filename = 'config', $var = '', $folder = '')
     {   
+        global $config;
+
+        if($filename == 'config' OR empty($filename)) // return to global config file
+        {
+            return $config;
+        }
+
         $folder = ($folder == '') ? APP .'config' : $folder;
 
-        if(in_array($filename, array('config','routes','sess','database','mongo')))
+        if(in_array($filename, $config['environment_config_files']))
         {
             $folder = APP .'config'. DS .strtolower(ENV);
         } 
@@ -502,9 +505,7 @@
             return;
         }
 
-        global $packages;
-
-        $config = getConfig();
+        global $packages, $config;
         
         $parts           = explode('\\', $packageRealname);
         $packageFilename = mb_strtolower($parts[0], $config['charset']);
@@ -601,7 +602,7 @@
     */
     function exceptionsHandler($e, $type = '')
     { 
-        global $packages;
+        global $packages, $config;
         
         $core = strtolower($packages['components']['core']);
 
@@ -613,9 +614,9 @@
         );
         
         $shutdownError = false;
+
         if(isset($shutdownErrors[$type]))  // We couldn't use any object for shutdown errors.
         {
-            $config = getConfig();
             $error  = new Error; // Load error package.
             
             $shutdownError = true;
@@ -655,9 +656,12 @@
                 }
 
                 $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
+
                 if(isset($allowedErrors[$code]))
                 {
-                    include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
+                    $exception = getComponent('exception');
+
+                    include (PACKAGES .$exception. DS .'releases'. DS .$packages['dependencies'][$exception]['version']. DS .'src'. DS .'view'. EXT);
                 }
             }
             else  // If error_reporting = 0, we show a blank page template.
@@ -670,7 +674,8 @@
         else  // Is It Exception ? Initialize to Exceptions Component.
         {
             $exception = getComponent('exception');
-            $exceptionObject = new $exception();     
+            
+            $exceptionObject = new $exception;     
             $exceptionObject->write($e, $type);
         }
 

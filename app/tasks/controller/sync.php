@@ -29,8 +29,7 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
 {
     if( ! isset(getInstance()->{$dbVar}))
     {
-        $database = new Db($dbVar);
-        $dbObject = $database->connect();
+        $dbObject = new Db($dbVar);
     } 
     else 
     {

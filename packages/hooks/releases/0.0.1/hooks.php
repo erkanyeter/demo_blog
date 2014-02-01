@@ -25,7 +25,7 @@ Class Hooks {
      */
     public function __construct()
     {
-        $config = getConfig();
+        global $config;
 
         if ($config['enable_hooks'] == FALSE)  // If hooks are not enabled in the config
         {                                            // file there is nothing else to do
@@ -42,7 +42,7 @@ Class Hooks {
         $this->hooks   =& $hooks;
         $this->enabled = true;
 
-        logMe('debug', "Hooks Class Initialized");
+        logMe('debug', 'Hooks Class Initialized');
     }
 
     // --------------------------------------------------------------------

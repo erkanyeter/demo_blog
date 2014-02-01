@@ -39,7 +39,7 @@ error_reporting(0);
 | @see  http://www.php.net/manual/en/timezones.php
 | 
 */
-date_default_timezone_set('Europe/London');
+date_default_timezone_set('America/Chicago');
 
 /*
 |--------------------------------------------------------------------------
@@ -126,6 +126,7 @@ if(defined('STDIN'))
 | }
 |
  */
+require (APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT);
 require (DATA .'cache'. DS .'packages.cache');
 
 /*

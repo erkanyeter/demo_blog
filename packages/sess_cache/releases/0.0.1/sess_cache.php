@@ -50,6 +50,8 @@ Class Sess_Cache {
 
     function init($params = array())
     {        
+        global $config;
+
         $sess = getConfig('sess');
 
         foreach (array(
@@ -67,8 +69,6 @@ Class Sess_Cache {
         {
             $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
         }
-        
-        $config = getConfig();
 
         $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
         $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
@@ -87,7 +87,6 @@ Class Sess_Cache {
         
         $this->cookie  = &$this->cookie;      // Set Cookie object
         $this->request = &$this->request;     // Set Request object
-        $this->db      = &$this->db;          // Set Database object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.

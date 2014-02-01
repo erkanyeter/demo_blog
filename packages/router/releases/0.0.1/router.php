@@ -129,7 +129,7 @@ Class Router {
     */
     public function _setRouting()
     {
-        $config = getConfig();
+        global $config;
 
         if( ! isset($_SERVER['HMVC_REQUEST']))    // GET request valid for standart router requests not HMVC.
         {

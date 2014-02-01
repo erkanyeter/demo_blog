@@ -43,8 +43,7 @@ Above the <dfn>getResult()</dfn> function returns an array of <strong>objects</s
 ------
 
 ```php
-$database = new Db(false);
-$db = $database->connect();
+$db = new Db();
 
 print_r($db->get('users')->getResultArray());
 ```

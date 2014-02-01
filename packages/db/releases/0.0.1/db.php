@@ -27,19 +27,40 @@ Class Db {
     public static $config = array(); 
 
     /**
+     * $db
+     * 
+     * @var object
+     */
+    public $db;
+
+    /**
      * Constructor
      * 
      * @param string $dbVar database configuration key
      */
     public function __construct($dbVar = 'db')
     {
-        $this->connect(strtolower($dbVar));
+        $this->db = $this->connect(strtolower($dbVar));
         
         logMe('debug', 'Db Class Initialized');
     }
        
     // --------------------------------------------------------------------
     
+    /**
+     * Call methods from CRUD object
+     * 
+     * @param  string $method
+     * @param  array $arguments
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        return call_user_func_array(array($this->db, $method), $arguments);
+    }
+
+    // --------------------------------------------------------------------
+
     /**
      * Connect to Database
      * 

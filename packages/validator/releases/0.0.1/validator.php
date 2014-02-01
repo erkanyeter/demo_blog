@@ -24,9 +24,9 @@ Class Validator {
 
     public function __construct($rules = array())
     {    
-        $this->_config_rules = $rules;  // Validation rules can be stored in a config file.
+        global $config;
 
-        $config = getConfig();
+        $this->_config_rules = $rules;  // Validation rules can be stored in a config file.
 
         mb_internal_encoding($config['charset']);
 
@@ -130,7 +130,7 @@ Class Validator {
      * @return   void
      */
     public function setRules($field, $label = '', $rules = '')
-    {
+    {        
         if (count($_REQUEST) == 0)   // No reason to set rules if we have no POST or GET data
         {
             return;
@@ -222,10 +222,14 @@ Class Validator {
             return false;
         }
     
-        if (count($this->_field_data) == 0)         // Does the _field_data array containing the validation rules exist?
+        if (count($this->_field_data) == 0)         // Does the _field_data array containing the validation rules exist ?
         {                                           // If not, we look to see if they were assigned via a config file
-            if (count($this->_config_rules) == 0)   // No validation rules?  We're done...
+            if (count($this->_config_rules) == 0)   // No validation rules ?  We're done...
             {
+                $this->_error_messages['message'] = 'No validation rule is defined.';
+
+                logMe('error', $this->_error_messages['message']);
+
                 return false;
             }
             
@@ -242,9 +246,11 @@ Class Validator {
                 $this->setRules($this->_config_rules);
             }
 
-            if (sizeof($this->_field_data) == 0)  // We're we able to set the rules correctly?
+            if (sizeof($this->_field_data) == 0)  // We're we able to set the rules correctly ?
             {
-                logMe('debug', "Unable to find validation rules");
+                $this->_error_messages['message'] = 'Unable to find validation rules';
+
+                logMe('error', $this->_error_messages['message']);
 
                 return false;
             }
@@ -284,7 +290,7 @@ Class Validator {
 
         $this->_resetPostArray();   // Now we need to re-set the POST data with the new, processed data
 
-        if ($total_errors == 0)     // No errors, validation passes!
+        if ($total_errors == 0)     // No errors, validation passes !
         {
             $this->_validation = true;
 
@@ -588,10 +594,9 @@ Class Validator {
                     }
                     else
                     {
-                        if(strpos($rule, '_') !== 0)
-                        {
-                            logMe('error', 'The '.$rule.' is not a valid, if you have new validation method do pull request on the github');                            
-                        }
+                        $this->_error_messages['message'] = 'The '.$rule.' is not a valid rule, if you have new validation method do pull request on the github.';
+
+                        logMe('error', $this->_error_messages['message']);
                     } 
                     
                     continue;                   
@@ -684,7 +689,7 @@ Class Validator {
     
     /**
      * !! WARNING Don't move this function to 
-     * src because of Form class __call this function 
+     * /src folder because of Form class __call this function 
      * magically.
      * 
      * Set Error Message

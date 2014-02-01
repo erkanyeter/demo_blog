@@ -13,7 +13,10 @@
 |
 */
 
-$web_service['service_folder'] = '/web_service';
+$web_service = array(
+
+		'service_folder' => '/web_models',
+);
 
 
 /* End of file web_service.php */
