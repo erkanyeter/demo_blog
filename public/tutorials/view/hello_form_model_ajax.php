@@ -6,18 +6,18 @@
         <?php echo $this->html->css('welcome.css') ?>
         <?php echo $this->html->js('ajax.js') ?>
 
-        <title>Odm Ajax Tutorial</title>
+        <title>Form Model Ajax Tutorial</title>
     </head>
     <body>
         <header>
             <?php echo $this->url->anchor('/', $this->html->img('logo.png', ' alt="Obullo" ')) ?>
         </header>
         
-        <h1>Hello Ajax</h1>
+        <h1>Hello Form Model Ajax ( No Schema )</h1>
         <section>
 
             <?php
-            echo $this->form->open('tutorials/hello_ajax/index', array('method' => 'POST', 'id' => 'odm_tutorial')) ?>
+            echo $this->form->open('tutorials/hello_form_model_ajax/index', array('method' => 'POST', 'id' => 'odm_tutorial')) ?>
 
                 <table width="100%">
                     <tr>

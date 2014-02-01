@@ -50,6 +50,33 @@
                     </tr>
                 </table>
 
+                <section>
+                        <h3>print_r($this->user->getOutput())</h3>
+                        <pre><?php print_r($this->user->getOutput()) ?></pre>
+
+                        <h3>print_r($this->user->getMessages())</h3>
+                        <pre><?php print_r($this->user->getMessages()) ?></pre>
+
+                        <h3> echo $this->user->getMessage('errorKey')</h3>
+                        <pre><?php echo $this->user->getMessage('errorKey') ?></pre>
+
+                        <h3>print_r($this->user->getErrors())</h3>
+                        <pre><?php print_r($this->user->getErrors()) ?></pre>
+
+                        <h3>$this->user->getError('user_email')</h3>
+                        <pre><?php echo $this->user->getError('user_email') ?></pre>
+
+                        <h3>print_r($this->user->getValues())</h3>
+                        <pre><?php print_r($this->user->getValues()) ?></pre>
+
+                        <h3>$this->user->getValue('user_email')</h3>
+                        <pre><?php echo $this->user->getValue('user_email') ?></pre>
+
+                        <h3>$this->user->getValue('user_password')</h3>
+                        <pre><?php echo $this->user->getValue('user_password') ?></pre>
+                </section>
+
+
         <?php echo $this->form->close() ?>
 
         <section>

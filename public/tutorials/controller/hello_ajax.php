@@ -27,7 +27,7 @@ $c->func('index', function(){
         //--------------------- set non schema rules
         
         $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
-        $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
+        $this->form->setRules('agreement', 'User Agreement', 'required|exactLen(1)');
         
         //---------------------
 

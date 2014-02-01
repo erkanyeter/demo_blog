@@ -54,23 +54,7 @@ namespace Odm\Src {
 
                 if($return) // Set Success Message
                 {
-                    $errorString = 'Operation succesfull.';
-                    
-                    if(in_array($method, $this->_modelDefinedMethods))
-                    {
-                        $errorString = 'Data '.$method.'d succesfully.';
-                    }
-                    
-                    $form = \Form::getFormConfig();
-
-                    $this->_odmMessages[$this->_odmTable]['messages'] = array(
-                    'success'    => 1, 
-                    'key'        => $method,
-                    'code'       => 11,
-                    'string'     => $errorString,
-                    'translated' => translate($errorString),
-                    'message'    => sprintf($form['notifications']['successMessage'], translate($errorString)),
-                    );
+                    $this->_buildSuccessMessage($method);
 
                     // $this->clear();  
                     // This occurs an error in callback data , no need clear the validator Object.
@@ -94,6 +78,28 @@ namespace Odm\Src {
         public function getAllMethods()
         {
             return array_keys($this->_modelMethods);
+        }
+
+        // --------------------------------------------------------------------
+
+        /**
+         * Build Success Message
+         * 
+         * @return void
+         */
+        private function _buildSuccessMessage($method)
+        {
+            $form   = \Form::getFormConfig();
+            $string = $this->_odmConfig['success_message'];
+
+            $this->_odmMessages[$this->_odmTable]['messages'] = array(
+                'success'    => 1, 
+                'key'        => $method,
+                'code'       => 11,
+                'string'     => $string,
+                'translated' => translate($string),
+                'message'    => sprintf($form['notifications']['successMessage'], translate($string)),
+            );
         }
 
         // --------------------------------------------------------------------

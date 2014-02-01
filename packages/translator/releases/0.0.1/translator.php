@@ -51,7 +51,7 @@ Class Translator {
     */
     public function load($filename = '', $idiom = '', $return = false)
     {
-        $config = getConfig();
+        global $config;
 
         if ($idiom == '' OR $idiom === false)
         {
@@ -73,7 +73,7 @@ Class Translator {
 
         if ( ! isset($lang))
         {
-            logMe('error', 'Translator file does not contain $lang variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
+            logMe('error', 'Language file does not contain $lang variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
             
             return;
         }
@@ -88,7 +88,7 @@ Class Translator {
 
         unset($lang);
 
-        logMe('debug', 'Translator file loaded: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
+        logMe('debug', 'Language file loaded: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
         
         return true;
     }

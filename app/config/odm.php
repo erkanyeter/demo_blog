@@ -16,7 +16,9 @@
 $odm = array(
 
 	'post' => new Post,   // Get object.
-	'form' => new Form,	 // Form object.
+	'form' => new Form,	  // Form object.
+	'success_message' => 'Operation succesfull.',  // Odm object use this message for general success messages.
+	'failure_message' => 'We couldn\'t do operation at this time please try again.',  // Odm object use this message for general failure messages.
 );
 
 

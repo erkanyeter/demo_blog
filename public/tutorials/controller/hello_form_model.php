@@ -12,61 +12,26 @@ $c = new Controller(function(){
 	new View;
 	new Post;
 
-	new Model('user', false); // Disable file schema using second parameter as "false"
-							  // Now user object will use just form post values.
+	new Model('user', false); // Disable file schema, using second parameter as "false"
+							  // Now user object will use Form object as a model.
 });
 
 $c->func('index', function(){
 	
-	if($this->post->get('dopost'))
+	if($this->post->get('dopost')) // if submit button click !
 	{
 		$this->form->setRules('user_email', 'Email', 'required|validEmail');
 		$this->form->setRules('user_password', 'Password', 'required|callback_password');
 
-		//-------- Geting post values ( Optional )
-
-		$this->user->data = array(
-			'user_email'    => $this->post->get('user_email'),
-			'user_password' => $this->post->get('user_password'),
-		);
-
-		//--------
-
 		$this->user->func('callback_password', function(){
-			$this->setMessage('callback_password', 'Not correct.');
-			return false;
+			if($_POST['user_password'] != '123'){
+				$this->setMessage('callback_password', 'Password not correct.');
+				return false; // wrong password
+			}
+			return true;
 		});
 
-		$this->user->isValid();
-
-		print_r($this->user->getAllOutput());
-
-		/*  
-		Array
-				(
-				    [errors] => Array
-				        (
-				            [user_email] => The Email field is required.
-				            [user_password] => The Password field is required.
-				        )
-
-				    [messages] => Array
-				        (
-				            [success] => 0
-				            [key] => validationError
-				            [code] => 10
-				            [string] => There are some errors in the form fields.
-				            [translated] => There are some errors in the form fields.
-				        )
-
-				    [values] => Array
-				        (
-				            [user_email] => 
-				            [user_password] => 
-				        )
-
-				)
-		 */
+		$this->user->isValid(); // do validation
 	}
 
     $this->view->get('hello_form_model', function(){
@@ -77,5 +42,5 @@ $c->func('index', function(){
     
 });   
 
-/* End of file hello_world.php */
-/* Location: .public/tutorials/controller/hello_world.php */
+/* End of file hello_form_model.php */
+/* Location: .public/tutorials/controller/hello_form_model.php */

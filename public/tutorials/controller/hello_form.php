@@ -17,10 +17,10 @@ $c->func('index', function() use($c){
 
     if($this->post->get('dopost'))
     {
-        // $this->form->setRules('email', 'Email', 'required|validEmail|callback_test');
-        // $this->form->setRules('password', 'Password', 'required|minLen(6)');
-        // $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
-        // $this->form->setRules('agreement', 'User Agreement', '_int|required');
+        $this->form->setRules('email', 'Email', 'required|validEmail|callback_test');
+        $this->form->setRules('password', 'Password', 'required|minLen(6)');
+        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
+        $this->form->setRules('agreement', 'User Agreement', '_int|required');
 
         $this->form->func('callback_test', function(){
             $a = 1; $b = 2;

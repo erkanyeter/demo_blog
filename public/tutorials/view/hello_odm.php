@@ -15,6 +15,7 @@
         <h2><?php echo $this->url->anchor('tutorials/hello_ajax', 'Ajax Tutorial') ?></h2>
 
         <section><?php echo $this->user->getMessage('message') ?></section>
+
         <section><?php echo $this->form->getNotice() ?></section>
         
         <section>
@@ -79,14 +80,14 @@
                             <h3>print_r($this->user->getErrors())</h3>
                             <pre><?php print_r($this->user->getErrors()) ?></pre>
 
-                            <h3>$this->user->getError('email')</h3>
-                            <pre><?php echo $this->user->getError('email') ?></pre>
+                            <h3>$this->user->getError('user_email')</h3>
+                            <pre><?php echo $this->user->getError('user_email') ?></pre>
 
                             <h3>print_r($this->user->getValues())</h3>
                             <pre><?php print_r($this->user->getValues()) ?></pre>
 
-                            <h3>$this->user->getValue('email')</h3>
-                            <pre><?php echo $this->user->getValue('email') ?></pre>
+                            <h3>$this->user->getValue('user_email')</h3>
+                            <pre><?php echo $this->user->getValue('user_email') ?></pre>
                         </section>
 
                     <?php } ?>        

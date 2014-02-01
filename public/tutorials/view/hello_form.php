@@ -18,6 +18,10 @@
         </section>
         
         <section>
+            <?php echo $this->form->getMessage() ?>
+        </section>
+
+        <section>
             <?php echo $this->form->getErrorString() ?>
         </section>
 
@@ -68,20 +72,20 @@
                 <?php echo $this->form->close() ?>
 
                     <h2>Test Results</h2>
-                    <?php if(isset($this->validator)) { ?>
 
-                        <section>
-                            <h3>$this->form->error('email')</h3>
-                            <pre><?php echo $this->form->getErrors('email') ?></pre>
+                    <section>
+                        <h3>$this->form->getOutput()</h3>
+                        <pre><?php print_r($this->form->getOutput()) ?></pre>
 
-                            <h3>print_r($this->form->getErrorString())</h3>
-                            <pre><?php print_r($this->form->getErrorString()) ?></pre>
+                        <h3>$this->form->error('email')</h3>
+                        <pre><?php echo $this->form->getErrors('email') ?></pre>
 
-                            <h3>print_r($this->form->getValue('email'))</h3>
-                            <pre><?php print_r($this->form->getValue('email')) ?></pre>
-                        </section>
+                        <h3>print_r($this->form->getErrorString())</h3>
+                        <pre><?php print_r($this->form->getErrorString()) ?></pre>
 
-                    <?php } ?>        
+                        <h3>print_r($this->form->getValue('email'))</h3>
+                        <pre><?php print_r($this->form->getValue('email')) ?></pre>
+                    </section>    
 
         </section> 
         

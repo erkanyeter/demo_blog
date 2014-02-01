@@ -129,8 +129,9 @@ Class Form {
     */
     public static function _attributesToString($attributes, $formtag = false)
     {
-        $form   = \Form::getFormConfig();  // get form template
-        $config = getConfig();
+        global $config;
+
+        $form = \Form::getFormConfig();  // get form template
 
         if (is_string($attributes) AND strlen($attributes) > 0)
         {
@@ -239,7 +240,7 @@ Class Form {
         if($form['use_template'] == false)
         {
             $array['templates'][self::$template] = array_map('strip_tags', $form['templates'][self::$template]);
-            $array['notifications'] = $form['notifications'];
+            $array['notifications']              = $form['notifications'];
 
             return $array;   
         }
@@ -261,12 +262,17 @@ Class Form {
         $validator->set('_callback_object', $this);
 
         $valid = $validator->isValid($group);
+        $form  = \Form::getFormConfig();  // get form template
 
-        if($valid == false)
+        if($valid == false) // if validation not pass !
         {
-            // $this->_formMessages['errors'] = $validator->_error_messages;
-            print_r($validator->_error_messages);
-            // print_r($validator->_error_array);
+            $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : 'There are some errors in the form fields.';
+
+            $this->_formMessages['messages']['string']      = $message;
+            $this->_formMessages['messages']['translated']  = translate($message);
+            $this->_formMessages['messages']['message']     = sprintf($form['notifications']['successMessage'], translate($message));
+            
+            $this->_formMessages['errors'] = $validator->_error_array;
         }
 
         return $valid;
@@ -285,6 +291,31 @@ Class Form {
     public function func($func, $closure)
     {
         $this->_callback_functions[$func] = $closure;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get Message 
+     * 
+     * @param  string $key
+     * @return string
+     */
+    public function getMessage($key = 'message')
+    {
+        return (isset($this->_formMessages['messages'][$key])) ? $this->_formMessages['messages'][$key] : '';
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get all output of the form 
+     * 
+     * @return array
+     */
+    public function getOutput()
+    {
+        return $this->_formMessages;
     }
 
     // ------------------------------------------------------------------------

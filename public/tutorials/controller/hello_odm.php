@@ -24,16 +24,14 @@ $c->func('index', function(){
 
         //--------------------- set non schema rules
         
-        // $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
-        // $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
+        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
+        $this->form->setRules('agreement', 'User Agreement', 'required|exactLen(1)');
         
         //---------------------
         
         $this->user->func('save', function() {
             if ($this->isValid()){
-                
                 $this->data['user_password'] = md5($this->getValue('user_password'));  // get secure value
-                
                 return $this->db->insert('users', $this);
             }
             return false;

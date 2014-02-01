@@ -122,12 +122,23 @@ Class Odm {
         {
             foreach($fields as $key => $val)  // Set filtered values
             {
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key])) 
+                // Using schema "false" means Form Model validation
+                // schema "true" means Odm Validation
+
+                if($this->_odmUseSchema == false OR isset($this->data[$key]))  // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));
+                    if(isset($val['rules']) AND $val['rules'] != '') // If we have rules
+                    {
+                        $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));  
+                    }
                 }
             }
             
+            if($this->_odmSchema == false) // If Model Trait save function not used we need send back success for "Form Model Ajax" Tutorial.
+            {                              
+                $this->_buildSuccessMessage('send');
+            }
+
             //----------------------------
 
             $this->_odmValidation = true;
@@ -154,24 +165,29 @@ Class Odm {
 
                 //----------------------------
 
-                $form = Form::getFormConfig();
-
-                $translated = translate('There are some errors in the form fields.');
+                $form   = Form::getFormConfig();
+                $string = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : 'There are some errors in the form fields.';
 
                 $this->_odmMessages[$table]['messages'] = array(
                     'success'    => 0, 
                     'key'        => 'validation',
                     'code'       => 10,
-                    'string'     => 'There are some errors in the form fields.',
-                    'translated' => $translated,
-                    'message'    => sprintf($form['notifications']['errorMessage'], $translated),
+                    'string'     => $string,
+                    'translated' => translate($string),
+                    'message'    => sprintf($form['notifications']['errorMessage'], translate($string)),
                 );
 
                 //----------------------------
 
-                if(isset($val['rules']) AND $val['rules'] != '' AND isset($this->data[$key]))  // Set filtered values.
+                // Using schema "false" means Form Model validation
+                // schema "true" means Odm Validation
+                 
+                if($this->_odmUseSchema == false OR isset($this->data[$key])) // Set filtered values.
                 {
-                    $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key)); 
+                    if(isset($val['rules']) AND $val['rules'] != '') // If we have rules
+                    {
+                        $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));    
+                    }
                 }
             }
             
@@ -482,11 +498,11 @@ Class Odm {
      * 
      * @param string $message
      */
-    public function setFailure($e = 'We couldn\'t do operation at this time please try again.')
+    public function setFailure($e = '')
     {
         $this->_odmValidation = false; // set validation to false;
 
-        $errorMessage = $errorString = $e;
+        $errorMessage = $errorString = $this->_odmConfig['failure_message'];
 
         if(is_object($e) AND (ENV == 'DEBUG' OR ENV == 'TEST'))
         {
@@ -501,12 +517,12 @@ Class Odm {
         $form = Form::getFormConfig();
 
         $this->_odmMessages[$this->_odmTable]['messages'] = array(
-        'success'    => 0, 
-        'key'        => 'failure',
-        'code'       => 12,
-        'string'     => (is_string($e)) ? $e : $errorString,
-        'translated' => $errorMessage,
-        'message'    => sprintf($form['notifications']['errorMessage'], $errorMessage),
+            'success'    => 0, 
+            'key'        => 'failure',
+            'code'       => 12,
+            'string'     => (is_string($e)) ? $e : $errorString,
+            'translated' => $errorMessage,
+            'message'    => sprintf($form['notifications']['errorMessage'], $errorMessage),
         );
     }
 

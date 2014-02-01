@@ -7,23 +7,19 @@
 $c = new Controller(function(){
     // __construct
 
-	new Url;
-	new Html;
-	new View;
-	new Post;
+	new request;
 
 	new Model('user', false); // Disable file schema using second parameter as "false"
 							  // Now user object will use just form post values.
 });
 
 $c->func('index', function(){
-	
-	if($this->post->get('dopost'))
-	{
-		$this->form->setRules('user_email', 'Email', 'required|validEmail');
-		$this->form->setRules('user_password', 'Password', 'required|callback_password');
 
-		//-------- Geting post values ( Optional )
+	if($this->request->isXmlHttp())  // Is request Ajax ? 
+	{
+		new Post;
+
+		//-------- To geting post values from output ( Optional )
 
 		$this->user->data = array(
 			'user_email'    => $this->post->get('user_email'),
@@ -32,48 +28,45 @@ $c->func('index', function(){
 
 		//--------
 
+		$this->form->setRules('user_email', 'Email', 'required|validEmail');
+		$this->form->setRules('user_password', 'Password', 'required');
+        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
+        $this->form->setRules('agreement', 'User Agreement', 'required|exactLen(1)');
+
 		$this->user->func('callback_password', function(){
-			$this->setMessage('callback_password', 'Not correct.');
-			return false;
+			if($_POST['user_password'] != '123'){
+				$this->setMessage('callback_password', 'Password not correct.');
+				return false; // wrong password
+			}
+			return true;
 		});
 
-		$this->user->isValid();
+        if($this->user->isValid()) // Call save function
+        {
+            $this->user->setMessage('alert', 'Data Saved !');
+            // $this->user->setMessage('redirect', 'http://google.com/');
+        }
 
-		print_r($this->user->getAllOutput());
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json;charset=UTF-8');
 
-		/*  
-		Array
-				(
-				    [errors] => Array
-				        (
-				            [user_email] => The Email field is required.
-				            [user_password] => The Password field is required.
-				        )
+        echo json_encode($this->user->getOutput());
+        // echo json_encode($this->user->getAllOutput());  // Get all output function also gives the values for debug.
 
-				    [messages] => Array
-				        (
-				            [success] => 0
-				            [key] => validationError
-				            [code] => 10
-				            [string] => There are some errors in the form fields.
-				            [translated] => There are some errors in the form fields.
-				        )
+	} 
+	else 
+	{
+        new Url;
+        new Html;
+        new View;
 
-				    [values] => Array
-				        (
-				            [user_email] => 
-				            [user_password] => 
-				        )
-
-				)
-		 */
+	    $this->view->get('hello_form_model_ajax', function(){
+	    	
+	        $this->set('name', 'Obullo');
+	        $this->set('footer', $this->tpl('footer', false));
+	    });
 	}
-
-    $this->view->get('hello_form_model_ajax', function(){
-    	
-        $this->set('name', 'Obullo');
-        $this->set('footer', $this->tpl('footer', false));
-    });
     
 });   
 

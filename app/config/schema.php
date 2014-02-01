@@ -21,7 +21,7 @@
 */
 
 $schema = array(
-	'use_column_prefix' => true,  // use column prefix in schemas as default
+	'use_column_prefix'  => true,  // use column prefix in schemas as default
 	'mysql_table_suffix' => ' ENGINE=InnoDB DEFAULT CHARSET=utf8;',  // Sql creator table suffix
 );
 
