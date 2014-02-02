@@ -91,15 +91,15 @@ namespace Odm\Src {
         {
             $form   = \Form::getFormConfig();
             $string = $this->_odmConfig['success_message'];
+            
+            // We need do append to array data otherwise $this->setMessage(); function
+            // does not work, because of it reset all array wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array()     
 
-            $this->_odmMessages[$this->_odmTable]['messages'] = array(
-                'success'    => 1, 
-                'key'        => $method,
-                'code'       => 11,
-                'string'     => $string,
-                'translated' => translate($string),
-                'message'    => sprintf($form['notifications']['successMessage'], translate($string)),
-            );
+            $this->_odmMessages[$this->_odmTable]['messages']['success']    = 1;
+            $this->_odmMessages[$this->_odmTable]['messages']['key']        = $method;
+            $this->_odmMessages[$this->_odmTable]['messages']['code']       = $string;
+            $this->_odmMessages[$this->_odmTable]['messages']['translated'] = translate($string);
+            $this->_odmMessages[$this->_odmTable]['messages']['message']    = sprintf($form['notifications']['successMessage'], translate($string));
         }
 
         // --------------------------------------------------------------------

@@ -12,11 +12,9 @@ $c = new Controller(function(){
 
 $c->func('index', function(){
 
-    $this->web->query('post','members/create.one.json?a=8',function(){
+    $this->web->query('post','members/create.one.json',function(){
         $this->data['user_username'] = 'test';
-       
-        // $this->isValid();
-        
+        $this->data['user_email']    = 'test.com';
     });
 
     // $this->web->isValid();

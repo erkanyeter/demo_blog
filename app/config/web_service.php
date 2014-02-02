@@ -12,9 +12,9 @@
 | $web_service['service_folder'] = '/web_service';
 |
 */
-
 $web_service = array(
 
+		'secret_key'	 => 'CXA0DhekFHL4iiasrmeKmg', 
 		'service_folder' => '/web_models',
 );
 

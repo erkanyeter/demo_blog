@@ -168,14 +168,17 @@ Class Odm {
                 $form   = Form::getFormConfig();
                 $string = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : 'There are some errors in the form fields.';
 
-                $this->_odmMessages[$table]['messages'] = array(
-                    'success'    => 0, 
-                    'key'        => 'validation',
-                    'code'       => 10,
-                    'string'     => $string,
-                    'translated' => translate($string),
-                    'message'    => sprintf($form['notifications']['errorMessage'], translate($string)),
-                );
+                //----------------------------
+
+                // We need do append to array data otherwise $this->setMessage(); function
+                // does not work, because of it reset all array wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array()
+                
+                $this->_odmMessages[$table]['messages']['success']    = 0;
+                $this->_odmMessages[$table]['messages']['key']        = 'validation';
+                $this->_odmMessages[$table]['messages']['code']       = 10;
+                $this->_odmMessages[$table]['messages']['string']     = $string;
+                $this->_odmMessages[$table]['messages']['translated'] = translate($string);
+                $this->_odmMessages[$table]['messages']['message']    = sprintf($form['notifications']['errorMessage'], translate($string));
 
                 //----------------------------
 
