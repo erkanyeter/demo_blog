@@ -8,7 +8,6 @@ $c = new Controller(function(){
     // __construct
 
 	new View;
-	// new International;
 });
 
 $c->func('index', function(){
