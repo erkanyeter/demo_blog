@@ -111,7 +111,7 @@ Class Request {
     // 
     // Accept-Encoding: gzip, deflate 
     // 
-    // Cookie: ob_session=uqdp8hvjsfhen759eucgp31h74; ob_session_userdata=a%3A4%3A%7Bs%3A10%3A%22session_id%22%3Bs%3A26%3A%22uqdp8hvjsfhen759eucgp31h74%22%3Bs%3A10%3A%22ip_address%22%3Bs%3A9%3A%22127.0.0.1%22%3Bs%3A10%3A%22user_agent%22%3Bs%3A50%3A%22Mozilla%2F5.0+%28X11%3B+Ubuntu%3B+Linux+x86_64%3B+rv%3A26.0%29+G%22%3Bs%3A13%3A%22last_activity%22%3Bi%3A1389947182%3B%7D75f0224d5214efb875c685a30eda7f06
+    // Cookie: frm_session=uqdp8hvjsfhen759eucgp31h74; frm_session_userdata=a%3A4%3A%7Bs%3A10%3A%22session_id%22%3Bs%3A26%3A%22uqdp8hvjsfhen759eucgp31h74%22%3Bs%3A10%3A%22ip_address%22%3Bs%3A9%3A%22127.0.0.1%22%3Bs%3A10%3A%22user_agent%22%3Bs%3A50%3A%22Mozilla%2F5.0+%28X11%3B+Ubuntu%3B+Linux+x86_64%3B+rv%3A26.0%29+G%22%3Bs%3A13%3A%22last_activity%22%3Bi%3A1389947182%3B%7D75f0224d5214efb875c685a30eda7f06
     // 
     // Connection: keep-alive 
 
@@ -165,7 +165,8 @@ Class Request {
     * @return    string
     */
     public function getIpAddress()
-    {
+    {   
+        global $config;
         static $ipAddress = '';
 
         if ($ipAddress != '')
@@ -173,7 +174,6 @@ Class Request {
             return $ipAddress;
         }
 
-        $config    = getConfig();
         $proxy_ips = $config['proxy_ips'];
 
         if ( ! empty($proxy_ips))

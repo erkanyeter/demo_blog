@@ -18,7 +18,7 @@ Class Sess_Database {
     public $expiration           = '7200';
     public $match_ip             = false;
     public $match_useragent      = true;
-    public $cookie_name          = 'ob_session';
+    public $cookie_name          = 'frm_session';
     public $db_var               = 'db';
     public $cookie_prefix        = '';
     public $cookie_path          = '';

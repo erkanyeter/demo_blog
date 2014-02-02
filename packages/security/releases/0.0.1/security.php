@@ -55,12 +55,6 @@ Class Security {
     private static $instance;
 
     /**
-     * framework getConfig()
-     * @var array
-     */
-    private $config;
-
-    /**
      * List of never allowed strings
      *
      * @var array
@@ -104,21 +98,21 @@ Class Security {
      */
     public function __construct()
     {
-        $this->config = getConfig();
+        global $config;
 
-        if ($this->config['csrf_protection'] === true)         // Is CSRF protection enabled?
+        if ($config['csrf_protection'] === true)         // Is CSRF protection enabled?
         {
             foreach (array('csrf_expire', 'csrf_token_name', 'csrf_cookie_name') as $key)  // CSRF config
             {
-                if (false !== ($val = $this->config[$key]))
+                if (false !== ($val = $config[$key]))
                 {
                     $this->{'_'.$key} = $val;
                 }
             }
 
-            if ($this->config['cookie_prefix']) // Append application specific cookie prefix
+            if ($config['cookie_prefix']) // Append application specific cookie prefix
             {
-                $this->_csrf_cookie_name = $this->config['cookie_prefix'].$this->_csrf_cookie_name;
+                $this->_csrf_cookie_name = $config['cookie_prefix'].$this->_csrf_cookie_name;
             }
 
             $this->_csrfSetHash();  // Set the CSRF hash
@@ -188,8 +182,10 @@ Class Security {
      */
     public function csrfSetCookie()
     {
+        global $config;
+
         $expire = time() + $this->_csrf_expire;
-        $secure_cookie = ($this->config['cookie_secure'] === TRUE) ? 1 : 0;
+        $secure_cookie = ($config['cookie_secure'] === true) ? 1 : 0;
 
         if ($secure_cookie)
         {
@@ -205,7 +201,7 @@ Class Security {
             }
         }
 
-        setcookie($this->_csrf_cookie_name, $this->_csrf_hash, $expire, $this->config['cookie_path'], $this->config['cookie_domain'], $secure_cookie);
+        setcookie($this->_csrf_cookie_name, $this->_csrf_hash, $expire, $config['cookie_path'], $config['cookie_domain'], $secure_cookie);
 
         logMe('debug', "CRSF cookie Set");
 
@@ -790,7 +786,7 @@ Class Security {
      */
     protected function _decodeEntity($match)
     {
-        return $this->entityDecode($match[0], strtoupper($this->config['charset']));
+        return $this->entityDecode($match[0], strtoupper($config['charset']));
     }
 
     // --------------------------------------------------------------------

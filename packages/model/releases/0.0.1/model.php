@@ -20,7 +20,7 @@ Class Model {
      */
     public function __construct($modelName, $schemaOrTable = '', $dbVar = 'db')
     {
-        global $packages;
+        global $packages, $config;
 
         //------------------- Connect to Database -----------------------//
 
@@ -61,9 +61,7 @@ Class Model {
         if($schemaOrTable === '' OR is_string($schemaOrTable))  // If schema provided as string , we understand its tablename ?
         {
             // ** Auto sync enabled in "debug" mode.
-
-            $config = getConfig();
-
+            
             if($config['model_auto_sync']) // Create new schema if not exists.
             {
                 $requestUri = base64_encode(getInstance()->uri->getRequestUri());

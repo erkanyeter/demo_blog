@@ -17,7 +17,7 @@ namespace Utf8\Src {
     */
     function _strpos($str, $search, $offset = 0)
     {
-        $config = getConfig();
+        global $config;
 
         return mb_strpos($str, $search, $offset, $config['charset']);
     }

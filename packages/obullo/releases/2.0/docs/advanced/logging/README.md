@@ -34,9 +34,9 @@ On your localhost to see all log messages set <kbd>$config['log_threshold'] = (E
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold']         = (ENV == 'LIVE') ? 1 : 0;
-$config['log_queries']           = (ENV == 'LIVE') ? false : true;
-$config['log_benchmark']         = (ENV == 'LIVE') ? false : true;
+$config['log_threshold']         = 5;
+$config['log_queries']           = true;
+$config['log_benchmark']         = truw;
 $config['log_date_format']       = 'Y-m-d H:i:s';
 ```
 #### Explanation of Settings:
@@ -74,13 +74,6 @@ logMe('info', 'The purpose of some variable is to provide some value.');
 
 **Note:** In order for the log file to actually be written, the <b>"logs"</b> folder must be writable which is located at <kbd>app/logs</kbd>. In addition, you must set the "threshold" for logging. You might, for example, only want error messages to be logged, and not the other two types. If you set it to zero logging will be disabled. (Look at <kbd>app/config/config.php</kbd>)
 
-#### logMe('level', '[ subject ]: message')
-
-If you want to keep logs in different color use "[ ]" brackets before the log message.
-
-```php
-logMe('debug', '[ welcome ]: Example message.');
-```
 
 Now above the message will be shown with different color on your console.
 
@@ -94,11 +87,17 @@ php task log
 You can set the log level filter using the level argument.
 
 ```php
-php task log level info
+php task log level error
 ```
 
 This command displays only log messages which are flagged as debug.
 
 ```php
 php task log level debug
+```
+
+#### Clear All logs
+
+```php
+php task clear
 ```

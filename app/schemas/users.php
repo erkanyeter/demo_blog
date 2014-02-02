@@ -31,7 +31,7 @@ $users = array(
 	'user_username' => array(
 		'label' => 'User Username',
 		'types' => '_not_null|_varchar(50)',
-		'rules' => '',
+		'rules' => 'required',
 		),
 );
  

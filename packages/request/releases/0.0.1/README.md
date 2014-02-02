@@ -10,6 +10,7 @@ Request class detects the server request method, secure connection, ip address, 
 new Request;
 $this->request->method();
 ```
+
 Once loaded, the Request object will be available using: <dfn>$this->request->method()</dfn>
 
 #### $this->request->getMethod();

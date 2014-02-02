@@ -12,7 +12,7 @@ namespace Utf8\Src {
     */
     function _ucfirst($str)
     {
-        $utf8   = getInstance()->utf8;
+        $utf8 = getInstance()->utf8;
         
         if($utf8->isAscii($str))
         {

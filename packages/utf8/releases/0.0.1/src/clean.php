@@ -20,11 +20,12 @@ namespace Utf8\Src {
     */
     function clean($var, $charset = null)
     {
+        global $config;
+
         $utf8 = getInstance()->utf8;
 
         if ( ! $charset)
         {
-            $config  = getConfig();
             $charset = $config['charset'];    // Use the application character set
         }
 

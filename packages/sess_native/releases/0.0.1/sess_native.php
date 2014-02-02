@@ -18,7 +18,7 @@ Class Sess_Native {
     public $expiration           = '7200';
     public $match_ip             = false;
     public $match_useragent      = true;
-    public $cookie_name          = 'ob_session';
+    public $cookie_name          = 'frm_session';
     public $cookie_prefix        = '';
     public $cookie_path          = '';
     public $cookie_domain        = '';

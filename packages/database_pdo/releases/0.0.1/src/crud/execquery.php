@@ -14,9 +14,9 @@ namespace Database_Pdo\Src\Crud {
     */
     function execQuery($sql)
     {
-        $config = getConfig();
-        $crud   = getInstance()->{\Db::$var};
+        global $config;
 
+        $crud   = getInstance()->{\Db::$var};
         $crud->last_sql = $sql;
 
         //------------------------------------

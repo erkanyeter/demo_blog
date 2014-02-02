@@ -13,7 +13,7 @@ namespace Response\Src {
     */
     function showError($message, $statusCode = 500, $heading = 'An Error Was Encountered')
     {
-        $config = getConfig();
+        global $config;
 
         header('Content-type: text/html; charset='.$config['charset']); // Some times we use utf8 chars in errors.
         

@@ -28,9 +28,7 @@ Class Exceptions {
     */
     public function write($e, $type = '')
     {
-        global $packages;
-
-        $config = getConfig();
+        global $packages, $config;
 
         $error  = new Error;
         $core   = strtolower($packages['components']['core']);

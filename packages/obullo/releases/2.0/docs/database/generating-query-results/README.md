@@ -59,7 +59,7 @@ If you run queries that might not produce a result, you are encouraged to test f
 ```php
 $this->db->prep()  // pdo prepare() switch 
 ->where('ip_address', '127.0.0.1')
-->get('ob_sessions')    // from this table
+->get('frm_sessions')    // from this table
 ->exec();
 
 if($this->db->getRow())
@@ -74,7 +74,7 @@ if($this->db->getRow())
 If **getCount()** function available in your db driver you can use it ..
 
 ```php
-$this->db->where('ip_address', '127.0.0.1')->get('ob_sessions');
+$this->db->where('ip_address', '127.0.0.1')->get('frm_sessions');
 
 if($this->db->getCount() > 0)
 {

@@ -1,6 +1,6 @@
 ## Cookie Class
 
--------
+------
 
 The Cookie Class contains functions that assist in working with cookies.
 
@@ -12,6 +12,8 @@ The Cookie Class contains functions that assist in working with cookies.
 new Cookie();
 $this->cookie->method();
 ```
+
+Once loaded, the Cookie object will be available using: <dfn>$this->cookie->method()</dfn>
 
 The following functions are available:
 

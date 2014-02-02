@@ -13,8 +13,6 @@ Class Cookie {
     
     public function __construct()
     {
-        $this->config = getConfig();
-
         if( ! isset(getInstance()->cookie))
         {
             getInstance()->cookie = $this; // Make available it in the controller $this->cookie->method();
@@ -42,6 +40,8 @@ Class Cookie {
     */
     public function set($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $secure = false)
     {
+        global $config;
+
         if (is_array($name))
         {        
             foreach (array('value', 'expire', 'domain', 'path', 'prefix', 'name') as $item)
@@ -53,24 +53,24 @@ Class Cookie {
             }
         }
 
-        if ($prefix == '' AND $this->config['cookie_prefix'] != '')
+        if ($prefix == '' AND $$config['cookie_prefix'] != '')
         {
-            $prefix = $this->config['cookie_prefix'];
+            $prefix = $config['cookie_prefix'];
         }
         
-        if ($domain == '' AND $this->config['cookie_domain'] != '')
+        if ($domain == '' AND $config['cookie_domain'] != '')
         {
-            $domain = $this->config['cookie_domain'];
+            $domain = $config['cookie_domain'];
         }
         
-        if ($path   == '/' AND $this->config['cookie_path'] != '/')
+        if ($path   == '/' AND $config['cookie_path'] != '/')
         {
-            $path   = $this->config['cookie_path'];
+            $path   = $config['cookie_path'];
         }
         
-        if ($secure == false AND $this->config['cookie_secure'] != false)
+        if ($secure == false AND $config['cookie_secure'] != false)
         {
-            $secure = $this->config['cookie_secure'];
+            $secure = $config['cookie_secure'];
         }
         
         if ( ! is_numeric($expire))
@@ -104,10 +104,12 @@ Class Cookie {
     */
     public function get($index = '', $xss_clean = false)
     {
+        global $config;
+
         $prefix = '';
-        if ( ! isset($_COOKIE[$index]) AND $this->config['cookie_prefix'] != '')
+        if ( ! isset($_COOKIE[$index]) AND $config['cookie_prefix'] != '')
         {
-            $prefix = $this->config['cookie_prefix'];
+            $prefix = $config['cookie_prefix'];
         }
 
         return Get::fetchFromArray($_COOKIE, $prefix.$index, $xss_clean);

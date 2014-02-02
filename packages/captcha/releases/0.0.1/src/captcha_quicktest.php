@@ -21,7 +21,7 @@ Class Captcha_Quicktest {
 	 */
 	public function fontTest()
 	{
-        $config = getConfig();
+        global $config;
 
         $images = '';
         $captcha = getInstance()->captcha;

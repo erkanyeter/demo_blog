@@ -16,9 +16,10 @@ namespace Form\Src {
     * @return   string
     */
     function getErrors($field = '', $prefix = '', $suffix = '')
-    {       
+    {   
+        global $config;
+        
         $form   = \Form::getFormConfig();
-        $config = getConfig();
 
         if($config['enable_query_strings'] AND isset($_GET['errors'][$field])) // GET Support
         {

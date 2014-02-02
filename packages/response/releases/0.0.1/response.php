@@ -139,7 +139,7 @@ Class Response {
      */        
     public function _sendOutput($output = '')
     {
-        $config = getConfig();
+        global $config;
 
         if ($output == '')  // Set the output data
         {

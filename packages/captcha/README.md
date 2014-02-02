@@ -2,9 +2,7 @@
 
 ------
 
-The Captcha class file contains functions that assist in creating CAPTCHA images.
-
-The following functions are available:
+The Captcha class file contains functions that assist in creating CAPTCHA security images.
 
 ### Initializing the Class
 
@@ -14,6 +12,10 @@ The following functions are available:
 new Captcha();
 $this->captcha->method();
 ```
+
+Once loaded, the Captcha object will be available using: <dfn>$this->captcha->method()</dfn>
+
+The following functions are available:
 
 ### Create a Captcha On the Fly
 
@@ -249,7 +251,7 @@ $this->captcha->clear();
 Produces image url for <b>img</b> tag.
 
 ```php
-echo $this->captcha->getimageUrl();  // gives /data/temp/captcha/a6ef8fc84ed0eb687c8bd1558cc72a8e.gif
+echo $this->captcha->getImageUrl();  // gives /data/temp/captcha/a6ef8fc84ed0eb687c8bd1558cc72a8e.gif
 ```
 ### Getting Image Id
 
@@ -293,11 +295,12 @@ In your controller you need to use the code below for checking the captcha answe
 
 ```php
 <?php
-new Get;
-$image_id = $this->get->post('image_id');
-$code = $this->sess->get($image_id);
+new Post;
 
-if($this->get->post('answer') == $code)
+$image_id = $this->post->get('image_id');
+$code 	  = $this->sess->get($image_id);
+
+if($this->post->get('answer') == $code)
 {
 	echo 'Captcha code is valid.';
 }

@@ -25,7 +25,7 @@ Class Log_Writer {
     */
     function dump($level = 'error', $msg = '')
     {   
-        $config = getConfig();
+        global $config;
 
         // Convert new lines to a temp symbol, than we replace it and read for console debugs.
         $msg = trim(preg_replace('/\n/', '[@]', $msg), "\n");

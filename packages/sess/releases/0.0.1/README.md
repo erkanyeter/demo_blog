@@ -215,7 +215,7 @@ When session data is available in a database, every time a valid session is foun
 In order to store sessions, you must first create a database table for this purpose. Here is the basic prototype (for MySQL) required by the session helper:
 
 ```php
-CREATE TABLE IF NOT EXISTS  `ob_sessions` (
+CREATE TABLE IF NOT EXISTS  `frm_sessions` (
 session_id varchar(40) DEFAULT '0' NOT NULL,
 ip_address varchar(16) DEFAULT '0' NOT NULL,
 user_agent varchar(50) NOT NULL,
@@ -225,7 +225,7 @@ PRIMARY KEY (session_id)
 );
 ```
 
-**Note:** By default the table is called <kbd>ob_sessions</kbd>, but you can name it anything you want as long as you update the <kbd>app/config/sess.php</kbd> file so that it contains the name you have chosen. Once you have created your database table you can enable the database option in your sess.php file as follows:
+**Note:** By default the table is called <kbd>frm_sessions</kbd>, but you can name it anything you want as long as you update the <kbd>app/config/sess.php</kbd> file so that it contains the name you have chosen. Once you have created your database table you can enable the database option in your sess.php file as follows:
 
 ```php
 $sess['driver'] = 'database';
@@ -236,7 +236,7 @@ Once enabled, the Session helper will store session data in the DB.
 Make sure you've specified the table name in your config file as well:
 
 ```php
-$sess['table_name'] = 'ob_sessions';
+$sess['table_name'] = 'frm_sessions';
 ```
 
 **Note:** The Session helper has built-in garbage collection which clears out expired sessions so you do not need to write your own routine to do it.
@@ -272,7 +272,7 @@ You'll find the following Session related preferences in your <kbd>app/config/se
     <tbody>
         <tr>
             <td>cookie_name</td>
-            <td>ob_session</td>
+            <td>frm_session</td>
             <td>None</td>
             <td>The name you want the session cookie saved as.</td>
         </tr>
@@ -308,7 +308,7 @@ You'll find the following Session related preferences in your <kbd>app/config/se
         </tr>
         <tr>
             <td>table_name</td>
-            <td>ob_sessions</td>
+            <td>frm_sessions</td>
             <td>Any valid SQL table name</td>
             <td>The name of the session database table.</td>
         </tr>

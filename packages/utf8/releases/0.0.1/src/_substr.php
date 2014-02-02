@@ -17,7 +17,7 @@ namespace Utf8\Src {
     */
     function _substr($str, $offset, $length = null)
     {
-        $config = getConfig();
+        global $config;
 
         return ($length === null) 
             ? mb_substr($str, $offset, mb_strlen($str), $config['charset']) 

@@ -15,7 +15,6 @@ $c = new Controller(function(){
     new Post;
 
     new Trigger('private','header');
-
 	new Model('posts');
 });
 

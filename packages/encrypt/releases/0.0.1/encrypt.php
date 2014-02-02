@@ -70,8 +70,8 @@ Class Encrypt {
                 return $this->encryption_key;
             }
             
-            $config = getConfig();
-            $key    = $config['encryption_key'];
+            global $config;
+            $key = $config['encryption_key'];
 
             if ($key === false)
             {

@@ -4,6 +4,8 @@ Tag Cloud returns <kbd>Array</kbd> and <kbd>Html</kbd>.
 
 ### Array
 Generated tags are returned as arrays so that you can use them in the way you want.
+
+
 ##### Creating Tag Cloud
 The simplest way to create a tag.
 ```php

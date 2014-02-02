@@ -61,12 +61,14 @@ Class Shmop {
      * @param  string $cacheData 
      * @return mixed           
      */
-    public function set($storeKey, $data)
+    public function set($storeKey, $data, $charset = '')
     {
-        $config = getConfig();
+        global $config;
+
+        $default_charset = (empty($charset)) ? $config['charset'] : $charset;
 
         $key    = crc32($storeKey);
-        $size   = mb_strlen($data, $config['charset']);
+        $size   = mb_strlen($data, $default_charset);
         $shm_id = shmop_open($key, 'c', 0755, $size);    // Create shared memory block with system id
 
         if ( ! $shm_id)
@@ -74,7 +76,7 @@ Class Shmop {
             throw new Exception(get_class().' couldn\'t create shared memory segment.');
         }
 
-        $shmop_size = shmop_size($shm_id);                    // Get shared memory block's size
+        $shmop_size        = shmop_size($shm_id);             // Get shared memory block's size
         $shm_bytes_written = shmop_write($shm_id, $data, 0);  // Lets write a test string into shared memory
 
         if ($shm_bytes_written != $size)

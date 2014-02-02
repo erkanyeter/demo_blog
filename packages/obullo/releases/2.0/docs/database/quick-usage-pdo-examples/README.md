@@ -76,7 +76,7 @@ If you run queries that might <strong>not</strong> produce a result, you are enc
 ```php
 $query = $this->db->prep()    // pdo prepare switch 
 ->where('ip_address', '127.0.0.1')
-->get('ob_sessions')    // from this table 
+->get('frm_sessions')    // from this table 
 ->exec();
 
 if($query->getRow())
@@ -92,7 +92,7 @@ If your database support using rowCount function via the SELECT statement you ca
 
 ```php
 $this->db->where('ip_address', '127.0.0.1')
-->get('ob_sessions')    // from this table 
+->get('frm_sessions')    // from this table 
 
 if($query->getCount() > 0)
 {

@@ -12,7 +12,7 @@ namespace Utf8\Src {
     */
     function _strtoupper($str)
     {
-        $config = getConfig();
+        global $config;
 
         return mb_strtoupper($str, $config['charset']);
     }

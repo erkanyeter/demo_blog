@@ -127,7 +127,7 @@ Class International {
      */
     public function getDefault()     // http://us.php.net/manual/tr/book.intl.php
     {
-        $config = getConfig();
+        global $config;
 
         return $config['default_translation']; // locale_get_default();
     }

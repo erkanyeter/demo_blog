@@ -27,8 +27,10 @@ Class Config
     * @return  void
     */
     public function __construct()
-    {
-        $this->config = getConfig();
+    {   
+        global $config;
+
+        $this->config = $config;
     }
     
     // --------------------------------------------------------------------

@@ -14,7 +14,7 @@ namespace Utf8\Src {
     */
     function _strtolower($str)
     {
-        $config = getConfig();
+        global $config;
 
         return mb_strtolower($str, $config['charset']);
     }

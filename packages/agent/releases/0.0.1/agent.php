@@ -232,7 +232,7 @@ Class Agent {
      */
     public function _setMobile()
     {
-        $config = getConfig();
+        global $config;
 
         if (is_array($this->mobiles) AND count($this->mobiles) > 0)
         {

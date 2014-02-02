@@ -13,7 +13,6 @@ $c = new Controller(function(){
     new Auth;
 
     new Trigger('private','header');
-
     new Model('posts');
 });
 

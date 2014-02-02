@@ -14,7 +14,7 @@ namespace Form\Src {
     */
     function open($action = '', $attributes = '', $hidden = array())
     {
-        $config = getConfig();
+        global $config;
         
         if ($attributes == '')
         {

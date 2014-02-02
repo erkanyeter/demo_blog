@@ -78,7 +78,7 @@ Class Error {
     */
     public function dumpArgument(& $var, $length = 128, $level = 0)
     {
-        $config = getConfig();
+        global $config;
 
         if ($var === null)
         {
@@ -260,8 +260,9 @@ Class Error {
     */
     public function debugFileSource($trace, $key = 0, $prefix = '')
     {
-        $config = getConfig();
-        $debug  = $config['debug_backtrace'];
+        global $config;
+        
+        $debug = $config['debug_backtrace'];
         
         $file        = $trace['file'];
         $line_number = $trace['line'];

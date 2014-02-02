@@ -12,6 +12,8 @@ namespace Database_Pdo\Src\Crud {
     */
     function exec($array = null)
     {
+        global $config;
+
         $crud = getInstance()->{\Db::$var};
 
         if(is_array($array)) // If data is array.
@@ -33,8 +35,6 @@ namespace Database_Pdo\Src\Crud {
         $end_time = ($em + $es);
         
         //------------------------------------
-        
-        $config = getConfig();
     
         if($config['log_queries'])
         {

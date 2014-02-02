@@ -33,8 +33,7 @@ Class Sess {
 
         logMe('debug', "Sess Class Initialized");
 
-        $config = getConfig();
-
+        global $config;
         static $logged = null;
 
         if($logged == null AND $config['log_threshold'] > 0)

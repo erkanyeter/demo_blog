@@ -82,7 +82,7 @@ Class Database_Layer extends Database_Crud {
     */
     public function query($sql = null)
     {
-        $config = getConfig();
+        global $config;
 
         $this->last_sql = $sql;
 

@@ -310,10 +310,10 @@ Class Captcha {
 		 */
 		private function generateCode()
 		{
+			global $config;
+
 			if($this->debugFlag == 'random')
 			{
-				$config = getConfig();
-
 				$possible = $this->char_pool[$this->set_pool];
 				$this->code = '';
 				$i          = 0;
@@ -471,7 +471,7 @@ Class Captcha {
 		 */
 		public function gc()
 		{
-			$config = getConfig();
+			global $config;
 			$expire = time() - $this->expiration;
 
 			if ( ! $this->img_path OR mb_strlen($this->img_path, $config['charset']) < 2)

@@ -90,7 +90,7 @@ Class Cache {
         {
             $driver = $this->_config['driver'];
         }
-        elseif(mb_strtolower($driver) == "memcache" OR mb_strtolower($driver) == "memcached")
+        elseif(mb_strtolower($driver) == 'memcache' OR mb_strtolower($driver) == 'memcached')
         {
             $this->_adapter = $driver;
         }
