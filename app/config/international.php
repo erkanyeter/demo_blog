@@ -11,23 +11,34 @@
 
 $international = array(
 
-		'cookie_lang_name'   => 'langName',  // Cookie name e.g. $_COOKIE['langName'];
-		'cookie_lang_code'   => 'langCode',  // Cookie name e.g. $_COOKIE['langCode'];
-		'uri_get_name'       => 'langCode';  // Uri query string name e.g. http://example.com/home?langCode=en
-		'uri_segment_number' => 1;  		 // Uri segment number e.g. http://example.com/home/en
-		
-		// ISO-639 Language Codes
-		// Table 20-2 ISO-639 Language Codes
-		// 
-		// http://docs.oracle.com/cd/E13214_01/wli/docs92/xref/xqisocodes.html
+	// Http Settings
+	'enable_query_string' => array('enabled' => true, 'key' => 'langCode'), // Uri query string name e.g. http://example.com/home?langCode=en
+	'enable_uri_segment'  => array('enabled' => false,'key' => 'langCode', 'segment' => 1), // Uri segment number e.g. http://example.com/home/en 	
 
-		'languages' => = array(
-								'ab_AB' => 'abkhazian',
-								'en_US' => 'english',
-								'tr_TR' => 'turkish',
-								'de_DE' => 'deutsch',
-								'es_ES' => 'spanish',
-								);
+	// Cookies
+	'cookie_prefix' => 'intl_',
+	'cookie_domain' => '',  		// Set to .your-domain.com for site-wide cookies
+	'cookie_path'   => '',			// Typically will be a forward slash
+	'cookie_time'   => strtotime( '+1 year' ), // strtotime( '+30 days' ); //  @see  Cookie expire time.   http://us.php.net/strtotime
+	'cookie_secure' => false,		// Cookies will only be set if a secure HTTPS connection exists.
+
+
+	// Php Intl Settings
+	'enable_locale_set_default' => true, // If enabled class will use PHP locale_set_default('en_US'); function
+										 // http://www.php.net/manual/bg/function.locale-set-default.php 
+
+	// ISO-639 Language Codes
+	// Table 20-2 ISO-639 Language Codes
+	// 
+	// http://docs.oracle.com/cd/E13214_01/wli/docs92/xref/xqisocodes.html
+
+	'languages' => array(
+							'ab_AB' => 'abkhazian',
+							'en_US' => 'english',
+							'tr_TR' => 'turkish',
+							'de_DE' => 'deutsch',
+							'es_ES' => 'spanish',
+							)
 );
 
 /* End of file international.php */

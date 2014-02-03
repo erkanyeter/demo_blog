@@ -42,7 +42,7 @@ $c->func('index', function($id){
 
         if($this->comment->save())  // save post
         {        
-            $this->form->setNotice('Post saved successfully.');
+            $this->form->setNotice('Comment saved successfully.', SUCCESS);
             $this->url->redirect($this->uri->getRequestUri());
         }
     }

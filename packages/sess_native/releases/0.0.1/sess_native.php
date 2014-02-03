@@ -15,10 +15,10 @@ Class Sess_Native {
     public $request;
     public $now;
     public $encrypt_cookie       = false;
-    public $expiration           = '7200';
+    public $expiration           = '7200'; // two hours
     public $match_ip             = false;
     public $match_useragent      = true;
-    public $cookie_name          = 'frm_session';
+    public $cookie_name          = 'ob_session';
     public $cookie_prefix        = '';
     public $cookie_path          = '';
     public $cookie_domain        = '';
@@ -258,7 +258,7 @@ Class Sess_Native {
 
         $_SESSION = $old_session_data; // restore the old session data into the new session
 
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
 
         $this->userdata['session_id']    = $new_sessid; // Update the session data in the session data array
         $this->userdata['last_activity'] = $this->now;
@@ -303,7 +303,7 @@ Class Sess_Native {
                                                                                      // we provide an md5 hash to prevent userside tampering
         }
         
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
 
         // Set the cookie
         setcookie(

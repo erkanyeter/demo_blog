@@ -252,7 +252,7 @@ Class Sess_Cache {
             $custom_userdata = $this->_serialize($custom_userdata); // Serialize the custom data array so we can store it
         }
         // $this->db->where('session_id', $this->userdata['session_id']);         // Run the update query
-        $this->db->set($this->userdata['session_id'], array('last_activity' => $this->userdata['last_activity'], 'user_data' => $custom_userdata),$this->expiration);
+        $this->db->set($this->userdata['session_id'], array('last_activity' => $this->userdata['last_activity'], 'user_data' => $custom_userdata), $this->expiration);
 
         // Write the cookie.  Notice that we manually pass the cookie data array to the
         // _setCookie() function. Normally that function will store $this->userdata, but 
@@ -439,7 +439,7 @@ Class Sess_Cache {
                                                                                      // we provide an md5 hash to prevent userside tampering
         }
         
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
 
         // Set the cookie
         setcookie(

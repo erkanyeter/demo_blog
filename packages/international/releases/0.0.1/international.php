@@ -18,16 +18,21 @@ Class International {
     public $langCode;
     public $langName;
     public $langArray;
-    public $langDefault;
+    public $langKey = 'langCode'; // Language key of the lang code default is = "langCode"
+                                  // Uri query string based example:  http://example.com/home?langCode=en
+                                  // Uri segment based example :      http://example.com/home/en
+                                  
+    private $cookie_prefix = 'intl_';
 
-    public $cookie_langName_key;    // $_COOKIE['langName']
-    public $cookie_langCode_key;    // $_COOKIE['langCode']
-    public $uri_get_name;           // Uri query string name e.g. http://example.com/home?langCode=en
-    public $uri_segment_number;     // Uri segment number    e.g. http://example.com/home/en
-    public $uri;                    // Uri object
+    // ------------------------------------------------------------------------
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
+        $this->config = getConfig('international');  // get package config file
+
         if ( ! extension_loaded('intl')) 
         {
             throw new Exception(sprintf(
@@ -36,20 +41,31 @@ Class International {
             ));
         }
 
-        if( ! isset(getInstance()->language))
-        { 
-            getInstance()->language = $this;  // Make available it in the controller $this->language->method();
+        if( ! isset(getInstance()->international))
+        {
+            getInstance()->international = $this;  // Make available it in the controller $this->language->method();
         }
 
-        $this->uri = getInstance()->uri;
+        //------------ Set cookie prefix -------------//
 
-        $this->langArray   = getConfig('international'); print_r($this->langArray['languages']); exit;
-        $this->langDefault = getInstance()->config->getItem('default_translation');
+        $this->cookie_prefix = $this->config['cookie_prefix'];
 
-        $this->langCode    = $this->langArray['languages'][$this->langDefault]; //default dil tanımlaması
-        $this->langName    = $this->langDefault;
+        //----------------------------------------------
 
-        logMe('debug', 'Localization Class Initialized');
+        if($this->config['enable_query_string']['enabled'])  // set language key
+        {
+            $this->langKey = $this->config['enable_query_string']['key'];
+        }
+        elseif($this->config['enable_uri_segment']['enabled'])
+        {
+            $this->langKey = $this->config['enable_uri_segment']['key'];
+        }
+
+        $this->langArray = $this->config['languages'];
+        $this->langCode  = getInstance()->config->getItem('default_translation'); // default lang code
+        $this->langName  = $this->langArray[$this->langCode];   // default lang name
+
+        logMe('debug', 'International Class Initialized');
 
         $this->_init(); // Initialize 
     }
@@ -63,6 +79,8 @@ Class International {
      */
     public function _init()
     {
+        global $config;
+
         if(defined('STDIN')) // Disable console & task errors
         {
             return; 
@@ -70,66 +88,47 @@ Class International {
 
         //----------- SET FROM HTTP GET METHOD ------------//
 
-        if( isset($_GET['langCode']) AND ! empty($_GET['langCode'])) // check $_GET
+        if($this->config['enable_query_string']['enabled'] AND isset($_GET[$this->langKey])) // check $_GET
         {
-            $this->setCode($_GET['lang']);
-            $this->setName();
-            $this->setCookie(); // write to cookie
-
-            $this->setDefault(); // Set default locale for php Locale class.
-
+            $this->setLanguage($_GET[$this->langKey]);
             return;
-        } 
+        }
+
+        //----------- SET FROM URI SEGMENT ------------//
+
+        if($this->config['enable_uri_segment']['enabled'] AND is_numeric($this->config['enable_uri_segment']['segment'])) // check uri segment
+        {
+            $segment = getInstance()->uri->getSegment($this->config['enable_uri_segment']['segment']);
+
+            if( ! empty($segment)) // empty control
+            {
+                $this->setLanguage($segment);
+                return;
+            }
+        }
 
         //----------- SET FROM COOKIE ------------//
 
-        if( isset($_COOKIE['langCode']) AND ! empty($_COOKIE['langCode'])) // check cookie
+        $cookie_name = $this->cookie_prefix.$this->langKey;
+
+        if( isset($_COOKIE[$cookie_name])) // check cookie
         {
-            $this->setCode($_COOKIE['langCode']);
-            $this->setName();  
-
-            // do not set cookie we have already data in cookie.
-
+            $this->setLanguage($_COOKIE[$cookie_name], false);  // do not set cookie we had already it in cookie.
             return;
-        } 
+        }
         else 
         {
             //----------- SET FROM BROWSER DEFAULT VALUE ------------// 
 
             if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
             {
-                $this->setCode(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
-                $this->setName();
-                $this->setCookie(); // write to cookie.
-            } 
-            else 
-            {
-                $this->getDefault();
+                $this->setLanguage(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+                return;
             }
+    
+            $this->setLanguage($config['default_translation']); // Set from framework config file
         }
 
-    }
-
-    // ------------------------------------------------------------------------
-
-    public function setDefault($locale = 'en-US')   // http://us.php.net/manual/tr/book.intl.php
-    {
-        locale_set_default((string)$locale);
-    }
-
-    // ------------------------------------------------------------------------
-    
-    /**
-     * Get default locale config.php file
-     * Use app locale instead of php.ini
-     * 
-     * @return string
-     */
-    public function getDefault()     // http://us.php.net/manual/tr/book.intl.php
-    {
-        global $config;
-
-        return $config['default_translation']; // locale_get_default();
     }
 
     // ------------------------------------------------------------------------
@@ -139,20 +138,52 @@ Class International {
      * 
      * @param string $langCode
      */
-    private function setLangCode($langCode = 'en-US')
+    private function _setLangCode($langCode = 'en_US')
     {
         $this->langCode = (string)$langCode;
+    }
+    
+    // ------------------------------------------------------------------------
+
+    /**
+     * Set language name using lang code
+     *
+     * @return  void
+     */
+    private function _setLangName()
+    {
+        if(isset($this->langArray[$this->langCode]))
+        {
+            $this->langName = $this->langArray[$this->langCode];
+        }
     }
 
     // ------------------------------------------------------------------------
 
     /**
-     * Set language name using lang code
+     * Set language code
+     * 
+     * @param string $langCode
      */
-    private function setLangName()
+    public function setLanguage($langCode = 'en_US', $write_cookie = true)
     {
-        $langNames      = array_flip($this->langArray['languages']);  // Convert to langCode => langName
-        $this->langName = isset($langNames[$this->langCode]) ? $langNames[$this->langCode] : $this->langDefault;
+        if( ! isset($this->langArray[$langCode])) // If its not in defined languages.
+        {
+            return; // Good bye ..
+        }
+
+        $this->_setLangCode($langCode);
+        $this->_setLangName();
+
+        if($write_cookie)
+        {
+            $this->_setCookie(); // write to cookie
+        }
+
+        if($this->config['enable_locale_set_default'])  // use locale_set_default function ?
+        {
+            locale_set_default($this->getLangCode());  // http://www.php.net/manual/bg/function.locale-set-default.php
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -164,11 +195,16 @@ Class International {
      */
     public function getLangName()
     {
+        if(isset($this->langArray[$this->langCode]))
+        {
+            return $this->langArray[$this->langCode];
+        }
+
         return $this->langName;
     }
 
     // -----------------------------------------------------------------------
-
+    
     /**
      * Get curent langCode
      * 
@@ -186,16 +222,24 @@ Class International {
      * 
      * @param string $langCode
      */
-    private function setCookie()
+    private function _setCookie()
     {
-        if(in_array($this->langCode, $this->langArray, true)) // check language available in defined languages.
-        {
-            setcookie('langName', $this->langName, time() + (60 * 60 * 24 * 30), '/');
-            setcookie('langCode', $this->langCode, time() + (60 * 60 * 24 * 30), '/');
-        }
+        global $config;
+
+        $this->cookie_domain = ( ! empty($this->config['cookie_domain'])) ? $this->config['cookie_domain'] : $config['cookie_domain'];
+        $this->cookie_path   = ( ! empty($this->config['cookie_path'])) ? $this->config['cookie_path'] : $config['cookie_path'];
+        $this->expiration    = $this->config['cookie_time'];
+
+        // Set the cookie
+        setcookie($this->cookie_prefix.$this->langKey, 
+            $this->getLangName(),
+            $this->expiration, // time() + (60 * 60 * 24 * 30)
+            $this->cookie_path,
+            $this->cookie_domain,
+            0);
     }
 
 }
 
-/* End of file localization.php */
-/* Location: ./packages/localization/releases/0.0.1/localization.php */
+/* End of file international.php */
+/* Location: ./packages/international/releases/0.0.1/international.php */

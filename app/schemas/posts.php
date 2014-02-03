@@ -10,7 +10,7 @@ $posts = array(
 		),
 	'post_user_id' => array(
 		'label' => 'Post User Id',
-		'types' => '_int(11)|_key(post_user_id)(post_user_id)|_null|_foreign_key(posts_ibfk_1)(users)(user_id)',
+		'types' => '_int(11)|_key(post_user_id)(post_user_id)|_not_null|_foreign_key(posts_ibfk_1)(users)(user_id)',
 		'rules' => '',
 		),
 	'post_title' => array(
@@ -35,7 +35,7 @@ $posts = array(
 			'Published',
 			'Archived',
 		),
-		'types' => '_not_null|_enum',
+		'types' => '_not_null|_enum|_default(Published)',
 		'rules' => 'required',
 		),
 	'post_creation_date' => array(

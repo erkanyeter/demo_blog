@@ -439,7 +439,7 @@ Class Sess_Database {
                                                                                      // we provide an md5 hash to prevent userside tampering
         }
         
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
 
         // Set the cookie
         setcookie(

@@ -13,6 +13,8 @@
 		<div id="clear"></div>
 		<div id="containerbox">
 
+			<section><?php echo $this->form->getNotice() ?></section>
+
 			<div id="content">
 				<div id="navigation">
 					<?php echo $this->url->anchor('/home', 'Home') ?> » <b> Post </b>
