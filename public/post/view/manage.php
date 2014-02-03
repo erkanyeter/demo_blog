@@ -85,7 +85,7 @@
 					<td colspan="4">Record not found</td>
 				</tr>
 
-				<? } ?>
+				<?php } ?>
 
 				</table>
 

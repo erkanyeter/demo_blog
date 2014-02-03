@@ -1,13 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.6deb1
+-- version 3.5.8.1deb1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 21, 2013 at 01:17 PM
--- Server version: 5.5.34-0ubuntu0.13.10.1
--- PHP Version: 5.5.3-1ubuntu2.1
+-- Generation Time: Feb 03, 2014 at 12:47 PM
+-- Server version: 5.5.34-0ubuntu0.13.04.1
+-- PHP Version: 5.4.9-4ubuntu2.4
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -19,7 +19,9 @@ SET time_zone = "+00:00";
 --
 -- Database: `demo_blog`
 --
-CREATE DATABASE IF NOT EXISTS demo_blog;
+
+CREATE DATABASE IF NOT EXISTS `demo_blog`;
+USE `demo_blog`;
 
 -- --------------------------------------------------------
 
@@ -33,13 +35,13 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `comment_name` varchar(50) NOT NULL,
   `comment_email` varchar(255) DEFAULT NULL,
   `comment_website` varchar(255) DEFAULT NULL,
-  `comment_comment` text NOT NULL,
+  `comment_body` text NOT NULL,
   `comment_creation_date` datetime DEFAULT NULL,
   `comment_modification_date` datetime DEFAULT NULL,
   `comment_status` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`comment_id`),
   KEY `comment_post_id` (`comment_post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -49,13 +51,13 @@ CREATE TABLE IF NOT EXISTS `comments` (
 
 CREATE TABLE IF NOT EXISTS `contacts` (
   `contact_id` int(11) NOT NULL AUTO_INCREMENT,
-  `contact_name` varchar(50) DEFAULT NULL,
-  `contact_email` varchar(50) DEFAULT NULL,
-  `contact_subject` varchar(255) DEFAULT NULL,
+  `contact_name` varchar(50) NOT NULL,
+  `contact_email` varchar(50) NOT NULL,
+  `contact_subject` varchar(255) NOT NULL,
   `contact_body` text,
-  `contact_creation_date` datetime DEFAULT NULL,
+  `contact_creation_date` datetime NOT NULL,
   PRIMARY KEY (`contact_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -65,16 +67,16 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 
 CREATE TABLE IF NOT EXISTS `posts` (
   `post_id` int(11) NOT NULL AUTO_INCREMENT,
-  `post_user_id` int(11) DEFAULT NULL,
-  `post_title` varchar(50) NOT NULL,
-  `post_content` varchar(50) NOT NULL,
+  `post_user_id` int(11) NOT NULL,
+  `post_title` varchar(255) NOT NULL,
+  `post_content` text NOT NULL,
   `post_tags` varchar(255) DEFAULT NULL,
-  `post_status` enum('Draft','Published','Archived') NOT NULL,
+  `post_status` enum('Draft','Published','Archived') NOT NULL DEFAULT 'Published',
   `post_creation_date` datetime DEFAULT NULL,
   `post_modification_date` datetime DEFAULT NULL,
   PRIMARY KEY (`post_id`),
   KEY `post_user_id` (`post_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -84,13 +86,13 @@ CREATE TABLE IF NOT EXISTS `posts` (
 
 CREATE TABLE IF NOT EXISTS `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varbinary(50) DEFAULT NULL,
-  `user_email` varchar(50) NOT NULL,
-  `user_password` varchar(50) NOT NULL,
+  `user_email` varchar(60) NOT NULL,
+  `user_password` varchar(75) NOT NULL,
   `user_creation_date` datetime DEFAULT NULL,
   `user_modification_date` datetime DEFAULT NULL,
+  `user_username` varchar(50) NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 --
 -- Constraints for dumped tables
