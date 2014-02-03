@@ -65,7 +65,7 @@
         <section>
             <h2>Real World Application</h2>
             <ol>
-                <li><?php echo $this->url->anchor('/home', 'Demo Blog') ?></li>
+                <li><?php echo $this->url->anchor('/home', 'Demo Blog') ?> * ( First run sql query db.sql which is located in root. )</li>
             </ol>
         </section>
 
