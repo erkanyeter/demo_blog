@@ -21,7 +21,6 @@ $c->func('index', function(){
 
     var_dump($this->web->getResultArray());
 
-
     echo '<br>';
     echo '<br>';
     echo $this->uri->getExtension().'<br/>'; 

@@ -114,7 +114,7 @@ Class Auth {
      * 
      * @param string $password
      */
-    private function setPassword($password)
+    public function setPassword($password)
     {
         $this->database_password = $password; 
     }
@@ -127,7 +127,7 @@ Class Auth {
      * @param  string $password
      * @return string $hash
      */
-    private function hashPassword($password)
+    public function hashPassword($password)
     {
         switch($this->algorithm)
         {
