@@ -20,7 +20,7 @@ $contacts = array(
 		),
 	'contact_subject' => array(
 		'label' => 'Contact Subject',
-		'types' => '_not_null|_default(true)|_varchar(255)',
+		'types' => '_not_null|_varchar(255)',
 		'rules' => 'required',
 		),
 	'contact_body' => array(
