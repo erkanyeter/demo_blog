@@ -153,32 +153,31 @@ Class Odm {
         {
             foreach($fields as $key => $val)  // Set validation errors.
             {
-               if(isset($validator->_field_data[$key]['error']))
-               {
+                if(isset($validator->_field_data[$key]['error']))
+                {
                    $error = $validator->getErrors($key, null, null);
 
                    if( ! empty($error))
                    {
                        $this->_odmMessages[$table]['errors'][$key] = $error;
                    }
-               }
+                }
 
                 //----------------------------
-
-                $form   = Form::getFormConfig();
+                
                 $string = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : 'There are some errors in the form fields.';
 
                 //----------------------------
 
                 // We need do append to array data otherwise $this->setMessage(); function
                 // does not work, because of it reset all array wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array()
-                
+
                 $this->_odmMessages[$table]['messages']['success']    = 0;
-                $this->_odmMessages[$table]['messages']['key']        = 'validation';
-                $this->_odmMessages[$table]['messages']['code']       = 10;
+                $this->_odmMessages[$table]['messages']['key']        = $this->_odmConfig['validation_error_key'];
+                $this->_odmMessages[$table]['messages']['code']       = $this->_odmConfig['validation_error_code'];
                 $this->_odmMessages[$table]['messages']['string']     = $string;
                 $this->_odmMessages[$table]['messages']['translated'] = translate($string);
-                $this->_odmMessages[$table]['messages']['message']    = sprintf($form['notifications']['errorMessage'], translate($string));
+                $this->_odmMessages[$table]['messages']['message']    = sprintf($this->_odmConfig['notifications']['errorMessage'], translate($string));
 
                 //----------------------------
 
@@ -517,15 +516,13 @@ Class Odm {
             $errorMessage = (hasTranslate($e)) ? translate($e) : $e; // Is Translated ?
         }
 
-        $form = Form::getFormConfig();
-
         $this->_odmMessages[$this->_odmTable]['messages'] = array(
             'success'    => 0, 
-            'key'        => 'failure',
-            'code'       => 12,
+            'key'        => $this->_odmConfig['operation_failure_key'],
+            'code'       => $this->_odmConfig['operation_failure_code'],
             'string'     => (is_string($e)) ? $e : $errorString,
             'translated' => $errorMessage,
-            'message'    => sprintf($form['notifications']['errorMessage'], $errorMessage),
+            'message'    => sprintf($this->_odmConfig['notifications']['failureMessage'], $errorMessage),
         );
     }
 

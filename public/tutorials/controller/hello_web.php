@@ -6,11 +6,14 @@
  */
 $c = new Controller(function(){
     // __construct
-    
+        
     new Web;
 });
 
 $c->func('index', function(){
+
+    // $this->oql->query('SELECT * FROM orders wincache_refresh_if_changed()');
+    // $this->oql->query('INSERT INTO users;');
 
     $this->web->query('post','members/create.one.json',function(){
         $this->data['user_username'] = 'test';
@@ -45,5 +48,5 @@ $c->func('index', function(){
 
 });
 
-/* End of file hello_rest.php */
-/* Location: .web_service/members/controller/hello_rest.php */
+/* End of file hello_web.php */
+/* Location: .web_service/members/controller/hello_web.php */

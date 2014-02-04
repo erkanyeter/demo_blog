@@ -127,7 +127,8 @@ Class Model {
                     $this->$k = $v;
                 }
                 function __assignColumns(){
-                    if(isset($this->data) AND sizeof($this->data) > 0){
+                    // We need to check data type for web service requests.
+                    if(isset($this->data) AND is_array($this->data) AND count($this->data) > 0){
                         foreach($this->data as $k => $v){
                             if(strpos($k, ".") > 0){     // Column join support
                                 unset($this->data[$k]);  // remove join "." data

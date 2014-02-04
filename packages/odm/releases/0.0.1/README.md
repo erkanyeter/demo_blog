@@ -331,7 +331,7 @@ print_r($this->user->getMessages());
 Array
 (
     [success] => 0  // 1
-    [key] => validation // save, update, delete, failure ..
+    [key] => validation_error
     [code] => 10 // 11 // 12
     [string] => There are some errors in the form fields.
     [translated] => There are some errors in the form fields.
@@ -343,12 +343,12 @@ $this->user->getMessage('success'); // gives you value of the success.
 
 <b>$this->user->getMessage('$key');</b> function gives you the value of the message. 
 
-#### Description Of Keys
+#### Defined Response Keys
 
 <table>
 <thead>
 <tr>
-<th>errorKey</th>
+<th>Response Key</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -363,46 +363,12 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tr>
 <tr>
 <td>code</td>
-<td>Same as error keys you can use the error codes if you want.</td>
-</tr>
-<tr>
-<td>string</td>
-<td>Gives the error message as string.</td>
-</tr>
-<tr>
-<td>translated</td>
-<td>Gives the translated error message using translate() function. ( uses translator package )</td>
-</tr>
-</tbody>
-</table>
-
-#### Description of <b>Error</b> Keys
+<td>Same as error keys you can use the error codes if you want.
 
 <table>
 <thead>
 <tr>
-<th>errorKey</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>validationError</td>
-<td>There is an input validation error.</td>
-</tr>
-<tr>
-<td>failure</td>
-<td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
-</tr>
-</tbody>
-</table>
-
-#### Description of Error Codes
-
-<table>
-<thead>
-<tr>
-<th>errorCode</th>
+<th>code</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -421,39 +387,55 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tr>
 </tbody>
 </table>
-
-#### Description of Success Keys
-
-<table>
-<thead>
-</thead>
-<tbody>
-<tr>
-<td>saveSuccess</td>
-<td>Successful save operation.</td>
+</td>
 </tr>
 <tr>
-<td>insertSuccess</td>
-<td>Successful insert operation.</td>
+<td>string</td>
+<td>Gives the error message as string.</td>
 </tr>
 <tr>
-<td>updateSuccess</td>
-<td>Successful update operation.</td>
+<td>translated</td>
+<td>Gives the translated error message using translate() function. ( uses translator package )</td>
 </tr>
 <tr>
-<td>removeSuccess</td>
-<td>Successful remove operation.</td>
-</tr>
-<tr>
-<td>deleteSuccess</td>
-<td>Successful delete operation.</td>
-</tr>
-<tr>
-<td>replaceSuccess</td>
-<td>Successful replace operation.</td>
+<td>message</td>
+<td>Givest the translated message with html template.</td>
 </tr>
 </tbody>
 </table>
+
+#### Defined <b>Status</b> Keys
+
+Status keys are configurable items from your odm.php config file.
+
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>validation_error</td>
+<td>You have got some validation errors.</td>
+</tr>
+<tr>
+<td>failure</td>
+<td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
+</tr>
+<tr>
+<td>success</td>
+<td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
+</tr>
+</tbody>
+</table>
+
+#### Defined Error Codes
+
+Error codes are configurable items from your odm.php config file.
+
+
 
 
 ### Schema Join & Save
