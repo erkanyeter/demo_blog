@@ -11,11 +11,13 @@
 
 Class Form {
 
-    public static $template     = 'default';   // Default form template
-    public $_callback_functions = array();     // Store __callback_func* validation methods
+    public static $template     = 'default';  // Default form template
+    public $_callback_functions = array();    // Store __callback_func* validation methods
 
-    private $_formMessages = array();  // Validation errors.
-    private $_formValues   = array();  // Filtered safe values.
+    private $_formMessages      = array();    // Validation errors.
+    private $_formValues        = array();    // Filtered safe values.
+
+    // ------------------------------------------------------------------------
 
     /**
      * Constructor
@@ -240,7 +242,8 @@ Class Form {
         if($form['use_template'] == false)
         {
             $array['templates'][self::$template] = array_map('strip_tags', $form['templates'][self::$template]);
-            $array['notifications']              = $form['notifications'];
+            $array['notifications'] = $form['notifications'];
+            $array['response']      = $form['response'];
 
             return $array;   
         }
@@ -264,10 +267,29 @@ Class Form {
         $valid = $validator->isValid($group);
         $form  = \Form::getFormConfig();  // get form template
 
+        // BUILD AJAX FRIENDLY RESPONSE DATA.
+
         if($valid == false) // if validation not pass !
         {
-            $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : 'There are some errors in the form fields.';
+            $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['form_error_message'];
 
+            $this->_formMessages['messages']['success']     = 0;
+            $this->_formMessages['messages']['key']         = $form['response']['form_error_key'];
+            $this->_formMessages['messages']['code']        = $form['response']['form_error_code'];
+            $this->_formMessages['messages']['string']      = $message;
+            $this->_formMessages['messages']['translated']  = translate($message);
+            $this->_formMessages['messages']['message']     = sprintf($form['notifications']['errorMessage'], translate($message));
+            
+            $this->_formMessages['errors'] = $validator->_error_array;
+        }
+
+        if($valid) 
+        {
+            $message = $form['response']['form_success_message'];
+
+            $this->_formMessages['messages']['success']     = 1;
+            $this->_formMessages['messages']['key']         = $form['response']['form_success_key'];
+            $this->_formMessages['messages']['code']        = $form['response']['form_success_code'];
             $this->_formMessages['messages']['string']      = $message;
             $this->_formMessages['messages']['translated']  = translate($message);
             $this->_formMessages['messages']['message']     = sprintf($form['notifications']['successMessage'], translate($message));

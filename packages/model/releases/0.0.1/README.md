@@ -79,7 +79,7 @@ If you provide the schema in array format schema driver also will create the dat
 **Note:** At this time we have just <b>Mysql Schema Driver</b>. if you want a write schema driver for other database types, please search on the net how to <b>submit a package</b> to Obullo.
 
 
-### Creating Model Functions
+### Creating Model
 
 After loading the model you need to build your model functions.
 
@@ -303,6 +303,7 @@ Using dot "." in your field "key" you can join them. e.g. **$this->user->data['s
 
 ```
 <?php
+
 new Model('order', 'orders');
 
 $this->order->data['order_type']        = '2';   
@@ -324,5 +325,34 @@ if($this->order->insert())
 ```
 
 Above the operation will insert data to orders and invoices tables and also does validation on each of them.
+
+### Form Model ( No Schema )
+
+```php
+<?php
+
+new Model('user', false);   // After that disabling file schema user object will use Form validation rules.
+
+if(isset($_POST['dopost'])) // if isset button click !
+{
+    $this->form->setRules('user_email', 'Email', 'required|validEmail');
+    $this->form->setRules('user_password', 'Password', 'required|callback_password');
+
+    $this->user->func('callback_password', function(){
+        if($_POST['user_password'] != '123'){
+            $this->setMessage('callback_password', 'Password not correct.');
+            return false; // wrong password
+        }
+        return true;
+    });
+
+    $this->user->isValid(); // do validation
+
+    print_r($this->user->getOutput());
+}
+
+/* End of file hello_form_model.php */
+/* Location: .public/tutorials/controller/hello_form_model.php */
+```
 
 **Note:** Look at <kbd>Odm Package</kbd> docs for more details.

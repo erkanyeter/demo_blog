@@ -20,6 +20,12 @@ $c->func('index', function(){
         $this->data['user_email']    = 'test.com';
     });
 
+    // new Web_Model('users', 'post');
+
+    // $this->users->data['user_username'] = 1;
+    // $this->users->save();
+    // $this->users->getCities();
+
     // $this->web->isValid();
 
     var_dump($this->web->getResultArray());
@@ -49,4 +55,4 @@ $c->func('index', function(){
 });
 
 /* End of file hello_web.php */
-/* Location: .web_service/members/controller/hello_web.php */
+/* Location: .tutorials/controller/hello_web.php */

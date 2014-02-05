@@ -40,8 +40,7 @@
 							</td>
 							<td>
 							<?php 
-							echo $this->form->dropdown('post_status',array(array('' => 'All'),
-								'getSchema(posts)[post_status][_enum]'), $this->form->setValue('post_status'),' onchange="submitPage();" '); 
+							echo $this->form->dropdown('post_status', '@getSchema.posts.post_status.func.list', $this->form->setValue('post_status'),' onchange="submitPage();" '); 
 							?>
 							</td>
 							<td>  </td>
@@ -59,6 +58,7 @@
 								<td><?php echo $post->post_title ?></td>
 								<td><?php echo $post->post_status ?></td>
 								<td><?php echo $post->post_creation_date ?></td>
+								
 								<td class="options">
 								<?php echo $this->url->anchor('post/preview/'.$post->post_id,
 									$this->html->img('view.png')

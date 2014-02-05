@@ -112,16 +112,16 @@ Class Model {
 
         //---------------------- Build Model Class -----------------------//
 
-        if( ! class_exists($modelName, false))  // Create the Model file on the fly with magic methods.
+        if( ! class_exists('AppModel_'.$modelName, false))  // Create the Model file on the fly with magic methods.
         {
-            eval('Class '.$modelName.' extends Odm { 
+            eval('Class AppModel_'.$modelName.' extends Odm { 
                 use Odm\Src\Model_Trait;
                 function __construct($schemaArray, $dbObject) {
                     parent::__construct($schemaArray, $dbObject); 
                 }
                 function __set($k, $v){
                     if( ! is_object($v) AND $k != "data"){  // Only data variable allowed !
-                        throw new Exception(sprintf("Only \"data\" variable allowed in model class.
+                        throw new Exception(sprintf("Only \"data\" variable allowed in application model class.
                             <pre>this->%s->data = \'\';</pre>", \''.$modelName.'\'));    
                     }
                     $this->$k = $v;
@@ -146,10 +146,12 @@ Class Model {
 
         //--------------- Call the Model Class Magically -----------------------//
 
+        $appModelName = 'AppModel_'.$modelName;
+
         $modelKey = strtolower($modelName);
-        getInstance()->{$modelKey} = new $modelName($schemaArray, $dbObject); // Model always must create new instance.
+        getInstance()->{$modelKey} = new $appModelName($schemaArray, $dbObject); // Model always must create new instance.
        
-        logMe('debug', "Model $modelName Initialized");
+        logMe('debug', "Application Model $modelName Initialized");
     }
 
 }

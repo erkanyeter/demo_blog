@@ -246,6 +246,55 @@ $users = array(
     'rules' => 'required|validEmail',
     ),
   'business_size' => array(
+    'label' => 'User Business Size',
+    '_enum' => array(
+            'small',
+            'medium',
+            'large',
+            'xlarge',
+            'xxlarge',
+        ),
+    'types' => '_null|_enum',
+    'rules' => '',
+    ),
+   'func' => function() {
+        $options = array(
+            'small'   => '1 employee',
+            'medium'  => '2 - 10 employees',
+            'large'   => '11 - 25 employees',
+            'xlarge'  => '26 - 75 employees',
+            'xxlarge' => 'More than 75 employees',
+        );
+        $business_sizes = getSchema('users')['business_size']['_enum'];
+        $sizes = array();
+        foreach($business_sizes as $val)
+        {
+            $sizes[$val] = $options[$val];
+        }
+        return $sizes;
+    },
+);
+```
+
+```php
+<?php
+echo $this->form->dropdown('business_size', '@getSchema.users.business_size.func', 'xlarge');
+```
+
+Adding custom options.
+
+```php
+<?php
+echo $this->form->dropdown('business_size', array(array('' => 'Please specify a field .. '), '@getSchema.users.business_size.func'));
+```
+
+
+### Array Functions
+
+Also you can build your array closure functions.
+
+```php
+  'business_size' => array(
         'label' => 'User Business Size',
         '_enum' => array(
             'small',
@@ -257,37 +306,39 @@ $users = array(
         'types' => '_null|_enum',
         'rules' => '',
         ),
-      'func' => function() {
-            $myOptions = array(
+      'func' => array(
+        'all' => function() {
+            $options = array(
                 'small'   => '1 employee',
                 'medium'  => '2 - 10 employees',
                 'large'   => '11 - 25 employees',
                 'xlarge'  => '26 - 75 employees',
                 'xxlarge' => 'More than 75 employees',
             );
-            $users   = getSchema('users');
-            $options = array();
-            foreach($users['business_size']['_enum'] as $val)
+            $business_sizes = getSchema('users')['business_size']['_enum'];
+            $sizes = array();
+            foreach($business_sizes as $val)
             {
-                $options[$val] = $myOptions[$val];
+                $sizes[$val] = $options[$val];
             }
-            return $options;
+            return $sizes;
         },
-);
+        'list' => function() {
+            $business_sizes = getSchema('users')['business_size']['_enum']['high'];            
+            $sizes = $business_sizes();
+
+            unset($sizes['xlarge']);
+            unset($sizes['xxlarge']);
+
+            return $sizes;
+        },
+      )
 ```
 
 ```php
 <?php
-echo $this->form->dropdown('business_size', 'getSchema(users)[business_size][func]', 'small');
+echo $this->form->dropdown('business_size', '@getSchema.users.business_size.func.list', 'medium');
 ```
-
-Adding custom options.
-
-```php
-<?php
-echo $this->form->dropdown('business_size', array(array('' => 'Please specify a field .. '), 'getSchema(users)[business_size][func]'));
-```
-
 
 #### $this->form->fieldset()
 

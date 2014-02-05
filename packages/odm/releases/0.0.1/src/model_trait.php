@@ -3,7 +3,7 @@ namespace Odm\Src {
 
     trait Model_Trait
     {
-        private $_modelMethods = array();
+        private $_modelMethods        = array();
         private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','push','send');
 
         // --------------------------------------------------------------------
@@ -92,13 +92,13 @@ namespace Odm\Src {
             // We need do append to array data otherwise $this->setMessage(); function
             // does not work, because of it reset all array wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array()     
 
-            $string = $this->_odmConfig['operation_success_message'];
+            $string = $this->_odmConfig['response']['operation_success_message'];
 
             $this->_odmMessages[$this->_odmTable]['messages']['success']    = 1;
-            $this->_odmMessages[$this->_odmTable]['messages']['key']        = $this->_odmConfig['operation_success_key'];
-            $this->_odmMessages[$this->_odmTable]['messages']['code']       = $this->_odmConfig['operation_success_key'];
+            $this->_odmMessages[$this->_odmTable]['messages']['key']        = $this->_odmConfig['response']['operation_success_key'];
+            $this->_odmMessages[$this->_odmTable]['messages']['code']       = $this->_odmConfig['response']['operation_success_code'];
             $this->_odmMessages[$this->_odmTable]['messages']['translated'] = translate($string);
-            $this->_odmMessages[$this->_odmTable]['messages']['message']    = sprintf($form['notifications']['successMessage'], translate($string));
+            $this->_odmMessages[$this->_odmTable]['messages']['message']    = sprintf($this->_odmConfig['notifications']['successMessage'], translate($string));
         }
 
         // --------------------------------------------------------------------
@@ -111,7 +111,8 @@ namespace Odm\Src {
          */
         private function __assignObjects()
         {
-            $modelKey = strtolower(get_class());
+            $modelName = str_replace('AppModel_', '', get_class());
+            $modelKey  = strtolower($modelName);
 
             foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
             {

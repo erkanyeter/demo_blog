@@ -64,7 +64,7 @@
 			                        <td>
 			                        <?php 
 			                            echo $this->form->error('post_status');
-										echo $this->form->dropdown('post_status','getSchema(posts)[post_status][_enum]', $this->form->setValue('post_status'), " ");
+										echo $this->form->dropdown('post_status','@getSchema.posts.post_status._enum', $this->form->setValue('post_status'), " ");
 			                            ?><span class="color_red">*</span>
 			                        </td>
 			                    </tr>
@@ -77,9 +77,7 @@
 			                    <tr>
 			                        <td colspan="2">&nbsp;</td>
 			                    </tr>
-			                </table>
-
-						 
+			                </table>						 
 					
 					<?php echo $this->form->close() ?>
 

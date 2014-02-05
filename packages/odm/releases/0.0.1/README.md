@@ -49,7 +49,7 @@ $users = array(
 Some data types requires array type of values ( like _enum or _set ).
 
 ```php
-<?php 
+<?php
 
 $users = array(
   '*' => array(),
@@ -327,6 +327,7 @@ $this->user->getValue('user_email');  // gives value of the user_email field
 ```php
 <?php
 print_r($this->user->getMessages());
+
 /*
 Array
 (
@@ -343,12 +344,12 @@ $this->user->getMessage('success'); // gives you value of the success.
 
 <b>$this->user->getMessage('$key');</b> function gives you the value of the message. 
 
-#### Defined Response Keys
+#### Message Keys
 
 <table>
 <thead>
 <tr>
-<th>Response Key</th>
+<th>Key</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -359,34 +360,60 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tr>
 <tr>
 <td>key</td>
-<td>Every error has a related error string for readability of them.</td>
+<td>Every error has a related error string for readability of them.
+
+    <table>
+    <thead>
+    <tr>
+    <th>String</th>
+    <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>validation_error</td>
+    <td>You have got some validation errors.</td>
+    </tr>
+    <tr>
+    <td>failure</td>
+    <td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
+    </tr>
+    <tr>
+    <td>success</td>
+    <td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
+    </tr>
+    </tbody>
+    </table>
+
+</td>
 </tr>
 <tr>
 <td>code</td>
-<td>Same as error keys you can use the error codes if you want.
+<td>Description of response codes.
 
-<table>
-<thead>
-<tr>
-<th>code</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10</td>
-<td>Validation Error</td>
-</tr>
-<tr>
-<td>11</td>
-<td>Successful</td>
-</tr>
-<tr>
-<td>12</td>
-<td>Failure</td>
-</tr>
-</tbody>
-</table>
+    <table>
+    <thead>
+    <tr>
+    <th>Integer</th>
+    <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>10</td>
+    <td>Validation Error</td>
+    </tr>
+    <tr>
+    <td>11</td>
+    <td>Successful</td>
+    </tr>
+    <tr>
+    <td>12</td>
+    <td>Failure</td>
+    </tr>
+    </tbody>
+    </table>
+
 </td>
 </tr>
 <tr>
@@ -404,39 +431,7 @@ $this->user->getMessage('success'); // gives you value of the success.
 </tbody>
 </table>
 
-#### Defined <b>Status</b> Keys
-
-Status keys are configurable items from your odm.php config file.
-
-<table>
-<thead>
-<tr>
-<th>key</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>validation_error</td>
-<td>You have got some validation errors.</td>
-</tr>
-<tr>
-<td>failure</td>
-<td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
-</tr>
-<tr>
-<td>success</td>
-<td>User customized failure message produced by <b>$this->model->setFailure();</b> method.</td>
-</tr>
-</tbody>
-</table>
-
-#### Defined Error Codes
-
-Error codes are configurable items from your odm.php config file.
-
-
-
+**Note:** <b>Status keys</b> and <b>error codes</b> are configurable items from your odm.php config file.
 
 ### Schema Join & Save
 
@@ -474,11 +469,11 @@ You can use the transactions if your table engine setted correctly as <b>INNODB<
 
 ```php
 <?php
-new Get;
+new Post;
 
 $this->user->data = array(
-    'email'    => $this->get->post('email'),
-    'password' => $this->get->post('password'),
+    'email'    => $this->post->get('email'),
+    'password' => $this->post->get('password'),
 );
 
 $this->user->setRules('agreement', array('label' => 'User Agreement', 'rules' => 'required'));
@@ -594,12 +589,12 @@ $users = array(
 ```php
 <?php
 new Url;
-new Get;
+new Post;
 
 new Model('user', 'users');
 
-$this->user->data['username'] = $this->get->post('username');
-$this->user->data['password'] = $this->get->post('password');
+$this->user->data['username'] = $this->post->get('username');
+$this->user->data['password'] = $this->post->get('password');
 
 $this->user->func('callback_username', function($username){
     if(strlen($username) > 10)
@@ -664,6 +659,35 @@ $this->model->setFailure($message = '');
 if you send exception object in <b>debug</b> and <b>test</b> mode it will give you <b>$e->getMessage()</b>, otherwise in <b>live</b> mode it will produce user friendly error message <b>( We couldn\'t do operation at this time please try again. )</b> which is defined in your <kbd>app/translations/en_US/odm.php</kbd> language file.
 ```php
 $this->model->setFailure($e);
+```
+
+### Form Models ( No Schema )
+
+```php
+<?php
+
+new Model('user', false);   // After that disabling file schema user object will use Form validation rules.
+
+if(isset($_POST['dopost'])) // if isset button click !
+{
+    $this->form->setRules('user_email', 'Email', 'required|validEmail');
+    $this->form->setRules('user_password', 'Password', 'required|callback_password');
+
+    $this->user->func('callback_password', function(){
+        if($_POST['user_password'] != '123'){
+            $this->setMessage('callback_password', 'Password not correct.');
+            return false; // wrong password
+        }
+        return true;
+    });
+
+    $this->user->isValid(); // do validation
+
+    print_r($this->user->getOutput());
+}
+
+/* End of file hello_form_model.php */
+/* Location: .public/tutorials/controller/hello_form_model.php */
 ```
 
 
@@ -1234,14 +1258,14 @@ $users = array(
         'Istanbul'
         ),
     'func' => function(){   // Map _enum options as $key => $value
-        $users   = getSchema('users');
+        $cities  = getSchema('users')['cities']['_enum'];
         $options = array();
-        foreach($users['cities']['_enum'] as $val)
+        foreach($cities as $val)
         {
             $options[$val] = $val;
         }
         return $options;
-    }
+    },
     ),
 );
 ```
@@ -1250,8 +1274,58 @@ After the creating schema function you can run it in a form element.
 
 ```php
 <?php 
-echo $this->form->dropdown('cities', 'getSchema(users)[_enum][func]', $this->form->setValue('cities'));
+echo $this->form->dropdown('cities', '@getSchema.users._enum.func', $this->form->setValue('cities'));
 ```
+
+
+Array Schemas
+
+```php
+$users = array(
+  '*' => array(),
+
+  'email' => array(
+    'label' => 'User Email',
+    'types' => 'minLen(6)|_varchar(160)',
+    'rules' => 'required|validEmail'
+    ),
+  'cities' => array(
+    'label' => 'Cities',
+    'types' => '_enum|_default(Berlin)',
+    'rules' => 'required|maxLen(20)'),
+    '_enum' => array(
+        'London',
+        'Tokyo',
+        'Paris',
+        'New York',
+        'Berlin',
+        'Istanbul'
+        ),
+      'func' => array(
+        'high' => function() {
+            $cities  = getSchema('users')['cities']['_enum'];
+            $options = array();
+            foreach($cities as $val)
+            {
+                $options[$val] = $val;
+            }
+            return $options;
+        },
+        'low' => function() {
+            $cities  = getSchema('users')['cities']['func']['high'];
+            $options = $cities();
+
+            unset($options['Berlin']); // remove unwanted cities
+            unset($options['Paris']); 
+
+            return $options;
+        },
+      )
+    ),
+);
+
+```
+
 
 ### Function Reference
 

@@ -110,7 +110,7 @@ Class Schema_Mysql {
      */
     public function buildSchemaField($key, $types, $newType = '')
     {
-        $fileSchema = getSchema($this->tablename);
+        $fileSchema        = getSchema($this->tablename);
         $currentFileSchema = $fileSchema;
         unset($fileSchema['*']);  // Get only fields no settings
 
@@ -122,16 +122,16 @@ Class Schema_Mysql {
 
         // --------- RENDER FUNC ----------//
         
-        if(isset($currentFileSchema[$key]['func']))
+        if(isset($currentFileSchema[$key]['func']))  // Don't remove functions
         {
             $schemaFile = file_get_contents($this->schemaObject->getPath());
-            $schemaFile = str_replace('<?php','',$schemaFile);
+            $schemaFile = str_replace(array('<?php', '<?'),'',$schemaFile);
 
-            preg_match("#'$key'(.*?)'func'(\s*)(=>)(\s*)(.*?)\},#s",$schemaFile, $matches);
+            preg_match("#'$key'.*?'func'\s+=>\s+((?:(array.*?}\),))|(?![array])(.*?},))#s",$schemaFile, $matches);
 
-            if( isset($matches[5]))
+            if( isset($matches[1]))
             {
-                $ruleString.= "\n\t\t'func' => $matches[5]},";  // fetch _func from current schema
+                $ruleString.= "\n\t\t'func' => $matches[1]";  // fetch _func from current schema
             }
         }
 

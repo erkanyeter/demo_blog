@@ -135,7 +135,7 @@ Class Odm {
             }
             
             if($this->_odmSchema == false) // If Model Trait save function not used we need send back success for "Form Model Ajax" Tutorial.
-            {                              
+            {
                 $this->_buildSuccessMessage('send');
             }
 
@@ -165,7 +165,7 @@ Class Odm {
 
                 //----------------------------
                 
-                $string = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : 'There are some errors in the form fields.';
+                $string = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $this->_odmConfig['response']['odm_error_message'];
 
                 //----------------------------
 
@@ -173,8 +173,8 @@ Class Odm {
                 // does not work, because of it reset all array wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array()
 
                 $this->_odmMessages[$table]['messages']['success']    = 0;
-                $this->_odmMessages[$table]['messages']['key']        = $this->_odmConfig['validation_error_key'];
-                $this->_odmMessages[$table]['messages']['code']       = $this->_odmConfig['validation_error_code'];
+                $this->_odmMessages[$table]['messages']['key']        = $this->_odmConfig['response']['validation_error_key'];
+                $this->_odmMessages[$table]['messages']['code']       = $this->_odmConfig['response']['validation_error_code'];
                 $this->_odmMessages[$table]['messages']['string']     = $string;
                 $this->_odmMessages[$table]['messages']['translated'] = translate($string);
                 $this->_odmMessages[$table]['messages']['message']    = sprintf($this->_odmConfig['notifications']['errorMessage'], translate($string));
@@ -504,7 +504,7 @@ Class Odm {
     {
         $this->_odmValidation = false; // set validation to false;
 
-        $errorMessage = $errorString = $this->_odmConfig['failure_message'];
+        $errorMessage = $errorString = $this->_odmConfig['response']['operation_failure_message'];
 
         if(is_object($e) AND (ENV == 'DEBUG' OR ENV == 'TEST'))
         {
@@ -518,8 +518,8 @@ Class Odm {
 
         $this->_odmMessages[$this->_odmTable]['messages'] = array(
             'success'    => 0, 
-            'key'        => $this->_odmConfig['operation_failure_key'],
-            'code'       => $this->_odmConfig['operation_failure_code'],
+            'key'        => $this->_odmConfig['response']['operation_failure_key'],
+            'code'       => $this->_odmConfig['response']['operation_failure_code'],
             'string'     => (is_string($e)) ? $e : $errorString,
             'translated' => $errorMessage,
             'message'    => sprintf($this->_odmConfig['notifications']['failureMessage'], $errorMessage),

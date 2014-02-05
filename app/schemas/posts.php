@@ -35,6 +35,21 @@ $posts = array(
 			'Published',
 			'Archived',
 		),
+		'func' => array(
+			'all' => function(){
+				$post_status = getSchema('posts')['post_status']['_enum'];
+				$options = array();
+				foreach($post_status as $k => $v)
+				{
+					$options[$v] = $v;
+				}
+				return $options;
+			},
+			'list' => function(){  // remap
+				$post_status = getSchema('posts')['post_status']['func']['all'];
+				return array_merge(array('' => 'All'), $post_status());
+			}
+		),
 		'types' => '_not_null|_enum|_default(Published)',
 		'rules' => 'required',
 		),

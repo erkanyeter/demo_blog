@@ -67,7 +67,7 @@
 			                        <td>
 			                        <?php 
 			                            echo $this->form->error('post_status');
-										echo $this->form->dropdown('post_status','getSchema(posts)[post_status][_enum]', $row, " ");
+										echo $this->form->dropdown('post_status','@getSchema.posts.post_status._enum', $row, " ");
 
 										// getSchema() is a tiny function to get schema configuration array
 										// 
