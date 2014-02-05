@@ -34,7 +34,7 @@ Class Web {
 
         if( ! isset(getInstance()->web))
         {
-            getInstance()->web = $this; // Make available it in the controller $this->mambo->method();
+            getInstance()->web = $this; // Make available it in the controller $this->web->method();
         }
 
         logMe('debug', 'Web Class Initialized');
@@ -185,21 +185,6 @@ Class Web {
         }
 
         return $this->raw_output;
-    }
-    
-    // ------------------------------------------------------------------------
-
-    /**
-     * Parse outputs and do validation
-     * then set error & and values
-     * 
-     * to Form object
-     * 
-     * @return boolean
-     */
-    public function isValid()
-    {
-
     }
 
     // ------------------------------------------------------------------------

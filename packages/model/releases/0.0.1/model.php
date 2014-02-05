@@ -122,7 +122,7 @@ Class Model {
                 function __set($k, $v){
                     if( ! is_object($v) AND $k != "data"){  // Only data variable allowed !
                         throw new Exception(sprintf("Only \"data\" variable allowed in application model class.
-                            <pre>this->%s->data = \'\';</pre>", \''.$modelName.'\'));    
+                            <pre>\$this->%s->data = \'\';</pre>", \''.$modelName.'\'));    
                     }
                     $this->$k = $v;
                 }
