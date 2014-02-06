@@ -19,8 +19,8 @@ $html_file = '<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-    '.$this->html->css('documantation/bootstrap.css').'
-    '.$this->html->css('documantation/bootstrap-theme.css').'
+    '.$this->html->css('web_model/bootstrap.css').'
+    '.$this->html->css('web_model/bootstrap-theme.css').'
 <script type="text/javascript">
 function ExceptionElement() {
     var elements = new Array();
