@@ -1,0 +1,48 @@
+{
+  "name": "web_model",
+  "description": "Web data model do hmvc based comminucations with /web_models folder.",
+  "version": "0.0.1",
+  "releases": ["0.0.1"],
+  "author": {
+    "name": "Obullo Team",
+    "email": "obulloframework@gmail.com",
+    "url": "https://github.com/obullo"
+  },
+  "component" : "library",
+  "dependencies": {
+    "log":"*",
+    "web":"*",
+  },
+  "keywords": [
+    "web",
+    "hmvc",
+    "web data model",
+    "service",
+    "rest",
+    "web_service",
+    "web_model",
+    "web_models",
+    "json",
+  ],
+  "homepage": "https://github.com/obullo/web_model",
+  "repo": {
+    "type": "git",
+    "url": "https://github.com/obullo/web_model.git",
+    "archive" : "zip",
+    "archive_url": "https://github.com/obullo/web_model/archive/master.zip"
+  },
+  "requires": {
+    "php": ">= 5.4.0",
+    "extensions": ["none"]
+  },
+  "bugs": {
+    "url": "https://github.com/obullo/web_model/issues",
+    "email": "obulloframework@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
+}

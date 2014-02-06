@@ -6,8 +6,8 @@
  */
 $c = new Controller(function(){
     // __construct
-        
-    new Web;
+    
+    new Web_Model('users', 'post');
 });
 
 $c->func('index', function(){
@@ -20,7 +20,7 @@ $c->func('index', function(){
     //     $this->data['user_email']    = 'test.com';
     // });
 
-    new Web_Model('users', 'post');
+
 
     // $this->users->data['user_username'] = 1;
     // $this->users->data['user_username'] = 1;
