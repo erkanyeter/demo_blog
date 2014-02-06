@@ -92,7 +92,7 @@ $c->func('index', function(){
         
     }
 
-    $this->view->get('hello_form_builder', function() {
+    $this->view->get('hello_form_builder_ali', function() {
 
         $this->set('name', 'Obullo');
         $this->set('footer', $this->tpl('footer', false));

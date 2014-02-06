@@ -32,6 +32,8 @@ $packages['dependencies']['email']                = array('version' => '0.0.1');
 $packages['dependencies']['encrypt']              = array('version' => '0.0.1');
 $packages['dependencies']['exceptions']           = array('version' => '0.0.1');
 $packages['dependencies']['form']                 = array('version' => '0.0.1');
+$packages['dependencies']['form_builder']         = array('version' => '0.0.1');
+$packages['dependencies']['form_builder_ali']     = array('version' => '0.0.1');
 $packages['dependencies']['ftp']                  = array('version' => '0.0.1');
 $packages['dependencies']['html']                 = array('version' => '0.0.1');
 $packages['dependencies']['hmvc']                 = array('version' => '0.0.1');
