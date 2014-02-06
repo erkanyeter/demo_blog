@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <function>
    <name>order</name>
-   <title>ORDER TİTLE</title>
    <description>This function get all user data from database table</description>
    <visibility>private</visibility>
    <request>

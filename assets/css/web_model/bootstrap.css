@@ -38,14 +38,14 @@ template {
 }
 
 html {
-  font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  font:Arial,Verdana,sans-serif;
+   font-family:Arial,Verdana,sans-serif;
+
 }
 
 a {
@@ -94,7 +94,6 @@ code,
 kbd,
 XMP,pre,
 samp {
-  font-family: monospace, serif;
   font-size: 1em;
 }
 
@@ -154,7 +153,6 @@ input,
 select,
 textarea {
   margin: 0;
-  font-family: inherit;
   font-size: 100%;
 }
 
@@ -304,8 +302,7 @@ html {
 }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
+   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;
   background-color: #ffffff;
@@ -315,7 +312,6 @@ input,
 button,
 select,
 textarea {
-  font-family: inherit;
   font-size: inherit;
   line-height: inherit;
 }
@@ -398,7 +394,6 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit;
@@ -742,7 +737,6 @@ code,
 kbd,XMP,
 pre,
 samp {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 code {
@@ -1901,7 +1895,6 @@ select[size] {
 }
 
 select optgroup {
-  font-family: inherit;
   font-size: inherit;
   font-style: inherit;
 }
@@ -2680,17 +2673,12 @@ input[type="button"].btn-block {
           transition: height 0.35s ease;
 }
 
-@font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url('../../fonts/glyphicons-halflings-regular.eot');
-  src: url('../../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
-}
+
 
 .glyphicon {
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
   -webkit-font-smoothing: antialiased;
   font-style: normal;
   font-weight: normal;
@@ -6456,7 +6444,6 @@ button.close {
   height: 20px;
   margin-top: -10px;
   margin-left: -10px;
-  font-family: serif;
 }
 
 .carousel-control .icon-prev:before {
@@ -7117,39 +7104,4 @@ td.visible-print {
   td.hidden-print {
     display: none !important;
   }
-}
-
-
-.postapi{
-  padding-left: 5px;
-  padding-right: 5px;
-  height: 45px;
-  background-color: #006857;
-  position: absolute;
-  margin-top: -14px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  color: white;
-  line-height: 45px;
-  text-align: center;
-  font-weight: bold;
-  margin-left: -60px;
-}
-.panel-heading{
-  padding-left: 55px;
-}
-.green
-{
-  color: #006857;
-}
-.apipanelico
-{
-  float: right;
-   margin-top: -31px;
-   font-size: 20px;
-   margin-right: 5px;
-   font-weight:100;
-}
-.red{
-  background-color: #CC1C0F;
 }
