@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function>
+   <name>order</name>
+   <title>ORDER TİTLE</title>
+   <description>This function get all user data from database table</description>
+   <visibility>private</visibility>
+   <request>
+      <data key="123" type="string" rules="required|callback_username" desc="Unique username of user"></data>
+      <data key="321" type="string" rules="required|validateEmail" desc="Unique email of user"></data>
+   </request>
+   <publish_date>2000-10-01</publish_date>
+   <version>1.0</version>
+   <author>Hakan Garip</author>
+
+</function>
