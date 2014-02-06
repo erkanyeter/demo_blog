@@ -10,12 +10,12 @@ $users = array(
 		),
 	'user_email' => array(
 		'label' => 'User Email',
-		'types' => '_not_null|_varchar(60)',
+		'types' => '_not_null|_varchar(50)',
 		'rules' => 'required|validEmail',
 		),
 	'user_password' => array(
 		'label' => 'User Password',
-		'types' => '_not_null|_varchar(75)',
+		'types' => '_not_null|_varchar(100)',
 		'rules' => 'required|minLen(6)',
 		),
 	'user_creation_date' => array(

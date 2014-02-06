@@ -24,7 +24,7 @@
  * */
 .uform-column{
 	padding-left: 0em;
-	padding-right: 0.5375em;
+	padding-right: 0.3375em;
 	padding-bottom: 0.5375em;
 	float: left;
 	margin: 0;
@@ -44,6 +44,10 @@
 	max-width:75%;
 	resize:none;
 }
+.uform-captcha-wrapper{
+	width:65%;
+	float:left;
+}
 /**
  * Submit Button CSS
  * */
@@ -62,7 +66,8 @@
 .uform-label-left {
 	float:left;
 	margin-right:0.3375em;
-	width:20%;
+	min-width:15%;
+	max-width:30%;
 }
 .uform-label-right{
 	float:right;
@@ -89,34 +94,34 @@
  * Grid System
  * */
 .uform-grid-1 {
-	width: 10%;
+	width: 9%;
 }
 .uform-grid-2 {
-	width: 20%;
+	width: 19%;
 }
 .uform-grid-3 {
-	width: 30%;
+	width: 29%;
 }
 .uform-grid-4 {
-	width: 40%;
+	width: 39%;
 }
 .uform-grid-5{
-	width: 50%;
+	width: 49%;
 }
 .uform-grid-6{
-	width: 60%;
+	width: 59%;
 }
 .uform-grid-7{
-	width: 70%;
+	width: 69%;
 }
 .uform-grid-8{
-	width: 80%;
+	width: 79%;
 }
 .uform-grid-9{
-	width: 90%;
+	width: 89%;
 }
 .uform-grid-10{
-	width: 100%;
+	width: 99%;
 }
 /**
  * Error Input Styles

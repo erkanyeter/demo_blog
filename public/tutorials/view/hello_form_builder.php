@@ -28,7 +28,7 @@
 
                         <section>
                             <h3>print_r($this->user->getOutput())</h3>
-                            <pre><?php print_r($this->user->getOutput()) ?></pre>
+                            <pre><?php print_r($this->form->getOutput()) ?></pre>
 
                             <h3>print_r($this->user->getMessages())</h3>
                             <pre><?php print_r($this->user->getMessages()) ?></pre>

@@ -64,7 +64,7 @@ Class Form_Builder
      */
     public function __construct()
     {
-        if( ! isset(getInstance()->form_builder))   // Load dependency, form package.
+        if( ! isset(getInstance()->form))   // Load dependency, form package.
         {
             new Form;
         }
@@ -74,7 +74,7 @@ Class Form_Builder
             getInstance()->form_builder = $this;  // Make available it in the controller.
         }
 
-        logMe('debug', 'Form Builder Class Initialized');
+        logMe('debug', 'Uform Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -88,6 +88,11 @@ Class Form_Builder
     {
         switch ($method)
         {
+            /*
+            Handling the external calls for the following funcitons.
+            We override the behaviour of these functions in the constructor.
+            while adding them externally in the controller.
+             */
             case 'input':
             case 'password':
             case 'hidden':
@@ -96,25 +101,16 @@ Class Form_Builder
             case 'radio':
             case 'dropdown':
             case 'textarea':
-            case 'multiselect':{
+            case 'multiselect':
+            case 'captcha' :
+            {
                 $colname = $arguments[0];
                 $this->setColValue('field_name', $arguments[0]);
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
-
-                return call_user_func_array(array(getInstance()->form, $method), $arguments);
+                return array("method" => $method, "arguments" => $arguments);
+                //return call_user_func_array(array(getInstance()->form, $method), $arguments);
+                break;
             }
-            /*
-            case 'textarea':
-                    $this->setColValue('field_name', $arguments[0]['name']);
-                    return array('method' => $method, 'arguments' => $arguments);
-                    break;
-            */
-            // case "setValue":
-            // {
-            //     $this->setColValue("setValue" , $arguments[0]);
-            //     return Form::setValue($arguments[0]);
-            //     break;
-            // }                
         }
     }
 
@@ -215,7 +211,7 @@ Class Form_Builder
      * @param  [type] $input [description]
      * @return [type]        [description]
      */
-    /*
+
     protected function printInput($input)
     {
         if (is_array($input))
@@ -233,12 +229,18 @@ Class Form_Builder
                 case 'multiselect':
                 {
                     return call_user_func_array(array(getInstance()->form, $input['method']), $input['arguments']);
+                    break;
+                }
+                case 'captcha':
+                {
+                    return $this->captchaBuild($input['arguments']);
+                    break;
                 }
             }
         }
         return;
     }
-*/
+
     // --------------------------------------------------------------------
 
     /**
@@ -290,7 +292,7 @@ Class Form_Builder
         {
             foreach ($this->fieldsArr as $rowNum => $v)
             {
-                $out .= "\n\t<div class='uform-row'>";  // printing a row "<div>"
+                $out .= "\n\t\t<div class='uform-row'>";  // printing a row "<div>"
 
                 if (is_array($v))
                 {
@@ -302,23 +304,23 @@ Class Form_Builder
                         $label = $error = $columnContent = '';
                         $addon_class = (isset($v['position']['input'])) ? "uform-ipos-" . $v['position']['input'] : "";
 
-                        $out  .= "\n\t\t<div class='uform-column " . array_shift($gridClass) . " $addon_class' >";  // add the column TD
-                        $label = "\n\t\t\t".$this->printLabel($rowNum, $colNum);
+                        $out  .= "\n\t\t\t<div class='uform-column " . array_shift($gridClass) . " $addon_class' >";  // add the column TD
+                        $label = "\n\t\t\t\t".$this->printLabel($rowNum, $colNum);
                         
-                        $columnContent = "\n\t\t\t".$this->printColumnContent($rowNum, $colNum);  // retrive column content.
+                        $columnContent = "\n\t\t\t\t".$this->printColumnContent($rowNum, $colNum);  // retrive column content.
 
-                        $error = (isset($v2['error_msg'])) ? $v2['error_msg'] : '';   // retrive validation error msg
+                        $error = getInstance()->form->error($v2['field_name'], "<div class='uform-error' >", "</div>");
 
                         $out .= $label . $columnContent . $error;
 
-                        $out .= "\n\t\t</div>"; // close the div tags
+                        $out .= "\n\t\t\t</div>"; // close the div tags
                     }
                 }
 
-                $out .= "\n\t</div>\n";  // close the "uform-row" div
+                $out .= "\n\t\t</div>\n";  // close the "uform-row" div
             }
         }
-
+        $out .= "\t</form>\n";
         $out .= "</div>\n";
 
         return $this->output = $out.$closeTag;
@@ -380,11 +382,6 @@ Class Form_Builder
         $col   = $this->fieldsArr[$rowNum]['columns'][$colNum];
         $out   = '';
 
-        print_r($this->fieldsArr); exit;
-
-        var_dump($col); 
-
-        /*
         if ( ! isset($col['input']['method']) AND isset($col['label']))  // it will be an array with "radios, checkboxs";
         {
             $i = 0;
@@ -410,7 +407,7 @@ Class Form_Builder
 
             $out = $this->printInput($col['input']);
         }
-        */
+
         return $out;
     }
 
@@ -424,29 +421,6 @@ Class Form_Builder
         $arg = (func_get_args());
 
         return call_user_func_array(array(getInstance()->form, 'setValue'), $arg);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function setValueFun($rowId, $colId, $value)
-    {
-        // $col = $this->fieldsArr[$rowId]['columns'][$colId];
-        // if (!isset($col['input']['arguments']))
-        // {
-        //     for ($i = 0 ; $i < count($col['input']); $i++)
-        //     {
-        //         $o = $col['input'][$i];
-        //         if (isset($o['arguments']))
-        //         {
-        //             $this->fieldsArr[$rowId]['columns'][$colId]['input'][$i]['arguments'][2] = Form::setValue($value);
-        //         }
-        //     }
-        //     // $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['rules'] = (isset($arg['rules'])) ? $arg['rules'] : ' ';
-        // }else
-        // {
-        //     $this->fieldsArr[$rowId]['columns'][$colId]['input']['arguments'][1] = Form::setValue("$value");
-        // }
-        // return ;
     }
 
     // --------------------------------------------------------------------
@@ -488,67 +462,37 @@ Class Form_Builder
      */
     public function isValid()
     {
-        getInstance()->form->isValid();
-        /*
-        $validator = getComponentInstance('validator');
-        $validator->set('_callback_object', $this);
-
-        foreach ($this->fieldsArr as $v) 
-        {
-            if (is_array($v))
-            {
-                foreach ($v['columns'] as $column)
-                {
-                    $rules = $column['rules'];
-                    $field_name = $column['field_name'];
-
-                    if (is_array($column))
-                    {
-                        if (isset($column['rules']) AND $column['rules'] != '')
-                        {
-                            $label = (isset($column['label'])) ? $column['label'] : '';
-
-                            $validator->setRules($field_name, $label, $column['rules']);
-                        }
-                    }
-                }
-            }
-        }
-
-        $validation = $validator->run();
-
-        for ($i = 1; $i < count($this->fieldsArr); $i++)
-        {
-            if (is_array($this->fieldsArr[$i]))
-            {
-                for ($j = 0; $j < count($this->fieldsArr[$i]['columns']); $j++)
-                {
-                    $this->fieldsArr[$i]['columns'][$j]['error_msg'] = getInstance()->form->error($this->fieldsArr[$i]['columns'][$j]['field_name'], "<div class='uform-error' >", "</div>");
-                }
-            }
-        }
-
-        return $validation;
-    */
+        return getInstance()->form->isValid();
     }
 
-    public function render()
+    // --------------------------------------------------------------------
+
+    /**
+     * Captcha
+     * 
+     * @return string
+     */
+    protected function captchaBuild( )
     {
-        for ($i = 1; $i < count($this->fieldsArr); $i++)
+        $args = func_get_args();
+        $args = $args[0];
+        
+        $config = getConfig('form_builder');
+        
+        if( is_callable($config['captcha']) )
         {
-            if (is_array($this->fieldsArr[$i]))
-            {
-                for ($j = 0; $j < count($this->fieldsArr[$i]['columns']); $j++)
-                {
-                    $this->fieldsArr[$i]['columns'][$j]['error_msg'] = getInstance()->form->error($this->fieldsArr[$i]['columns'][$j]['field_name'], "<div class='uform-error' >", "</div>");
-                }
-            }
-        }
+            $captchaVars = call_user_func_array(Closure::bind($config['captcha'], getInstance(), 'Controller'), array());
 
-        // print_r($this->fieldsArr);
-        // echo getInstance()->form->error('user_email');
+            $out = "\t<div class='uform-captcha-wrapper'>\n";
+            $out .= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($captchaVars['image_id']['name'], $captchaVars['image_id']['value']))."\n";
+            $out .= "\t<img src='$captchaVars[image_url]' />\n";
+            $out .= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
+            $out .= "\t</div>\n";
+
+            return $out;
+        }else
+            throw(new Exception('Form Builder error : captcha must be a callable function in config file.'));
     }
-
 }
 
 // END Uform Class
