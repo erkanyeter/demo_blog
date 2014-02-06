@@ -71,6 +71,7 @@ $packages['dependencies']['translator']           = array('version' => '0.0.1');
 $packages['dependencies']['validator']            = array('version' => '0.0.1');
 $packages['dependencies']['web']                  = array('version' => '0.0.1');
 $packages['dependencies']['web_results_json']     = array('version' => '0.0.1');
+$packages['dependencies']['web_model']         	  = array('version' => '0.0.1');
 $packages['dependencies']['web_service']          = array('version' => '0.0.1');
 $packages['dependencies']['uri']                  = array('version' => '0.0.1');
 $packages['dependencies']['url']                  = array('version' => '0.0.1');
@@ -83,7 +84,7 @@ $packages['dependencies']['view']                 = array('version' => '0.0.1');
 | -------------------------------------------------------------------
 | COMPONENTS
 | -------------------------------------------------------------------
-| This configuration specifies components of Obullo that you may replace
+| This configuration specifies components of Framework that you may replace
 | them with third party packages.
 |
 | We get the components using getComponent('component');

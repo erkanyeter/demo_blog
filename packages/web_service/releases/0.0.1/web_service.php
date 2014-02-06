@@ -30,11 +30,12 @@ Class Web_Service extends Controller {
 
         switch ($visibility) {
             case 'public':
-                
                 break;
             
             case 'protected':
-                
+                break;
+
+            case 'private':
                 break;
 
             default:

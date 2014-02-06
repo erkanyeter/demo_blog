@@ -15,20 +15,22 @@ $c->func('index', function(){
     // $this->oql->query('SELECT * FROM orders wincache_refresh_if_changed()');
     // $this->oql->query('INSERT INTO users;');
 
-    $this->web->query('post','members/create.one.json',function(){
-        $this->data['user_username'] = 'test';
-        $this->data['user_email']    = 'test.com';
-    });
+    // $this->web->query('post','members/createOne.json',function(){
+    //     $this->data['user_username'] = 'test';
+    //     $this->data['user_email']    = 'test.com';
+    // });
 
-    // new Web_Model('users', 'post');
+    new Web_Model('users', 'post');
 
     // $this->users->data['user_username'] = 1;
-    // $this->users->save();
-    // $this->users->getCities();
+    // $this->users->data['user_username'] = 1;
+    // $this->users->data['user_username'] = 1;
+    // $this->users->data['user_username'] = 1;
+    $this->users->create_one();
 
     // $this->web->isValid();
 
-    var_dump($this->web->getResultArray());
+    var_dump($this->users->getResultArray());
 
     echo '<br>';
     echo '<br>';
