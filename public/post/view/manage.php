@@ -43,8 +43,8 @@
 							echo $this->form->dropdown('post_status', '@getSchema.posts.post_status.func.list', $this->form->setValue('post_status'),' onchange="submitPage();" '); 
 							?>
 							</td>
-							<td>  </td>
-							<td>  </td>
+							<td></td>
+							<td></td>
 						</tr>
 
 				<?php if(count($posts) > 0) { ?>
@@ -67,10 +67,9 @@
 									$this->html->img('update.png')
 								) ?>
 
-<?php echo $this->url->anchor('post/delete/'.$post->post_id,
+								<?php echo $this->url->anchor('post/delete/'.$post->post_id,
 									$this->html->img('delete.png'),
 								' onclick="return confirm(\'Are you sure from this action ?\');"  ') ?>
-
 								</td>
 							</tr>
 					 <?php } ?>
@@ -88,8 +87,6 @@
 				<?php echo $this->form->close() ?>
 
 				</div>
-
-
 			</div>
 
 			<?php echo $sidebar ?>

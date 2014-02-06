@@ -12,8 +12,8 @@ $database = array(
 
 	'db' => new Pdo_Mysql(array(    // or new Mongo_Db;
 		'variable' => 'db',
-		'hostname' => '10.0.0.108',
-		'username' => 'obullo',
+		'hostname' => 'localhost',
+		'username' => 'root',
 		'password' => '123',
 		'database' => 'demo_blog',
 		'driver'   => '',	// optional

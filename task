@@ -25,9 +25,9 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 /*
 |--------------------------------------------------------------------------
-| We need to make sure is it Task or Cmd Request
+| We need to make sure is it Task or Cli Request
 | The main difference of a task request, user call it via
-| task helper and run with Task::run(); function internally.
+| task class and run with $this->task->run(); function internally.
 |--------------------------------------------------------------------------
 */
 if(end($_SERVER['argv']) == 'OB_TASK_REQUEST')

@@ -28,7 +28,7 @@ Class Web {
     /**
      * Constructor
      */
-    public function __construct($directory = 'web_models')
+    public function __construct($directory = 'web_service')
     {
         $this->web_service_directory = $directory;
 
@@ -197,7 +197,7 @@ Class Web {
      */
     public function __call($method, $arguments)
     {
-        if( ! method_exists($this, $method))  // Call the Validator object methods
+        if( ! method_exists($this, $method))  // Call the Web_Results object methods
         {   
             $resultClass   = 'Web_Results_'.ucfirst($this->uri_extension);
             $resultObject  = new $resultClass($this->getRawOutput()); // Send raw output to result object.
