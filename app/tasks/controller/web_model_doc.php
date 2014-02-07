@@ -57,13 +57,15 @@ function ExceptionToggle(obj){
     $scan = scandir($folder);
 
     $dataArray = array();
-    $table_tr = '';
-    $i=0;
+    $table_tr  = '';
+    $i = 0;
+
     foreach ($scan as $key => $value) 
     {
         if($value != '.' and $value != '..' and $value !='docs')
         {
             $subFolder = $folder.'/'.$value;
+
             $files = scandir($subFolder);
             foreach ($files as $k => $fileName) 
             {
@@ -82,7 +84,7 @@ function ExceptionToggle(obj){
 
                     $data['folder']       =  $phpPath;
                     $data['name']         =  $dom->getElementsByTagName('name')->item(0)->nodeValue;
-                     $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
+                    $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
                     $data['visibility']   =  $dom->getElementsByTagName('visibility')->item(0)->nodeValue;
                     $data['publish_date'] =  $dom->getElementsByTagName('publish_date')->item(0)->nodeValue;
                     $data['version']      =  $dom->getElementsByTagName('version')->item(0)->nodeValue;
@@ -105,7 +107,6 @@ function ExceptionToggle(obj){
                     $html_file .='  
                                 <div class="panel panel-default">
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'arg_toggle_'.$i.'\');">
-                                        
                                         
                                         <div class="panel-heading">
                                             <div class="postapi">'.$data['request'].'</div>
@@ -143,13 +144,13 @@ function ExceptionToggle(obj){
 
                         foreach ($dom->getElementsByTagName('data') as $feeditem)
                         {
-                            if ($feeditem->getAttribute('necessary') == 'required')
+                            if ($feeditem->getAttribute('required') == 'yes')
                             {
-                                $necessary = '<div class="required">'.$feeditem->getAttribute('necessary').'</div>';
+                                $required = '<div class="required">'.$feeditem->getAttribute('required').'</div>';
                             }
                             else
                             {
-                                $necessary = '<div class="optional">'.$feeditem->getAttribute('necessary').'</div>';
+                                $required = '<div class="optional">'.$feeditem->getAttribute('required').'</div>';
                             }
                         
                             $dataData = trim($feeditem->nodeValue);
@@ -159,7 +160,7 @@ function ExceptionToggle(obj){
                                                                 <td>'.$feeditem->getAttribute('key') .'</td>
                                                                 <td>'.$feeditem->getAttribute('type').'</td>
                                                                 <td>'.$feeditem->getAttribute('rules').'</td>
-                                                                <td>'.$necessary.'</td>
+                                                                <td>'.$required.'</td>
                                                                 <td>'.$feeditem->getAttribute('desc').'</td>
                                                                 <td>'.$dataData.'</td>
                                                             </tr>';
