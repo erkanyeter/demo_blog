@@ -17,6 +17,23 @@ $c = new Controller(function(){
 
 $c->func('index', function(){
     
+    /*
+    new Form_Builder(array('/tutorials/hello_form_builder', array('method' => 'post')), function(){
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Email',
+            'rules' => 'required|validEmail',
+            'input' => $this->input('user_email', $this->setValue('user_email')),
+        ));
+
+    });
+
+    $this->form_builder->create();
+    $this->form_builder->isValid();
+    */
+
     $this->form_builder->open('/tutorials/hello_form_builder', array('method' => 'post'), function() {
 
         $this->addRow();

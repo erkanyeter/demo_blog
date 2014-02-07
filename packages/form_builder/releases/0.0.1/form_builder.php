@@ -286,7 +286,6 @@ Class Form_Builder
                         $error = getInstance()->form->error($v2['field_name'], "<div class='uform-error' >", "</div>");
 
                         $out .= $label . $columnContent . $error;
-
                         $out .= "\n\t\t\t</div>"; // close the div tags
                     }
                 }
@@ -514,7 +513,7 @@ Class Form_Builder
     }
 }
 
-// END Uform Class
+// END Form Builder Class
 
-/* End of file uform.php */
-/* Location: ./packages/uform/releases/0.0.1/uform.php */
+/* End of file form_builder.php */
+/* Location: ./packages/form_builder/releases/0.0.1/form_builder.php */
