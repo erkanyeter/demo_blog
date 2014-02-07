@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <function>
    <name>create.one</name>
-   <title>Get one user</title>
    <description>This function get all user data from database table</description>
    <visibility>private</visibility>
    <get>

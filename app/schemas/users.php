@@ -10,12 +10,16 @@ $users = array(
 		),
 	'user_email' => array(
 		'label' => 'User Email',
+<<<<<<< HEAD
 		'types' => '_varchar(60)|_not_null',
+=======
+		'types' => '_varchar(60)|_null',
+>>>>>>> 49ffeb32e2e2832ab1f1b93691eea7b182fc1639
 		'rules' => 'required|validEmail',
 		),
 	'user_password' => array(
 		'label' => 'User Password',
-		'types' => '_not_null|_varchar(75)',
+		'types' => '_not_null|_varchar(100)',
 		'rules' => 'required|minLen(6)',
 		),
 	'user_creation_date' => array(

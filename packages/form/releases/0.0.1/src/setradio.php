@@ -19,7 +19,7 @@ namespace Form\Src {
     {
         $OBJ = getInstance()->form->_getValidatorObject();
 
-        if ($OBJ === false)
+        if ($OBJ !== false)
         {
             if ( ! isset($_REQUEST[$field]))
             {

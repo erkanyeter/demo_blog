@@ -24,7 +24,7 @@ namespace Form\Src {
             $value = getInstance()->form->_getSchemaPost($value, $field); 
         }
 
-        if ($OBJ === false)
+        if ($OBJ !== false)
         { 
             if ( ! isset($_REQUEST[$field]))
             {

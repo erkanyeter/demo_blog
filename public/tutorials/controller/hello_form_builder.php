@@ -9,7 +9,7 @@ $c = new Controller(function(){
     new Post;      
     new Url;
     new Html;
-    new Form_Builder_Ali;
+    new Form_Builder;
     new View;
     
     new Model('user', 'users'); 
@@ -22,32 +22,8 @@ $c = new Controller(function(){
 });
 
 $c->func('index', function(){
-    /*
-    if($this->get->post('dopost'))
-    {
-        $this->user->data['email']    = $this->get->post('email');
-        $this->user->data['password'] = $this->get->post('password');
-        //--------------------- set non schema rules
-        
-        $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
-        $this->form->setRules('agreement', 'User Agreement', '_int|required|exactLen(1)');
-        
-        //---------------------
-        $this->user->func('save', function() {
-            if ($this->isValid()){
-                $this->data['password'] = md5($this->getValue('password'));
-                return $this->db->insert('users', $this);
-            }
-            return false;
-        });
-        if($this->user->save())
-        {   
-            $this->form->setNotice('User saved successfully.',SUCCESS);
-            $this->url->redirect('tutorials/hello_odm');
-        }
-    }
-    */
-    $this->form_builder->open('/tutorials/hello_form_builder_ali', array('method' => 'post'), function() {
+    
+    $this->form_builder->open('/tutorials/hello_form_builder', array('method' => 'post'), function() {
 
         $this->addRow();
         $this->setPosition('label', 'left');
@@ -62,16 +38,54 @@ $c->func('index', function(){
         $this->addCol(array(
             'label' => 'Password',
             'rules' => 'required|minLen(6)',
-            'input' => $this->input('user_password', $this->setValue('user_password')),
+            'input' => $this->password('user_password', $this->setValue('user_password')),
         ) );
-
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
             'label' => 'Confirm',
             'rules' => 'required|matches(user_password)',
-            'input' => $this->input('confirm_password', $this->setValue('confirm_password'), ' id="confirm" ' ),
+            'input' => $this->password('confirm_password', $this->setValue('confirm_password'), ' id="confirm" ' ),
         ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Policy : ',
+            'rules' => 'required|contains(n,y)',
+            array("label" => "Yes", "input" => $this->radio("pp", 'y', $this->setRadio('pp', 'y')) ),
+            array("label" => "No", "input" => $this->radio("pp", 'n', $this->setRadio('pp', 'n')) ),
+        ));
+        $this->addCol(array(
+                   'label' => 'Country',
+                   'input' => $this->dropdown('country', array(1 => "Turkey" , 2 => "US" , 3 => "Syria"), $this->setValue('country'), " id='cntry' "),
+                   'rules' => 'required|xssClean'
+                  )
+               );
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Langs : ',
+            'rules' => 'contains(en,tr,ar)',
+            array("label" => "En", "input" => $this->checkbox("lang[]", 'en', $this->setRadio('lang', 'en')) ),
+            array("label" => "Tr", "input" => $this->checkbox("lang[]", 'tr', $this->setRadio('lang', 'tr')) ),
+            array("label" => "Ar", "input" => $this->checkbox("lang[]", 'ar', $this->setRadio('lang', 'ar')) ),
+        ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Security Image',
+            'rules' => 'required',
+            'input' => $this->captcha('answer')
+        ));
+
+        /*
+        if (is_callable($closure))
+        {
+            call_user_func_array(Closure::bind($closure, getInstance(), 'Controller'), array());
+        }*/
 
         $this->addRow();
         $this->setPosition('label', 'left');
@@ -81,15 +95,9 @@ $c->func('index', function(){
         ));
     });
 
-    $this->form_builder->close();
-
-    // $this->form_builder->render();
-
     if($this->post->get('dopost'))
     {
-
         $this->form_builder->isValid();
-        
     }
 
     $this->view->get('hello_form_builder', function() {

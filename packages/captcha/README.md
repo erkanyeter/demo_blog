@@ -23,7 +23,7 @@ Creates captcha on the fly with default settings.
 
 ```php
 <?php
-new Captcha();
+new Captcha;
 $this->captcha->create();
 ```
 ### Config File

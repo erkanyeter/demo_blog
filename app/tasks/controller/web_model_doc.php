@@ -39,12 +39,12 @@ function ExceptionToggle(obj){
     if (el == null){
         return false;
     }
-    el.className = (el.className != \'collapsed\' ? \'collapsed\' :  \'\' );
+    el.className = (el.className != \'collapsed\' ? \'collapsed\' : \'\' );
 }
 </script>
 </head>
 
-<body>
+<body> 
 <div class="container">
     <div class="page-header">
         <h1><span class="green">Web Models</span> API <span style="font-size: 16px"> v1.0</span></h1> 
@@ -52,7 +52,7 @@ function ExceptionToggle(obj){
     </div>
     <div class="panel-group" id="accordion">';
 
-    $folder = './public/web_models';
+    $folder = './public/web_model';
 
     $scan = scandir($folder);
 
@@ -82,8 +82,7 @@ function ExceptionToggle(obj){
 
                     $data['folder']       =  $phpPath;
                     $data['name']         =  $dom->getElementsByTagName('name')->item(0)->nodeValue;
-                    $data['title']        =  $dom->getElementsByTagName('title')->item(0)->nodeValue;
-                    $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
+                     $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
                     $data['visibility']   =  $dom->getElementsByTagName('visibility')->item(0)->nodeValue;
                     $data['publish_date'] =  $dom->getElementsByTagName('publish_date')->item(0)->nodeValue;
                     $data['version']      =  $dom->getElementsByTagName('version')->item(0)->nodeValue;
@@ -114,14 +113,12 @@ function ExceptionToggle(obj){
                                                '.$data['folder'].' 
                                             </h4>
                                         </div>
-                                        <div class="apipanelico"><span class="glyphicon glyphicon-chevron-down"></span></div>
+                                        <div class="apipanelico arrov"></div>
                                     </a>
                                     <div id="arg_toggle_'.$i.'" class="collapsed">
 
                                         <div class="panel-body">
-                                            <h1 class="green">'.$data['name'].' </h1><!-- -->
-                                            <p><p>
-                                            <h3 class="green">'.$data['title'].' </h3>
+                                            <h3 class="green">'.$data['name'].' </h3><!-- -->
                                             <p><p>
                                             '.$data['description'].' 
                                             <p>
