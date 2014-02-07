@@ -64,8 +64,8 @@ Class Form_Builder
         {
             /*
             Handling the external calls for the following functions.
-            We override the behaviour of these functions in the constructor.
-            while adding them externally in the controller.
+            We override the behaviour of these functions in the constructor,
+            while adding them externally in the Controller.
             */
             case 'input':
             case 'password':
@@ -76,13 +76,12 @@ Class Form_Builder
             case 'dropdown':
             case 'textarea':
             case 'multiselect':
-            case 'captcha' :
+            case 'captcha':
             {
                 $colname = $arguments[0];
                 $this->setColValue('field_name', $arguments[0]);
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
                 return array("method" => $method, "arguments" => $arguments);
-                //return call_user_func_array(array(getInstance()->form, $method), $arguments);
                 break;
             }
         }
@@ -93,8 +92,7 @@ Class Form_Builder
     protected function close()
     {
         $args = func_get_args();
-
-        $this->output .= call_user_func_array(array(getInstance()->form, 'close'), $args)."\n";
+        return $this->output .= call_user_func_array(array(getInstance()->form, 'close'), $args)."\n";
     }
 
     // --------------------------------------------------------------------
@@ -128,7 +126,7 @@ Class Form_Builder
                 }
             }
         }
-        else
+        else // normal set
         {
             $this->setColValue('input', $data['input']);
         }
@@ -143,18 +141,15 @@ Class Form_Builder
             $label = (isset($data['label'])) ? $data['label'] : ucfirst(strtolower($data['label']));
 
             getInstance()->form->setRules($this->getColName(), $label, $data['rules']);
-
             // $this->setColValue('rules', $arg['rules']);
         }
 
         // increase column index in the columns array
         $this->colNum ++;
-
-        // print_r($this->colNames);
     }
 
-    // --------------------------------------------------------------------
 
+    // --------------------------------------------------------------------
     /**
      * Get current column name
      * 
@@ -166,7 +161,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Assign values to the columns
      * 
@@ -179,7 +173,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Prinnt 
      * @param  [type] $input [description]
@@ -216,26 +209,25 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Set position for label or input
      * 
      * $this->setPosition('label' , 'left');
      * $this->setPosition('input' , 'right');
+     * $this->setPosition('error' , 'bottom');
      * 
      * @param string element name
      * @param string position
      */
     protected function setPosition($element, $position = 'left')
     {
-        if (in_array($element, array('label', 'input')) AND in_array($position, array('left', 'top', 'right', 'center')))
+        if (in_array($element, array('label', 'input', 'error')) AND in_array($position, array('left', 'top', 'right', 'center','bottom')))
         {
             $this->fieldsArr[$this->rowNum]['position'][$element] = $position;
         }
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Create the form, the main function.
      * 
@@ -251,7 +243,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Print the form HTML
      * 
@@ -282,11 +273,9 @@ Class Form_Builder
                         $label = "\n\t\t\t\t".$this->printLabel($rowNum, $colNum);
                         
                         $columnContent = "\n\t\t\t\t".$this->printColumnContent($rowNum, $colNum);  // retrive column content.
-
                         $error = getInstance()->form->error($v2['field_name'], "<div class='uform-error' >", "</div>");
 
                         $out .= $label . $columnContent . $error;
-
                         $out .= "\n\t\t\t</div>"; // close the div tags
                     }
                 }
@@ -294,14 +283,13 @@ Class Form_Builder
                 $out .= "\n\t\t<br clear='all' /></div>\n";  // close the "uform-row" div
             }
         }
-        $out .= "\t</form>\n";
+        $out .= "\t".$this->close()."\n";
         $out .= "</div>\n";
 
         return $this->output = $out.$closeTag;
     }
 
     // --------------------------------------------------------------------
-
     /**
      * This function determines which 'css classes'
      * will be assigned to each column
@@ -342,7 +330,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Print the column content
      * 
@@ -360,11 +347,6 @@ Class Form_Builder
         {
             $i = 0;
             
-            if (isset($col['setValue']))
-            {
-                $this->setValueFun($rowNum, $colNum, $col['setValue']);
-            }
-
             foreach ($col['input'] as $col_v)
             {
                 $out .= (isset($col['listLabel'][$i])) ? $col['listLabel'][$i] : '';
@@ -374,11 +356,6 @@ Class Form_Builder
         }
         else
         {
-            if (isset($col['setValue']))
-            {
-                $this->setValueFun($rowNum, $colNum, $col['setValue']);
-            }
-
             $out = $this->printInput($col['input']);
         }
 
@@ -393,19 +370,16 @@ Class Form_Builder
     public function setValue()
     {
         $arg = (func_get_args());
-
         return call_user_func_array(array(getInstance()->form, 'setValue'), $arg);
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Setting a value for 'radio', Form::setRadio()
      */
     public function setRadio()
     {
         $arg = (func_get_args());
-
         return call_user_func_array(array(getInstance()->form, 'setRadio'), $arg);
     }
 
@@ -415,24 +389,20 @@ Class Form_Builder
     public function setSelect()
     {
         $arg = (func_get_args());
-
         return call_user_func_array(array(getInstance()->form, 'setSelect'), $arg);
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Setting a value for 'checboxs', Form::setCheckbox()
      */
     public function setCheckbox()
     {
         $arg = (func_get_args());
-
         return call_user_func_array(array(getInstance()->form, 'setCheckbox'), $arg);
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Print the label of the column
      * 
@@ -453,7 +423,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     public function setRules()
     {
         $args = func_get_args();
@@ -462,7 +431,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Run the validation
      * 
@@ -474,7 +442,6 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-
     /**
      * Captcha
      * 
