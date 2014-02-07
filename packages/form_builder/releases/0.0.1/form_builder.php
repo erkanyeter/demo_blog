@@ -317,7 +317,7 @@ Class Form_Builder
                     }
                 }
 
-                $out .= "\n\t\t</div>\n";  // close the "uform-row" div
+                $out .= "\n\t\t<br clear='all' /></div>\n";  // close the "uform-row" div
             }
         }
         $out .= "\t</form>\n";
@@ -426,6 +426,40 @@ Class Form_Builder
     // --------------------------------------------------------------------
 
     /**
+     * Setting a value for 'radio', Form::setRadio()
+     */
+    public function setRadio()
+    {
+        $arg = (func_get_args());
+
+        return call_user_func_array(array(getInstance()->form, 'setRadio'), $arg);
+    }
+
+    /**
+     * Setting a value for 'radio', Form::setRadio()
+     */
+    public function setSelect()
+    {
+        $arg = (func_get_args());
+
+        return call_user_func_array(array(getInstance()->form, 'setSelect'), $arg);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Setting a value for 'checboxs', Form::setCheckbox()
+     */
+    public function setCheckbox()
+    {
+        $arg = (func_get_args());
+
+        return call_user_func_array(array(getInstance()->form, 'setCheckbox'), $arg);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Print the label of the column
      * 
      * @return string Column Label
@@ -488,6 +522,7 @@ Class Form_Builder
             $out .= "\t<img src='$captchaVars[image_url]' />\n";
             $out .= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
             $out .= "\t</div>\n";
+            $out .= "\t<br clear='all' />\n";
 
             return $out;
         }else

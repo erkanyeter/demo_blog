@@ -51,10 +51,26 @@ $c->func('index', function(){
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
-            'label' => 'Privacy & Policy : ',
+            'label' => 'Policy : ',
             'rules' => 'required|contains(n,y)',
-            array("label" => "Yes", "input" => $this->radio("pp", 'y') ),
-            array("label" => "No", "input" => $this->radio("pp", 'n') ),
+            array("label" => "Yes", "input" => $this->radio("pp", 'y', $this->setRadio('pp', 'y')) ),
+            array("label" => "No", "input" => $this->radio("pp", 'n', $this->setRadio('pp', 'n')) ),
+        ));
+        $this->addCol(array(
+                   'label' => 'Country',
+                   'input' => $this->dropdown('country', array(1 => "Turkey" , 2 => "US" , 3 => "Syria"), $this->setValue('country'), " id='cntry' "),
+                   'rules' => 'required|xssClean'
+                  )
+               );
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Langs : ',
+            'rules' => 'contains(en,tr,ar)',
+            array("label" => "En", "input" => $this->checkbox("lang[]", 'en', $this->setRadio('lang', 'en')) ),
+            array("label" => "Tr", "input" => $this->checkbox("lang[]", 'tr', $this->setRadio('lang', 'tr')) ),
+            array("label" => "Ar", "input" => $this->checkbox("lang[]", 'ar', $this->setRadio('lang', 'ar')) ),
         ));
 
         $this->addRow();

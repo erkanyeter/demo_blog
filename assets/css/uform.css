@@ -8,10 +8,12 @@
  * Row CSS
  * */
 .uform-row{
-	width: 100%;
-	margin: 0px auto;
-	padding: 0px;
-	clear:both;
+	border-bottom: 1px dotted #DDDDDD;
+    clear: both;
+    margin: 5px auto;
+    padding: 0;
+    width: 100%;
+    padding: 0px;
 }
 .uform-row:after {
 	clear: both;
@@ -65,7 +67,7 @@
 }
 .uform-label-left {
 	float:left;
-	
+
 	margin-right:0.3375em;
 	min-width:20%;
 	max-width:30%;
