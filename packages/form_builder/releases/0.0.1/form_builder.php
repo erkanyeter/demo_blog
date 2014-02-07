@@ -350,8 +350,8 @@ Class Form_Builder
         );
 
         $x = array();
-        if (in_array($columnsNum, array_keys($gridSys))) // check if the count of columns in 
-        {                                                // the same row is larger than the accepted count.
+        if (in_array($columnsNum, array_keys($gridSys))) // check if the count of columns in-
+        {                                                // -the same row is larger than the accepted count.
             array_walk($gridSys[$columnsNum], function($value, $key) use(&$x) {
                 $x[] = 'uform-grid-' . $value;
             });
