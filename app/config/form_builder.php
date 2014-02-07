@@ -30,10 +30,10 @@ $form_builder = array(
         $this->captcha->create();
 
         return array(
-            'image_url'      => $this->captcha->getImageUrl(),
-            'image_id'       => $this->captcha->getImageId(),
-            'image_template' => '<img src="%s" />',
-            'input_template' => '<input type="hidden" name="image_id" value="%s" />',
+            'image_url'             => $this->captcha->getImageUrl(),
+            'image_id'              => $this->captcha->getImageId(),
+            'image_template'        => '<img src="%s" />',
+            'hidden_input_template' => '<input type="hidden" name="image_id" value="%s" />',
         );
     }
 );

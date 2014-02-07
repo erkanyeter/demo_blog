@@ -491,14 +491,14 @@ Class Form_Builder
         {
             $captcha = call_user_func_array(Closure::bind($config['captcha'], getInstance(), 'Controller'), array());
 
-            if( empty($captcha['input_template']) OR empty($captcha['image_url']) )
+            if( empty($captcha['hidden_input_template']) OR empty($captcha['image_url']) )
             {
                 throw(new Exception('Form builder error : Captcha closure in the config file must return an array containing two index keys (image_hidden_input, image_url).'));
             }
 
             $out = "\t<div class='uform-captcha-wrapper'>\n";
 
-                $out.= "\t".sprintf($captcha['input_template'], $captcha['image_id'])."\n";
+                $out.= "\t".sprintf($captcha['hidden_input_template'], $captcha['image_id'])."\n";
                 $out.= "\t".sprintf($captcha['image_template'], $captcha['image_url'])."\n";
                 $out.= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
 
