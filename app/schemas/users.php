@@ -15,7 +15,7 @@ $users = array(
 		),
 	'user_password' => array(
 		'label' => 'User Password',
-		'types' => '_not_null|_varchar(100)',
+		'types' => '_not_null|_varchar(75)',
 		'rules' => 'required|minLen(6)',
 		),
 	'user_creation_date' => array(

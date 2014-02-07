@@ -7,51 +7,25 @@
  * @package       packages
  * @subpackage    uform
  * @category      form builder
- * @example $uform = new Uform();
- *          $uform->create("table", function(){
- *              $this->addForm('/tutorials/hello_uform', array('method' => 'post'));
- *
- *              // adding new Row to the form and then adding two columns inside it.
- *              $this->addRow();
- *              $this->addCol(
- *                  'label' => 'Email',
- *                  'input' => $this->input('email', $this->setValue('email'), " id='email' "),
- *                  'rules' => 'required|xssClean'
- *                 )
- *              );
- *              $this->addCol(array(
- *                  'label' => 'Password',
- *                  'input' => $this->dropdown('doUKnow', array(1 => "Yes" , 2 => "No" , 3 => "I don't know"), " id='duknow' "),
- *                  'rules' => 'required|xssClean'
- *                 )
- *              );
- *
- *              $this->addRow();
- *              $this->addCol(array(
- *                  "label" => "Language",
- *                  array("label" => "Arabic", "input" => $this->radio("lang", 'ar') ),
- *                  array("label" => "Turkish", "input" => $this->radio("lang", 'tr') ),
- *                  array("label" => "English", "input" => $this->radio("lang", 'en') )
- *              ));
- *
- *              $this->addRow();
- *              $this->addCol(array(
- *                  'input' => $this->submit('submit', ' Login ', '', " id='sbmt' ")
- *                 )
- *              );
- *          });
- *
- *          $uform->isValid();
- *          $uform->printForm();
- * @tutorial    input's accepted funcitons are : input => $this->{fun_name}. {fun_name} = input, hidden, radio, checkbox, dropdown, submit, password, textarea
  * 
+ * @tutorial    Allowed funtions list : 
+ *              input => $this->$method_name();
+ *              input, 
+ *              hidden, 
+ *              radio, 
+ *              checkbox, 
+ *              dropdown, 
+ *              submit, 
+ *              password, 
+ *              textarea
  */
+
 Class Form_Builder
 {
     private $output;
     private $fieldsArr;
-    private $rowNum = 0;
-    private $colNum = 0;
+    private $rowNum   = 0;
+    private $colNum   = 0;
     private $colNames = array();
 
     // --------------------------------------------------------------------
@@ -74,7 +48,7 @@ Class Form_Builder
             getInstance()->form_builder = $this;  // Make available it in the controller.
         }
 
-        logMe('debug', 'Uform Class Initialized');
+        logMe('debug', 'Form Builder Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -89,10 +63,10 @@ Class Form_Builder
         switch ($method)
         {
             /*
-            Handling the external calls for the following funcitons.
+            Handling the external calls for the following functions.
             We override the behaviour of these functions in the constructor.
             while adding them externally in the controller.
-             */
+            */
             case 'input':
             case 'password':
             case 'hidden':
@@ -506,7 +480,7 @@ Class Form_Builder
      * 
      * @return string
      */
-    protected function captchaBuild( )
+    protected function captchaBuild()
     {
         $args = func_get_args();
         $args = $args[0];
@@ -515,21 +489,28 @@ Class Form_Builder
         
         if( is_callable($config['captcha']) )
         {
-            $captchaVars = call_user_func_array(Closure::bind($config['captcha'], getInstance(), 'Controller'), array());
+            $captcha = call_user_func_array(Closure::bind($config['captcha'], getInstance(), 'Controller'), array());
 
-            if( empty($captchaVars['image_id']) OR empty($captchaVars['image_url']) )
-                throw(new Exception('Form Builder error : Captcha closure in the config file must return an array containing two index keys (image_id, image_url).'));
+            if( empty($captcha['input_template']) OR empty($captcha['image_url']) )
+            {
+                throw(new Exception('Form builder error : Captcha closure in the config file must return an array containing two index keys (image_hidden_input, image_url).'));
+            }
 
             $out = "\t<div class='uform-captcha-wrapper'>\n";
-            $out .= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($captchaVars['image_id']['name'], $captchaVars['image_id']['value']))."\n";
-            $out .= "\t<img src='$captchaVars[image_url]' />\n";
-            $out .= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
-            $out .= "\t</div>\n";
-            $out .= "\t<br clear='all' />\n";
 
+                $out.= "\t".sprintf($captcha['input_template'], $captcha['image_id'])."\n";
+                $out.= "\t".sprintf($captcha['image_template'], $captcha['image_url'])."\n";
+                $out.= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
+
+            $out.= "\t</div>\n";
+
+            $out.= "\t<br clear='all' />\n";
             return $out;
-        }else
-            throw(new Exception('Form Builder error : captcha must be a callable function in config file.'));
+        }
+        else
+        {
+            throw new Exception('Form Builder error : Captcha key must be a callable function in form_builder.php config file.');
+        }
     }
 }
 

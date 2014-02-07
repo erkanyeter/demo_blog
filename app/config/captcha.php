@@ -11,17 +11,17 @@
 $captcha = array(
 	
 	'sess'           => new Sess,
-	'driver'         => 'cool',		 // Set default driver ( "secure" or "cool" ).
-	'set_pool'       => 'random',	 // Pools: numbers - alpha - random
-	'char'           => '5',			 // Character length of captcha code
-	'font_size'      => '20',	 // Font size
-	'height'         => '40',		 // Height of captcha image, "width = auto" no need to set it.
-	'wave_image'     => true,    // Image wave for more strong captchas.
+	'driver'         => 'cool',		 			// Set default driver ( "secure" or "cool" ).
+	'set_pool'       => 'random',	 			// Pools: numbers - alpha - random
+	'char'           => '5',			 		// Character length of captcha code
+	'font_size'      => '20',	 				// Font size
+	'height'         => '40',					// Height of captcha image, "width = auto" no need to set it.
+	'wave_image'     => true,    				// Image wave for more strong captchas.
 	'img_path'       => '/data/temp/captcha',   // Set captcha image path
-	'user_font_path' => '/assets/fonts',  // Set captcha font path
-	'image_type'     =>	'gif',				  // Set image extension
-	'expiration'     => '10',				  // Expiration time of captcha ( second )
-	'colors' => array(					  // Color Schema
+	'user_font_path' => '/assets/fonts',  		// Set captcha font path
+	'image_type'     =>	'gif',				  	// Set image extension
+	'expiration'     => '10',				  	// Expiration time of captcha ( second )
+	'colors' => array(					  		// Color Schema
 						'red'    => '255,0,0',
 						'blue'   => '0,0,255',
 						'green'  => '0,102,0',

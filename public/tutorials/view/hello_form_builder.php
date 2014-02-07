@@ -10,9 +10,9 @@
     <body>
         <header><?php echo $this->url->anchor('/', $this->html->img('logo.png', ' alt="Obullo" ')) ?></header>
         
-        <h1>Hello Uform</h1>
+        <h1>Hello Form Builder</h1>
 
-        <section><?php echo $this->user->getMessage('errorMessage') ?></section>
+        <section><?php echo $this->form->getMessage('message') ?></section>
         <section><?php echo $this->form->getNotice() ?></section>
 
         
@@ -34,7 +34,7 @@
                             <pre><?php print_r($this->user->getMessages()) ?></pre>
 
                             <h3> echo $this->user->getMessage('errorKey')</h3>
-                            <pre><?php echo $this->user->getMessage('errorKey') ?></pre>
+                            <pre><?php echo $this->user->getMessage('message') ?></pre>
 
                             <h3>print_r($this->user->getErrors())</h3>
                             <pre><?php print_r($this->user->getErrors()) ?></pre>

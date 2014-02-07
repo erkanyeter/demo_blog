@@ -12,13 +12,7 @@ $c = new Controller(function(){
     new Form_Builder;
     new View;
     
-    new Model('user', 'users'); 
-
-    /**
-     * FORM BUILDER VERSION IS @ALPHA
-     * IT IS NOT RELEASES YET !!
-     */
-
+    new Model('user', 'users');
 });
 
 $c->func('index', function(){
@@ -39,7 +33,8 @@ $c->func('index', function(){
             'label' => 'Password',
             'rules' => 'required|minLen(6)',
             'input' => $this->password('user_password', $this->setValue('user_password')),
-        ) );
+        ));
+
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
@@ -53,12 +48,12 @@ $c->func('index', function(){
         $this->addCol(array(
             'label' => 'Policy : ',
             'rules' => 'required|contains(n,y)',
-            array("label" => "Yes", "input" => $this->radio("pp", 'y', $this->setRadio('pp', 'y')) ),
-            array("label" => "No", "input" => $this->radio("pp", 'n', $this->setRadio('pp', 'n')) ),
+            array('label' => 'Yes', 'input' => $this->radio('pp', 'y', $this->setRadio('pp', 'y')) ),
+            array('label' => 'No', 'input' => $this->radio('pp', 'n', $this->setRadio('pp', 'n')) ),
         ));
         $this->addCol(array(
                    'label' => 'Country',
-                   'input' => $this->dropdown('country', array(1 => "Turkey" , 2 => "US" , 3 => "Syria"), $this->setValue('country'), " id='cntry' "),
+                   'input' => $this->dropdown('country', array(1 => 'Germany' , 2 => 'US' , 3 => 'Syria'), $this->setValue('country'), " id='cntry' "),
                    'rules' => 'required|xssClean'
                   )
                );
@@ -66,11 +61,11 @@ $c->func('index', function(){
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
-            'label' => 'Langs : ',
-            'rules' => 'contains(en,tr,ar)',
-            array("label" => "En", "input" => $this->checkbox("lang[]", 'en', $this->setRadio('lang', 'en')) ),
-            array("label" => "Tr", "input" => $this->checkbox("lang[]", 'tr', $this->setRadio('lang', 'tr')) ),
-            array("label" => "Ar", "input" => $this->checkbox("lang[]", 'ar', $this->setRadio('lang', 'ar')) ),
+            'label' => 'Languages : ',
+            'rules' => 'contains(en,de,ar)',
+            array('label' => 'En', 'input' => $this->checkbox('lang[]', 'en', $this->setRadio('lang', 'en')) ),
+            array('label' => 'De', 'input' => $this->checkbox('lang[]', 'de', $this->setRadio('lang', 'tr')) ),
+            array('label' => 'Ar', 'input' => $this->checkbox('lang[]', 'ar', $this->setRadio('lang', 'ar')) ),
         ));
 
         $this->addRow();
@@ -80,12 +75,6 @@ $c->func('index', function(){
             'rules' => 'required',
             'input' => $this->captcha('answer')
         ));
-
-        /*
-        if (is_callable($closure))
-        {
-            call_user_func_array(Closure::bind($closure, getInstance(), 'Controller'), array());
-        }*/
 
         $this->addRow();
         $this->setPosition('label', 'left');
