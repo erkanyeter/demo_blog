@@ -90,19 +90,20 @@ function ExceptionToggle(obj){
                     $data['author']       =  $dom->getElementsByTagName('author')->item(0)->nodeValue;
  
 
-                    if($dom->getElementsByTagName('post')->length > 0){
+                    if($dom->getElementsByTagName('post')->length > 0)
+                    {
                         $data['request'] = 'POST';
-                    
                     }
-                    elseif($dom->getElementsByTagName('get')->length > 0){
-                        $data['request'] = 'GET';   
-                    
+                    elseif($dom->getElementsByTagName('get')->length > 0)
+                    {
+                        $data['request'] = 'GET';
                     }
-                    else{
-                        $data['request'] = 'REQUEST';   
-                    
+                    else
+                    {
+                        $data['request'] = 'REQUEST';
                     }
-                   $html_file .='  
+
+                    $html_file .='  
                                 <div class="panel panel-default">
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'arg_toggle_'.$i.'\');">
                                         
@@ -143,18 +144,20 @@ function ExceptionToggle(obj){
                                                         </thead>
                                                         <tbody>';
 
-                    foreach ($dom->getElementsByTagName('data') as $feeditem){
-                        if ($feeditem->getAttribute('necessary') == 'required') {
-                            $necessary = '<div class="required">'.$feeditem->getAttribute('necessary').'</div>';
-
-                        }
-                        else
+                        foreach ($dom->getElementsByTagName('data') as $feeditem)
                         {
-                            $necessary = '<div class="optional">'.$feeditem->getAttribute('necessary').'</div>';
-                        }
-                        $dataData = trim($feeditem->nodeValue);
+                            if ($feeditem->getAttribute('necessary') == 'required')
+                            {
+                                $necessary = '<div class="required">'.$feeditem->getAttribute('necessary').'</div>';
+                            }
+                            else
+                            {
+                                $necessary = '<div class="optional">'.$feeditem->getAttribute('necessary').'</div>';
+                            }
                         
-                        $html_file .='
+                            $dataData = trim($feeditem->nodeValue);
+                        
+                            $html_file .='
                                                             <tr>
                                                                 <td>'.$feeditem->getAttribute('key') .'</td>
                                                                 <td>'.$feeditem->getAttribute('type').'</td>
@@ -162,9 +165,8 @@ function ExceptionToggle(obj){
                                                                 <td>'.$necessary.'</td>
                                                                 <td>'.$feeditem->getAttribute('desc').'</td>
                                                                 <td>'.$dataData.'</td>
-                                                            </tr>
-                        ';
-                    } 
+                                                            </tr>';
+                        } 
 
                     $html_file.='  
                                                         </tbody>

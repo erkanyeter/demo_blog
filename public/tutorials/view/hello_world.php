@@ -42,7 +42,7 @@ ul{list-style-type:square;}
 code,kbd{background:#EEE;border:1px solid #DDD;border:1px solid #DDD;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:0 4px;color:#666;font-size:12px;}
 pre{background:#EEE;border:1px solid #DDD;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:5px 10px;color:#666;font-size:12px;}
 pre code{background:transparent;border:none;padding:0;}
-a{color:#069586;}
+a{color:#006857;}
 header{padding: 30px 0;text-align:center;}
 </style>
     </head>
