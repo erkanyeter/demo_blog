@@ -54,6 +54,7 @@ Class Form_Builder
         $args = func_get_args();
         
         $this->buildClosure = $args[2];
+        
         unset($args[2]);
         $this->output = "\t".call_user_func_array(array($this->form, 'open'), $args);
     }
@@ -93,6 +94,7 @@ Class Form_Builder
                 return array("method" => $method, "arguments" => $arguments);
                 break;
             }
+            case 'isValid':
             case 'printForm':
             {
                 $identifier = $arguments[0];
@@ -101,10 +103,39 @@ Class Form_Builder
                     throw new Exception('Form Builder Error : trying to printForm for a not created form.');
                 }
 
-                return self::$forms[$identifier]->printForm();
+                return self::$forms[$identifier]->$method();
             }
             
         }
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Create the form, the main function.
+     * 
+     * @param  string  form Identifier
+     */
+    public function create($identifier)
+    {
+        $this->_identifier = $identifier;
+        
+        call_user_func_array(Closure::bind($this->buildClosure, $this, get_class()), array());
+        
+        self::$forms[$identifier] = $this;
+    }
+
+    // --------------------------------------------------------------------
+    /**
+     * Run the validation
+     * 
+     * @return boolean
+     */
+    protected function isValid()
+    {
+        $this->setRules();
+
+        return $this->form->isValid();
     }
 
     // --------------------------------------------------------------------
@@ -236,32 +267,6 @@ Class Form_Builder
         {
             $this->fieldsArr[$this->rowNum]['position'][$element] = $position;
         }
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Create the form, the main function.
-     * 
-     * @param  string  form Identifier
-     */
-    public function create($identifier)
-    {
-        $this->_identifier = $identifier;
-        
-        call_user_func_array(Closure::bind($this->buildClosure, $this, get_class()), array());
-        
-        self::$forms[$identifier] = clone $this;
-
-        
-
-        // $this->shiftingLocalParams($identifier,'create');
-
-        $this->output    = '';
-        $this->fieldsArr = '';
-        $this->rowNum    = '';
-        $this->colNum    = '';
-        $this->colNames  = '';
     }
 
     // --------------------------------------------------------------------
@@ -403,7 +408,7 @@ Class Form_Builder
             
             foreach ($col['input'] as $col_v)
             {
-                $out .= (isset($col['listLabel'][$i])) ? $col['listLabel'][$i] : '';
+                $out .= (isset($col['listLabel'][$i])) ? $this->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
                 $out .= $this->printInput($col_v);
                 $i ++;
             }
@@ -493,24 +498,6 @@ Class Form_Builder
                 }
             }
         }
-    }
-
-    // --------------------------------------------------------------------
-    /**
-     * Run the validation
-     * 
-     * @return boolean
-     */
-    public function isValid($identifier)
-    {
-        if(empty(self::$forms[$identifier]))
-        {
-            throw new Exception('Form Builder Error : trying to printForm for a not created form.');
-        }
-
-        self::$forms[$identifier]->setRules();
-
-        return $this->form->isValid();
     }
 
     // --------------------------------------------------------------------

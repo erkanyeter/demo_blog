@@ -90,6 +90,9 @@
 .form-builder-label-top{
 	margin-bottom:0.2375em;
 }
+.form-builder-radio-label{
+	display:inline-block;
+}
 /**
  * Input Possitions
  * */
@@ -111,6 +114,9 @@
 }
 .form-builder-ipos-center .form-builder-error{
 	text-align:center;
+}
+.form-builder-ipos-right .form-builder-radio-label{
+	float:right;
 }
 /**
  * Grid System
