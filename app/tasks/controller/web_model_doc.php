@@ -22,25 +22,10 @@ $html_file = '<!DOCTYPE html>
     '.$this->html->css('web_model/bootstrap.css').'
     '.$this->html->css('web_model/bootstrap-theme.css').'
 <script type="text/javascript">
-function ExceptionElement() {
-    var elements = new Array();
-    for (var i = 0; i < arguments.length; i++){
-        var element = arguments[i];
-        if (typeof element == \'string\')
-            element = document.getElementById(element);
-        if (arguments.length == 1)
-            return element;
-        elements.push(element);
+    function ExceptionToggle(obj)
+    {
+       document.getElementById(obj).classList.toggle(\'collapsed\'); 
     }
-    return elements;
-}
-function ExceptionToggle(obj){
-    var el = ExceptionElement(obj);
-    if (el == null){
-        return false;
-    }
-    el.className = (el.className != \'collapsed\' ? \'collapsed\' : \'\' );
-}
 </script>
 </head>
 
@@ -59,14 +44,25 @@ function ExceptionToggle(obj){
     $dataArray = array();
     $table_tr  = '';
     $i = 0;
-
+$ii =0;
     foreach ($scan as $key => $value) 
     {
         if($value != '.' and $value != '..' and $value !='docs')
         {
             $subFolder = $folder.'/'.$value;
-
+$ii++;
             $files = scandir($subFolder);
+              $html_file .=' <div class="panel panel-default">
+                                <div class="title_web_model">
+                                    <a href="javascript:void(0);" onclick="ExceptionToggle(\'arg_toggle_div_'.$ii.'\');" >
+                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAxBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MzE4ODYzMUU5MEEzMTFFMzhGQ0NDOTA2RTMyM0U3NUYiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MzE4ODYzMUQ5MEEzMTFFMzhGQ0NDOTA2RTMyM0U3NUYiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiBXaW5kb3dzIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9IjI0MjUzODExRjlFMkYwN0Q0OEVFMTkxMENDMEExODMzIiBzdFJlZjpkb2N1bWVudElEPSIyNDI1MzgxMUY5RTJGMDdENDhFRTE5MTBDQzBBMTgzMyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PpM+VI4AAAChSURBVHjaYmTICGfAA4qBuAdNrBeISzBU/v3LsLOwloGJgcpg1EDaG/gDi9hPXIq52NgZWKBJAxdwxCJmi1UPExPDxH3bGBiB6fA/1fz76yeVwxDo5UEey79+gSOlF48SM2gkIINzQLwfQ+X//wxOekZgA0vwGJiNxcAdQFyNofLfP4Z672CCXubAIsaOS/HPP3+oG4b/gd4eLRwoBwABBgA5CSJGM6NVhwAAAABJRU5ErkJggg==">
+                                        '.$value.'
+                                    </a>
+                                </div>
+                                <div class="collapsed"  id="arg_toggle_div_'.$ii.'" >
+                                    ';
+
+
             foreach ($files as $k => $fileName) 
             {
                 $xmlfile = strpos($fileName, '.xml');
@@ -105,7 +101,10 @@ function ExceptionToggle(obj){
                     }
 
                     $html_file .='  
-                                <div class="panel panel-default">
+                               
+                               
+                                 <div class="panel panel-default  left25 ">
+                                    
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'arg_toggle_'.$i.'\');">
                                         
                                         <div class="panel-heading">
@@ -179,9 +178,11 @@ function ExceptionToggle(obj){
                                         </div>
                                     </div>
                                 </div>
+                           
                            ';               
                 }
             }
+            $html_file.='   </div></div>';
         }
     }
 
