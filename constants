@@ -46,7 +46,8 @@ define('APP',  ROOT .'app'. DS);
 define('DATA',  ROOT .'data'. DS);
 define('CLASSES',  ROOT .'classes'. DS);
 define('PACKAGES',  ROOT .'packages'. DS);
-define('PUBLIC_DIR', (defined('STDIN')) ? APP : ROOT .'public'. DS);
+define('PUBLIC_FOLDER', ROOT .'public'. DS);
+define('PUBLIC_DIR', (defined('STDIN')) ? APP : PUBLIC_FOLDER);
 define('TASK_FILE', 'task');
 
 /*

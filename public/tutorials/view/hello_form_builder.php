@@ -19,9 +19,17 @@
         <section>
                     <!-- print form output -->
 
-                    <?php echo $this->form_builder->printForm() ?>
+                    <?php echo $this->form_builder->printForm('test') ?>
 
                     <!-- print form output -->
+
+                    <hr />
+                    
+                    <h2>Second form</h2>
+
+                    <!-- print second form -->
+                    <?php echo $this->form_builder->printForm('login') ?>
+
     
                     <h2>Test Results</h2>
                     <?php if(isset($this->user) AND is_object($this->user)) { ?>

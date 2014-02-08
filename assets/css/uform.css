@@ -1,13 +1,14 @@
 /**
  * Uform Package Css
  * */
-.uform-div-wrapper{
+.clear {clear:both;}
+.form-builder-div-wrapper{
  	font-size:14px;
 }
 /**
  * Row CSS
  * */
-.uform-row{
+.form-builder-row{
 	border-bottom: 1px dotted #DDDDDD;
     clear: both;
     margin: 5px auto;
@@ -15,45 +16,54 @@
     width: 100%;
     padding: 0px;
 }
-.uform-row:after {
+.form-builder-row:after {
 	clear: both;
 }
-.uform-row:before, .uform-row:after {
+.form-builder-row:before, .form-builder-row:after {
 	display: table;
+}
+.form-builder-row:last-child{
+	border-bottom : none;
 }
 /**
  * Column CSS
  * */
-.uform-column{
+.form-builder-column{
 	padding-left: 0em;
 	padding-right: 0.3375em;
 	padding-bottom: 0.5375em;
 	float: left;
 	margin: 0;
 	color:rgb(6, 149, 120);
+	display:inline-block;
 }
-.uform-column input,.uform-column select{
+.form-builder-column input,.form-builder-column select{
 	width : 65%;
 	font-size: 10pt;
 
 }
-.uform-column input[type='checkbox'], .uform-column input[type='radio']{
+.form-builder-column input[type='checkbox'], .form-builder-column input[type='radio']{
 	width : 15px !important;
 	display:inline;
 	margin:auto 25px auto 5px;
 }
-.uform-column textarea{
+.form-builder-column textarea{
 	max-width:75%;
 	resize:none;
 }
-.uform-captcha-wrapper{
+.form-builder-captcha-wrapper{
 	width:65%;
-	float:left;
+	
+	display:inline-block;
+}
+.form-builder-field-wrapper{
+	width:70%;
+	float: left;
 }
 /**
  * Submit Button CSS
  * */
-.uform-column input[type='submit']{
+.form-builder-column input[type='submit']{
 	cursor:pointer;
 	width : 30%;
 	font-size: 15px;
@@ -62,74 +72,83 @@
 /**
  * Label CSS
  * */
-.uform-label-wrapper{
+.form-builder-label-wrapper{
 	color:rgb(102, 102, 102);
 }
-.uform-label-left {
+.form-builder-label-left {
 	float:left;
 
 	margin-right:0.3375em;
 	min-width:20%;
 	max-width:30%;
 }
-.uform-label-right{
+.form-builder-label-right{
 	float:right;
 	margin-left:0.3375em;
 	width:20%;
 }
-.uform-label-top{
+.form-builder-label-top{
 	margin-bottom:0.2375em;
 }
 /**
  * Input Possitions
  * */
-.uform-ipos-left input{
+.form-builder-ipos-left input{
 	float:left;
 }
-.uform-ipos-right input{
+.form-builder-ipos-right input{
 	float:right;
 }
-.uform-ipos-center input{
-	display:block;
+.form-builder-ipos-center input{
+	display:inline-block;
 	margin:auto;
+}
+.form-builder-ipos-left .form-builder-error{
+	text-align:left;
+}
+.form-builder-ipos-right .form-builder-error{
+	text-align:right;
+}
+.form-builder-ipos-center .form-builder-error{
+	text-align:center;
 }
 /**
  * Grid System
  * */
-.uform-grid-1 {
+.form-builder-grid-1 {
 	width: 9%;
 }
-.uform-grid-2 {
+.form-builder-grid-2 {
 	width: 19%;
 }
-.uform-grid-3 {
+.form-builder-grid-3 {
 	width: 29%;
 }
-.uform-grid-4 {
+.form-builder-grid-4 {
 	width: 39%;
 }
-.uform-grid-5{
+.form-builder-grid-5{
 	width: 49%;
 }
-.uform-grid-6{
+.form-builder-grid-6{
 	width: 59%;
 }
-.uform-grid-7{
+.form-builder-grid-7{
 	width: 69%;
 }
-.uform-grid-8{
+.form-builder-grid-8{
 	width: 79%;
 }
-.uform-grid-9{
+.form-builder-grid-9{
 	width: 89%;
 }
-.uform-grid-10{
+.form-builder-grid-10{
 	width: 99%;
 }
 /**
  * Error Input Styles
  * */
-.uform-error{
+.form-builder-error{
 	font-size:10pt;
 	color:red !important;
 }
