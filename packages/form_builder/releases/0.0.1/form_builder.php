@@ -86,7 +86,6 @@ Class Form_Builder
             case 'dropdown':
             case 'textarea':
             case 'multiselect':
-            case 'captcha':
             {
                 $colname = $arguments[0];
                 $this->setColValue('field_name', $arguments[0]);
@@ -105,8 +104,21 @@ Class Form_Builder
 
                 return self::$forms[$identifier]->$method();
             }
-            
+            case 'captcha':
+            {
+                $colname = $arguments[0];
+                $this->setColValue('rules', 'callback_validateCaptcha');
+                $this->setColValue('field_name', $arguments[0]);
+                $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
+                return array("method" => $method, "arguments" => $arguments);
+                break;
+            }
         }
+    }
+
+    protected function validateCaptcha(){
+        die('yesssssssssss');
+        return false;
     }
 
     // --------------------------------------------------------------------
@@ -212,6 +224,13 @@ Class Form_Builder
      */
     protected function setColValue($index, $value)
     {
+        if($index === 'rules')
+        {
+            if( ! empty ($this->fieldsArr[$this->rowNum]['columns'][$this->colNum][$index]) )
+            {
+                $value .= '|'.$this->fieldsArr[$this->rowNum]['columns'][$this->colNum][$index];
+            }
+        }
         $this->fieldsArr[$this->rowNum]['columns'][$this->colNum][$index] = $value;
     }
 
