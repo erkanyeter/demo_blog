@@ -34,7 +34,22 @@ h3{margin:0;font-size:12px;font-weight:bold;}
 ul,ol{list-style-position:inside;color:#999;}
 ul{list-style-type:square;}
 code,kbd{background:#EEE;border:1px solid #DDD;border:1px solid #DDD;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:0 4px;color:#666;font-size:12px;}
-pre{background:#EEE;border:1px solid #DDD;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:5px 10px;color:#666;font-size:12px;}
+pre{
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  background:#EEE;
+  border:1px solid #DDD;
+  border-radius:4px;
+  -moz-border-radius:4px;
+  -webkit-
+  border-radius:4px;
+  padding:5px 10px;
+  color:#666;
+  font-size:12px;
+}
 pre code{background:transparent;border:none;padding:0;}
 a{color:#069586;}
 header{padding: 30px 0;text-align:center;}

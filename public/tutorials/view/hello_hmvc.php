@@ -2,9 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-            
             <?php echo $this->html->css('welcome.css') ?>
-
         <title>Hmvc Tutorial</title>
     </head>
 
@@ -15,15 +13,16 @@
         
         <h1>Hmvc Tutorial</h1>
  
-<pre>$this->web->get('tutorials/hello_dummy/test/1/2/3'));
-$this->web->get('tutorials/hello_dummy/test/4/5/6'));</pre>
+<pre>
+new Web;
+$this->web->get('tutorials/hello_dummy/test/1/2/3');
+$this->web->get('tutorials/hello_dummy/test/4/5/6');</pre>
 
         <p><?php echo $response_a ?></p>
         <p><?php echo $response_b ?></p>
         
-        <?php 
-            echo $footer;
-        ?>
+        <?php echo $footer ?>
+
         <section>
             <p>&nbsp;</p>
         </section>

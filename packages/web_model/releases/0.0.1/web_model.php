@@ -75,7 +75,7 @@ Class Web_Model_Request
         $web  = new Web($web_model['service_folder']);
         $data = $this->data; // Set request data
 
-        $output = $web->query('post', $this->modelName.'/'.$method.'.json',function() use($data){
+        $output = $web->query('post', '/users/create_one.json',function() use($data){
             $this->data = $data;
         });
 
@@ -89,6 +89,8 @@ Class Web_Model_Request
 
         //     return call_user_func_array(array($resultObject, $method), $arguments);
         // }
+        
+        return $output;
     }
 
     public function clear()

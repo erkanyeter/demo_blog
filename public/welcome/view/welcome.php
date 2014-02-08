@@ -2,9 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-
             <?php echo $this->html->css('welcome.css') ?>
-
         <title>Obullo</title>
     </head>
     <body>
@@ -54,6 +52,7 @@
                 <li><?php echo $this->url->anchor('/tutorials/hello_scheme', 'Hello Scheme') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_odm', 'Hello Odm') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_form', 'Hello Form') ?></li>
+                <li><?php echo $this->url->anchor('/tutorials/hello_forms', 'Hello Form(s)') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_form_model', 'Hello Form Model') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_form_model_ajax', 'Hello Form Model Ajax') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_ajax', 'Hello Ajax') ?></li>

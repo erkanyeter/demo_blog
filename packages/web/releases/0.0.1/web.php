@@ -28,7 +28,7 @@ Class Web {
     /**
      * Constructor
      */
-    public function __construct($directory = 'web_service')
+    public function __construct($directory = 'web_model')
     {
         $this->web_service_directory = $directory;
 

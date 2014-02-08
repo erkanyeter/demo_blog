@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
             <?php echo $this->html->css('welcome.css') ?>
-        <title>Odm Tutorial</title>
+        <title>Hello Form</title>
     </head>
 
     <body>
@@ -13,22 +13,12 @@
         
         <h1>Hello Form</h1>
 
-        <section>
-            <?php echo $this->form->getNotice() ?>
-        </section>
-        
-        <section>
-            <?php echo $this->form->getMessage() ?>
-        </section>
+        <section><?php echo $this->form->getNotice() ?></section>
+        <section><?php echo $this->form->getMessage() ?></section>
+        <section><?php echo $this->form->getErrorString() ?></section>
 
         <section>
-            <?php echo $this->form->getErrorString() ?>
-        </section>
-
-        <section>
-
-            <?php
-            echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
+            <?php echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
 
                 <table width="100%">
                     <tr>
@@ -71,51 +61,21 @@
                 
                 <?php echo $this->form->close() ?>
 
+                <h2>Test Results</h2>
 
-            <?php echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
+                <section>
+                    <h3>$this->form->getOutput()</h3>
+                    <pre><?php print_r($this->form->getOutput()) ?></pre>
 
-                <table width="100%">
-                    <tr>
-                        <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
-                        <td><?php 
-                            echo $this->form->error('uemail');
-                            echo $this->form->input('uemail', $this->form->setValue('uemail'), " id='uemail' ");
-                            ?></td>
-                    </tr>
-                    <tr>
-                        <td><?php echo $this->form->label('Password') ?></td>
-                        <td><?php 
-                            echo $this->form->error('upassword');
-                            echo $this->form->password('upassword', '', " id='upassword' ");
-                            ?></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><?php echo $this->form->submit('udopost', 'Do Post') ?></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">&nbsp;</td>
-                    </tr>
-                    </table>
-                
-                <?php echo $this->form->close() ?>
+                    <h3>$this->form->getError('email')</h3>
+                    <pre><?php echo $this->form->getError('email') ?></pre>
 
+                    <h3>print_r($this->form->getErrorString())</h3>
+                    <pre><?php print_r($this->form->getErrorString()) ?></pre>
 
-                    <h2>Test Results Form One</h2>
-
-                    <section>
-                        <h3>$this->form->getOutput()</h3>
-                        <pre><?php print_r($this->form->getOutput()) ?></pre>
-
-                        <h3>$this->form->error('email')</h3>
-                        <pre><?php echo $this->form->getErrors('email') ?></pre>
-
-                        <h3>print_r($this->form->getErrorString())</h3>
-                        <pre><?php print_r($this->form->getErrorString()) ?></pre>
-
-                        <h3>print_r($this->form->getValue('email'))</h3>
-                        <pre><?php print_r($this->form->getValue('email')) ?></pre>
-                    </section>    
+                    <h3>print_r($this->form->getValue('email'))</h3>
+                    <pre><?php print_r($this->form->getValue('email')) ?></pre>
+                </section>    
 
         </section> 
         

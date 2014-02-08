@@ -6,29 +6,18 @@
  */
 $c = new Controller(function(){
     // __construct
-    
-    new Web_Model('users', 'post');
 });
 
 $c->func('index', function(){
 
-    new Web('web_model');
-    $this->web->query('post','web_model/users/create_one.json',function(){
+    new Web;
+
+    $this->web->query('post','/members/create_one.json',function(){
         $this->data['user_username'] = 'test';
-        $this->data['user_email']    = 'test.com';
+        $this->data['user_email']    = 'me@test.com';
     });
 
-    exit;
-
-    // $this->users->data['user_username'] = 1;
-    // $this->users->data['user_username'] = 1;
-    // $this->users->data['user_username'] = 1;
-    $this->users->data['user_username'] = 1;
-    $this->users->create_one();
-
-    // $this->web->isValid();
-
-    var_dump($this->users->getResultArray());
+    print_r($this->web->getResultArray());
 
     echo '<br>';
     echo '<br>';
