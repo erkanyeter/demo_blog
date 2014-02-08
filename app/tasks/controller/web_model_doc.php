@@ -14,6 +14,9 @@ $c = new Controller(function(){
 });
 
 $c->func('index', function(){
+   
+    $folder =PUBLIC_FOLDER.'web_model';
+    $scan = scandir($folder);
 
 $html_file = '<!DOCTYPE html>
 <html lang="en">
@@ -22,49 +25,46 @@ $html_file = '<!DOCTYPE html>
     '.$this->html->css('web_model/bootstrap.css').'
     '.$this->html->css('web_model/bootstrap-theme.css').'
 <script type="text/javascript">
-function ExceptionElement() {
-    var elements = new Array();
-    for (var i = 0; i < arguments.length; i++){
-        var element = arguments[i];
-        if (typeof element == \'string\')
-            element = document.getElementById(element);
-        if (arguments.length == 1)
-            return element;
-        elements.push(element);
+    function ExceptionToggle(obj)
+    {
+        document.getElementById(obj).classList.toggle(\'collapsed\');
+        
+        var objArray = obj.split("_");
+        maintoggle= "maintoggle_"+objArray[1].toString();
+        document.getElementById(maintoggle).innerHTML = document.getElementById(maintoggle).innerHTML == "+" && "-" || "+";
     }
-    return elements;
-}
-function ExceptionToggle(obj){
-    var el = ExceptionElement(obj);
-    if (el == null){
-        return false;
-    }
-    el.className = (el.className != \'collapsed\' ? \'collapsed\' : \'\' );
-}
 </script>
 </head>
 
 <body> 
 <div class="container">
     <div class="page-header">
-        <h1><span class="green">Web Models</span> API <span style="font-size: 16px"> v1.0</span></h1> 
-        <p class="lead"></p>
+        <span class="green" style=" font-size: 30px;">Web Models</span>
     </div>
     <div class="panel-group" id="accordion">';
 
-    $folder = './public/web_model';
-
-    $scan = scandir($folder);
-
+    
     $dataArray = array();
-    $table_tr = '';
-    $i=0;
+    $table_tr  = '';
+    $i = 0;
+$ii =0;
     foreach ($scan as $key => $value) 
     {
         if($value != '.' and $value != '..' and $value !='docs')
         {
             $subFolder = $folder.'/'.$value;
+$ii++;
             $files = scandir($subFolder);
+              $html_file .=' <div class="panel panelmain">
+                                <div class="title_web_model">
+                                    <a href="javascript:void(0);"  onclick="ExceptionToggle(\'argtogglediv_'.$ii.'\');" >
+                                        [<span id="maintoggle_'.$ii.'">+</span>] '.$value.'
+                                    </a>
+                                </div>
+                                <div class="collapsed"  id="argtogglediv_'.$ii.'" >
+                                    ';
+
+
             foreach ($files as $k => $fileName) 
             {
                 $xmlfile = strpos($fileName, '.xml');
@@ -72,17 +72,17 @@ function ExceptionToggle(obj){
                 {
                     $i++;
                     $xmlfile = $subFolder . '/' . $fileName;
-
-                    $dom = new DomDocument; 
+                    
+                    $dom     = new DomDocument; 
                     $dom->load($xmlfile);
                     
-                    $data = array();
+                    $data    = array();
                     $phpPath = str_replace($folder.'/','',$xmlfile);
                     $phpPath = str_replace('.xml','',$phpPath);
 
                     $data['folder']       =  $phpPath;
                     $data['name']         =  $dom->getElementsByTagName('name')->item(0)->nodeValue;
-                     $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
+                    $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
                     $data['visibility']   =  $dom->getElementsByTagName('visibility')->item(0)->nodeValue;
                     $data['publish_date'] =  $dom->getElementsByTagName('publish_date')->item(0)->nodeValue;
                     $data['version']      =  $dom->getElementsByTagName('version')->item(0)->nodeValue;
@@ -103,9 +103,11 @@ function ExceptionToggle(obj){
                     }
 
                     $html_file .='  
-                                <div class="panel panel-default">
+                               
+                               
+                                 <div class="panel panel-default  left25 ">
+                                    
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'arg_toggle_'.$i.'\');">
-                                        
                                         
                                         <div class="panel-heading">
                                             <div class="postapi">'.$data['request'].'</div>
@@ -118,69 +120,71 @@ function ExceptionToggle(obj){
                                     <div id="arg_toggle_'.$i.'" class="collapsed">
 
                                         <div class="panel-body">
-                                            <h3 class="green">'.$data['name'].' </h3><!-- -->
-                                            <p><p>
+                                            <div class="title green">'.$data['name'].' </div>
                                             '.$data['description'].' 
-                                            <p>
-                                            <span class="visibilty green">Visibility</span>  <strong>'.$data['visibility'].' </strong>
-                                            <p></p>
-                                                <p></p>
-
                                                 <div class="table-responsive">
                                                     <table class="table">
-                                                        <thead>
+                                                       
                                                             <tr>
                                                                 <th>Data</th>
                                                                 <th>Type</th>
                                                                 <th>Rules</th>
-                                                                <th>Necessary</th>
+                                                                <th>Is Require</th>
                                                                 <th>Description</th>
                                                                 <th>Example</th>
                                                                
                                                             </tr>
-                                                        </thead>
-                                                        <tbody>';
+                                                        
+                                                    ';
 
                         foreach ($dom->getElementsByTagName('data') as $feeditem)
                         {
-                            if ($feeditem->getAttribute('necessary') == 'required')
+                            if ($feeditem->getAttribute('required') == 'yes')
                             {
-                                $necessary = '<div class="required">'.$feeditem->getAttribute('necessary').'</div>';
+                                $required = '<div class="required">'.$feeditem->getAttribute('required').'</div>';
                             }
                             else
                             {
-                                $necessary = '<div class="optional">'.$feeditem->getAttribute('necessary').'</div>';
+                                $required = '<div class="optional">'.$feeditem->getAttribute('required').'</div>';
                             }
                         
-                            $dataData = trim($feeditem->nodeValue);
-                        
+                            $dataData  = trim($feeditem->nodeValue);
+                            
                             $html_file .='
                                                             <tr>
                                                                 <td>'.$feeditem->getAttribute('key') .'</td>
                                                                 <td>'.$feeditem->getAttribute('type').'</td>
                                                                 <td>'.$feeditem->getAttribute('rules').'</td>
-                                                                <td>'.$necessary.'</td>
+                                                                <td>'.$required.'</td>
                                                                 <td>'.$feeditem->getAttribute('desc').'</td>
                                                                 <td>'.$dataData.'</td>
                                                             </tr>';
                         } 
 
                     $html_file.='  
-                                                        </tbody>
+                                                       
                                                     </table>
                                                 </div>
                                             <p>
-                                                <div class="author">Author : '.$data['author'].' </div>
+                                                <div class="author">
+                                                     v'.$data['version'].' <br>
+                                                    Visibility : <span class="red">'.$data['visibility'].' </span>
+                                           
+                                                   
+                                                   
+                                                </div>
                                             </p>
                                             <p>
-                                                <div class="publishdate">v'.$data['version'].' <br>Publish Date : '.$data['publish_date'].' </div>
+                                                <div class="publishdate"> Author : '.$data['author'].'  <br>Publish Date : '.$data['publish_date'].' </div>
                                             </p>
                                         </div>
                                     </div>
                                 </div>
+                           
                            ';               
                 }
             }
+            $html_file.='   </div></div>';
         }
     }
 

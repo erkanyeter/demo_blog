@@ -573,8 +573,8 @@ cite {
 }
 
 .page-header {
-  padding-bottom: 9px;
-  margin: 40px 0 20px;
+
+  margin: 10px 0 20px;
   border-bottom: 1px solid #eeeeee;
 }
 
@@ -1640,7 +1640,7 @@ th {
 
 .table {
   width: 100%;
-  margin-bottom: 20px;
+  
 }
 
 .table > thead > tr > th,
@@ -1652,7 +1652,7 @@ th {
   padding: 8px;
   line-height: 1.428571429;
   vertical-align: top;
-  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
 }
 
 .table > thead > tr > th {
@@ -5581,7 +5581,7 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 
 .panel {
-  margin-bottom: 20px;
+
   background-color: #ffffff;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -5591,6 +5591,7 @@ a.list-group-item.active:focus .list-group-item-text {
 
 .panel-body {
   padding: 15px;
+  padding-top: 0px;
 }
 
 .panel-body:before,
@@ -5705,7 +5706,7 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 
 .panel-heading {
-  padding: 10px 15px;
+  padding: 5px 15px;
   border-bottom: 1px solid transparent;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
@@ -5735,7 +5736,6 @@ a.list-group-item.active:focus .list-group-item-text {
 }
 
 .panel-group .panel {
-   margin-bottom: 20px;
 
   overflow: hidden;
   border-radius: 4px;
