@@ -11,6 +11,7 @@ $c = new Controller(function(){
     new View;
     new Form;
     new Post;
+
 });
 
 $c->func('index', function() use($c){  
@@ -22,21 +23,34 @@ $c->func('index', function() use($c){
         $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
         $this->form->setRules('agreement', 'User Agreement', '_int|required');
 
-        $this->form->func('callback_test', function(){
-            $a = 1; $b = 2;
-            if($a != $b)
-            {
-                $this->setMessage('callback_test', 'Example callback function test message !');
-                return false;
-            }
-        });
+        // $this->form->func('callback_test', function(){
+        //     $a = 1; $b = 2;
+        //     if($a != $b)
+        //     {
+        //         $this->setMessage('callback_test', 'Example callback function test message !');
+        //         return false;
+        //     }
+        // });
 
         if($this->form->isValid())
         {        
-            $this->form->setNotice('Validation Success', SUCCESS);    // Set flash notice using Session Class.
-            $this->url->redirect('tutorials/hello_validator');        // Redirect to user same page.
+            $this->form->setNotice('Dopost Validation Success', SUCCESS);    // Set flash notice using Session Class.
+            $this->url->redirect('tutorials/hello_form/index');        // Redirect to user same page.
         }
     }
+
+    if($this->post->get('udopost'))
+    {
+        $this->form->setRules('uemail', 'UEmail', 'required|validEmail');
+        $this->form->setRules('upassword', 'UPassword', 'required|minLen(6)');
+
+        if($this->form->isValid())
+        {        
+            $this->form->setNotice('Udopost Validation Success', SUCCESS);    // Set flash notice using Session Class.
+            $this->url->redirect('tutorials/hello_form/index');        // Redirect to user same page.
+        }
+    }
+
 
     $this->view->get('hello_form', function(){
 

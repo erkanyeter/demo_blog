@@ -9,35 +9,76 @@ $c = new Controller(function(){
     new Post;      
     new Url;
     new Html;
-    new Form_Builder;
+    //new Form_Builder;
     new View;
     
     new Model('user', 'users');
 });
 
 $c->func('index', function(){
-    
-    /*
-    new Form_Builder(array('/tutorials/hello_form_builder', array('method' => 'post')), function(){
+
+
+    // if($this->post->get('dopost'))
+    // {
+    //     echo 'hello';
+    // }
+
+    // if($this->post->get('udopost'))
+    // {
+    //     echo 'world';
+    // }
+
+
+    // echo '<form action="/tutorials/hello_form_builder" method="POST">';
+
+    //     echo '<input type="submit" value="dpost" name="dopost" />';
+    //     echo '<input type="submit" value="udopost" name="udopost" />';
+
+    // echo '</form>';
+
+    // $new = new Form;
+    // $new2 = clone $new;
+
+    // $new->setRules('user_name','d','required');
+    // $new2->setRules('pass','ddd','xssClean');
+
+    // $new2->isValid();
+
+    new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',
-            'input' => $this->input('user_email', $this->setValue('user_email')),
+            'input' => $this->input('uemail', $this->setValue('uemail')),
+        ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => 'Password',
+            'rules' => 'required|minLen(6)',
+            'input' => $this->password('upassword', $this->setValue('upassword')),
+        ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
+            'label' => '&nbsp;',
+            'input' => $this->submit('udopost', 'Do Post', ' id="udopost" '),
         ));
 
     });
 
-    $this->form_builder->create();
-    $this->form_builder->isValid();
-    */
+    $this->form_builder->create('login');
 
-    $this->form_builder->open('/tutorials/hello_form_builder', array('method' => 'post'), function() {
+    new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setPosition('input', 'left');
+        $this->setPosition('error', 'top');
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',
@@ -80,9 +121,9 @@ $c->func('index', function(){
         $this->addCol(array(
             'label' => 'Languages : ',
             'rules' => 'contains(en,de,ar)',
-            array('label' => 'En', 'input' => $this->checkbox('lang[]', 'en', $this->setRadio('lang', 'en')) ),
-            array('label' => 'De', 'input' => $this->checkbox('lang[]', 'de', $this->setRadio('lang', 'tr')) ),
-            array('label' => 'Ar', 'input' => $this->checkbox('lang[]', 'ar', $this->setRadio('lang', 'ar')) ),
+            array('label' => 'En', 'input' => $this->checkbox('lang[]', 'en', $this->setCheckbox('lang', 'en')) ),
+            array('label' => 'De', 'input' => $this->checkbox('lang[]', 'de', $this->setCheckbox('lang', 'de')) ),
+            array('label' => 'Ar', 'input' => $this->checkbox('lang[]', 'ar', $this->setCheckbox('lang', 'ar')) ),
         ));
 
         $this->addRow();
@@ -101,9 +142,16 @@ $c->func('index', function(){
         ));
     });
 
+    $this->form_builder->create('test');
+
     if($this->post->get('dopost'))
     {
-        $this->form_builder->isValid();
+        $this->form_builder->isValid('test');
+    }
+
+    if($this->post->get('udopost'))
+    {
+        $this->form_builder->isValid('login');
     }
 
     $this->view->get('hello_form_builder', function() {

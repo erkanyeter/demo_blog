@@ -71,7 +71,37 @@
                 
                 <?php echo $this->form->close() ?>
 
-                    <h2>Test Results</h2>
+
+            <?php echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
+
+                <table width="100%">
+                    <tr>
+                        <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
+                        <td><?php 
+                            echo $this->form->error('uemail');
+                            echo $this->form->input('uemail', $this->form->setValue('uemail'), " id='uemail' ");
+                            ?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo $this->form->label('Password') ?></td>
+                        <td><?php 
+                            echo $this->form->error('upassword');
+                            echo $this->form->password('upassword', '', " id='upassword' ");
+                            ?></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><?php echo $this->form->submit('udopost', 'Do Post') ?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                    </tr>
+                    </table>
+                
+                <?php echo $this->form->close() ?>
+
+
+                    <h2>Test Results Form One</h2>
 
                     <section>
                         <h3>$this->form->getOutput()</h3>
