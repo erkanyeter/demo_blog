@@ -133,6 +133,7 @@ Class Form_Builder
      */
     protected function isValid()
     {
+        getInstance()->form = $this->form;
         $this->setRules();
 
         return $this->form->isValid();

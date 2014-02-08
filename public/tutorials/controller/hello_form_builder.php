@@ -103,7 +103,6 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
-        $this->setPosition('input', 'right');
         $this->addCol(array(
             'label' => 'Policy : ',
             'rules' => 'required|contains(n,y)',
