@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
             <?php echo $this->html->css('welcome.css') ?>
-        <title>Odm Tutorial</title>
+        <title>Hello Form</title>
     </head>
 
     <body>
@@ -13,22 +13,12 @@
         
         <h1>Hello Form</h1>
 
-        <section>
-            <?php echo $this->form->getNotice() ?>
-        </section>
-        
-        <section>
-            <?php echo $this->form->getMessage() ?>
-        </section>
+        <section><?php echo $this->form->getNotice() ?></section>
+        <section><?php echo $this->form->getMessage() ?></section>
+        <section><?php echo $this->form->getErrorString() ?></section>
 
         <section>
-            <?php echo $this->form->getErrorString() ?>
-        </section>
-
-        <section>
-
-            <?php
-            echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
+            <?php echo $this->form->open('tutorials/hello_form/index', array('method' => 'POST')) ?>
 
                 <table width="100%">
                     <tr>
@@ -77,8 +67,8 @@
                         <h3>$this->form->getOutput()</h3>
                         <pre><?php print_r($this->form->getOutput()) ?></pre>
 
-                        <h3>$this->form->error('email')</h3>
-                        <pre><?php echo $this->form->getErrors('email') ?></pre>
+                        <h3>$this->form->getError('email')</h3>
+                        <pre><?php echo $this->form->getError('email') ?></pre>
 
                         <h3>print_r($this->form->getErrorString())</h3>
                         <pre><?php print_r($this->form->getErrorString()) ?></pre>

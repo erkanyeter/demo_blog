@@ -12,10 +12,8 @@
         </header>
         
         <h1>Hello Odm</h1>
-        <h2><?php echo $this->url->anchor('tutorials/hello_ajax', 'Ajax Tutorial') ?></h2>
 
         <section><?php echo $this->user->getMessage('message') ?></section>
-
         <section><?php echo $this->form->getNotice() ?></section>
         
         <section>
@@ -64,8 +62,9 @@
                 
                 <?php echo $this->form->close() ?>
 
+                    <?php if($this->post->get('dopost')) { ?>
+                    
                     <h2>Test Results</h2>
-                    <?php if(isset($this->user) AND is_object($this->user)) { ?>
 
                         <section>
                             <h3>print_r($this->user->getOutput())</h3>

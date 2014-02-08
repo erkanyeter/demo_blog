@@ -9,7 +9,7 @@ $c = new Web_Service('public', function(){
 
     if(ENV == 'LIVE') // Deny access to this folder in live mode.
     {
-        $this->response->show404();
+    	$this->response->show404();
     }
 });
 

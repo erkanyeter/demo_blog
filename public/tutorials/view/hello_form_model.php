@@ -13,15 +13,9 @@
 
         <h1>Hello Form Model ( No Schema )</h1>
 
-        <section>
-            <?php echo $this->form->getNotice() ?>
-        </section>
-        
+        <section><?php echo $this->form->getNotice() ?></section>
         <section><?php echo $this->user->getMessage('message') ?></section>
-
-        <section>
-            <?php echo $this->form->getErrorString() ?>
-        </section>
+        <section><?php echo $this->form->getErrorString() ?></section>
 
         <?php echo $this->form->open('tutorials/hello_form_model/index', array('method' => 'POST')) ?>
 
@@ -75,7 +69,6 @@
                         <h3>$this->user->getValue('user_password')</h3>
                         <pre><?php echo $this->user->getValue('user_password') ?></pre>
                 </section>
-
 
         <?php echo $this->form->close() ?>
 
