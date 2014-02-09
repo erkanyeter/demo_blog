@@ -2,8 +2,6 @@
 
 ### What is the Odm
 
-Bye bye to traditional models which kill productivity of developers we create models <b>on the fly</b> using <b>Schemas</b>.
-
 <kbd>Odm</kbd> is a model that does <kbd>validate</kbd> and <kbd>crud</kbd> operations using your validation schemas.
 
 ### Creating a Schema
@@ -83,12 +81,10 @@ $users = array(
 
 ### Auto Schema Creation & Sync ( Only Mysql )
 
-When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exists. 
-Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current field and datatypes.
+When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exist. 
+<kbd>Schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current data types.
 
-If you provide the schema in array format schema driver also will create the database table if it does not exists.
-
-**Note:** At this time we have just <b>Mysql Schema Driver</b>. if you want a write schema driver for other database types, please search on the net how to <b>submit a package</b> to Obullo.
+**Note:** At this time we have just <b>Mysql Schema Driver</b>.
 
 ### Model Reference
 
@@ -97,7 +93,7 @@ new Model(string $variableName, mixed $schemaOrTable = '', string $dbVar = 'db')
 ```
 
 * <b>First Parameter:</b> This parameter specifies the controller variable, you can access it like $this->var->method();
-* <b>Second Parameter:</b> This parameter sets database tablename or schema array, if you provide an array it will convert to schema object.
+* <b>Second Parameter:</b> This parameter sets database tablename.
 * <b>Third Parameter:</b> This parameter sets the current database variable, default is "db".
 
 
@@ -106,7 +102,7 @@ new Model(string $variableName, mixed $schemaOrTable = '', string $dbVar = 'db')
 ```php
 new Model('user', 'users');
 ```
-This code create a model on the fly and store it into <b>$this->user</b> variable. All models are empty classes and they extend to Odm Class automatically.
+This code creates a model on the fly and store it into <b>$this->user</b> variable. All models are empty classes and they extend to Odm Class automatically.
 
 
 ### Creating Model Functions
