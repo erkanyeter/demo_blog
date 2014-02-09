@@ -1265,8 +1265,7 @@ After the creating schema function you can run it in a form element.
 echo $this->form->dropdown('cities', '@getSchema.users._enum.func', $this->form->setValue('cities'));
 ```
 
-
-Array Schemas
+#### Mapping your functions
 
 ```php
 $users = array(
