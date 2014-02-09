@@ -1,10 +1,6 @@
 ## Models <a name="models"></a>
 
-Bye bye to traditional models which kill productivity of developers we create models <b>on the fly</b> using <b>Schemas</b>.
-
-**Note:** In other words we use models in the controller section. The reading operations are <b>optional</b> .
-
-**Note:** Look at <kbd>Odm Package</kbd> docs for more details.
+Bye bye to traditional models which kill productivity of developers we create models <b>on the fly</b>. Models are simply designed  to validating your database schemas.
 
 ### What is a Model? <a name="what-is-a-model"></a>
 
@@ -32,7 +28,7 @@ This code creates a model on the fly and stores it into <b>$this->user</b> varia
 
 ### Creating a Schema
 
-Schema is a simply class that contains your <b>labels</b>, <b>data types</b> and <b>validaton rules</b>. A schema class is located in your <kbd>schemas</kbd> folder and looks like below the example.
+Schema is a simply confi file that contains your <b>labels</b>, <b>data types</b> and <b>validaton rules</b>. A schema file is located in your <kbd>schemas</kbd> folder and looks like below the example.
 
 ```php
 <?php
