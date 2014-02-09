@@ -295,7 +295,7 @@ If you have more than one validation for two or more tables you can merge schema
 
 Using dot "." in your field "key" you can join them. e.g. **$this->user->data['second_tablename.fieldname']**
 
-```
+```php
 <?php
 
 new Model('order', 'orders');
@@ -315,7 +315,6 @@ if($this->order->insert())
     $this->form->setNotice('Order inserted successfully !', SUCCESS);
     $this->url->redirect('/home');
 }
-?>
 ```
 
 Above the operation will insert data to orders and invoices tables and also does validation on each of them.
@@ -325,9 +324,10 @@ Above the operation will insert data to orders and invoices tables and also does
 ```php
 <?php
 
-new Model('user', false);   // After that disabling file schema user object will use Form validation rules.
+new Model('user', false);   // File schema disabled
+                            // User model will use form object for the validation.
 
-if(isset($_POST['dopost'])) // if isset button click !
+if(isset($_POST['dopost'])) // if button click !
 {
     $this->form->setRules('user_email', 'Email', 'required|validEmail');
     $this->form->setRules('user_password', 'Password', 'required|callback_password');
