@@ -14,8 +14,8 @@ Models are PHP classes that are designed to work with information in your databa
 new Model(string $var, mixed $schemaOrTable = '', string $dbVar = 'db');
 ```
 
-* <b>First Parameter:</b> Specifies the controller variable, you can access it like $this->var->method();
-* <b>Second Parameter:</b> Sets database tablename or schema array, if you provide an array it will convert to schema object.
+* <b>First Parameter:</b> Specifies the controller variable, you can access it like $this->var->method().
+* <b>Second Parameter:</b> Sets database tablename.
 * <b>Third Parameter:</b> Sets the current database variable, default is "db".
 
 
@@ -28,7 +28,7 @@ This code creates a model on the fly and stores it into <b>$this->user</b> varia
 
 ### Creating a Schema
 
-Schema is a simply confi file that contains your <b>labels</b>, <b>data types</b> and <b>validaton rules</b>. A schema file is located in your <kbd>schemas</kbd> folder and looks like below the example.
+Schema is a simply config file that contains your <b>labels</b>, <b>data types</b> and <b>validaton rules</b>. A schema file is located in your <kbd>schemas</kbd> folder and looks like below the example.
 
 ```php
 <?php
@@ -68,11 +68,9 @@ $users = array(
 ### Creating Schemas Automatically ( Only Mysql )
 
 When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exist. 
-Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current validation rules.
+<kbd>Schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current data types.
 
-If you provide the schema in array format schema driver also will create the database table if its does not exist.
-
-**Note:** At this time we have just <b>Mysql Schema Driver</b>. if you want a write schema driver for other database types, please search on the net how to <b>submit a package</b> to Obullo.
+**Note:** At this time we have just <b>Mysql Schema Driver</b>.
 
 
 ### Creating Model
