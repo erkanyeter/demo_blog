@@ -119,6 +119,8 @@ Available <b>CRUD operations</b> that we recommend are listed below. You can def
 * replace
 * delete
 * remove
+* push
+* send
 
 **Note:** Look at <kbd>Odm Package</kbd> docs for more details.
 
