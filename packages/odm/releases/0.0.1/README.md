@@ -496,14 +496,6 @@ $this->user->func('save',function() {
 $this->user->save();  //  Call your save function.
 ```
 
-### Mongodb Options
-
-If you use mongo db package, crud library allows you to add mongo db write concerns if you provide them in array.
-
-```php
-$this->db->insert('users', array('w' => 0, 'j' => 1));
-```
-
 ### Multiple Validation
 
 For multiple saving operations just use your model in your foreach loop.
@@ -1322,6 +1314,13 @@ $users = array(
 
 ```
 
+### Mongodb Options
+
+If you use mongo db package, crud library allows you to add mongo db write concerns if you provide them in array.
+
+```php
+$this->db->insert('users', array('w' => 0, 'j' => 1));
+```
 
 ### Function Reference
 
