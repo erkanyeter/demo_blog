@@ -435,7 +435,7 @@ If you have more than one validation for two or more tables you can merge schema
 
 Using dot "." in your field "key" you can join them. e.g. **$this->user->data['second_tablename.fieldname']**
 
-```
+```php
 <?php
 new Model('order', 'orders');
 
