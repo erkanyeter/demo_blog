@@ -15,8 +15,8 @@ $c = new Controller(function(){
 
 $c->func('index', function(){
    
-    $folder =PUBLIC_FOLDER.'web_model';
-    $scan = scandir($folder);
+    $folder      = PUBLIC_FOLDER .'web_model';
+    $scan_result = scandir($folder);
 
 $html_file = '<!DOCTYPE html>
 <html lang="en">
@@ -42,43 +42,42 @@ $html_file = '<!DOCTYPE html>
         <span class="green" style=" font-size: 30px;">Web Models</span>
     </div>
     <div class="panel-group" id="accordion">';
-
     
+    $i  = 0;
+    $ii = 0;
     $dataArray = array();
     $table_tr  = '';
-    $i = 0;
-$ii =0;
-    foreach ($scan as $key => $value) 
+    foreach ($scan_result as $key => $value) 
     {
         if($value != '.' and $value != '..' and $value !='docs')
         {
-            $subFolder = $folder.'/'.$value;
-$ii++;
-            $files = scandir($subFolder);
-              $html_file .=' <div class="panel panelmain">
+            $ii++;
+            $subFolder = $folder. DS .$value;
+            $files     = scandir($subFolder);
+
+            $html_file .='<div class="panel panelmain">
                                 <div class="title_web_model">
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'argtogglediv_'.$ii.'\');" >
                                         [<span id="maintoggle_'.$ii.'">+</span>] '.$value.'
                                     </a>
                                 </div>
-                                <div class="collapsed"  id="argtogglediv_'.$ii.'" >
-                                    ';
-
+                                <div class="collapsed"  id="argtogglediv_'.$ii.'" >';
 
             foreach ($files as $k => $fileName) 
             {
                 $xmlfile = strpos($fileName, '.xml');
+
                 if ($xmlfile !== false) 
                 {
                     $i++;
-                    $xmlfile = $subFolder . '/' . $fileName;
+                    $xmlfile = $subFolder . DS . $fileName;
                     
                     $dom     = new DomDocument; 
                     $dom->load($xmlfile);
                     
                     $data    = array();
-                    $phpPath = str_replace($folder.'/','',$xmlfile);
-                    $phpPath = str_replace('.xml','',$phpPath);
+                    $phpPath = str_replace($folder. DS ,'', $xmlfile);
+                    $phpPath = str_replace('.xml', '', $phpPath);
 
                     $data['folder']       =  $phpPath;
                     $data['name']         =  $dom->getElementsByTagName('name')->item(0)->nodeValue;
