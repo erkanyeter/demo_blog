@@ -16,8 +16,8 @@
         <section><?php echo $this->form->getNotice() ?></section>
 
         <?php if($this->post->get('form1_dopost')) { ?>
-        <section><?php echo $this->form->getMessage() ?></section>
-        <section><?php echo $this->form->getErrorString() ?></section>
+            <section><?php echo $this->form->getMessage() ?></section>
+            <section><?php echo $this->form->getErrorString() ?></section>
         <?php } ?>
 
         <h2>Form1</h2>
@@ -83,8 +83,8 @@
             <?php } ?>
 
             <?php if($this->post->get('form2_dopost')) { ?>
-            <section><?php echo $this->form->getMessage() ?></section>
-            <section><?php echo $this->form->getErrorString() ?></section>
+                <section><?php echo $this->form->getMessage() ?></section>
+                <section><?php echo $this->form->getErrorString() ?></section>
             <?php } ?>
 
             <h2>Form2</h2>

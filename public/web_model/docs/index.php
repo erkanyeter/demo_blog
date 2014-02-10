@@ -16,8 +16,6 @@ $c->func('index', function(){
 
     new Task;
      
-    $output = $this->task->run('web_model_doc/index', true);
-    
+    $output = $this->task->run('web_model/index', true);
     echo $output;
-
 });
