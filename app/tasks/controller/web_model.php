@@ -30,8 +30,11 @@ $html_file = '<!DOCTYPE html>
         document.getElementById(obj).classList.toggle(\'collapsed\');
         
         var objArray = obj.split("_");
-        maintoggle= "maintoggle_"+objArray[1].toString();
-        document.getElementById(maintoggle).innerHTML = document.getElementById(maintoggle).innerHTML == "+" && "-" || "+";
+        if(objArray[0] == "argtogglediv_")
+        {
+            maintoggle= "maintoggle_"+objArray[1].toString();
+            document.getElementById(maintoggle).innerHTML = document.getElementById(maintoggle).innerHTML == "+" && "-" || "+";
+        }
     }
 </script>
 </head>

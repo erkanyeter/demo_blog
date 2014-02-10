@@ -484,6 +484,7 @@ background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAICAY
   color: #006857;
   font-size: 18px;
   text-decoration: none;
+  margin-left: 2px;
 }
 .panelmain
 {
