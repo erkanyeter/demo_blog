@@ -1,10 +1,6 @@
 ## Models <a name="models"></a>
 
-Bye bye to traditional models which kill productivity of developers we create models <b>on the fly</b> using <b>Schemas</b>.
-
-**Note:** In other words we use models in the controller section. The reading operations are <b>optional</b> .
-
-**Note:** Look at <kbd>Odm Package</kbd> docs for more details.
+Bye bye to traditional models which kill productivity of developers we create models <b>on the fly</b>. Models are simply designed  to validating your database schemas.
 
 ### What is a Model? <a name="what-is-a-model"></a>
 
@@ -18,8 +14,8 @@ Models are PHP classes that are designed to work with information in your databa
 new Model(string $var, mixed $schemaOrTable = '', string $dbVar = 'db');
 ```
 
-* <b>First Parameter:</b> Specifies the controller variable, you can access it like $this->var->method();
-* <b>Second Parameter:</b> Sets database tablename or schema array, if you provide an array it will convert to schema object.
+* <b>First Parameter:</b> Specifies the controller variable, you can access it like $this->var->method().
+* <b>Second Parameter:</b> Sets database tablename.
 * <b>Third Parameter:</b> Sets the current database variable, default is "db".
 
 
@@ -32,7 +28,7 @@ This code creates a model on the fly and stores it into <b>$this->user</b> varia
 
 ### Creating a Schema
 
-Schema is a simply class that contains your <b>labels</b>, <b>data types</b> and <b>validaton rules</b>. A schema class is located in your <kbd>schemas</kbd> folder and looks like below the example.
+Schema is a simply config file that contains your <b>labels</b>, <b>data types</b> and <b>validaton rules</b>. A schema file is located in your <kbd>schemas</kbd> folder and looks like below the example.
 
 ```php
 <?php
@@ -72,11 +68,9 @@ $users = array(
 ### Creating Schemas Automatically ( Only Mysql )
 
 When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the schema file if it does not exist. 
-Using your tablename the <kbd>schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current validation rules.
+<kbd>Schema_mysql</kbd> <b>package</b> parses your column information of your database table and it builds automatically the current data types.
 
-If you provide the schema in array format schema driver also will create the database table if its does not exist.
-
-**Note:** At this time we have just <b>Mysql Schema Driver</b>. if you want a write schema driver for other database types, please search on the net how to <b>submit a package</b> to Obullo.
+**Note:** At this time we have just <b>Mysql Schema Driver</b>.
 
 
 ### Creating Model
@@ -125,6 +119,8 @@ Available <b>CRUD operations</b> that we recommend are listed below. You can def
 * replace
 * delete
 * remove
+* push
+* send
 
 **Note:** Look at <kbd>Odm Package</kbd> docs for more details.
 
@@ -301,7 +297,7 @@ If you have more than one validation for two or more tables you can merge schema
 
 Using dot "." in your field "key" you can join them. e.g. **$this->user->data['second_tablename.fieldname']**
 
-```
+```php
 <?php
 
 new Model('order', 'orders');
@@ -321,7 +317,6 @@ if($this->order->insert())
     $this->form->setNotice('Order inserted successfully !', SUCCESS);
     $this->url->redirect('/home');
 }
-?>
 ```
 
 Above the operation will insert data to orders and invoices tables and also does validation on each of them.
@@ -331,9 +326,10 @@ Above the operation will insert data to orders and invoices tables and also does
 ```php
 <?php
 
-new Model('user', false);   // After that disabling file schema user object will use Form validation rules.
+new Model('user', false);   // File schema disabled
+                            // User model will use form object for the validation.
 
-if(isset($_POST['dopost'])) // if isset button click !
+if(isset($_POST['dopost'])) // if button click !
 {
     $this->form->setRules('user_email', 'Email', 'required|validEmail');
     $this->form->setRules('user_password', 'Password', 'required|callback_password');
