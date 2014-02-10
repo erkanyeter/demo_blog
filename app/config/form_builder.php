@@ -15,25 +15,32 @@
 
 $form_builder = array(
 
-    'captcha' => function(){  // Captcha Widget Settings
+    'captcha'   => array(
+        'hidden_field_name' => 'image_id',
+        'captchaFunc' => function(){  // Captcha Widget Settings
 
-        new Captcha;
+            new Captcha;
 
-        $this->captcha->setDriver('secure');  // or set to "cool" with no background
-        $this->captcha->setPool('alpha');
-        $this->captcha->setChar(5);
-        $this->captcha->setFontSize(20);
-        $this->captcha->setHeight(36);
-        $this->captcha->setWave(false);
-        $this->captcha->setColor(array('red','black','blue'));
-        $this->captcha->setNoiseColor(array('red','black','blue'));
-        $this->captcha->create();
+            $this->captcha->setDriver('secure');  // or set to "cool" with no background
+            $this->captcha->setPool('alpha');
+            $this->captcha->setChar(5);
+            $this->captcha->setFontSize(20);
+            $this->captcha->setHeight(36);
+            $this->captcha->setWave(false);
+            $this->captcha->setColor(array('red','black','blue'));
+            $this->captcha->setNoiseColor(array('red','black','blue'));
+            $this->captcha->create();
 
-        return array(
-            'image_url'             => $this->captcha->getImageUrl(),
-            'image_id'              => $this->captcha->getImageId(),
-            'image_template'        => '<img src="%s" />',
-            'hidden_input_template' => '<input type="hidden" name="image_id" value="%s" />',
-        );
-    }
+            // return array(
+            //     'image_url'             => $this->captcha->getImageUrl(),
+            //     'image_id'              => $this->captcha->getImageId(),
+            //     'image_template'        => '<img src="%s" />',
+            //     'hidden_input_template' => '<input type="hidden" name="image_id" value="%s" />',
+            // );
+            return array(
+                'image_url'             => $this->captcha->getImageUrl(),
+                'image_id'              => $this->captcha->getImageId(), // hidden_field_name
+            );
+        }
+    ),
 );

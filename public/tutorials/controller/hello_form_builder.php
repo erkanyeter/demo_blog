@@ -48,18 +48,28 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setPosition('error', 'top');
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',
-            'input' => $this->input('uemail', $this->setValue('uemail')),
+            'input' => $this->input('email', $this->setValue('email')),
+        ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->setPosition('error', 'top');
+        $this->addCol(array(
+            'label' => 'Password',
+            'rules' => 'required|minLen(6)',
+            'input' => $this->password('password', $this->setValue('password')),
         ));
 
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
-            'label' => 'Password',
-            'rules' => 'required|minLen(6)',
-            'input' => $this->password('upassword', $this->setValue('upassword')),
+            'label' => 'Security Image',
+            'rules' => 'required',
+            'input' => $this->captcha('answer2')
         ));
 
         $this->addRow();
@@ -77,8 +87,6 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
-        $this->setPosition('input', 'left');
-        $this->setPosition('error', 'top');
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',

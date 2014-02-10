@@ -32,33 +32,20 @@
 
     
                     <h2>Test Results</h2>
-                    <?php if(isset($this->user) AND is_object($this->user)) { ?>
 
                         <section>
-                            <h3>print_r($this->user->getOutput())</h3>
+                            <h3>print_r($this->form->getOutput())</h3>
                             <pre><?php print_r($this->form->getOutput()) ?></pre>
 
-                            <h3>print_r($this->user->getMessages())</h3>
-                            <pre><?php print_r($this->user->getMessages()) ?></pre>
+                            <h3>print_r($this->form->getErrors())</h3>
+                            <pre><?php print_r($this->form->getErrors()) ?></pre>
 
-                            <h3> echo $this->user->getMessage('errorKey')</h3>
-                            <pre><?php echo $this->user->getMessage('message') ?></pre>
+                            <h3>$this->form->getError('email')</h3>
+                            <pre><?php echo $this->form->getError('email') ?></pre>
 
-                            <h3>print_r($this->user->getErrors())</h3>
-                            <pre><?php print_r($this->user->getErrors()) ?></pre>
-
-                            <h3>$this->user->getError('email')</h3>
-                            <pre><?php echo $this->user->getError('email') ?></pre>
-
-                            <h3>print_r($this->user->getValues())</h3>
-                            <pre><?php print_r($this->user->getValues()) ?></pre>
-
-                            <h3>$this->user->getValue('email')</h3>
-                            <pre><?php echo $this->user->getValue('email') ?></pre>
+                            <h3>$this->form->getValue('email')</h3>
+                            <pre><?php echo $this->form->getValue('email') ?></pre>
                         </section>
-
-                    <?php } ?>        
-
         </section> 
         
         <section>
