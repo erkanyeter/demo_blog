@@ -11,8 +11,8 @@
 
 Class Translator {
     
-    public $language  = array();
-    public $is_loaded = array();
+    public $language  = array(); // langCode folder ( e.g. en_US/ )
+    public $is_loaded = array(); // Let we know if its loaded
     
     public static $instance;
 
@@ -45,8 +45,8 @@ Class Translator {
     *
     * @access   public
     * @param    string   $filename the name of the language file to be loaded. Can be an array
-    * @param    string   $idiom the language folder (english, etc.)
-    * @param    bool     $return return to $lang variable if you don't merge
+    * @param    string   $idiom the language code folder (en_US, etc.)
+    * @param    bool     $return return to $translate variable if you don't merge
     * @return   mixed
     */
     public function load($filename = '', $idiom = '', $return = false)
@@ -71,22 +71,22 @@ Class Translator {
         
         require(APP .'translations'. DS .$idiom. DS .$filename. EXT);
 
-        if ( ! isset($lang))
+        if ( ! isset($translate))
         {
-            logMe('error', 'Language file does not contain $lang variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
+            logMe('error', 'Language file does not contain $translate variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
             
             return;
         }
 
         if ($return)
         {
-            return $lang;
+            return $translate;
         }
 
         $this->is_loaded[] = $filename;
-        $this->language    = array_merge($this->language, $lang);
+        $this->language    = array_merge($this->language, $translate);
 
-        unset($lang);
+        unset($translate);
 
         logMe('debug', 'Language file loaded: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
         

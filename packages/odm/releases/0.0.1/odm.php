@@ -302,6 +302,8 @@ Class Odm {
     {
         if(isset($this->_odmMessages[$this->_odmTable]))
         {
+            arsort($this->_odmMessages[$this->_odmTable]); // sort descending
+
             return $this->_odmMessages[$this->_odmTable];
         }
 
@@ -320,7 +322,11 @@ Class Odm {
      */
     public function getAllOutput()
     {
-        return array_merge($this->getOutput(), array('values' => $this->getValues()));
+        $messages = array_merge($this->getOutput(), array('values' => $this->getValues()));
+
+        arsort($messages);
+
+        return $messages;
     }
 
     // --------------------------------------------------------------------

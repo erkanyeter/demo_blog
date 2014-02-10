@@ -1,32 +1,35 @@
 ## User Classes
 
-The <kbd>modules/classes</kbd> folder is reserved for user libraries. Below the examples demonstrate creating class and helper files.
+The <kbd>app/classes</kbd> folder is reserved for user classes. Below the examples demonstrate creating your class files.
 
 ### Creating Your Classes
 
 ------
 
 ```php
-Class Test
-{
-    function __construct($no_instance = true)
+<?php
+
+Class Doly {
+
+    public function __construct()
     {
-        if($no_instance)
+        if( ! isset(getInstance()->doly) )
         {
-            getInstance()->test = $this; // Available it in the contoller $this->test->method();
+            getInstance()->doly = $this;
         }
-        
-        logMe('debug', "Acl Class Initialized");
+
+        logMe('debug', 'My Doly Class Initialized');
     }
 
-    function me()
+    public function hello()
     {
-        echo 'Hello !';
+        echo 'Hello World !';
     }
+
 }
 
-new test();
-$this->test->me();   // output Hello !
+new Doly;
+$this->doly->hello();   // output Hello World !
 ```
 
 ### Including Sources
@@ -38,14 +41,14 @@ require CLASSES .'test/src/otherclass.php';
 
 Class Test
 {
-    function __construct($no_instance = true)
+    function __construct()
     {
-        if($no_instance)
+        if( ! isset(getInstance()->test) )
         {
-            getInstance()->test = $this; // Available it in the contoller $this->test->method();
+            getInstance()->test = $this;
         }
         
-        logMe('debug', "Test Class Initialized");
+        logMe('debug', 'Test Class Initialized');
     }
 
     function me()
@@ -53,26 +56,4 @@ Class Test
         echo 'Hello !';
     }
 }
-```
-
-### Creating Your Helpers
-
-```php
-namespace Test {
-
-    Class start {
-
-        function __construct()
-        {
-            \logMe('Test Helper Initialized !');
-        }       
-    }
-    
-    function me()
-    {
-       echo 'Hello me !';
-    }
-}
-
-new test\start();  // Calling your test functions. ( helpers )
 ```
