@@ -23,13 +23,15 @@
 Class Form_Builder
 {
     private $_identifier;
+    private $_captcha_hidden_field;
     private $output;
     private $fieldsArr;
     private $rowNum   = 0;
     private $colNum   = 0;
     private $colNames = array();
     private $buildClosure;
-    private $form;
+
+    private $css = "/** * Uform Package Css * */.clear {clear:both;}.form-builder-div-wrapper{ font-size:14px;}/** * Row CSS * */.form-builder-row{border-bottom: 1px dotted #DDDDDD; clear: both; margin: 5px auto; padding: 0; width: 100%; padding: 0px;}.form-builder-row:after {clear: both;}.form-builder-row:before, .form-builder-row:after {display: table;}.form-builder-row:last-child{border-bottom : none;}/** * Column CSS * */.form-builder-column{padding-left: 0em;padding-right: 0.3375em;padding-bottom: 0.5375em;float: left;margin: 0;color:rgb(6, 149, 120);display:inline-block;}.form-builder-column input,.form-builder-column select{width : 65%;font-size: 10pt;}.form-builder-column input[type='checkbox'], .form-builder-column input[type='radio']{width : 15px !important;display:inline;margin:auto 25px auto 5px;}.form-builder-column textarea{max-width:75%;resize:none;}.form-builder-captcha-wrapper{width:65%;display:inline-block;}.form-builder-field-wrapper{width:70%;float: left;}/** * Submit Button CSS * */.form-builder-column input[type='submit']{cursor:pointer;width : 30%;font-size: 15px;color: rgb(6, 149, 134);}/** * Label CSS * */.form-builder-label-wrapper{color:rgb(102, 102, 102);}.form-builder-label-left {float:left;margin-right:0.3375em;min-width:20%;max-width:30%;}.form-builder-label-right{float:right;margin-left:0.3375em;width:20%;}.form-builder-label-top{margin-bottom:0.2375em;}.form-builder-radio-label{display:inline-block;}/** * Input Possitions * */.form-builder-ipos-left input{float:left;}.form-builder-ipos-right input{float:right;}.form-builder-ipos-center input{display:inline-block;margin:auto;}.form-builder-ipos-left .form-builder-error{text-align:left;}.form-builder-ipos-right .form-builder-error{text-align:right;}.form-builder-ipos-center .form-builder-error{text-align:center;}.form-builder-ipos-right .form-builder-radio-label{float:right;}/** * Grid System * */.form-builder-grid-1 {width: 9%;}.form-builder-grid-2 {width: 19%;}.form-builder-grid-3 {width: 29%;}.form-builder-grid-4 {width: 39%;}.form-builder-grid-5{width: 49%;}.form-builder-grid-6{width: 59%;}.form-builder-grid-7{width: 69%;}.form-builder-grid-8{width: 79%;}.form-builder-grid-9{width: 89%;}.form-builder-grid-10{width: 99%;}/** * Error Input Styles * */.form-builder-error{font-size:10pt;color:red !important;}";
     
     // multiforms
     private static $forms    = array();
@@ -43,8 +45,6 @@ Class Form_Builder
      */
     public function __construct()
     {
-        $this->form = new Form;
-
         // set the new instance each time to the controller
         // otherwise must change the params to static
         getInstance()->form_builder = $this;  // Make available it in the controller.
@@ -56,7 +56,7 @@ Class Form_Builder
         $this->buildClosure = $args[2];
         
         unset($args[2]);
-        $this->output = "\t".call_user_func_array(array($this->form, 'open'), $args);
+        $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $args);
     }
 
 
@@ -64,7 +64,7 @@ Class Form_Builder
 
     /**
      * This function is used to handle some functions.
-     * handle $this->form->input() functions
+     * handle getInstance()->form->input() functions
      * 
      * all the public functions in the class, must holds 'form-identifier as a parameter.'
      */
@@ -97,6 +97,12 @@ Class Form_Builder
             case 'printForm':
             {
                 $identifier = $arguments[0];
+
+                $this->_identifier = $identifier;
+
+                $config = getConfig('form_builder');
+                $this->_captcha_hidden_field = $this->_identifier.$config['captcha']['hidden_field_name'];
+                
                 if(empty(self::$forms[$identifier]))
                 {
                     throw new Exception('Form Builder Error : trying to printForm for a not created form.');
@@ -106,19 +112,44 @@ Class Form_Builder
             }
             case 'captcha':
             {
+                // define the callback check funciton
+                if ( ! isset(getInstance()->sess) )
+                {
+                    getInstance()->sess = new Sess;
+                }
+                
+                $identifier = $this->_identifier;
+                
+                // creating validation callback function for captcha.
+                getInstance()->form->func('callback_captcha_'.$this->_identifier, function() use ($arguments,$identifier) {
+                
+                    $config = getConfig('form_builder');
+
+                    $code = $this->sess->get($this->post->get($config['captcha']['hidden_field_name']));
+
+                    if( $this->post->get($arguments[0]) != $code )
+                    {
+                        $this->setMessage('callback_captcha_'.$identifier, translate('Security code doesn\'t match security image. '));
+                        return false;
+                    }
+                    return true;
+
+                });
+
                 $colname = $arguments[0];
-                $this->setColValue('rules', 'callback_validateCaptcha');
+                $this->setColValue('rules', 'callback_captcha_'.$this->_identifier);
+                
                 $this->setColValue('field_name', $arguments[0]);
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
                 return array("method" => $method, "arguments" => $arguments);
                 break;
             }
+            default:
+            {
+                throw new Exception("Form Builder Error : wrong method name '$method'. Please review the readme file.");
+                break;
+            }
         }
-    }
-
-    protected function validateCaptcha(){
-        die('yesssssssssss');
-        return false;
     }
 
     // --------------------------------------------------------------------
@@ -145,10 +176,10 @@ Class Form_Builder
      */
     protected function isValid()
     {
-        getInstance()->form = $this->form;
+        // getInstance()->form = getInstance()->form;
         $this->setRules();
 
-        return $this->form->isValid();
+        return getInstance()->form->isValid();
     }
 
     // --------------------------------------------------------------------
@@ -257,7 +288,7 @@ Class Form_Builder
                 case 'textarea':
                 case 'multiselect':
                 {
-                    return call_user_func_array(array($this->form, $input['method']), $input['arguments']);
+                    return call_user_func_array(array(getInstance()->form, $input['method']), $input['arguments']);
                     break;
                 }
                 case 'captcha':
@@ -326,7 +357,7 @@ Class Form_Builder
 
 
 
-                        $error = $this->form->error($v2['field_name'], "<div class='form-builder-error' >", "</div>");
+                        $error = getInstance()->form->error($v2['field_name'], "<div class='form-builder-error' >", "</div>");
 
                         $inputWrapper = "\n\t\t\t\t<div class='form-builder-field-wrapper'>\n";
                         
@@ -362,7 +393,7 @@ Class Form_Builder
             }
         }
 
-        $out .= "\t".$this->form->close()."\n";
+        $out .= "\t".getInstance()->form->close()."\n";
         $out .= "</div>\n";
 
         return $out.'<div class="clear" ></div>';
@@ -428,7 +459,7 @@ Class Form_Builder
             
             foreach ($col['input'] as $col_v)
             {
-                $out .= (isset($col['listLabel'][$i])) ? $this->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
+                $out .= (isset($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
                 $out .= $this->printInput($col_v);
                 $i ++;
             }
@@ -449,7 +480,7 @@ Class Form_Builder
     protected function setValue()
     {
         $arg = (func_get_args());
-        return call_user_func_array(array($this->form, 'setValue'), $arg);
+        return call_user_func_array(array(getInstance()->form, 'setValue'), $arg);
     }
 
     // --------------------------------------------------------------------
@@ -459,7 +490,7 @@ Class Form_Builder
     protected function setRadio()
     {
         $arg = (func_get_args());
-        return call_user_func_array(array($this->form, 'setRadio'), $arg);
+        return call_user_func_array(array(getInstance()->form, 'setRadio'), $arg);
     }
 
     /**
@@ -468,7 +499,7 @@ Class Form_Builder
     protected function setSelect()
     {
         $arg = (func_get_args());
-        return call_user_func_array(array($this->form, 'setSelect'), $arg);
+        return call_user_func_array(array(getInstance()->form, 'setSelect'), $arg);
     }
 
     // --------------------------------------------------------------------
@@ -478,7 +509,7 @@ Class Form_Builder
     protected function setCheckbox()
     {
         $arg = (func_get_args());
-        return call_user_func_array(array($this->form, 'setCheckbox'), $arg);
+        return call_user_func_array(array(getInstance()->form, 'setCheckbox'), $arg);
     }
 
     // --------------------------------------------------------------------
@@ -495,7 +526,7 @@ Class Form_Builder
         $addon_class = (isset($row['position']['label'])) ? 'form-builder-label-' . $row['position']['label'] : 'form-builder-label-top';
 
         $out  = "<div class='form-builder-label-wrapper $addon_class'>";
-        $out .= (isset($row['columns'][$arg[1]]['label'])) ? $this->form->label($row['columns'][$arg[1]]['label']) : ' ';
+        $out .= (isset($row['columns'][$arg[1]]['label'])) ? getInstance()->form->label($row['columns'][$arg[1]]['label']) : ' ';
         $out .= '</div>';
 
         return $out;
@@ -513,7 +544,7 @@ Class Form_Builder
                     foreach($rowVars as $colKey => $col )
                     {
                         if( ! empty($col['rules']) )
-                        $this->form->setRules($col['field_name'], $col['label'], $col['rules']);
+                        getInstance()->form->setRules($col['field_name'], $col['label'], $col['rules']);
                     }
                 }
             }
@@ -533,21 +564,33 @@ Class Form_Builder
         $args = $args[0];
         
         $config = getConfig('form_builder');
-        
-        if( is_callable($config['captcha']) )
-        {
-            $captcha = call_user_func_array(Closure::bind($config['captcha'], getInstance(), 'Controller'), array());
+        $config = $config['captcha'];
 
-            if( empty($captcha['hidden_input_template']) OR empty($captcha['image_url']) )
+        if( empty($config['hidden_field_name']) )
+        {
+            throw new Exception('Form Builder error : Captcha hidden_field_name must has been set in form_builder.php config file.');
+        }
+        
+        if( is_callable($config['captchaFunc']) )
+        {
+            $captcha = call_user_func_array(Closure::bind($config['captchaFunc'], getInstance(), 'Controller'), array());
+
+            // if( empty($captcha['hidden_input_template']) OR empty($captcha['image_url']) )
+            if( empty($captcha['image_id']) OR empty($captcha['image_url']) )
             {
                 throw(new Exception('Form builder error : Captcha closure in the config file must return an array containing two index keys (image_hidden_input, image_url).'));
             }
 
             $out = "\t<div class='form-builder-captcha-wrapper'>\n";
 
-                $out.= "\t".sprintf($captcha['hidden_input_template'], $captcha['image_id'])."\n";
-                $out.= "\t".sprintf($captcha['image_template'], $captcha['image_url'])."\n";
-                $out.= "\t". call_user_func_array(array($this->form, 'input'), $args)."\n";
+                $img_template = '<img src="%s" />';
+
+                $out.= "\t".sprintf($img_template, $captcha['image_url'])."\n";
+                // captcha hidden field preceded by form _identifier
+                $out.= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($config['hidden_field_name'], $captcha['image_id']))."\n";
+                // $out.= "\t".sprintf($captcha['hidden_input_template'], $captcha['image_id'])."\n";
+                // $out.= "\t".sprintf($captcha['image_template'], $captcha['image_url'])."\n";
+                $out.= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
 
             $out.= "\t</div>\n";
 

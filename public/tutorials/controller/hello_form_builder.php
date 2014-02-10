@@ -67,6 +67,14 @@ $c->func('index', function(){
         $this->addRow();
         $this->setPosition('label', 'left');
         $this->addCol(array(
+            'label' => 'Security Image',
+            'rules' => 'required',
+            'input' => $this->captcha('answer2')
+        ));
+
+        $this->addRow();
+        $this->setPosition('label', 'left');
+        $this->addCol(array(
             'label' => '&nbsp;',
             'input' => $this->submit('udopost', 'Do Post', ' id="udopost" '),
         ));
