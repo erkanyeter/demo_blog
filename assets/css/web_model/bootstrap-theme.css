@@ -439,7 +439,7 @@ margin-top: -6px;
 border: 1px solid transparent;
 border-radius: 4px;
 color: white;
-line-height: 32px;
+line-height: 29px;
 text-align: center;
 margin-left: -60px;
 font-size: 14px;
@@ -484,6 +484,7 @@ background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAICAY
   color: #006857;
   font-size: 18px;
   text-decoration: none;
+  margin-left: 2px;
 }
 .panelmain
 {

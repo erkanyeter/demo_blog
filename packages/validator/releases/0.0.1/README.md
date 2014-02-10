@@ -449,7 +449,7 @@ $this->form->setRules('first_name', 'translate:first_name', 'required');
 Then, store the name in one of your language file arrays (without the prefix):
 
 ```php
-$lang['first_name'] = 'First Name';
+$translate['first_name'] = 'First Name';
 ```
 
 **Note:** If you store your array item in a language file that is not loaded automatically by Framework, you'll need to remember to load it in your controller using:

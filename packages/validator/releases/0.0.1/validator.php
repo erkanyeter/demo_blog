@@ -702,16 +702,16 @@ Class Validator {
      * @param    string
      * @return   string
      */
-    public function setMessage($lang, $val = '')
+    public function setMessage($key, $val = '')
     {
         $validator = getInstance()->validator;
         
-        if ( ! is_array($lang))
+        if ( ! is_array($key))
         {
-            $lang = array($lang => $val);
+            $key = array($key => $val);
         }
     
-        $validator->_error_messages = array_merge($validator->_error_messages, $lang);
+        $validator->_error_messages = array_merge($validator->_error_messages, $key);
     }
 
 }

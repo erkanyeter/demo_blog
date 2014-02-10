@@ -14,18 +14,18 @@ Language files are typically stored in your <kbd>app/translator</kbd> directory.
 
 ------
 
-Within the file you will assign each line of text to an array called <var>$lang</var> with this prototype:
+Within the file you will assign each line of text to an array called <var>$translate</var> with this prototype:
 
 ```php
-$lang['language_key'] = "The actual message to be shown";
+$translate['language_key'] = "The actual message to be shown";
 ```
 
 **Note:** It's a good practice to use actual message as key for all messages in a given file to avoid collisions with similarly named items in other files. 
 
 ```php
-$lang['You must submit an email address'] = "You must submit an email address";
-$lang['You must submit a URL']  = "You must submit a URL";
-$lang['You must submit a username'] = "You must submit a username";
+$translate['You must submit an email address'] = "You must submit an email address";
+$translate['You must submit a URL']  = "You must submit a URL";
+$translate['You must submit a username'] = "You must submit a username";
 ```
 
 ```php
