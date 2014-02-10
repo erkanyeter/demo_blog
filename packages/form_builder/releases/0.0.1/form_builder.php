@@ -31,7 +31,7 @@ Class Form_Builder
     private $colNames = array();
     private $buildClosure;
 
-    private $css = "/** * Uform Package Css * */.clear {clear:both;}.form-builder-div-wrapper{ font-size:14px;}/** * Row CSS * */.form-builder-row{border-bottom: 1px dotted #DDDDDD; clear: both; margin: 5px auto; padding: 0; width: 100%; padding: 0px;}.form-builder-row:after {clear: both;}.form-builder-row:before, .form-builder-row:after {display: table;}.form-builder-row:last-child{border-bottom : none;}/** * Column CSS * */.form-builder-column{padding-left: 0em;padding-right: 0.3375em;padding-bottom: 0.5375em;float: left;margin: 0;color:rgb(6, 149, 120);display:inline-block;}.form-builder-column input,.form-builder-column select{width : 65%;font-size: 10pt;}.form-builder-column input[type='checkbox'], .form-builder-column input[type='radio']{width : 15px !important;display:inline;margin:auto 25px auto 5px;}.form-builder-column textarea{max-width:75%;resize:none;}.form-builder-captcha-wrapper{width:65%;display:inline-block;}.form-builder-field-wrapper{width:70%;float: left;}/** * Submit Button CSS * */.form-builder-column input[type='submit']{cursor:pointer;width : 30%;font-size: 15px;color: rgb(6, 149, 134);}/** * Label CSS * */.form-builder-label-wrapper{color:rgb(102, 102, 102);}.form-builder-label-left {float:left;margin-right:0.3375em;min-width:20%;max-width:30%;}.form-builder-label-right{float:right;margin-left:0.3375em;width:20%;}.form-builder-label-top{margin-bottom:0.2375em;}.form-builder-radio-label{display:inline-block;}/** * Input Possitions * */.form-builder-ipos-left input{float:left;}.form-builder-ipos-right input{float:right;}.form-builder-ipos-center input{display:inline-block;margin:auto;}.form-builder-ipos-left .form-builder-error{text-align:left;}.form-builder-ipos-right .form-builder-error{text-align:right;}.form-builder-ipos-center .form-builder-error{text-align:center;}.form-builder-ipos-right .form-builder-radio-label{float:right;}/** * Grid System * */.form-builder-grid-1 {width: 9%;}.form-builder-grid-2 {width: 19%;}.form-builder-grid-3 {width: 29%;}.form-builder-grid-4 {width: 39%;}.form-builder-grid-5{width: 49%;}.form-builder-grid-6{width: 59%;}.form-builder-grid-7{width: 69%;}.form-builder-grid-8{width: 79%;}.form-builder-grid-9{width: 89%;}.form-builder-grid-10{width: 99%;}/** * Error Input Styles * */.form-builder-error{font-size:10pt;color:red !important;}";
+    private static $css = "form_builder.css";
     
     // multiforms
     private static $forms    = array();
@@ -53,9 +53,11 @@ Class Form_Builder
 
         $args = func_get_args();
         
+        // saving builder function
         $this->buildClosure = $args[2];
         
         unset($args[2]);
+        // open form tag
         $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $args);
     }
 
@@ -112,14 +114,13 @@ Class Form_Builder
             }
             case 'captcha':
             {
-                // define the callback check funciton
                 if ( ! isset(getInstance()->sess) )
                 {
                     getInstance()->sess = new Sess;
                 }
                 
                 $identifier = $this->_identifier;
-                
+
                 // creating validation callback function for captcha.
                 getInstance()->form->func('callback_captcha_'.$this->_identifier, function() use ($arguments,$identifier) {
                 
@@ -227,7 +228,6 @@ Class Form_Builder
         {
             $label = (isset($data['label'])) ? $data['label'] : ucfirst(strtolower($data['label']));
             $this->setColValue('rules', $data['rules']);
-            // $this->setColValue('rules', $arg['rules']);
         }
 
         // increase column index in the columns array
@@ -329,8 +329,6 @@ Class Form_Builder
      */
     protected function printForm()
     {
-        // $this->shiftingLocalParams($identifier,'print');
-
         $out = "\n<div class='form-builder-div-wrapper'>\n";         // check the printout type "table or div"
         $out.= $this->output;
 
@@ -397,6 +395,14 @@ Class Form_Builder
         $out .= "</div>\n";
 
         return $out.'<div class="clear" ></div>';
+    }
+
+    /**
+     * Link CSS file
+     */
+    public function linkCss()
+    {
+        return getInstance()->html->css(self::$css);
     }
 
     // --------------------------------------------------------------------

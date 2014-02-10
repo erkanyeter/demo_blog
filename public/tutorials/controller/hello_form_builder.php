@@ -17,33 +17,7 @@ $c = new Controller(function(){
 
 $c->func('index', function(){
 
-
-    // if($this->post->get('dopost'))
-    // {
-    //     echo 'hello';
-    // }
-
-    // if($this->post->get('udopost'))
-    // {
-    //     echo 'world';
-    // }
-
-
-    // echo '<form action="/tutorials/hello_form_builder" method="POST">';
-
-    //     echo '<input type="submit" value="dpost" name="dopost" />';
-    //     echo '<input type="submit" value="udopost" name="udopost" />';
-
-    // echo '</form>';
-
-    // $new = new Form;
-    // $new2 = clone $new;
-
-    // $new->setRules('user_name','d','required');
-    // $new2->setRules('pass','ddd','xssClean');
-
-    // $new2->isValid();
-
+    // creating the first form
     new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
@@ -83,6 +57,7 @@ $c->func('index', function(){
 
     $this->form_builder->create('login');
 
+    // creating the second form
     new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
@@ -152,11 +127,15 @@ $c->func('index', function(){
 
     $this->form_builder->create('test');
 
+
+    // validating the second form
     if($this->post->get('dopost'))
     {
         $this->form_builder->isValid('test');
     }
 
+
+    // validation the first form
     if($this->post->get('udopost'))
     {
         $this->form_builder->isValid('login');
