@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
             <?php echo $this->html->css('welcome.css') ?>
-            <?php echo $this->form_builder->linkCss() ?>
+            <?php echo $this->form_builder->printCss() ?>
         <title>Odm Tutorial</title>
     </head>
 

@@ -22,19 +22,16 @@
 
 Class Form_Builder
 {
-    private $_identifier;
-    private $_captcha_hidden_field;
     private $output;
-    private $fieldsArr;
+    private $columnStorage;   // form columns informations
     private $rowNum   = 0;
     private $colNum   = 0;
     private $colNames = array();
-    private $buildClosure;
+    private $closure;
+    private $_identifier;
 
-    private static $css = "form_builder.css";
-    
-    // multiforms
-    private static $forms    = array();
+    private static $css   = 'form_builder.css';
+    private static $forms = array();     // multiforms
 
     // --------------------------------------------------------------------
     /**
@@ -49,18 +46,15 @@ Class Form_Builder
         // otherwise must change the params to static
         getInstance()->form_builder = $this;  // Make available it in the controller.
 
-        logMe('debug', 'Form Builder Class Initialized');
-
         $args = func_get_args();
+        $this->closure = $args[2];  // saving builder function
         
-        // saving builder function
-        $this->buildClosure = $args[2];
-        
-        unset($args[2]);
-        // open form tag
-        $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $args);
-    }
+        unset($args[2]); // unset argument
 
+        $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $args); // open form tag
+
+        logMe('debug', 'Form Builder Class Initialized');
+    }
 
     // --------------------------------------------------------------------
 
@@ -68,7 +62,7 @@ Class Form_Builder
      * This function is used to handle some functions.
      * handle getInstance()->form->input() functions
      * 
-     * all the public functions in the class, must holds 'form-identifier as a parameter.'
+     * all the public functions in the class, must holds 'form-identifier as a parameter .'
      */
     public function __call($method, $arguments)
     {
@@ -90,7 +84,7 @@ Class Form_Builder
             case 'multiselect':
             {
                 $colname = $arguments[0];
-                $this->setColValue('field_name', $arguments[0]);
+                $this->_setColumnArray('field_name', $arguments[0]);
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
                 return array("method" => $method, "arguments" => $arguments);
                 break;
@@ -100,10 +94,7 @@ Class Form_Builder
             {
                 $identifier = $arguments[0];
 
-                $this->_identifier = $identifier;
-
                 $config = getConfig('form_builder');
-                $this->_captcha_hidden_field = $this->_identifier.$config['captcha']['hidden_field_name'];
                 
                 if(empty(self::$forms[$identifier]))
                 {
@@ -122,11 +113,11 @@ Class Form_Builder
                 $identifier = $this->_identifier;
 
                 // creating validation callback function for captcha.
-                getInstance()->form->func('callback_captcha_'.$this->_identifier, function() use ($arguments,$identifier) {
+                getInstance()->form->func('callback_captcha_'.$identifier, function() use ($arguments,$identifier) {
                 
                     $config = getConfig('form_builder');
 
-                    $code = $this->sess->get($this->post->get($config['captcha']['hidden_field_name']));
+                    $code = $this->sess->get($this->post->get($config['captcha']['hidden_input_name']));
 
                     if( $this->post->get($arguments[0]) != $code )
                     {
@@ -138,9 +129,10 @@ Class Form_Builder
                 });
 
                 $colname = $arguments[0];
-                $this->setColValue('rules', 'callback_captcha_'.$this->_identifier);
-                
-                $this->setColValue('field_name', $arguments[0]);
+
+                $this->_setColumnArray('rules', 'callback_captcha_'.$this->_identifier);
+                $this->_setColumnArray('field_name', $arguments[0]);
+
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
                 return array("method" => $method, "arguments" => $arguments);
                 break;
@@ -164,7 +156,7 @@ Class Form_Builder
     {
         $this->_identifier = $identifier;
         
-        call_user_func_array(Closure::bind($this->buildClosure, $this, get_class()), array());
+        call_user_func_array(Closure::bind($this->closure, $this, get_class()), array());
         
         self::$forms[$identifier] = $this;
     }
@@ -177,8 +169,7 @@ Class Form_Builder
      */
     protected function isValid()
     {
-        // getInstance()->form = getInstance()->form;
-        $this->setRules();
+        $this->_setRules();
 
         return getInstance()->form->isValid();
     }
@@ -209,70 +200,61 @@ Class Form_Builder
             {
                 if (isset($item['input']))
                 {
-                    $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['input'][]     = $item['input'];
-                    $this->fieldsArr[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($item['label'])) ? $item['label'] : ' ';
+                    $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['input'][]     = $item['input'];
+                    $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($item['label'])) ? $item['label'] : ' ';
                 }
             }
         }
         else // normal set
         {
-            $this->setColValue('input', $data['input']);
+            $this->_setColumnArray('input', $data['input']);
         }
 
         if(array_key_exists('label', $data))
         {
-            $this->setColValue('label', $data['label']);
+            $this->_setColumnArray('label', $data['label']);
         }
 
         if(array_key_exists('rules', $data))
         {
             $label = (isset($data['label'])) ? $data['label'] : ucfirst(strtolower($data['label']));
-            $this->setColValue('rules', $data['rules']);
+            $this->_setColumnArray('rules', $data['rules']);
         }
 
         // increase column index in the columns array
         $this->colNum ++;
     }
 
-
     // --------------------------------------------------------------------
-    /**
-     * Get current column name
-     * 
-     * @return [type] [description]
-     */
-    protected function getColName()
-    {
-        return $this->colNames[$this->rowNum][$this->colNum];
-    }
 
-    // --------------------------------------------------------------------
     /**
      * Assign values to the columns
      * 
      * @param string $index index name of the array element
      * @param string $value value 
      */
-    protected function setColValue($index, $value)
+    protected function _setColumnArray($index, $value)
     {
         if($index === 'rules')
         {
-            if( ! empty ($this->fieldsArr[$this->rowNum]['columns'][$this->colNum][$index]) )
+            if( ! empty ($this->columnStorage[$this->rowNum]['columns'][$this->colNum][$index]) )
             {
-                $value .= '|'.$this->fieldsArr[$this->rowNum]['columns'][$this->colNum][$index];
+                $value .= '|'.$this->columnStorage[$this->rowNum]['columns'][$this->colNum][$index];
             }
         }
-        $this->fieldsArr[$this->rowNum]['columns'][$this->colNum][$index] = $value;
+        $this->columnStorage[$this->rowNum]['columns'][$this->colNum][$index] = $value;
     }
 
     // --------------------------------------------------------------------
+
     /**
-     * Prinnt 
-     * @param  [type] $input [description]
-     * @return [type]        [description]
+     * Print Input
+     *
+     * @param  string $input
+     * @return string
      */
 
-    protected function printInput($input)
+    protected function _printInput($input)
     {
         if (is_array($input))
         {
@@ -293,7 +275,7 @@ Class Form_Builder
                 }
                 case 'captcha':
                 {
-                    return $this->captchaBuild($input['arguments']);
+                    return $this->_captchaBuild($input['arguments']);
                     break;
                 }
             }
@@ -302,6 +284,7 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
+    
     /**
      * Set position for label or input
      * 
@@ -316,7 +299,7 @@ Class Form_Builder
     {
         if (in_array($element, array('label', 'input', 'error')) AND in_array($position, array('left', 'top', 'right', 'center','bottom')))
         {
-            $this->fieldsArr[$this->rowNum]['position'][$element] = $position;
+            $this->columnStorage[$this->rowNum]['position'][$element] = $position;
         }
     }
 
@@ -332,16 +315,16 @@ Class Form_Builder
         $out = "\n<div class='form-builder-div-wrapper'>\n";         // check the printout type "table or div"
         $out.= $this->output;
 
-        if (is_array($this->fieldsArr))         // looping the fields array
+        if (is_array($this->columnStorage))         // looping the fields array
         {
-            foreach ($this->fieldsArr as $rowNum => $v)
+            foreach ($this->columnStorage as $rowNum => $v)
             {
                 $out .= "\n\t\t<div class='form-builder-row'>";  // printing a row "<div>"
 
                 if (is_array($v))
                 {
                     $columnsNum = count($v['columns']);     // get column grid class
-                    $gridClass  = $this->calculateWidth($columnsNum);
+                    $gridClass  = $this->_calculateWidth($columnsNum);
 
                     foreach ($v['columns'] as $colNum => $v2)
                     {
@@ -349,11 +332,9 @@ Class Form_Builder
                         $addon_class = (isset($v['position']['input'])) ? "form-builder-ipos-" . $v['position']['input'] : "";
 
                         $out  .= "\n\t\t\t<div class='form-builder-column " . array_shift($gridClass) . " $addon_class' >";  // add the column TD
-                        $label = "\n\t\t\t\t".$this->printLabel($rowNum, $colNum);
+                        $label = "\n\t\t\t\t".$this->_printLabel($rowNum, $colNum);
                         
-                        $columnContent = "\n\t\t\t\t\t".$this->printColumnContent($rowNum, $colNum);  // retrive column content.
-
-
+                        $columnContent = "\n\t\t\t\t\t".$this->_printColumnContent($rowNum, $colNum);  // retrive column content.
 
                         $error = getInstance()->form->error($v2['field_name'], "<div class='form-builder-error' >", "</div>");
 
@@ -397,22 +378,25 @@ Class Form_Builder
         return $out.'<div class="clear" ></div>';
     }
 
+    // --------------------------------------------------------------------
+
     /**
-     * Link CSS file
+     * Print CSS file embed tag
      */
-    public function linkCss()
+    public function printCss()
     {
         return getInstance()->html->css(self::$css);
     }
 
     // --------------------------------------------------------------------
+
     /**
      * This function determines which 'css classes'
      * will be assigned to each column
      * 
      * @return array
      */
-    protected function calculateWidth($columnsNum)
+    protected function _calculateWidth($columnsNum)
     {
         $gridSys = array(
             1 => array(10),
@@ -446,17 +430,18 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
+
     /**
      * Print the column content
      * 
      * @return string Column output
      */
-    protected function printColumnContent($rowNum, $colNum)
+    protected function _printColumnContent($rowNum, $colNum)
     {
         $arg   = func_get_args();
         
-        $row   = $this->fieldsArr[$rowNum];
-        $col   = $this->fieldsArr[$rowNum]['columns'][$colNum];
+        $row   = $this->columnStorage[$rowNum];
+        $col   = $this->columnStorage[$rowNum]['columns'][$colNum];
         $out   = '';
 
         if ( ! isset($col['input']['method']) AND isset($col['label']))  // it will be an array with "radios, checkboxs";
@@ -466,13 +451,13 @@ Class Form_Builder
             foreach ($col['input'] as $col_v)
             {
                 $out .= (isset($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
-                $out .= $this->printInput($col_v);
+                $out .= $this->_printInput($col_v);
                 $i ++;
             }
         }
         else
         {
-            $out = $this->printInput($col['input']);
+            $out = $this->_printInput($col['input']);
         }
 
         return $out;
@@ -481,7 +466,7 @@ Class Form_Builder
     // --------------------------------------------------------------------
 
     /**
-     * Setting a value for 'inputs', Form::setValue()
+     * Setting a value for 'inputs', $this->form->setValue()
      */
     protected function setValue()
     {
@@ -490,8 +475,9 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
+
     /**
-     * Setting a value for 'radio', Form::setRadio()
+     * Setting a value for 'radio', $this->form->setRadio()
      */
     protected function setRadio()
     {
@@ -499,8 +485,10 @@ Class Form_Builder
         return call_user_func_array(array(getInstance()->form, 'setRadio'), $arg);
     }
 
+    // --------------------------------------------------------------------
+
     /**
-     * Setting a value for 'radio', Form::setRadio()
+     * Setting a value for 'radio', $this->form->setRadio()
      */
     protected function setSelect()
     {
@@ -510,7 +498,7 @@ Class Form_Builder
 
     // --------------------------------------------------------------------
     /**
-     * Setting a value for 'checboxs', Form::setCheckbox()
+     * Setting a value for 'checboxs', $this->form->setCheckbox()
      */
     protected function setCheckbox()
     {
@@ -519,16 +507,17 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
+
     /**
      * Print the label of the column
      * 
      * @return string Column Label
      */
-    protected function printLabel()
+    protected function _printLabel()
     {
         $arg = func_get_args();
 
-        $row = $this->fieldsArr[$arg[0]];
+        $row = $this->columnStorage[$arg[0]];
         $addon_class = (isset($row['position']['label'])) ? 'form-builder-label-' . $row['position']['label'] : 'form-builder-label-top';
 
         $out  = "<div class='form-builder-label-wrapper $addon_class'>";
@@ -539,9 +528,13 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
-    protected function setRules()
+    
+    /**
+     * Set rules for validat
+     */
+    protected function _setRules()
     {
-        foreach($this->fieldsArr as $row )
+        foreach($this->columnStorage as $row )
         {
             foreach($row as $key => $rowVars)
             {
@@ -564,7 +557,7 @@ Class Form_Builder
      * 
      * @return string
      */
-    protected function captchaBuild()
+    protected function _captchaBuild()
     {
         $args = func_get_args();
         $args = $args[0];
@@ -572,14 +565,14 @@ Class Form_Builder
         $config = getConfig('form_builder');
         $config = $config['captcha'];
 
-        if( empty($config['hidden_field_name']) )
+        if( empty($config['hidden_input_name']) )
         {
-            throw new Exception('Form Builder error : Captcha hidden_field_name must has been set in form_builder.php config file.');
+            throw new Exception('Form Builder error : Captcha hidden_input_name must has been set in form_builder.php config file.');
         }
         
-        if( is_callable($config['captchaFunc']) )
+        if( is_callable($config['func']) )
         {
-            $captcha = call_user_func_array(Closure::bind($config['captchaFunc'], getInstance(), 'Controller'), array());
+            $captcha = call_user_func_array(Closure::bind($config['func'], getInstance(), 'Controller'), array());
 
             // if( empty($captcha['hidden_input_template']) OR empty($captcha['image_url']) )
             if( empty($captcha['image_id']) OR empty($captcha['image_url']) )
@@ -589,11 +582,11 @@ Class Form_Builder
 
             $out = "\t<div class='form-builder-captcha-wrapper'>\n";
 
-                $img_template = '<img src="%s" />';
+                $img_template =  ( empty($config['image_template']) ) ? '<img src="%s" />' : $config['image_template'];
 
                 $out.= "\t".sprintf($img_template, $captcha['image_url'])."\n";
                 // captcha hidden field preceded by form _identifier
-                $out.= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($config['hidden_field_name'], $captcha['image_id']))."\n";
+                $out.= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($config['hidden_input_name'], $captcha['image_id']))."\n";
                 // $out.= "\t".sprintf($captcha['hidden_input_template'], $captcha['image_id'])."\n";
                 // $out.= "\t".sprintf($captcha['image_template'], $captcha['image_url'])."\n";
                 $out.= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
@@ -607,6 +600,7 @@ Class Form_Builder
             throw new Exception('Form Builder error : Captcha key must be a callable function in form_builder.php config file.');
         }
     }
+
 }
 
 // END Form Builder Class
