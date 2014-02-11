@@ -11,12 +11,12 @@ Models are PHP classes that are designed to work with information in your databa
 ### Model Reference
 
 ```php
-new Model(string $var, mixed $schemaOrTable = '', string $dbVar = 'db');
+new Model(string $var, mixed $schemaOrTable = '', object $dbObject = null);
 ```
 
 * <b>First Parameter:</b> Specifies the controller variable, you can access it like $this->var->method().
 * <b>Second Parameter:</b> Sets database tablename.
-* <b>Third Parameter:</b> Sets the current database variable, default is "db".
+* <b>Third Parameter:</b> Sets your custom database object ( optional ).
 
 
 ### Creating & Loading Models

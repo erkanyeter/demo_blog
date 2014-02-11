@@ -64,7 +64,7 @@ $form = array(
 		'form_error_code'      => '8',
 		'form_success_key'     => 'success',
 		'form_success_code'    => '9',
-		'form_success_message' => 'Operation succesfull.',
+		'form_success_message' => 'Operation successful.',
 	),
 
 );

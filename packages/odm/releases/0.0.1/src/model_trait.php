@@ -87,10 +87,12 @@ namespace Odm\Src {
          * 
          * @return void
          */
-        private function _buildSuccessMessage($method)
+        private function _buildSuccessMessage()
         {
             // We need do append to array data otherwise $this->setMessage(); function
-            // does not work, because of it reset all array wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array()     
+            // does not work, because of it reset all array data
+            // !! wrong way ---> $this->_odmMessages[$this->_odmTable]['messages'] = array('success' => 1)     
+            // :) right way ---> $this->_odmMessages[$this->_odmTable]['messages']['success'] = 1;
 
             $string = $this->_odmConfig['response']['operation_success_message'];
 

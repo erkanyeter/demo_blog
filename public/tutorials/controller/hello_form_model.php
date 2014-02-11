@@ -31,7 +31,10 @@ $c->func('index', function(){
 			return true;
 		});
 
-		$this->user->isValid(); // do validation
+		if($this->user->isValid())  // check validation
+		{
+			$this->user->setMessage('message', 'Form is successfully validated.');
+		}
 	}
 
     $this->view->get('hello_form_model', function(){
