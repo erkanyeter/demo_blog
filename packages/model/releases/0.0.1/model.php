@@ -76,7 +76,7 @@ Class Model {
 
                 $task      = new Task;    // Get tablename from "sync form" if we have sync request otherwise use current tablename.
                 $tablename = isset($_POST['lastCurrentSchema']) ? $_POST['lastCurrentSchema'] : $tablename ;
-                $output    = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.$dbVar.'/'.$requestUri.'/'.$postData, true);
+                $output    = $task->run('sync/index/'.$tablename.'/'.$modelName.'/'.Db::$var.'/'.$requestUri.'/'.$postData, true);
 
                 // print_r($_POST); exit; // debug On / Off
 

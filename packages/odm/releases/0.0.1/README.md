@@ -89,12 +89,12 @@ When you <b>call a model</b>, <kbd>model package</kbd> creates automatically the
 ### Model Reference
 
 ```php
-new Model(string $variableName, mixed $schemaOrTable = '', string $dbVar = 'db');
+new Model(string $variableName, mixed $schemaOrTable = '', object $dbVar = null);
 ```
 
 * <b>First Parameter:</b> This parameter specifies the controller variable, you can access it like $this->var->method();
 * <b>Second Parameter:</b> This parameter sets database tablename.
-* <b>Third Parameter:</b> This parameter sets the current database variable, default is "db".
+* <b>Third Parameter:</b> Sets your custom database object ( optional ).
 
 
 ### Creating Models *Using File Schema*

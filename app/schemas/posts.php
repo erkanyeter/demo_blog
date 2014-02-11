@@ -50,7 +50,7 @@ $posts = array(
 			'Published',
 			'Archived',
 		),
-		'types' => '_not_null|_enum|_default(Published)|_key(post_status)(post_status)',
+		'types' => '_not_null|_enum|_default(Published)',
 		'rules' => 'required',
 		),
 	'post_creation_date' => array(
