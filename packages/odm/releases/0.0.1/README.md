@@ -153,14 +153,14 @@ $this->user->delete();
 
 Available <b>CRUD operations</b> that we are support listed below. You can define any of these methods.
 
-* save
-* insert
+* create
+* read
 * update
-* replace
 * delete
 * remove
-* push
-* send
+* insert
+* save
+* replace
 * callback_ ( form validation callback_* functions )
 
 

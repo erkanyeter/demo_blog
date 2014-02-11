@@ -385,10 +385,10 @@ Class Hmvc
             return $this->getResponse();
         }
          
-        // Detect The Application ( Web or Web Service )
+        // Get application methods
         //----------------------------
 
-        $_storedMethods = (get_class($c)) == 'Controller' ? array_keys($c->_controllerAppMethods) : array_keys($c->_webServiceAppMethods);
+        $_storedMethods = array_keys($c->_controllerAppMethods);
 
         //----------------------------
         // Check method exist or not

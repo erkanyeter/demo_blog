@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function>
+   <name>getby.id</name>
+   <description>This function get one user data from users table.</description>
+   <visibility>private</visibility>
+   <post>
+      <data key="user_id" type="integer" rules="required" desc="User Id of user, must be integer" required='yes'>
+  		 	username
+      </data>
+   </post>
+   <version>1.0</version>
+   <author>Ersin Güvenç</author>
+   <publish_date>2014-10-01</publish_date>
+</function>

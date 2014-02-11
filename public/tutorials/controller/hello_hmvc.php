@@ -16,7 +16,9 @@ $c = new Controller(function(){
 
 $c->func('index',function() {
 
+    // multiple
     $response_a = $this->web->get('tutorials/hello_dummy/test/1/2/3');
+    
     $response_b = $this->web->get('tutorials/hello_dummy/test/4/5/6');
 
     $this->view->get('hello_hmvc', function() use($response_a, $response_b) {

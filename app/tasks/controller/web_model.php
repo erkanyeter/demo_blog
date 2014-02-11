@@ -18,7 +18,7 @@ $c->func('index', function(){
     $folder      = PUBLIC_FOLDER .'web_model';
     $scan_result = scandir($folder);
 
-$html_file = '<!DOCTYPE html>
+$html = '<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -58,7 +58,7 @@ $html_file = '<!DOCTYPE html>
             $subFolder = $folder. DS .$value;
             $files     = scandir($subFolder);
 
-            $html_file .='<div class="panel panelmain">
+            $html.='<div class="panel panelmain">
                                 <div class="title_web_model">
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'argtogglediv_'.$ii.'\');" >
                                         [<span id="maintoggle_'.$ii.'">+</span>] '.$value.'
@@ -85,12 +85,11 @@ $html_file = '<!DOCTYPE html>
                     $data['folder']       =  $phpPath;
                     $data['name']         =  $dom->getElementsByTagName('name')->item(0)->nodeValue;
                     $data['description']  =  $dom->getElementsByTagName('description')->item(0)->nodeValue;
-                    $data['visibility']   =  $dom->getElementsByTagName('visibility')->item(0)->nodeValue;
+                    // $data['visibility']   =  $dom->getElementsByTagName('visibility')->item(0)->nodeValue;
                     $data['publish_date'] =  $dom->getElementsByTagName('publish_date')->item(0)->nodeValue;
                     $data['version']      =  $dom->getElementsByTagName('version')->item(0)->nodeValue;
                     $data['author']       =  $dom->getElementsByTagName('author')->item(0)->nodeValue;
  
-
                     if($dom->getElementsByTagName('post')->length > 0)
                     {
                         $data['request'] = 'POST';
@@ -104,9 +103,7 @@ $html_file = '<!DOCTYPE html>
                         $data['request'] = 'REQUEST';
                     }
 
-                    $html_file .='  
-                               
-                               
+                    $html.='
                                  <div class="panel panel-default  left25 ">
                                     
                                     <a href="javascript:void(0);"  onclick="ExceptionToggle(\'arg_toggle_'.$i.'\');">
@@ -152,7 +149,7 @@ $html_file = '<!DOCTYPE html>
                         
                             $dataData  = trim($feeditem->nodeValue);
                             
-                            $html_file .='
+                            $html .='
                                                             <tr>
                                                                 <td>'.$feeditem->getAttribute('key') .'</td>
                                                                 <td>'.$feeditem->getAttribute('type').'</td>
@@ -162,18 +159,21 @@ $html_file = '<!DOCTYPE html>
                                                                 <td>'.$dataData.'</td>
                                                             </tr>';
                         } 
+    
+                    $visibility = '';
+                    if(isset($data['visibility']))
+                    {
+                        $visibility = '<br>Visibility : <span class="red">'.$data['visibility'].' </span>';
+                    }
 
-                    $html_file.='  
+                    $html.='  
                                                        
                                                     </table>
                                                 </div>
                                             <p>
                                                 <div class="author">
-                                                     v'.$data['version'].' <br>
-                                                    Visibility : <span class="red">'.$data['visibility'].' </span>
-                                           
-                                                   
-                                                   
+                                                     v'.$data['version'].'
+                                                    '.$visibility.'
                                                 </div>
                                             </p>
                                             <p>
@@ -186,19 +186,19 @@ $html_file = '<!DOCTYPE html>
                            ';               
                 }
             }
-            $html_file.='   </div></div>';
+            $html.='   </div></div>';
         }
     }
 
- $html_file .='
+ $html.='
     </div>
-</div>
+</div>d
 </body>
 </html>';
 
-echo $html_file;
+echo $html;
 
 });
 
-/* End of file web_model_doc.php */
-/* Location: .app/tasks/controller/web_model_doc.php */
+/* End of file web_model.php */
+/* Location: .app/tasks/controller/web_model.php */

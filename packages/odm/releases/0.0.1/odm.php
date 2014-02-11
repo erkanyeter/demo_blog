@@ -19,13 +19,13 @@ Class Odm {
     public $_odmMessages     = array();   // Validation errors and transactional ( Insert, Update, delete ) messages
     public $_odmValues       = array();   // Filtered safe values
     public $_odmValidation   = false;     // If form validation success we set it to true
-    public $_odmValidator;
     public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
     public $_odmColumnJoins  = array();   // Do join foreach columns with related schema
     public $_odmUseSchema    = true;      // Use schema file as default
 
     public $post;                         // Post package object
     public $form;                         // Form package object
+    public $validator;                    // Validator package object
     
     // --------------------------------------------------------------------
 
@@ -38,9 +38,6 @@ Class Odm {
     public function __construct($schemaArray, $dbObject)
     {
         $this->_odmConfig    = getConfig('odm');   // Initialize to Validator Object.
-        $this->_odmValidator = getInstance()->validator; 
-
-        $this->clear();            // Clear the validator.
 
         $this->_odmTable     = strtolower($schemaArray['*']['_tablename']);
         $this->_odmUseSchema = $schemaArray['*']['_use_schema'];
@@ -53,12 +50,26 @@ Class Odm {
             $this->_odmSchema = array();
         }
 
-        $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
-        $this->post = (isset(getInstance()->post)) ? getInstance()->post : $odm['post'];
+        $form = \Form::getFormConfig();
+
+        $this->form      = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
+        $this->post      = (isset(getInstance()->post)) ? getInstance()->post : $form['post'];
+
+        // --------------------------------------------------------------------
+        // NOTE: Every object must create new instance when we use Hmvc.
+        // The validator bug is a good example of this issue.
+        // When we call it as a new object, we understood multiple validation problems 
+        // fixed in HMVC.
+
+        $this->validator = (isset(getInstance()->validator)) ? getInstance()->validator : new Validator;  // hmvc isset errors .. !
+
+        // --------------------------------------------------------------------
 
         getInstance()->translator->load('odm');  // Load Odm package language file.
 
         $this->{Db::$var} = $dbObject; // Store database object
+
+        // $this->clear();            // This occurs Hmvc errors .. Clear the validator.
 
         logMe('debug', 'Odm Class Initialized');
     }
@@ -73,10 +84,9 @@ Class Odm {
     */
     public function isValid()
     {
-        $validator = $this->_odmValidator;
-        $table     = $this->_odmTable;
+        $table = $this->_odmTable;
 
-        $validator->set('_callback_object', $this);
+        $this->validator->set('_callback_object', $this);
 
         // ----------------------------------------
         // @ Column join
@@ -100,7 +110,7 @@ Class Odm {
             }
         }
 
-        $fields = array_merge($this->_odmSchema, $validator->_field_data);// Merge "Odm" and "Validator fields"
+        $fields = array_merge($this->_odmSchema, $this->validator->_field_data); // Merge "Odm" and "Validator fields"
         $fields = array_merge($joinSchemaFields, $fields);  // Merge with $this->_odmSchema
         
         foreach($fields as $key => $val)
@@ -112,13 +122,13 @@ Class Odm {
                     if(isset($this->data[$key])) // Set selected key to REQUEST.
                     {
                         $label = (isset($val['label'])) ? $val['label'] : '';   // $_REQUEST[$key] = $this->{$key};
-                        $validator->setRules($key, $label, $val['rules']);
+                        $this->validator->setRules($key, $label, $val['rules']);
                     }
                 }
             }
         }
         
-        if($validator->isValid())   // Run the validation
+        if($this->validator->isValid())   // Run the validation
         {
             foreach($fields as $key => $val)  // Set filtered values
             {
@@ -153,9 +163,9 @@ Class Odm {
         {
             foreach($fields as $key => $val)  // Set validation errors.
             {
-                if(isset($validator->_field_data[$key]['error']))
+                if(isset($this->validator->_field_data[$key]['error']))
                 {
-                   $error = $validator->getErrors($key, null, null);
+                   $error = $this->validator->getErrors($key, null, null);
 
                    if( ! empty($error))
                    {
@@ -165,7 +175,7 @@ Class Odm {
 
                 //----------------------------
                 
-                $string = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $this->_odmConfig['response']['odm_error_message'];
+                $string = (isset($this->validator->_error_messages['message'])) ? $this->validator->_error_messages['message'] : $this->_odmConfig['response']['odm_error_message'];
 
                 //----------------------------
 
@@ -234,19 +244,20 @@ Class Odm {
     // --------------------------------------------------------------------
     
     /**
-    * Clear Validation Object.
+    * Clear Odm Object Variables
+    * 
+    * @return  void
     */
     public function clear()
     {        
         $this->_odmValidation = false;
 
-        $validator = $this->_odmValidator;
-        $validator->clear();
-
-        $this->_odmSchema       = null;     // Schema object.
-        $this->_odmTable        = '';       // Tablename.
-        $this->_odmMessages     = array();  // Validation errors.
-        $this->_odmValues       = array();  // Filtered safe values.
+        $this->validator->clear();  // clear validator object
+        
+        $this->_odmSchema       = array();   // Schema object.
+        $this->_odmTable        = '';        // Tablename.
+        $this->_odmMessages     = array();   // Validation errors.
+        $this->_odmValues       = array();   // Filtered safe values.
         $this->_odmFormTemplate = 'default'; // Form template.
         $this->_odmColumnJoins  = array(); 
     }    
@@ -436,8 +447,7 @@ Class Odm {
 
         if(isset($this->_odmSchema[$key])) // set a validation error.
         {
-            $validator = $this->_odmValidator;
-            $validator->_field_data[$key]['error'] = $error;
+            $this->validator->_field_data[$key]['error'] = $error;
         }
     }
 
@@ -587,6 +597,19 @@ Class Odm {
         }
 
         return $schemas;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set response data to Odm
+     * messages use especially READ operations.
+     * 
+     * @param array $data db results as array or array data
+     */
+    public function setResult($data)
+    {
+        $this->_odmMessages[$this->_odmTable]['result'] = (array)$data;
     }
 
 }

@@ -27,7 +27,7 @@ Class Controller {
      * 
      * @param object $closure
      */
-    public function __construct($closure, $autorun = true)       
+    public function __construct($closure)       
     {   
         self::$instance = &$this;
 
@@ -86,7 +86,9 @@ Class Controller {
         // "One Public Method Per Controller" Rule
         //-----------------------------------------------------
         
-        if(strncmp($methodName, '_', 1) !== 0 AND strpos($methodName, 'callback_') !== 0) // if it is not a private method control the "One Public Method Per Controller" rule
+        // if it is not a private method control the "One Public Method Per Controller" rule
+
+        if(strncmp($methodName, '_', 1) !== 0 AND strpos($methodName, 'callback_') !== 0) 
         {
             $this->_controllerAppPublicMethods[$method] = $methodName;
 
