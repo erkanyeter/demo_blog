@@ -20,6 +20,7 @@ Class Setup_Wizard {
     private $_dbName;
     private $_db;
 
+    protected $ini_line = array();
     protected $wizard; // for model
 
     /**
@@ -83,9 +84,9 @@ Class Setup_Wizard {
      * 
      * @return boolean true or exception
      */
-    private function _createSql()
+    private function _createSQL()
     {
-        $sql    = $this->getSQL();
+        $sql    = $this->post->get('sql');
         $result = $this->_db->exec($sql);
 
         if($result > 0)
@@ -104,7 +105,7 @@ Class Setup_Wizard {
      * 
      * @return string
      */
-    private function getSQL()
+    public function getSQL()
     {
         return $sql = file_get_contents($this->_db_path);
     }
@@ -112,23 +113,40 @@ Class Setup_Wizard {
     // --------------------------------------------------------------------
 
     /**
-     * Write setup ini
+     * Set setup ini file
      * 
      * @return function _fileRewrite()
      */
     public function setIni($segment = 'demo_blog', $key = 'installed', $value = 1)
     {
-        $this->ini_line = '['.$segment.'] '.$key.' = '.$value;
+        $ini_line = '['.$segment.'] '.$key.' = '.$value;
+
+        return array_push($this->ini_line, $ini_line);
     }
 
+    // --------------------------------------------------------------------
+
+    /**
+     * Write ini
+     * 
+     * @return string
+     */
     public function writeIni()
     {
-        return $this->_fileRewrite($this->_ini_file, $data);
+        print_r($this->ini_line);
+        return $this->_fileRewrite($this->_ini_file, implode('',$this->ini_line));
     }
 
+    // --------------------------------------------------------------------
+
+    /**
+     * Get ini content
+     * 
+     * @return array
+     */
     public function getIni()
     {
-        return parse_ini_file($this->_ini_file);
+        return parse_ini_file($this->getIniFile());
     }
 
     // --------------------------------------------------------------------
@@ -188,10 +206,11 @@ Class Setup_Wizard {
      * @param  string $label
      * @return array
      */
-    public function setInput($name, $label)
+    public function setInput($name, $label, $rule)
     {
         $input          = array();
         $input['name']  = $name;
+        $input['rule']  = $rule;
         $input['label'] = $label;
 
         array_push($this->_input, $input);
@@ -209,7 +228,6 @@ Class Setup_Wizard {
         $form = '';
         foreach($this->_input as $input)
         {
-            // $form.= $this->form->error($input['name']);
             if($input['name'] == 'password')
             {
                 $form.= '<tr><td class="newColumn">'.$this->form->label($input['label']).'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->error($input['name']).$this->form->password($input['name'],''," id='$input[name]'").'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
@@ -220,9 +238,10 @@ Class Setup_Wizard {
             }
         }
 
-        $form.= '<tr><td class="newColumn">'.$this->form->label('SQL Path').'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->input('',$this->_db_path).'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
+        $form.= '<tr><td class="newColumn">'.$this->form->label('SQL Path').'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->input('',$this->_db_path,'disabled').'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
 
-        $form.= '<tr><td class="newColumn" colspan="2">'.$this->form->textarea('aaa',$this->getSQL(),'cols="50" rows="10"').'</tr>';
+        $form.= '<tr><td class="newColumn" colspan="2">'.$this->form->textarea('sql',$this->getSQL(),'cols="50" rows="10"').'</tr>';
+
 
         return $form;
     }
@@ -236,9 +255,9 @@ Class Setup_Wizard {
      */
     public function run()
     {
-        $parse = parse_ini_file($this->getIniFile());
+        $parse = $this->getIni();
 
-        if($parse['installed'] == 1)
+        if(isset($parse['installed']) == 1)
         {
             return false;
         }
@@ -253,7 +272,7 @@ Class Setup_Wizard {
 
             foreach($this->_input as $rule)
             {
-                $this->form->setRules($rule['name'], $rule['label'], 'required');
+                $this->form->setRules($rule['name'], $rule['label'], $rule['rule']);
             }
 
             if($this->wizard->isValid())
@@ -266,7 +285,7 @@ Class Setup_Wizard {
                 {
                     $this->wizard->setMessage('message',$this->_dbName.' database available');
                 }
-                elseif( ! $this->_createSql())
+                elseif( ! $this->_createSQL())
                 {
                     $this->wizard->setMessage('message','Database not installed');
                 }
@@ -274,9 +293,15 @@ Class Setup_Wizard {
                 {
                     $this->wizard->setMessage('message','Database config file could not be created.');
                 }
-                elseif( ! $this->setIni('demo_blog', 'installed', 1))
+                elseif( ! $this->writeIni())
                 {
                     $this->wizard->setMessage('message','Setup.ini file could not be written.');
+                }
+                else
+                {
+                    $url = new \Url;
+
+                    $url->redirect();
                 }
             }
         }
@@ -289,8 +314,6 @@ Class Setup_Wizard {
         {
             $this->formHtml();
         }
-
-
     }
 
     // --------------------------------------------------------------------
@@ -303,7 +326,7 @@ Class Setup_Wizard {
     private function _createDbConfig()
     {
         $db_config = APP . 'config' . DS . 'debug' . DS . 'database.php';
-        $data = $this->_getDbConfig();
+        $data      = $this->_getDbConfig();
 
         return $this->_fileRewrite($db_config, $data);
     }
