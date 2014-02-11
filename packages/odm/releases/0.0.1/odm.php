@@ -35,7 +35,7 @@ Class Odm {
      * @param mixed $schemaArray  array or booelan type
      * @param object $dbObject
      */
-    public function __construct($schemaArray, $dbObject)
+    public function __construct($schemaArray, $dbObject = null)
     {
         $this->_odmConfig    = getConfig('odm');   // Initialize to Validator Object.
 
@@ -52,8 +52,8 @@ Class Odm {
 
         $form = \Form::getFormConfig();
 
-        $this->form      = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
-        $this->post      = (isset(getInstance()->post)) ? getInstance()->post : $form['post'];
+        $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
+        $this->post = (isset(getInstance()->post)) ? getInstance()->post : $form['post'];
 
         // --------------------------------------------------------------------
         // NOTE: Every object must create new instance when we use Hmvc.
@@ -67,7 +67,10 @@ Class Odm {
 
         getInstance()->translator->load('odm');  // Load Odm package language file.
 
-        $this->{Db::$var} = $dbObject; // Store database object
+        if(is_object($dbObject)) // if db object is not null
+        {
+            $this->{Db::$var} = $dbObject; // Store database object
+        }
 
         // $this->clear();            // This occurs Hmvc errors .. Clear the validator.
 
@@ -144,9 +147,9 @@ Class Odm {
                 }
             }
             
-            if($this->_odmSchema == false) // If Model Trait save function not used we need send back success for "Form Model Ajax" Tutorial.
+            if($this->_odmSchema == false) // If Model Trait save function not used we need send success messages for "Form Model Ajax".
             {
-                $this->_buildSuccessMessage('send');
+                $this->_buildSuccessMessage(); // send successful response
             }
 
             //----------------------------

@@ -22,7 +22,8 @@ $c->func('index', function(){
 	$this->setup_wizard->setTitle('Setup Wizard <u>Database Connection</u>');
 	$this->setup_wizard->setInput('hostname','Hostname');
 	$this->setup_wizard->setInput('username','Username');
-	$this->setup_wizard->setInput('password','Password');
+	$this->setup_wizard->setInput('password','Password','required');
+	
 	$this->setup_wizard->run();
 
 
