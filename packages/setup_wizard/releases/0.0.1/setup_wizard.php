@@ -248,6 +248,20 @@ Class Setup_Wizard {
 
     // --------------------------------------------------------------------
 
+    public function setRedirectUrl($url = '/')
+    {
+        $this->redirectUrl = $url;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getRedirectUrl()
+    {
+        return $this->redirectUrl;
+    }
+
+    // --------------------------------------------------------------------
+    
     /**
      * Run last function
      * 
@@ -283,7 +297,7 @@ Class Setup_Wizard {
                 }
                 elseif( ! $this->_dbControl())
                 {
-                    $this->wizard->setMessage('message',$this->_dbName.' database available');
+                    $this->wizard->setMessage('message',$this->_dbName.' database already exists.');
                 }
                 elseif( ! $this->_createSQL())
                 {
@@ -300,7 +314,7 @@ Class Setup_Wizard {
                 else
                 {
                     $url = new \Url;
-                    $url->redirect();
+                    $url->redirect($this->getRedirectUrl());
                 }
             }
         }
