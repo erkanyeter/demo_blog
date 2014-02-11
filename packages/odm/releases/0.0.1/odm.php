@@ -456,6 +456,11 @@ Class Odm {
             return getInstance()->validator->setMessage($key, $message);
         }
 
+        if($key == 'message') // if key message use message template
+        {
+            $message = sprintf($this->_odmConfig['notifications']['errorMessage'], translate($message));
+        }
+
         $this->_odmMessages[$this->_odmTable]['messages'][$key] = $message;
     }
 

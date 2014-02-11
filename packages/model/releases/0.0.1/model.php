@@ -16,16 +16,18 @@ Class Model {
      * 
      * @param string  $modelName  Model Name
      * @param array | string | null | boolean $schemaOrTable Schema Object 
-     * @param string $dbVar database object variable
+     * @param string $dbObject database object
      */
-    public function __construct($modelName, $schemaOrTable = '', $dbVar = 'db')
+    public function __construct($modelName, $schemaOrTable = '', $dbObject = null)
     {
         global $packages, $config;
 
         //------------------- Connect to Database -----------------------//
 
-        new Db($dbVar);
-        $dbObject = getInstance()->{$dbVar};
+        if($schemaOrTable !== false AND $dbObject == null)
+        {
+            $dbObject = new Db;
+        }
 
         //------------------- Include Form Class -----------------------//
 

@@ -36,7 +36,7 @@ $odm = array(
 		'operation_failure_code' 	=> '12',
 		'operation_success_key'     => 'success',
 		'operation_success_code'    => '11',
-		'operation_success_message' => 'Operation succesfull.',  									// Odm object use this message for general success messages.
+		'operation_success_message' => 'Operation successful.',  									// Odm object use this message for general success messages.
 		'operation_failure_message' => 'We couldn\'t do operation at this time please try again.',  // Odm object use this message for general failure messages.
 	),
 
