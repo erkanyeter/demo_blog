@@ -126,8 +126,7 @@ Class Schema_Mysql {
         {
             $schemaFile = file_get_contents($this->schemaObject->getPath());
             $schemaFile = str_replace(array('<?php', '<?'),'',$schemaFile);
-
-            preg_match("#'$key'.*?'func'\s+=>\s+((?:(array.*?}\),))|(?![array])(.*?},))#s",$schemaFile, $matches);
+            preg_match("#'$key'.*?'func'\s*=>\s*((?:(array.*?}\s*\)\s*,))|(?![array])(.*?}\s*,))#s",$schemaFile, $matches);
 
             if( isset($matches[1]))
             {

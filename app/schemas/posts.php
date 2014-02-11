@@ -30,11 +30,6 @@ $posts = array(
 		),
 	'post_status' => array(
 		'label' => 'Post Status',
-		'_enum' => array(
-			'Draft',
-			'Published',
-			'Archived',
-		),
 		'func' => array(
 			'all' => function(){
 				$post_status = getSchema('posts')['post_status']['_enum'];
@@ -50,7 +45,12 @@ $posts = array(
 				return array_merge(array('' => 'All'), $post_status());
 			}
 		),
-		'types' => '_not_null|_enum|_default(Published)',
+		'_enum' => array(
+			'Draft',
+			'Published',
+			'Archived',
+		),
+		'types' => '_not_null|_enum|_default(Published)|_key(post_status)(post_status)',
 		'rules' => 'required',
 		),
 	'post_creation_date' => array(
