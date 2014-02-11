@@ -1,7 +1,7 @@
 <?php
 
 /**
- * $c hello_web "web service"
+ * $c hello_web_model "local web service"
  * 
  * @var Controller
  */
@@ -13,23 +13,23 @@ $c->func('index', function(){
 
     new Web;
 
-    // $this->web->query('members/create.one.json',function(){
+    // $res = $this->web->query('members/create.one.json',function(){
     //     $this->data['user_username'] = 'test';
     //     $this->data['user_email']    = 'me@test.com';
     // });
 
-    // $r = $this->web->getResult();
+    // print_r($res);
+    // print_r($this->web->getResultArray());
 
     // var_dump($this->web->getResultArray());
 
-
     $r = $this->web->query('members/getby.id.json',function(){
-        $this->data['user_id'] = '3';
+        $this->data['user_id'] = '3'; // get one user
     });
 
     if($r['success'])
     {
-        print_r($this->web->getResult());
+        print_r($this->web->getRowArray());
     }
 
     echo '<br>';
@@ -54,5 +54,5 @@ $c->func('index', function(){
 
 });
 
-/* End of file hello_web.php */
-/* Location: .tutorials/controller/hello_web.php */
+/* End of file hello_web_model.php */
+/* Location: .tutorials/controller/hello_web_model.php */

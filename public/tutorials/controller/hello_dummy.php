@@ -10,6 +10,7 @@ $c = new Controller(function(){
 });
 
 $c->func('test', function($arg1, $arg2, $arg3){
+
 	echo '<pre>Response: '.$arg1 .' - '.$arg2. ' - '.$arg3.'</pre>';
 });
 

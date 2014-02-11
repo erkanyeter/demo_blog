@@ -8,7 +8,7 @@
 $c = new Controller(function(){  
 
     new Post;
-    new Model('user', 'users');
+    new Model('user', 'users');  // use schema
 });
 
 $c->func('index', function(){
@@ -38,7 +38,9 @@ $c->func('index', function(){
             {
                 $this->db->transaction();
                 $this->db->insert('users', $this);
-                $this->setValue('insert_id', $this->db->insertId()); // send insert id in value
+
+                $this->setResult(array('insert_id' => $this->db->insertId())); // send insert id in value
+
                 $this->db->commit();
 
                 return true;

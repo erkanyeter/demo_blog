@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <function>
    <name>create.one</name>
-   <description>This function get all user data from database table</description>
-   <visibility>private</visibility>
+   <description>This function create one user to users table.</description>
    <post>
       <data key="user_username" type="string" rules="required|callback_username" desc="Unique username of user" required='yes'>
   		 	username

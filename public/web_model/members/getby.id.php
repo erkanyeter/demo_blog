@@ -9,7 +9,8 @@ $c = new Controller(function(){
 
     new Post;
     new Form;
-    new Model('user', false);
+
+    new Model('user', false); // don't call the schema
 });
 
 $c->func('index', function(){
@@ -25,7 +26,7 @@ $c->func('index', function(){
             $this->db->get('users');
             $results = $this->db->getResultArray();
 
-            $this->setResult($results);
+            $this->setResult($results); // set result data into odm messages
 
             return true;
         }
