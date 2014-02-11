@@ -37,10 +37,9 @@
 	color:rgb(6, 149, 120);
 	display:inline-block;
 }
-.form-builder-column input,.form-builder-column select{
+.form-builder-column input,.form-builder-column select,.form-builder-column textarea{
 	width : 65%;
 	font-size: 10pt;
-
 }
 .form-builder-column input[type='checkbox'], .form-builder-column input[type='radio']{
 	width : 15px !important;
@@ -50,6 +49,7 @@
 .form-builder-column textarea{
 	max-width:75%;
 	resize:none;
+	min-height:150px;
 }
 .form-builder-captcha-wrapper{
 	width:65%;
