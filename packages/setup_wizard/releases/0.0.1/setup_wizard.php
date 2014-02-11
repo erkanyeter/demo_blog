@@ -240,7 +240,7 @@ Class Setup_Wizard {
 
         $form.= '<tr><td class="newColumn">'.$this->form->label('SQL Path').'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->input('',$this->_db_path,'disabled').'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
 
-        $form.= '<tr><td class="newColumn" colspan="2">'.$this->form->textarea('sql',$this->getSQL(),'cols="50" rows="10"').'</tr>';
+        $form.= '<tr><td class="newColumn" colspan="2">'.$this->form->textarea('sql',$this->getSQL(),' rows="10" style="width:485px;"').'</tr>';
 
 
         return $form;
@@ -256,8 +256,8 @@ Class Setup_Wizard {
     public function run()
     {
         $parse = $this->getIni();
-
-        if(isset($parse['installed']) == 1)
+        
+        if(isset($parse['installed']) AND  $parse['installed'] == 1)
         {
             return false;
         }
@@ -300,7 +300,6 @@ Class Setup_Wizard {
                 else
                 {
                     $url = new \Url;
-
                     $url->redirect();
                 }
             }
@@ -308,12 +307,16 @@ Class Setup_Wizard {
         
         if(count($this->_setExtension) > 0 AND count($this->_input) == 0)
         {
+            // step1
             $this->extensionHtml();
         }
         elseif(count($this->_input) > 0)
         {
+            // step2
             $this->formHtml();
         }
+
+        exit;
     }
 
     // --------------------------------------------------------------------
@@ -439,8 +442,10 @@ $database = array(
         $html.= '<head>'.$this->writeCss().'</head>';
         $html.= '<body>';
         $html.= '<h1>'.$this->_title.'</h1>';
-        $html.= '<div class="WizardStep active">Step 1</div><div class="WizardStep">Step 2</div>';
-        $html.= $this->form->open('/step2', array('method' => 'POST', 'name' => 'step1', 'id' => 'setup_wizard'));
+        $html.= '<div class="WizardStep active">Step 1</div> <div class="WizardStep">|</div> <div class="WizardStep">Step 2</div>';
+
+        $html.= $this->form->open('/'.getInstance()->uri->getRequestUri(), array('method' => 'POST', 'name' => 'step1', 'id' => 'setup_wizard'));
+
         $html.= '<table class="modelTable">';
         $html.= '<tr>';
         $html.= '<th>Extension</th>';
@@ -448,12 +453,15 @@ $database = array(
         $html.= '</tr>';
         $html.= $this->_extensionControl();
         $html.='</tbody></table>';
-        $html.= $this->form->submit('submit_step1','Step 2','id="submit_step1"');
-        $html.= $this->form->submit('submit_step1','Step 2','id="submit_step11" style="display:none" disabled');
+        $html.= $this->form->submit('submit_step1','Next Step','id="submit_step1"');
+        $html.= $this->form->submit('submit_step1','Next Step','id="submit_step11" style="display:none" disabled');
+
         $html.= $this->form->close();
+
         $html.= $this->writeScript();
+
         $html.= '<p></p>';
-        $html.= '<p class="footer" style="font-size:11px;">* You need to install above the requirements. After that the installation you can continue.</p>';
+        $html.= '<p class="footer" style="font-size:11px;color:#006857;">* Please install above the requirements then click next. "Otherwise application will not  work correctly." </p>';
         $html.= "\n</body>";
         $html.= "\n</html>";
 
@@ -473,20 +481,27 @@ $database = array(
         $html.= '<head>'.$this->writeCss().'</head>';
         $html.= '<body>';
         $html.= '<h1>'.$this->_title.'</h1>';
-        $html.= $this->form->getNotice();
+        $html.= $this->form->getNotice(); 
+
+        $html.= '<div class="WizardStep">Step 1</div> <div class="WizardStep">|</div> <div class="WizardStep active">Step 2</div>';
+        
         ( ! empty($this->wizard) ? $html.= $this->wizard->getMessage() : '' );
-        $html.= '<div class="WizardStep">Step 1</div><div class="WizardStep active">Step 2</div>';
-        $html.= $this->form->open('', array('method' => 'POST', 'name' => 'step2', 'id' => 'setup_wizard'));
+
+        $html.= $this->form->open('/'.getInstance()->uri->getRequestUri(), array('method' => 'POST', 'name' => 'step2', 'id' => 'setup_wizard'));
+
         $html.= '<table class="modelTable">';
         $html.= '<tr>';
         $html.= '<th colspan="2">Database Configuration</th>';
         $html.= '</tr>';
         $html.= $this->_createInput();
         $html.='</tbody></table>';
+        
+        $html.= $this->form->submit('back','Back');
         $html.= $this->form->submit('submit_step2','Install');
         $html.= $this->form->close();
+
         $html.= '<p></p>';
-        $html.= '<p class="footer" style="font-size:11px;">* Configure your database connection settings then click to install.</p>';
+        $html.= '<p class="footer" style="font-size:11px;color:#006857;">* Configure your database connection settings then click to install.</p>';
         $html.= "\n</body>";
         $html.= $this->writeScript();
         $html.= "\n</html>";

@@ -14,12 +14,39 @@ $c = new Controller(function(){
     new View;
     new Sess;
     new Auth;
+    new Post;
 
     new Trigger('public','header'); // run triggers
 
 });
 
 $c->func('index', function(){
+
+    //---------- Check Installation ------------------
+    
+    if($this->post->get('submit_step1') OR $this->post->get('submit_step2'))
+    {
+        new Setup_Wizard;
+
+        $this->setup_wizard->setDatabase('demo_blog','/var/www/demo_blog/db.sql');
+        $this->setup_wizard->setTitle('Setup Wizard <u>Database Connection</u>');
+        $this->setup_wizard->setInput('hostname','Hostname','required');
+        $this->setup_wizard->setInput('username','Username','required');
+        $this->setup_wizard->setInput('password','Password','required');
+        $this->setup_wizard->setIni('demo_blog', 'installed', 1);
+
+        $this->setup_wizard->run();
+    } 
+    else 
+    {
+        new Setup_Wizard;
+
+        $this->setup_wizard->setTitle('Welcome to Demo_Blog Setup Wizard - ( Requirements )');
+        $this->setup_wizard->setExtension('pdo');
+        $this->setup_wizard->run();
+    }
+
+    //------------------------------------------------
 
     $this->db->select("*, IFNULL((SELECT count(*) FROM comments 
         WHERE posts.post_id = comment_post_id AND comment_status = 1 
