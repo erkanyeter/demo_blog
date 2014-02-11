@@ -503,7 +503,6 @@ $database = array(
         $html.= '<p></p>';
         $html.= '<p class="footer" style="font-size:11px;color:#006857;">* Configure your database connection settings then click to install.</p>';
         $html.= "\n</body>";
-        $html.= $this->writeScript();
         $html.= "\n</html>";
 
         echo $html;
