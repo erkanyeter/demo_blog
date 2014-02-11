@@ -133,7 +133,6 @@ Class Setup_Wizard {
      */
     public function writeIni()
     {
-        print_r($this->ini_line);
         return $this->_fileRewrite($this->_ini_file, implode('',$this->ini_line));
     }
 
@@ -565,7 +564,7 @@ $database = array(
     {
         return '<script type="text/javascript">
                     var elm = document.getElementById("driverError");
-                    if(elm.className == "columnTypeError"){
+                    if(elm !== null && elm.className == "columnTypeError"){
                         document.getElementById("submit_step1").style.display = "none";
                         document.getElementById("submit_step11").style.display = "block";
                     }
