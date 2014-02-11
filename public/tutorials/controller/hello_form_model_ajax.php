@@ -7,8 +7,7 @@
 $c = new Controller(function(){
     // __construct
 
-	new request;
-
+	new Request;
 	new Model('user', false); // Disable file schema using second parameter as "false"
 							  // Now user object will use just form post values.
 });

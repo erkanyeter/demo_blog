@@ -17,7 +17,6 @@
 $odm = array(
 
 	// Objects
-	'post' => new Post,   // Get object.
 	'form' => new Form,	  // Form object.
 
 	// Form Notifications

@@ -4,7 +4,7 @@ namespace Odm\Src {
     trait Model_Trait
     {
         private $_modelMethods        = array();
-        private $_modelDefinedMethods = array('save','update','delete','remove','insert','replace','push','send');
+        private $_modelDefinedMethods = array('create','read','update','delete','remove','insert','save','replace');
 
         // --------------------------------------------------------------------
 

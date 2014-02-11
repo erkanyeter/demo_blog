@@ -15,8 +15,9 @@
 
 Class Web {
     
-    public $uri_extension       = 'json';    // response format
-    public $data                = array();   // request data
+    public $data          = array();   // request data
+    public $uri_extension = 'json';    // response format
+    public $array_output  = array();   // array output of json response
 
     // ------------------------------------------------------------------------
 
@@ -58,12 +59,12 @@ Class Web {
     /**
      * new Web ( Hmvc ) Request
      * 
-     * @param  string  $methodString method.name
      * @param  closure $data        sending post query string data
+     * @param  string  $method      method.name
      * @param  integer $ttl         cache expiration time
      * @return object
      */
-    public function query($method = 'post', $methodQueryString, $data = '', $ttl = 0)
+    public function query($methodQueryString, $data = '', $method = 'post', $ttl = 0)
     {
         if(strpos($methodQueryString, '.') !== false)
         {
@@ -71,7 +72,12 @@ Class Web {
             $this->uri_extension = strtolower(end($extension));
         }
 
-        return $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
+        $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
+
+        // Decode json data.
+        $this->array_output = json_decode($this->getRawOutput(), true);
+
+        return $this->array_output['messages']; // return to validator messages
     }
 
     // ------------------------------------------------------------------------
@@ -199,8 +205,7 @@ Class Web {
     {
         if( ! method_exists($this, $method))  // Call the Web_Results object methods
         {   
-            $resultClass   = 'Web_Results_'.ucfirst($this->uri_extension);
-            $resultObject  = new $resultClass($this->getRawOutput()); // Send raw output to result object.
+            $resultObject  = new Web_Results($this->array_output); // Send raw output to result object.
 
             return call_user_func_array(array($resultObject, $method), $arguments);
         }

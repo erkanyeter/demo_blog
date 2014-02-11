@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Web Results Json Response 
+ * Web Results Response 
  * Decoder
  * 
  * @package       packages
@@ -10,18 +10,18 @@
  * @link
  */
 
-Class Web_Results_Json {
+Class Web_Results {
 	
-	protected $raw;  // raw data output
+	protected $array;  // raw data output
 
 	/**
 	 * Constructor
 	 * 
 	 * @param mixed $rows result data
 	 */
-	public function __construct($raw)
+	public function __construct($array)
 	{
-		$this->raw = $raw; // assign raw data
+		$this->array = $array; // assign raw data
 	}
 
     // ------------------------------------------------------------------------
@@ -33,7 +33,7 @@ Class Web_Results_Json {
 	 */
 	public function getResult()
 	{
-		return json_decode($this->raw);
+		return (object)$this->array['result'];
 	}
 	
     // ------------------------------------------------------------------------
@@ -45,7 +45,7 @@ Class Web_Results_Json {
 	 */
 	public function getResultArray()
 	{
-		return json_decode($this->raw, true);
+		return $this->array['result'];
 	}
 
     // ------------------------------------------------------------------------
@@ -182,7 +182,7 @@ Class Web_Results_Json {
 
 }
 
-// END Web Results Json
+// END Web Results
 
-/* End of file web_result_json.php */
-/* Location: ./packages/web_results_json/releases/0.0.1/web_results_json.php */
+/* End of file web_result.php */
+/* Location: ./packages/web_results/releases/0.0.1/web_results.php */

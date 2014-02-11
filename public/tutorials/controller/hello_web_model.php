@@ -2,6 +2,7 @@
 
 /**
  * $c hello_web "web service"
+ * 
  * @var Controller
  */
 $c = new Controller(function(){
@@ -12,17 +13,27 @@ $c->func('index', function(){
 
     new Web;
 
-    $this->web->query('post','/members/create_one.json',function(){
-        $this->data['user_username'] = 'test';
-        $this->data['user_email']    = 'me@test.com';
+    // $this->web->query('members/create.one.json',function(){
+    //     $this->data['user_username'] = 'test';
+    //     $this->data['user_email']    = 'me@test.com';
+    // });
+
+    // $r = $this->web->getResult();
+
+    // var_dump($this->web->getResultArray());
+
+
+    $r = $this->web->query('members/getby.id.json',function(){
+        $this->data['user_id'] = '3';
     });
 
-    print_r($this->web->getResultArray());
+    if($r['success'])
+    {
+        print_r($this->web->getResult());
+    }
 
     echo '<br>';
-    echo '<br>';
-    echo $this->uri->getExtension().'<br/>'; 
-    echo '<br>';
+    echo '<br>aksldhaksjdkasjd';
 
     /*
     $this->rest->data['user_username']      = '';

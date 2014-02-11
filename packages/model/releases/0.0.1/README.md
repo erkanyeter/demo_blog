@@ -113,14 +113,15 @@ $this->user->delete();
 
 Available <b>CRUD operations</b> that we recommend are listed below. You can define any of these methods.
 
-* save
-* insert
+* create
+* read
 * update
-* replace
 * delete
 * remove
-* push
-* send
+* insert
+* save
+* replace
+* callback_ ( form validation callback_* functions )
 
 **Note:** Look at <kbd>Odm Package</kbd> docs for more details.
 

@@ -20,30 +20,30 @@ Class Web_Service extends Controller {
      * @param string $visibility ( public, protected ) default is public
      * @param object $closure
      */
-    public function __construct($visibility = '', $closure = '')
+    public function __construct($closure = '')
     {
-        if(is_callable($visibility))  // check is web service closure data is visible.
-        {
-            $closure    = $visibility;
-            $visibility = 'public';
-        } 
+        // if(is_callable($visibility))  // check is web service closure data is visible.
+        // {
+        //     $closure    = $visibility;
+        //     $visibility = 'public';
+        // } 
 
-        switch ($visibility) {
-            case 'public':
-                break;
+        // switch ($visibility) {
+        //     case 'public':
+        //         break;
             
-            case 'protected':
-                break;
+        //     case 'protected':
+        //         break;
 
-            case 'private':
-                break;
+        //     case 'private':
+        //         break;
 
-            default:
-                throw new Exception('There is no visibility called '.$visibility.'.');
-                break;
-        }
+        //     default:
+        //         throw new Exception('There is no visibility called '.$visibility.'.');
+        //         break;
+        // }
 
-        parent::__construct($closure, false); // Close autoruns
+        parent::__construct($closure);
     }
 
     // ------------------------------------------------------------------------
