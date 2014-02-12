@@ -28,6 +28,12 @@ First step is creating new instance of Form_builder class. The constructor accep
 new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
     /* building form statements */
 });
+$this->form_builder->create('form_identifier');
+// validate
+$this->form_builder->isValid('form_identifier');
+// print form
+echo $this->form_builder->printCss();
+echo $this->form_builder->printForm('form_identifier');
 ```
 
 
@@ -96,7 +102,7 @@ $this->addCol(array(
 After construction the form you need just to call 'create' function and set an identifier for your form.
 
 ```php
-<?php echo $this->Form_builder->create('test_form_identifier') ?>
+<?php $this->form_builder->create('test_form_identifier') ?>
 ```
 
 ### Print The Form <a name='printTheForm'></a>
