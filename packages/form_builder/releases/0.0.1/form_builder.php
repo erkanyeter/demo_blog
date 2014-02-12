@@ -46,6 +46,11 @@ Class Form_Builder
         // otherwise must change the params to static
         getInstance()->form_builder = $this;  // Make available it in the controller.
 
+        if(! isset(getInstance()->form) )
+        {
+            getInstance()->form = new Form;
+        }
+
         $args = func_get_args();
         $this->closure = $args[2];  // saving builder function
         
@@ -212,7 +217,13 @@ Class Form_Builder
 
         if(array_key_exists('label', $data))
         {
-            $this->_setColumnArray('label', $data['label']);
+            $tempLabel = $data['label'];
+            // if(preg_match('/^(translate\s?\:)/i', $data['label']) )
+            // {
+            //     $tempLabel = preg_replace('/^(translate\s?\:)/i','',$data['label']);
+            //     $tempLabel = translate($tempLabel);
+            // }
+            $this->_setColumnArray('label', $tempLabel);
         }
 
         if(array_key_exists('rules', $data))
@@ -221,8 +232,26 @@ Class Form_Builder
             $this->_setColumnArray('rules', $data['rules']);
         }
 
+        if(isset($data['attr']))
+        {
+            $tempAttr = $data['attr'];
+            $this->_setColumnArray('attr', $tempAttr);
+        }
+
         // increase column index in the columns array
         $this->colNum ++;
+    }
+
+    protected function _processColumnClass($attr = '' , $defaultClass)
+    {
+        if(preg_match('/class\s*=\s*[\"\'](?<mymatch>.*?)[\"\']/i', $attr,$match))
+        {
+            $attr = preg_replace("/class\s*=\s*[\"\'](?<mymatch>.*?)[\"\']/i", "class='$match[mymatch] $defaultClass' ", $attr);
+        }else{
+            $attr = (empty($attr)) ? " class='$defaultClass' " : $attr . " class='$defaultClass' ";
+        }
+
+        return $attr;
     }
 
     // --------------------------------------------------------------------
@@ -304,6 +333,27 @@ Class Form_Builder
     }
 
     // --------------------------------------------------------------------
+    
+    /**
+     * set Class for row
+     * 
+     * $this->setClass('class1' , 'class2');
+     * 
+     * @param string params
+     */
+    protected function setClass()
+    {
+        $args = func_get_args();
+        if( !empty($args) )
+        {
+            foreach($args as $arg)
+            {
+                $this->columnStorage[$this->rowNum]['class'] = empty($this->columnStorage[$this->rowNum]['class']) ? $arg : $this->columnStorage[$this->rowNum]['class'] . ' ' . $arg;
+            }
+        }
+    }
+
+    // --------------------------------------------------------------------
 
     /**
      * Print the form HTML
@@ -319,7 +369,9 @@ Class Form_Builder
         {
             foreach ($this->columnStorage as $rowNum => $v)
             {
-                $out .= "\n\t\t<div class='form-builder-row'>";  // printing a row "<div>"
+                $rowClass = ( !empty($v['class']) ? 'form-builder-row '.$v['class'] : 'form-builder-row' );
+                
+                $out .= "\n\t\t<div class='$rowClass'>";  // printing a row "<div>"
 
                 if (is_array($v))
                 {
@@ -329,9 +381,14 @@ Class Form_Builder
                     foreach ($v['columns'] as $colNum => $v2)
                     {
                         $label = $error = $columnContent = '';
+                        
                         $addon_class = (isset($v['position']['input'])) ? "form-builder-ipos-" . $v['position']['input'] : "";
+                        $addon_class .= ' '.array_shift($gridClass);
+                        $addon_class .= ' form-builder-column ';
 
-                        $out  .= "\n\t\t\t<div class='form-builder-column " . array_shift($gridClass) . " $addon_class' >";  // add the column TD
+                        $attrs = $this->_processColumnClass((!empty($v2['attr']) ? $v2['attr'] : ''), $addon_class);
+
+                        $out  .= "\n\t\t\t<div ".( ( !empty( $attrs ) ) ? $attrs : '' )." >";  // add the column TD
                         $label = "\n\t\t\t\t".$this->_printLabel($rowNum, $colNum);
                         
                         $columnContent = "\n\t\t\t\t\t".$this->_printColumnContent($rowNum, $colNum);  // retrive column content.
