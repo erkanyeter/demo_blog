@@ -22,19 +22,19 @@
     "native driver",
     "driver"
   ],
-  "homepage": "https://github.com/obullo/sess_native",
+  "homepage": "https://github.com/obullo/setup_wizard",
   "repo": {
     "type": "git",
-    "url": "https://github.com/obullo/sess_native.git",
+    "url": "https://github.com/obullo/setup_wizard.git",
     "archive" : "zip",
-    "archive_url": "https://github.com/obullo/sess_native/archive/master.zip"
+    "archive_url": "https://github.com/obullo/setup_wizard/archive/master.zip"
   },
   "requires": {
     "php": ">= 5.4.0",
     "extensions": ["none"]
   },
   "bugs": {
-    "url": "https://github.com/obullo/sess_native/issues",
+    "url": "https://github.com/obullo/setup_wizard/issues",
     "email": "obulloframework@gmail.com"
   },
   "licenses": [

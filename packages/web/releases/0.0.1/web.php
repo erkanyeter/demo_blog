@@ -86,7 +86,7 @@ Class Web {
         // Decode json data.
         $this->array_output = json_decode($this->getRawOutput(), true);
 
-        return $this->array_output['messages']; // return to validator messages
+        return $this->array_output; // return to validator messages
     }
 
     // ------------------------------------------------------------------------

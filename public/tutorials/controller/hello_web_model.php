@@ -27,7 +27,7 @@ $c->func('index', function(){
         $this->data['user_id'] = '3'; // get one user
     });
 
-    if($r['success'])
+    if($r['messages']['success'])
     {
         print_r($this->web->getRowArray());
     }
