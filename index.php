@@ -39,7 +39,7 @@ error_reporting(0);
 | @see  http://www.php.net/manual/en/timezones.php
 | 
 */
-date_default_timezone_set('America/Chicago');
+date_default_timezone_set('Europe/London');
 
 /*
 |--------------------------------------------------------------------------

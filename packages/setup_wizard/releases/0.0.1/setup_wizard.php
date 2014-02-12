@@ -133,7 +133,6 @@ Class Setup_Wizard {
      */
     public function writeIni()
     {
-        print_r($this->ini_line);
         return $this->_fileRewrite($this->_ini_file, implode('',$this->ini_line));
     }
 
@@ -248,6 +247,20 @@ Class Setup_Wizard {
 
     // --------------------------------------------------------------------
 
+    public function setRedirectUrl($url = '/')
+    {
+        $this->redirectUrl = $url;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getRedirectUrl()
+    {
+        return $this->redirectUrl;
+    }
+
+    // --------------------------------------------------------------------
+    
     /**
      * Run last function
      * 
@@ -283,7 +296,7 @@ Class Setup_Wizard {
                 }
                 elseif( ! $this->_dbControl())
                 {
-                    $this->wizard->setMessage('message',$this->_dbName.' database available');
+                    $this->wizard->setMessage('message',$this->_dbName.' database already exists.');
                 }
                 elseif( ! $this->_createSQL())
                 {
@@ -300,7 +313,7 @@ Class Setup_Wizard {
                 else
                 {
                     $url = new \Url;
-                    $url->redirect();
+                    $url->redirect($this->getRedirectUrl());
                 }
             }
         }
@@ -503,7 +516,6 @@ $database = array(
         $html.= '<p></p>';
         $html.= '<p class="footer" style="font-size:11px;color:#006857;">* Configure your database connection settings then click to install.</p>';
         $html.= "\n</body>";
-        $html.= $this->writeScript();
         $html.= "\n</html>";
 
         echo $html;
@@ -552,7 +564,7 @@ $database = array(
     {
         return '<script type="text/javascript">
                     var elm = document.getElementById("driverError");
-                    if(elm.className == "columnTypeError"){
+                    if(elm !== null && elm.className == "columnTypeError"){
                         document.getElementById("submit_step1").style.display = "none";
                         document.getElementById("submit_step11").style.display = "block";
                     }
