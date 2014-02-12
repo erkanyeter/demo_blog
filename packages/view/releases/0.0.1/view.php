@@ -47,6 +47,9 @@ Class View {
     */
     public function fetch($__vPath, $__vFilename, $__vData = null, $__vInclude = true)
     {
+        $file_extension = substr($__vFilename, strrpos($__vFilename, '.')); // Detecet the file extension ( e.g. '.tpl' )
+        $ext            = (strpos($file_extension, '.') === 0) ? '' : EXT;
+
         if(function_exists('getInstance') AND  is_object(getInstance()))
         {
             foreach(array_keys(get_object_vars(getInstance())) as $key) // This allows to using "$this" variable in all views files.
@@ -72,11 +75,11 @@ Class View {
             extract($this->_object, EXTR_SKIP); 
         }
 
-        logMe('debug', 'View file loaded: '.$__vPath. $__vFilename . EXT);
+        logMe('debug', 'View file loaded: '.$__vPath. $__vFilename . $ext);
 
         ob_start();   // Please open short tags in your php.ini file. ( short_tag = On ).
 
-        include_once($__vPath. $__vFilename . EXT);
+        include_once($__vPath. $__vFilename . $ext);
 
         $output = ob_get_clean();
 

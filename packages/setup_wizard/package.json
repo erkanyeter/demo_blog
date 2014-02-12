@@ -1,6 +1,6 @@
 {
-  "name": "web_service",
-  "description": "Create web service models for ( GET, POST, PUT, DELETE ) operations.",
+  "name": "setup_wizard",
+  "description": "Setup wizard ",
   "version": "0.0.1",
   "releases": ["0.0.1"],
   "author": {
@@ -8,31 +8,33 @@
     "email": "obulloframework@gmail.com",
     "url": "https://github.com/obullo"
   },
-  "component" : "library",
+  "component" : "helper",
   "dependencies": {
     "log":"*",
-    "controller":"*",
+    "sess": "*"
   },
   "keywords": [
-    "web",
-    "response",
-    "web_service",
-    "rest",
-    "model",
+    "sess",
+    "session",
+    "sessions",
+    "http session",
+    "native",
+    "native driver",
+    "driver"
   ],
-  "homepage": "https://github.com/obullo/web_service",
+  "homepage": "https://github.com/obullo/sess_native",
   "repo": {
     "type": "git",
-    "url": "https://github.com/obullo/web_service.git",
+    "url": "https://github.com/obullo/sess_native.git",
     "archive" : "zip",
-    "archive_url": "https://github.com/obullo/web_service/archive/master.zip"
+    "archive_url": "https://github.com/obullo/sess_native/archive/master.zip"
   },
   "requires": {
     "php": ">= 5.4.0",
     "extensions": ["none"]
   },
   "bugs": {
-    "url": "https://github.com/obullo/web_service/issues",
+    "url": "https://github.com/obullo/sess_native/issues",
     "email": "obulloframework@gmail.com"
   },
   "licenses": [

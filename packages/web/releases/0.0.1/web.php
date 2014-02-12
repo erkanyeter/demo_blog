@@ -21,7 +21,7 @@ Class Web {
 
     // ------------------------------------------------------------------------
 
-    protected $raw_output;             // response raw output of current web request
+    protected $raw_output;             // response raw output of the current web request
     protected $web_service_directory;  // default web service directory
 
     // ------------------------------------------------------------------------
@@ -32,6 +32,8 @@ Class Web {
     public function __construct($directory = 'web_model')
     {
         $this->web_service_directory = $directory;
+
+        $this->__assignObjects();   // Assign all controller objects and make available them in this class.
 
         if( ! isset(getInstance()->web))
         {
@@ -51,7 +53,14 @@ Class Web {
      */
     public function __set($key, $val)
     {
-        $this->data[$key] = $val;   // set query string params
+        if($key == 'data')
+        {
+            $this->data[$key] = $val;   // set query string params
+        } 
+        else 
+        {
+            $this->{$key} = $val;       // assign controller variables
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -73,7 +82,7 @@ Class Web {
         }
 
         $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
-
+        
         // Decode json data.
         $this->array_output = json_decode($this->getRawOutput(), true);
 
@@ -236,6 +245,24 @@ Class Web {
     public function getRawOutput()
     {
         return (string)$this->raw_output;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Assign all objects.
+     * 
+     * @return void
+     */
+    private function __assignObjects()
+    {
+        foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
+        {
+            if(is_object($v)) // Do not assign again reserved variables
+            {
+                $this->{$k} = getInstance()->{$k};
+            }
+        }
     }
 
 }

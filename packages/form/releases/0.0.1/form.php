@@ -57,7 +57,7 @@ Class Form {
 
         if(isset($this->_callback_functions[$method])) // _callback functions for form validations
         {            
-            $this->__assignObjects();   // Assign all objects for and make it available $this->package->method() .. in the callback functions.
+            $this->__assignObjects();   // Assign all controller objects and make available them in this class.
 
             return call_user_func_array(Closure::bind($this->_callback_functions[$method], $this, get_class()), array());
         }
@@ -349,8 +349,6 @@ Class Form {
      */
     private function __assignObjects()
     {
-        $modelKey = strtolower(get_class());
-
         foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
         {
             if(is_object($v)) // Do not assign again reserved variables

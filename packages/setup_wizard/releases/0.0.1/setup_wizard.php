@@ -9,23 +9,31 @@
  * @link
  */
 
-
 Class Setup_Wizard {
+    
+    private $_loadedExtensions  = array();
+    private $_input             = array();
+    private $_css_file          = null;
+    private $_database_template = '/app/templates/database.tpl';
+    private $_dbPath;
 
-    private $_setExtension = array();
-    private $_input        = array();
-    private $_ini_file;
-    private $_title;
-    private $_db_path;
+    // Database connection variables
     private $_dbName;
+    private $_dbDriver;
+    private $_dbPrefix;
+    private $_dbhPort;
+
+    private $_title;
+    private $_sub_title;
     private $_db;
 
     protected $ini_line = array();
-    protected $wizard; // for model
+    protected $wizard;  // Model wizard
+    protected $form;    // Form object
+    protected $post;    // Post object
 
     /**
      * Constructor
-     * 
      */
     public function __construct()
     {
@@ -34,10 +42,9 @@ Class Setup_Wizard {
             getInstance()->setup_wizard = $this; // Available it in the contoller $this->setup_wizard->method();
         }
 
-        $this->form = new \Form;
-
+        $this->form = new Form;
         
-        logMe('debug', "Setup Wizard Class Initialized");
+        logMe('debug', 'Setup Wizard Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -45,11 +52,19 @@ Class Setup_Wizard {
     /**
      * Set extension
      * 
-     * @param array $driver
+     * @param string | array $driver
+     * @return  void
      */
-    public function setExtension($driver)
+    public function setExtension($ext)
     {
-        array_push($this->_setExtension, $driver);
+        if(is_array($ext))
+        {
+            $this->_loadedExtensions = $ext;
+        } 
+        else 
+        {
+            array_push($this->_loadedExtensions, $ext);
+        }
     }
 
     // --------------------------------------------------------------------
@@ -59,10 +74,10 @@ Class Setup_Wizard {
      * 
      * @return html $extension
      */
-    private function _extensionControl()
+    private function _checkExtensions()
     {
         $extension = '';
-        foreach($this->_setExtension as $driver)
+        foreach($this->_loadedExtensions as $driver)
         {
             if( ! extension_loaded($driver))
             {
@@ -99,7 +114,6 @@ Class Setup_Wizard {
 
     // --------------------------------------------------------------------
 
-
     /**
      * Get SQL output
      * 
@@ -107,21 +121,7 @@ Class Setup_Wizard {
      */
     public function getSQL()
     {
-        return $sql = file_get_contents($this->_db_path);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Set setup ini file
-     * 
-     * @return function _fileRewrite()
-     */
-    public function setIni($segment = 'demo_blog', $key = 'installed', $value = 1)
-    {
-        $ini_line = '['.$segment.'] '.$key.' = '.$value;
-
-        return array_push($this->ini_line, $ini_line);
+        return $sql = file_get_contents($this->_dbPath);
     }
 
     // --------------------------------------------------------------------
@@ -133,19 +133,7 @@ Class Setup_Wizard {
      */
     public function writeIni()
     {
-        return $this->_fileRewrite($this->_ini_file, implode('',$this->ini_line));
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get ini content
-     * 
-     * @return array
-     */
-    public function getIni()
-    {
-        return parse_ini_file($this->getIniFile());
+        return $this->_filePutContents($this->_ini_file, implode('',$this->ini_line));
     }
 
     // --------------------------------------------------------------------
@@ -155,9 +143,9 @@ Class Setup_Wizard {
      * 
      * @param  string $fileName
      * @param  string $data
-     * @return write setup.ini file
+     * @return write setup_wizard.ini file
      */
-    private function _fileRewrite($fileName, $data)
+    private function _filePutContents($fileName, $data)
     {
         if( ! file_put_contents($fileName, $data, LOCK_EX))
         {
@@ -167,21 +155,246 @@ Class Setup_Wizard {
         return true;
     }
 
+    /**
+     * Create form html
+     * 
+     * @return html
+     */
+    public function createForm()
+    {
+        $form = '';
+        foreach($this->_input as $input)
+        {
+            if($input['name'] == 'password')
+            {
+                $form.= '<tr>';
+                $form.= '<td class="newColumn">';
+                $form.= $this->form->label($input['label']);
+                $form.= '<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div>';
+                $form.= '</td>';
+                $form.= '<td class="error">';
+                $form.= $this->form->error($input['name']).$this->form->password($input['name'], $input['value'], $input['attr']);
+                $form.= '<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div>';
+                $form.= '</td>';
+                $form.= '</tr>';
+            }
+            else
+            {
+                $form.= '<tr>';
+                $form.= '<td class="newColumn">';
+                $form.= $this->form->label($input['label']);
+                $form.= '<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div>';
+                $form.= '</td>';
+                $form.= '<td class="error">';
+                $form.= $this->form->error($input['name']).$this->form->input($input['name'],$input['value'], $input['attr']);
+                $form.= '<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div>';
+                $form.= '</td>';
+                $form.= '</tr>';
+            }
+        }
+
+        // foreach(){} textarea
+        // foreach(){} dropdown
+
+        $form.= '<tr><td class="newColumn" colspan="2">'.$this->form->textarea('sql',$this->getSQL(),' rows="10" style="width:485px;"').'</tr>';
+
+        return $form;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Run last function
+     * 
+     * @return function
+     */
+    public function run()
+    {
+        $ini_data = $this->getIni();
+        
+        if(isset($ini_data['installed']) AND $ini_data['installed'] == 1)
+        {
+            return false;
+        }
+
+        $this->post = new Post;
+
+        if($this->post->get('submit_step2'))
+        {
+            new Model('wizard', false);
+
+            $this->wizard = getInstance()->wizard;
+
+            foreach($this->_input as $rule)
+            {
+                $this->form->setRules($rule['name'], $rule['label'], $rule['rule']);
+            }
+
+            if($this->wizard->isValid())
+            {
+                if( ! $this->checkDatabaseAccess())
+                {
+                    $this->wizard->setMessage('message','Wrong username or password');
+                }
+                elseif( ! $this->checkDatabaseExists())
+                {
+                    $this->wizard->setMessage('message', $this->_dbName.' database already exists.');
+                }
+                elseif( ! $this->_createSQL())
+                {
+                    $this->wizard->setMessage('message','Database not installed');
+                }
+                elseif( ! $this->writeDatabaseConfig())
+                {
+                    $this->wizard->setMessage('message','Database config file could not be created.');
+                }
+                elseif( ! $this->writeIni())
+                {
+                    $this->wizard->setMessage('message','Setup.ini file could not be written.');
+                }
+                else
+                {
+                    $url = new Url;
+                    $url->redirect($this->getRedirectUrl());
+                }
+            }
+        }
+        
+        if(count($this->_loadedExtensions) > 0 AND count($this->_input) == 0)
+        {
+            $this->createExtensionHtml(); // step1
+        }
+        elseif(count($this->_input) > 0)
+        {
+            $this->createFormHtml();      // step2
+        }
+
+        exit;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set database config filename
+     * 
+     * @return  void
+     */
+    public function setDatabaseConfigFile($filepath)
+    {
+        $this->sql_file_path = $filepath;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get database configuration file
+     * 
+     * @return string
+     */
+    public function getDatabaseConfigFile()
+    {
+        $path = str_replace('\/', DS, trim($this->sql_file_path, '/'));
+        $path = str_replace('app', rtrim(APP, DS), $path);
+
+        return $path;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setDatabasePath($file)
+    {
+        $this->_dbPath = str_replace('\/', DS, $file);
+
+        if( ! file_exists($this->_dbPath))
+        {
+            throw new Exception($path.' file not found');
+        }
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getDatabasePath()
+    {
+        return $this->_dbPath;
+    }
+
     // --------------------------------------------------------------------
 
     /**
      * Set database and db path
      * 
-     * @param  string $database
+     * @param  string $database db name
      * @param  string $db_path
-     * @return string $this
+     * @return object
      */
-    public function setDatabase($database, $db_path)
+    public function setDatabase($database)
     {
-        $this->_path($db_path);
         $this->_dbName = $database;
 
         return $this;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getDatabaseName()
+    {
+        return $this->_dbName;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setDatabaseDriver($dbDriver = 'Pdo_Mysql')
+    {
+        $this->_dbDriver = $dbDriver;
+    }
+    
+    // --------------------------------------------------------------------
+
+    public function getDatabaseDriver()
+    {
+        return $this->_dbDriver;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setDatabaseTemplate($template = null)
+    {
+        $path = str_replace('\/', DS, trim($template, '/'));
+        $path = str_replace('app', rtrim(APP, DS), $path);
+
+        $this->_database_template = (empty($template)) ? APP. 'templates'. DS .'database.tpl' : $path;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getDatabaseTemplate()
+    {
+        return $this->_database_template;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set your custom css file
+     * 
+     * @param string $css
+     * @return void
+     */
+    public function setCssFile($css = '')
+    {
+        $this->_css_file = $css;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get css file url
+     * 
+     * @return string
+     */
+    public function getCssFile()
+    {
+        return (empty($this->_css_file)) ? '/assets/css/setup_wizard.css' : $this->_css_file;
     }
 
     // --------------------------------------------------------------------
@@ -199,54 +412,68 @@ Class Setup_Wizard {
     // --------------------------------------------------------------------
 
     /**
+     * Set sub title
+     * 
+     * @param string $sub_title
+     */
+    public function setSubTitle($sub_title)
+    {
+        return $this->_sub_title = $sub_title;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Set input
      * 
      * @param  string $name
      * @param  string $label
      * @return array
      */
-    public function setInput($name, $label, $rule)
+    public function setInput($name, $label = '', $rule = '', $value = '', $attr = '')
     {
         $input          = array();
         $input['name']  = $name;
         $input['rule']  = $rule;
         $input['label'] = $label;
+        $input['value'] = $value;
+        $input['attr']  = $attr;
 
         array_push($this->_input, $input);
     }
 
     // --------------------------------------------------------------------
-
+    
     /**
-     * Create input output html
+     * Set installation note
      * 
-     * @return html
+     * @param string $note
      */
-    private function _createInput()
+    public function setNote($note = '')
     {
-        $form = '';
-        foreach($this->_input as $input)
-        {
-            if($input['name'] == 'password')
-            {
-                $form.= '<tr><td class="newColumn">'.$this->form->label($input['label']).'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->error($input['name']).$this->form->password($input['name'],''," id='$input[name]'").'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
-            }
-            else
-            {
-                $form.= '<tr><td class="newColumn">'.$this->form->label($input['label']).'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->error($input['name']).$this->form->input($input['name'],$this->form->setValue($input['name'])," id='$input[name]'").'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
-            }
-        }
-
-        $form.= '<tr><td class="newColumn">'.$this->form->label('SQL Path').'<div class="columnUpdateWrapper"><div class="columnNewRow"></div></div></td><td class="error">'.$this->form->input('',$this->_db_path,'disabled').'<div class="columnUpdateWrapper"><div class="columnNewRow"><div style="clear:left;"></div></td></tr>';
-
-        $form.= '<tr><td class="newColumn" colspan="2">'.$this->form->textarea('sql',$this->getSQL(),' rows="10" style="width:485px;"').'</tr>';
-
-
-        return $form;
+        $this->installation_note = $note;
     }
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get installation note
+     * 
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->installation_note;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set redirect url then we redirect user
+     * to this page end of the wizard.
+     * 
+     * @param string $url
+     */
     public function setRedirectUrl($url = '/')
     {
         $this->redirectUrl = $url;
@@ -254,165 +481,137 @@ Class Setup_Wizard {
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get redirect url string
+     * 
+     * @return string
+     */
     public function getRedirectUrl()
     {
         return $this->redirectUrl;
     }
 
     // --------------------------------------------------------------------
+
+    /**
+     * Set setup ini file
+     * 
+     * @return array
+     */
+    public function setIni($key = 'installed', $value = 1)
+    {
+        $ini_line = $key.' = '.$value;
+
+        return array_push($this->ini_line, $ini_line);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get ini content
+     * 
+     * @return array
+     */
+    public function getIni()
+    {
+        return parse_ini_file($this->getIniFile());
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get ini file
+     * 
+     * @return string ini file
+     */
+    public function getIniFile()
+    {
+        return $this->_ini_file = DATA . 'cache' . DS . 'setup_wizard.ini';
+    }
+
+    // --------------------------------------------------------------------
     
     /**
-     * Run last function
+     * Create database.php config file
+     * in app/config/debug/ folder.
      * 
-     * @return function
+     * @return bool
      */
-    public function run()
+    private function writeDatabaseConfig()
     {
-        $parse = $this->getIni();
-        
-        if(isset($parse['installed']) AND  $parse['installed'] == 1)
-        {
-            return false;
-        }
+        $db_config = $this->getDatabaseConfigFile();
+        $data      = $this->getDatabaseTemplateFile();
 
-        $this->post = new \Post;
+        return $this->_filePutContents($db_config, $data);
+    }
+    
+    // --------------------------------------------------------------------
 
-        if($this->post->get('submit_step2'))
-        {
-            new Model('wizard', false);
-
-            $this->wizard = getInstance()->wizard;
-
-            foreach($this->_input as $rule)
-            {
-                $this->form->setRules($rule['name'], $rule['label'], $rule['rule']);
-            }
-
-            if($this->wizard->isValid())
-            {
-                if( ! $this->_dbAccess())
-                {
-                    $this->wizard->setMessage('message','Wrong username or password');
-                }
-                elseif( ! $this->_dbControl())
-                {
-                    $this->wizard->setMessage('message',$this->_dbName.' database already exists.');
-                }
-                elseif( ! $this->_createSQL())
-                {
-                    $this->wizard->setMessage('message','Database not installed');
-                }
-                elseif( ! $this->_createDbConfig())
-                {
-                    $this->wizard->setMessage('message','Database config file could not be created.');
-                }
-                elseif( ! $this->writeIni())
-                {
-                    $this->wizard->setMessage('message','Setup.ini file could not be written.');
-                }
-                else
-                {
-                    $url = new \Url;
-                    $url->redirect($this->getRedirectUrl());
-                }
-            }
-        }
-        
-        if(count($this->_setExtension) > 0 AND count($this->_input) == 0)
-        {
-            // step1
-            $this->extensionHtml();
-        }
-        elseif(count($this->_input) > 0)
-        {
-            // step2
-            $this->formHtml();
-        }
-
-        exit;
+    public function setDatabaseItem($item, $value)
+    {
+        $this->{$item} = $value;
     }
 
     // --------------------------------------------------------------------
 
-    /**
-     * Create db config file
-     * 
-     * @return [type] [description]
-     */
-    private function _createDbConfig()
+    public function getDatabaseItem($item)
     {
-        $db_config = APP . 'config' . DS . 'debug' . DS . 'database.php';
-        $data      = $this->_getDbConfig();
-
-        return $this->_fileRewrite($db_config, $data);
+        return $this->{$item};
     }
-
+    
     // --------------------------------------------------------------------
 
     /**
-     * Get db config
+     * Get db config template file
      * 
      * @return string
      */
-    private function _getDbConfig()
-    {
-        return '<?php
-/*
-|--------------------------------------------------------------------------
-| Database Configuration
-|--------------------------------------------------------------------------
-|
-| Database Variables
-|
-*/
-$database = array(
+    public function getDatabaseTemplateFile()
+    {        
+        $pattern = array(
+            '{database_driver}' => $this->getDatabaseDriver(),
+            '{variable}' => 'db',
+            '{hostname}' => $this->getDatabaseItem('hostname'),
+            '{username}' => $this->getDatabaseItem('username'),
+            '{password}' => $this->getDatabaseItem('password'),
+            '{database}' => $this->getDatabaseItem('database'),
+            '{driver}'   => '',
+            '{prefix}'   => $this->getDatabaseItem('prefix'),
+            '{dbh_port}' => $this->getDatabaseItem('dbh_port'),
+            '{char_set}' => $this->getDatabaseItem('char_set'),
+            '{dsn}'      => $this->getDatabaseItem('dsn'),
+            '{options}'  => $this->getDatabaseItem('options'),
+        );
 
-    \'db\' => new Pdo_Mysql(array(    // or new Mongo_Db;
-        \'variable\' => \'db\',
-        \'hostname\' => \''.$this->post->get("hostname").'\',
-        \'username\' => \''.$this->post->get("username").'\',
-        \'password\' => \''.$this->post->get("password").'\',
-        \'database\' => \''.$this->_dbName.'\',
-        \'driver\'   => \'\',   // optional
-        \'prefix\'   => \'\',
-        \'dbh_port\' => \'\',
-        \'char_set\' => \'utf8\',
-        \'dsn\'      => \'\',
-        \'options\'  => array() // array( PDO::ATTR_PERSISTENT => false ); 
-        )),
-    
-);
+        $template = file_get_contents($this->getDatabaseTemplate());
 
-/* End of file database.php */
-/* Location: .app/config/debug/database.php */';
-
+        return str_replace(array_keys($pattern), array_values($pattern), $template);
     }
 
     // --------------------------------------------------------------------
 
     /**
-     * Db Access
+     * Database Access
      * 
      * @return boolean true or false
      */
-    private function _dbAccess()
+    public function checkDatabaseAccess()
     {
-        $hostname = $this->post->get('hostname');
-        $username = $this->post->get('username');
-        $password = $this->post->get('password');
+        $hostname = $this->getDatabaseItem('hostname');
+        $username = $this->getDatabaseItem('username');
+        $password = $this->getDatabaseItem('password');
 
-        try{
-            $this->_db = new PDO(
-                           "mysql:host=$hostname",
-                           $username,
-                           $password
-                        );
+        try
+        {
+            $this->_db = new PDO("mysql:host=$hostname", $username, $password);
             $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e){
+        } 
+        catch (PDOException $e)
+        {
             preg_match('/Access denied/',$e->getMessage(),$exception);
         }
 
-        if(isset($exception) AND $exception[0] == 'Access denied')
+        if(isset($exception[0]) AND $exception[0] == 'Access denied')
         {
             return false;
         }
@@ -423,11 +622,11 @@ $database = array(
     // --------------------------------------------------------------------
 
     /**
-     * Db control
+     * Database exists ?
      * 
      * @return boolean true or false
      */
-    private function _dbControl()
+    private function checkDatabaseExists()
     {
         $dbs = $this->_db->query('SHOW DATABASES');
 
@@ -449,12 +648,13 @@ $database = array(
      * 
      * @return html
      */
-    protected function extensionHtml()
+    protected function createExtensionHtml()
     {
         $html = '<html>';
         $html.= '<head>'.$this->writeCss().'</head>';
         $html.= '<body>';
         $html.= '<h1>'.$this->_title.'</h1>';
+        $html.= '<h4>'.$this->_sub_title.'</h4>';
         $html.= '<div class="WizardStep active">Step 1</div> <div class="WizardStep">|</div> <div class="WizardStep">Step 2</div>';
 
         $html.= $this->form->open('/'.getInstance()->uri->getRequestUri(), array('method' => 'POST', 'name' => 'step1', 'id' => 'setup_wizard'));
@@ -464,11 +664,12 @@ $database = array(
         $html.= '<th>Extension</th>';
         $html.= '<th>Status</th>';
         $html.= '</tr>';
-        $html.= $this->_extensionControl();
-        $html.='</tbody></table>';
-        $html.= $this->form->submit('submit_step1','Next Step','id="submit_step1"');
-        $html.= $this->form->submit('submit_step1','Next Step','id="submit_step11" style="display:none" disabled');
+        $html.= $this->_checkExtensions();
+        $html.='</tbody>';
+        $html.='</table>';
 
+        $html.= $this->form->submit('submit_step1','Next Step','id="submit_step1"');
+        $html.= $this->form->submit('submit_step1','Next Step','id="submit_disabled" style="display:none" disabled');
         $html.= $this->form->close();
 
         $html.= $this->writeScript();
@@ -488,7 +689,7 @@ $database = array(
      * 
      * @return html
      */
-    protected function formHtml()
+    protected function createFormHtml()
     {
         $html = '<html>';
         $html.= '<head>'.$this->writeCss().'</head>';
@@ -504,17 +705,18 @@ $database = array(
 
         $html.= '<table class="modelTable">';
         $html.= '<tr>';
-        $html.= '<th colspan="2">Database Configuration</th>';
+        $html.= '<th colspan="2">'.$this->_sub_title.'</th>';
         $html.= '</tr>';
-        $html.= $this->_createInput();
-        $html.='</tbody></table>';
+        $html.= $this->createForm();
+        $html.='</tbody>';
+        $html.='</table>';
         
         $html.= $this->form->submit('back','Back');
         $html.= $this->form->submit('submit_step2','Install');
         $html.= $this->form->close();
 
         $html.= '<p></p>';
-        $html.= '<p class="footer" style="font-size:11px;color:#006857;">* Configure your database connection settings then click to install.</p>';
+        $html.= '<p class="footer" style="font-size:11px;color:#006857;">'.$this->getNote().'</p>';
         $html.= "\n</body>";
         $html.= "\n</html>";
 
@@ -522,39 +724,7 @@ $database = array(
     }
 
     // --------------------------------------------------------------------
-
-    /**
-     * Get ini file
-     * 
-     * @return string ini file
-     */
-    public function getIniFile()
-    {
-        return $this->_ini_file = DATA . 'cache' . DS . 'setup.ini';
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Path for db file
-     * 
-     * @return string db_path
-     */
-    private function _path($file)
-    {
-        $this->_db_path = str_replace('\/', DS, $file);
-
-        if( ! file_exists($this->_db_path))
-        {
-            throw new Exception($path." file not found");
-        }
-
-        return $this->_db_path;
-    }
-
-    // --------------------------------------------------------------------
     
-
     /**
      * Write javascript output
      * 
@@ -566,7 +736,7 @@ $database = array(
                     var elm = document.getElementById("driverError");
                     if(elm !== null && elm.className == "columnTypeError"){
                         document.getElementById("submit_step1").style.display = "none";
-                        document.getElementById("submit_step11").style.display = "block";
+                        document.getElementById("submit_disabled").style.display = "block";
                     }
                 </script>';
     }
@@ -580,20 +750,10 @@ $database = array(
      */
     public function writeCss()
     {
-        global $packages;
-
-        $css_file = PACKAGES .'setup_wizard'. DS .'releases'. DS .$packages['dependencies']['setup_wizard']['version']. DS .'src'. DS .'setup_wizard.css';
-
-        $css = '<style type="text/css">';
-        $css.= file_get_contents($css_file);
-        $css.= "</style>";
-
-        return $css;
+        return '<link href="'.$this->getCssFile().'" rel="stylesheet" type="text/css" />';
     }
 
 }
-
-
 
 /* End of file setup_wizard.php */
 /* Location: ./packages/setup_wizard/releases/0.0.1/setup_wizard.php */

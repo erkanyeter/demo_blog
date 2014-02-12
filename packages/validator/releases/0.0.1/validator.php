@@ -672,9 +672,9 @@ Class Validator {
      */    
     private function _translateFieldname($fieldname)
     {
-        if (substr($fieldname, 0, 6) == 'translate:') // Do we need to translate the field name? 
+        if (substr($fieldname, 0, 10) == 'translate:') // Do we need to translate the field name? 
         {
-            $line = substr($fieldname, 6);   // Grab the variable
+            $line = substr($fieldname, 10);   // Grab the variable
 
             if (hasTranslate($line)) // Were we able to translate the field name? If not we use $line.
             {

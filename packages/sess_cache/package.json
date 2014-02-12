@@ -1,6 +1,6 @@
 {
-  "name": "web_model",
-  "description": "Web data model do hmvc based comminucations with /web_models folder.",
+  "name": "sess_cache",
+  "description": "Session cache driver, e.g. memcache, apc and file based cache",
   "version": "0.0.1",
   "releases": ["0.0.1"],
   "author": {
@@ -11,32 +11,32 @@
   "component" : "library",
   "dependencies": {
     "log":"*",
-    "web":"*",
+    "cache": "*",
+    "sess": "*",
+    "get": "*"
   },
   "keywords": [
-    "web",
-    "hmvc",
-    "web data model",
-    "service",
-    "rest",
-    "web_service",
-    "web_model",
-    "web_models",
-    "json",
+    "session",
+    "sess",
+    "driver"
+    "cache",
+    "apc",
+    "file",
+    "memcache",
+    "memcached"
   ],
-  "homepage": "https://github.com/obullo/web_model",
+  "homepage": "https://github.com/obullo/sess_cache",
   "repo": {
     "type": "git",
-    "url": "https://github.com/obullo/web_model.git",
+    "url": "https://github.com/obullo/sess_cache.git",
     "archive" : "zip",
-    "archive_url": "https://github.com/obullo/web_model/archive/master.zip"
+    "archive_url": "https://github.com/obullo/sess_cache/archive/master.zip"
   },
   "requires": {
     "php": ">= 5.4.0",
-    "extensions": ["none"]
   },
   "bugs": {
-    "url": "https://github.com/obullo/web_model/issues",
+    "url": "https://github.com/obullo/sess_cache/issues",
     "email": "obulloframework@gmail.com"
   },
   "licenses": [
