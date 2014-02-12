@@ -37,9 +37,14 @@
 	color:rgb(6, 149, 120);
 	display:inline-block;
 }
-.form-builder-column input,.form-builder-column select,.form-builder-column textarea{
+.form-builder-column input[type=text],.form-builder-column input[type=password],.form-builder-column textarea{
 	width : 65%;
 	font-size: 10pt;
+}
+.form-builder-column select{
+	max-width:65%;
+	min-width:20%;
+	margin:auto 1px;
 }
 .form-builder-column input[type='checkbox'], .form-builder-column input[type='radio']{
 	width : 15px !important;
@@ -57,7 +62,7 @@
 	display:inline-block;
 }
 .form-builder-field-wrapper{
-	width:70%;
+	width:65%;
 	float: left;
 }
 /**
@@ -150,6 +155,9 @@
 }
 .form-builder-grid-10{
 	width: 99%;
+}
+.form-builder-grid-4 input, .form-builder-grid-4 select,.form-builder-grid-3 input,.form-builder-grid-3 select,.form-builder-grid-2 input,.form-builder-grid-2 select{
+	width:25%;
 }
 /**
  * Error Input Styles
