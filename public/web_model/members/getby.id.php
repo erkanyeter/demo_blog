@@ -1,40 +1,20 @@
 <?php
 
 /**
- * $c members/getby.id.JSON
+ * $c members/getby.id
  * 
  * @var Controller
  */
 $c = new Controller(function(){  
 
-    new Post;
-    new Form;
-
-    new Model('user', false); // don't call the schema
+    new Db;   // load database
 });
 
 $c->func('index', function(){
 
-    $this->user->data = $this->post->get(); // Get all $_POST data
+    $this->db->where('user_id', $_POST['user_id']);
+    $this->db->get('users');
 
-    $this->form->setRules('user_id', 'User ID', 'required|_int');
-
-    $this->user->func('read', function(){
-        if ($this->isValid()){              // Validate schema
-            
-            $this->db->where('user_id', $this->getValue('user_id'));
-            $this->db->get('users');
-            $results = $this->db->getResultArray();
-
-            $this->setResult($results); // set result data into odm messages
-
-            return true;
-        }
-        return false;
-    });
-
-    $this->user->read();
-
-    echo json_encode($this->user->getAllOutput());
+    echo json_encode(array('success' => 1, 'results' => $this->db->getResultArray(), 'e' => null));
 
 });

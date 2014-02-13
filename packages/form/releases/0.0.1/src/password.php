@@ -28,7 +28,7 @@ namespace Form\Src {
 
         $data['type'] = 'password';
         
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['password'], getInstance()->form->input($data, $value, $extra));
     }

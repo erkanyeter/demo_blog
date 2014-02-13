@@ -17,7 +17,6 @@ Class Web {
     
     public $data          = array();   // request data
     public $uri_extension = 'json';    // response format
-    public $array_output  = array();   // array output of json response
 
     // ------------------------------------------------------------------------
 
@@ -82,11 +81,14 @@ Class Web {
         }
 
         $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
-        
-        // Decode json data.
-        $this->array_output = json_decode($this->getRawOutput(), true);
 
-        return $this->array_output; // return to validator messages
+        $r = json_decode($this->getRawOutput(), true); // Decode json data.
+
+        //-------- Check Web Model Standarts ----------//
+
+        
+
+        return $r; // return to validator messages
     }
 
     // ------------------------------------------------------------------------
@@ -200,24 +202,6 @@ Class Web {
         }
 
         return $this->raw_output;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Generate query results using
-     * Web_Results_$driver
-     * 
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        if( ! method_exists($this, $method))  // Call the Web_Results object methods
-        {   
-            $resultObject  = new Web_Results($this->array_output); // Send raw output to result object.
-
-            return call_user_func_array(array($resultObject, $method), $arguments);
-        }
     }
 
     // ------------------------------------------------------------------------

@@ -16,9 +16,6 @@
 
 $odm = array(
 
-	// Objects
-	'form' => new Form,	  // Form object.
-
 	// Form Notifications
 	'notifications' => array(
 		'errorMessage' 	 => '<div class="notification error">%s</div>',

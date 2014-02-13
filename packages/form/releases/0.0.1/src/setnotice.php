@@ -9,7 +9,7 @@ namespace Form\Src {
      * @param string $message set notification message.
      * @return void
      */
-    function setNotice($message, $key = 'error', $suffix = null)
+    function setNotice($message, $key = '0', $suffix = null)
     {
         $Class  = getComponent('sess');
         $sess   = (isset(getInstance()->sess)) ? getInstance()->sess : new $Class;
@@ -17,20 +17,16 @@ namespace Form\Src {
 
         switch ($key)  // set custom notice
         {
-            case 'error':
+            case '0':
                 $sess->setFlash('errorMessage_'.$suffix, $message);
                 break;
             
-            case 'success':
+            case '1':
                 $sess->setFlash('successMessage_'.$suffix, $message);
                 break;
 
-            case 'info':
+            case '2':
                 $sess->setFlash('infoMessage_'.$suffix, $message);
-                break;
-
-            default:
-                $sess->setFlash('errorMessage_'.$suffix, $message);
                 break;
         }
     }

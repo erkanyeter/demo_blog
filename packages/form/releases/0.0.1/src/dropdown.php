@@ -104,7 +104,7 @@ namespace Form\Src {
 
         $selectTag .= '</select>';
 
-        $form = \Form::getFormConfig(); // get template
+        $form = \Form::getConfig(); // get template
 
         return sprintf($form['templates'][\Form::$template]['dropdown'], $selectTag);
     }

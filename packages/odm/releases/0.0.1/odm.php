@@ -17,7 +17,6 @@ Class Odm {
     public $_odmTable        = '';        // Table name ( model name )
     public $_odmConfig       = array();   // Odm configuration variable
     public $_odmMessages     = array();   // Validation errors and transactional ( Insert, Update, delete ) messages
-    public $_odmValues       = array();   // Filtered safe values
     public $_odmValidation   = false;     // If form validation success we set it to true
     public $_odmFormTemplate = 'default'; // Default form template defined in app/config/form.php
     public $_odmColumnJoins  = array();   // Do join foreach columns with related schema
@@ -50,16 +49,13 @@ Class Odm {
             $this->_odmSchema = array();
         }
 
-        $form = \Form::getFormConfig();
-
-        $this->form = (isset(getInstance()->form)) ? getInstance()->form : $odm['form'];
-        $this->post = (isset(getInstance()->post)) ? getInstance()->post : $form['post'];
+        $this->post = new Post;
+        $this->form = new Form;
 
         // --------------------------------------------------------------------
         // NOTE: Every object must create new instance when we use Hmvc.
         // The validator bug is a good example of this issue.
-        // When we call it as a new object, we understood multiple validation problems 
-        // fixed in HMVC.
+        // When we call it as a new object, we see the multiple validation problems in HMVC.
 
         $this->validator = (isset(getInstance()->validator)) ? getInstance()->validator : new Validator;  // hmvc isset errors .. !
 
@@ -142,7 +138,7 @@ Class Odm {
                 {
                     if(isset($val['rules']) AND $val['rules'] != '') // If we have rules
                     {
-                        $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));  
+                        $this->_odmMessages[$table]['values'][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));
                     }
                 }
             }
@@ -201,7 +197,7 @@ Class Odm {
                 {
                     if(isset($val['rules']) AND $val['rules'] != '') // If we have rules
                     {
-                        $this->_odmValues[$table][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));    
+                        $this->_odmMessages[$table]['values'][$key] = $this->_setValue($key, (isset($this->data[$key])) ? $this->data[$key] : $this->post->get($key));    
                     }
                 }
             }
@@ -260,7 +256,6 @@ Class Odm {
         $this->_odmSchema       = array();   // Schema object.
         $this->_odmTable        = '';        // Tablename.
         $this->_odmMessages     = array();   // Validation errors.
-        $this->_odmValues       = array();   // Filtered safe values.
         $this->_odmFormTemplate = 'default'; // Form template.
         $this->_odmColumnJoins  = array(); 
     }    
@@ -277,9 +272,9 @@ Class Odm {
     {
         $table = $this->_odmTable;
 
-        if(isset($this->_odmValues[$table]))
+        if(isset($this->_odmMessages[$table]['values']))
         {
-            return $this->_odmValues[$table];
+            return $this->_odmMessages[$table]['values'];
         }
 
         return;
@@ -297,9 +292,9 @@ Class Odm {
     {
         $table = $this->_odmTable;
 
-        if(isset($this->_odmValues[$table][$field]))
+        if(isset($this->_odmMessages[$table]['values'][$field]))
         {
-            return $this->_odmValues[$table][$field];
+            return $this->_odmMessages[$table]['values'][$field];
         }
 
         return false;
@@ -308,20 +303,17 @@ Class Odm {
     // --------------------------------------------------------------------
     
     /**
-     * Get all outputs.
+     * Get safe outputs.
      * 
      * @return array
      */
     public function getOutput()
     {
-        if(isset($this->_odmMessages[$this->_odmTable]))
-        {
-            arsort($this->_odmMessages[$this->_odmTable]); // sort descending
+        $messages = $this->getAllOutput();
 
-            return $this->_odmMessages[$this->_odmTable];
-        }
+        unset($messages['values']);
 
-        return array();
+        return $messages;
     }
 
     // --------------------------------------------------------------------
@@ -336,11 +328,13 @@ Class Odm {
      */
     public function getAllOutput()
     {
-        $messages = array_merge($this->getOutput(), array('values' => $this->getValues()));
+        if(isset($this->_odmMessages[$this->_odmTable]))
+        {
+            arsort($this->_odmMessages[$this->_odmTable]); // sort descending
+            return $this->_odmMessages[$this->_odmTable];
+        }
 
-        arsort($messages);
-
-        return $messages;
+        return array();
     }
 
     // --------------------------------------------------------------------

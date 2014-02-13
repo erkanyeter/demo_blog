@@ -11,7 +11,7 @@ namespace Form\Src {
 	 */
     function addBr($padding = '5', $str = '&nbsp;')
     {
-    	$form = \Form::getFormConfig();
+    	$form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['addbr'], $padding, $str);
     }

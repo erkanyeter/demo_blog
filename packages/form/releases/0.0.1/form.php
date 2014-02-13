@@ -12,8 +12,8 @@
 Class Form {
 
     public static $template     = 'default';  // Default form template
-    public $_callback_functions = array();    // Store __callback_func* validation methods
 
+    public $_callback_functions = array();    // Store __callback_func* validation methods
     private $_formMessages      = array();    // Validation errors.
     private $_formValues        = array();    // Filtered safe values.
 
@@ -24,7 +24,7 @@ Class Form {
      */
     public function __construct()
     {
-        self::getFormConfig();  // Initialize to form config and validator object.
+        new Validator;          // Create Validator Object
 
         if( ! isset(getInstance()->form))
         {
@@ -133,7 +133,7 @@ Class Form {
     {
         global $config;
 
-        $form = \Form::getFormConfig();  // get form template
+        $form = Form::getConfig();  // get form template
 
         if (is_string($attributes) AND strlen($attributes) > 0)
         {
@@ -235,7 +235,7 @@ Class Form {
      * 
      * @return array
      */
-    public static function getFormConfig()
+    public static function getConfig()
     {
         $form = getConfig('form');
 
@@ -265,7 +265,7 @@ Class Form {
         $validator->set('_callback_object', $this);
 
         $valid = $validator->isValid($group);
-        $form  = \Form::getFormConfig();  // get form template
+        $form  = Form::getConfig();  // get form template
 
         // BUILD AJAX FRIENDLY RESPONSE DATA.
 
@@ -331,11 +331,25 @@ Class Form {
     // ------------------------------------------------------------------------
 
     /**
-     * Get all output of the form 
+     * Get safe outputs of the form 
      * 
      * @return array
      */
     public function getOutput()
+    {
+        unset($this->_formMessages['values']);
+
+        return $this->_formMessages;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get all output of the form 
+     * 
+     * @return array
+     */
+    public function getAllOutput()
     {
         return $this->_formMessages;
     }

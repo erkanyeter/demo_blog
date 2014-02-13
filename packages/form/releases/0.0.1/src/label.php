@@ -43,7 +43,7 @@ namespace Form\Src {
 
         $label .= ">$label_text</label>";
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['label'], $label);
     }

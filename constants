@@ -55,9 +55,9 @@ define('TASK_FILE', 'task');
 | NOTIFICATION CONSTANTS
 |---------------------------------------------------------------
 */
-define('SUCCESS', 'success');
-define('ERROR', 'error');
-define('INFO', 'info');
+define('ERROR', 0);
+define('SUCCESS', 1);
+define('INFO', 2);
 
 
 /* End of file constants */

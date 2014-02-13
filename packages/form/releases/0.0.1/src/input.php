@@ -21,7 +21,7 @@ namespace Form\Src {
 
         $defaults = array('type' => 'text', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         $inputElement = "<input ".\Form::_parseFormAttributes($data, $defaults).$extra." />";
 

@@ -25,7 +25,7 @@ namespace Form\Src {
             $fieldset .= "<legend>$legend_text</legend>\n";
         }
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return $form['templates'][\Form::$template]['fieldsetOpen'].$fieldset;
     }
