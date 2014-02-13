@@ -85,8 +85,53 @@ Class Web {
         $r = json_decode($this->getRawOutput(), true); // Decode json data.
 
         //-------- Check Web Model Standarts ----------//
-
         
+        $standards_of_web_model = "The web model standards requires below the structure. <pre>
+\$r = array(
+
+    'success' => 1,
+    'results' => array(),
+    'message' => '',         // optional key
+
+)</pre>";
+        $standards_of_fail_e    = "The web model standards requires below the structure for failure operations. <pre>
+\$r = array(
+
+    'success' => 0,
+    'message' => '',
+    'e' => \$e->getMessage(), // optional key
+
+)</pre>";
+
+        if(isset($r['success']))
+        {
+            $r['success'] = ($r['success'] === '1' 
+                OR $r['success'] === 1 
+                OR $r['success'] === 'true' 
+                OR $r['success'] === true) ? true : false;
+
+            if($r['success'] AND ! isset($r['results']))  // Successful operation.
+            {
+                throw new Exception($standards_of_web_model);
+            } 
+            elseif( $r['success'] == 0 AND ! isset($r['message']))  // Unsuccessful operation.
+            {
+                throw new Exception($standards_of_fail_e);
+            }
+
+            if(isset($r['message']))
+            {
+                if(strpos($r['message'], 'translate:') === 0)  // Translate the message
+                {
+                    
+                }
+            }
+
+        } 
+        else 
+        {
+            throw new Exception($standards_of_web_model);
+        }
 
         return $r; // return to validator messages
     }

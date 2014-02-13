@@ -42,8 +42,6 @@ Class Form_Builder
      */
     public function __construct()
     {
-        // set the new instance each time to the controller
-        // otherwise must change the params to static
         getInstance()->form_builder = $this;  // Make available it in the controller.
 
         if(! isset(getInstance()->form) )
@@ -86,20 +84,17 @@ Class Form_Builder
             case 'radio':
             case 'dropdown':
             case 'textarea':
-            case 'multiselect':
-            {
+            case 'multiselect': {
                 $colname = $arguments[0];
                 $this->_setColumnArray('field_name', $arguments[0]);
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
-                return array("method" => $method, "arguments" => $arguments);
+
+                return array('method' => $method, 'arguments' => $arguments);
                 break;
             }
             case 'isValid':
-            case 'printForm':
-            {
+            case 'printForm': {
                 $identifier = $arguments[0];
-
-                $config = getConfig('form_builder');
                 
                 if(empty(self::$forms[$identifier]))
                 {
@@ -121,16 +116,13 @@ Class Form_Builder
                 getInstance()->form->func('callback_captcha_'.$identifier, function() use ($arguments,$identifier) {
                 
                     $config = getConfig('form_builder');
+                    $code   = $this->sess->get($this->post->get($config['captcha']['hidden_input_name']));
 
-                    $code = $this->sess->get($this->post->get($config['captcha']['hidden_input_name']));
-
-                    if( $this->post->get($arguments[0]) != $code )
-                    {
-                        $this->setMessage('callback_captcha_'.$identifier, translate('Security code doesn\'t match security image. '));
+                    if( $this->post->get($arguments[0]) != $code ){
+                        $this->setMessage('callback_captcha_'.$identifier, translate('Security code doesn\'t match security image.'));
                         return false;
                     }
                     return true;
-
                 });
 
                 $colname = $arguments[0];
@@ -242,12 +234,23 @@ Class Form_Builder
         $this->colNum ++;
     }
 
+    // --------------------------------------------------------------------
+
+    /**
+     * 
+     * 
+     * @param  string $attr
+     * @param  string $defaultClass
+     * @return string         
+     */
     protected function _processColumnClass($attr = '' , $defaultClass)
     {
         if(preg_match('/class\s*=\s*[\"\'](?<mymatch>.*?)[\"\']/i', $attr,$match))
         {
             $attr = preg_replace("/class\s*=\s*[\"\'](?<mymatch>.*?)[\"\']/i", "class='$match[mymatch] $defaultClass' ", $attr);
-        }else{
+        }
+        else
+        {
             $attr = (empty($attr)) ? " class='$defaultClass' " : $attr . " class='$defaultClass' ";
         }
 
@@ -496,7 +499,6 @@ Class Form_Builder
     protected function _printColumnContent($rowNum, $colNum)
     {
         $arg   = func_get_args();
-        
         $row   = $this->columnStorage[$rowNum];
         $col   = $this->columnStorage[$rowNum]['columns'][$colNum];
         $out   = '';
@@ -587,7 +589,7 @@ Class Form_Builder
     // --------------------------------------------------------------------
     
     /**
-     * Set rules for validat
+     * Set rules for validate
      */
     protected function _setRules()
     {
@@ -600,7 +602,9 @@ Class Form_Builder
                     foreach($rowVars as $colKey => $col )
                     {
                         if( ! empty($col['rules']) )
-                        getInstance()->form->setRules($col['field_name'], $col['label'], $col['rules']);
+                        {
+                            getInstance()->form->setRules($col['field_name'], $col['label'], $col['rules']);
+                        }
                     }
                 }
             }
@@ -631,7 +635,6 @@ Class Form_Builder
         {
             $captcha = call_user_func_array(Closure::bind($config['func'], getInstance(), 'Controller'), array());
 
-            // if( empty($captcha['hidden_input_template']) OR empty($captcha['image_url']) )
             if( empty($captcha['image_id']) OR empty($captcha['image_url']) )
             {
                 throw(new Exception('Form builder error : Captcha closure in the config file must return an array containing two index keys (image_hidden_input, image_url).'));
@@ -657,6 +660,36 @@ Class Form_Builder
             throw new Exception('Form Builder error : Captcha key must be a callable function in form_builder.php config file.');
         }
     }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Create a callback function
+     * for validator
+     * 
+     * @param  string $func
+     * @param  closure $closure
+     * @return void
+     */
+    public function func($func,$closure)
+    {
+        getInstance()->form->func($func,$closure);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Set Message
+     * 
+     * @param string $key
+     * @param string $val
+     */
+    public function setMessage($key, $val)
+    {
+        getInstance()->validator->setMessage($key, $val);
+    }
+
+    // --------------------------------------------------------------------
 
 }
 

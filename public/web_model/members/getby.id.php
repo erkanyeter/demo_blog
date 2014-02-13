@@ -15,6 +15,6 @@ $c->func('index', function(){
     $this->db->where('user_id', $_POST['user_id']);
     $this->db->get('users');
 
-    echo json_encode(array('success' => 1, 'results' => $this->db->getResultArray(), 'e' => null));
+    echo json_encode(array('success' => 1, 'results' => $this->db->getResultArray()));
 
 });

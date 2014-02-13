@@ -45,7 +45,7 @@ Class Auth {
 
         $this->db = $this->db->connect(); // connect to database and assign db object.
 
-        logMe('debug', "Auth Class Initialized");
+        logMe('debug', 'Auth Class Initialized');
     }
     
     // --------------------------------------------------------------------

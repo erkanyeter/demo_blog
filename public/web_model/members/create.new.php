@@ -1,16 +1,6 @@
 <?php
 
 /**
- * Web Model Standards
- *        
- *  $results = array(      
- *   'success' => 1,
- *   'results' => array('user_id' => $this->db->insertId(), 'count' => $rows),
- *   'e' => '',
- *  ); 
- */
-
-/**
  * $c members/create.new
  * 
  * @var Controller
@@ -31,20 +21,20 @@ $c->func('index', function(){
     try
     {
         $this->db->transaction();
+
         $this->db->where('user_emaile', 'me@test.com');
         $rows = $this->db->update('users', $data);
 
-        $results = array(
+        $r = array(
             'success' => 1,
             'results' => array('user_id' => $this->db->insertId(), 'count' => $rows),
-            'e' => '',
         );
 
         $this->db->commit();
     } 
     catch(Exception $e)
     {
-        $results = array(
+        $r = array(
             'success' => 0,
             'message' => 'translate:failure',
             'e' => $e->getMessage(),
@@ -53,6 +43,6 @@ $c->func('index', function(){
         $this->db->rollBack();
     }
 
-    echo json_encode($results);
+    echo json_encode($r);
 
 });
