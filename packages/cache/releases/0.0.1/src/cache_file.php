@@ -23,22 +23,22 @@ Class Cache_File {
 	/**
      * Get
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function get($id)
+	public function get($key)
 	{
-		if ( ! file_exists($this->_cache_path.$id))
+		if ( ! file_exists($this->_cache_path.$key))
 		{
 			return false;
 		}
 		
-		$data = file_get_contents($this->_cache_path.$id);
+		$data = file_get_contents($this->_cache_path.$key);
 		$data = unserialize($data);
 		
 		if (time() >  $data['time'] + $data['ttl'])
 		{
-			unlink($this->_cache_path.$id);
+			unlink($this->_cache_path.$key);
 			return false;
 		}
 		
@@ -49,16 +49,16 @@ Class Cache_File {
 
 	/**
 	 * Replace
-	 * @param  [type]  $id   [description]
+	 * @param  [type]  $key   [description]
 	 * @param  [type]  $data [description]
 	 * @param  integer $ttl  [description]
 	 * @return [type]        [description]
 	 */
-	public function replace($id, $data, $ttl = 60)
+	public function replace($key, $data, $ttl = 60)
 	{
-		$this->delete($id);
+		$this->delete($key);
 
-		return $this->set($id, $data, $ttl);
+		return $this->set($key, $data, $ttl);
 	}
 
 	// ------------------------------------------------------------------------
@@ -66,10 +66,10 @@ Class Cache_File {
     /**
      * Save
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function set($id, $data, $ttl = 60)
+	public function set($key, $data, $ttl = 60)
 	{
 		$contents = array(
 						  'time' => time(),
@@ -77,7 +77,7 @@ Class Cache_File {
 						  'data' => $data
 						  );
 
-		$fileName = $this->_cache_path.$id;
+		$fileName = $this->_cache_path.$key;
         if ( ! $fp = fopen($fileName, 'wb'))
         {
             return false;
@@ -98,12 +98,12 @@ Class Cache_File {
     /**
      * Delete
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function delete($id)
+	public function delete($key)
 	{
-		return unlink($this->_cache_path.$id);
+		return unlink($this->_cache_path.$key);
 	}
 
 	// ------------------------------------------------------------------------
@@ -111,10 +111,10 @@ Class Cache_File {
     /**
      * Clean all data
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function clean()
+	public function flushAll()
 	{
 		return delete_files($this->_cache_path);
 	}
@@ -137,22 +137,22 @@ Class Cache_File {
     /**
      * Get Meta Data
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function getMetaData($id)
+	public function getMetaData($key)
 	{
-		if ( ! file_exists($this->_cache_path.$id))
+		if ( ! file_exists($this->_cache_path.$key))
 		{
 			return false;
 		}
 
-		$data = file_get_contents($this->_cache_path.$id);
+		$data = file_get_contents($this->_cache_path.$key);
 		$data = unserialize($data);
 
 		if (is_array($data))
 		{
-			$mtime = filemtime($this->_cache_path.$id);
+			$mtime = filemtime($this->_cache_path.$key);
 
 			if ( ! isset($data['ttl']))
 			{
@@ -173,7 +173,7 @@ Class Cache_File {
     /**
      * Controlling for supporting driver.
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
 	public function isSupported()
