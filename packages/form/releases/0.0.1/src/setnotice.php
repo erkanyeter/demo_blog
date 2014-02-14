@@ -15,6 +15,11 @@ namespace Form\Src {
         $sess   = (isset(getInstance()->sess)) ? getInstance()->sess : new $Class;
         $suffix = ($suffix === null) ? uniqid() : $suffix;
 
+        if(is_bool($key)) // Boolean support
+        {
+            $key = ($key) ? '1' : '0';
+        }
+
         switch ($key)  // set custom notice
         {
             case '0':

@@ -23,10 +23,7 @@ Class Log_Adapter {
      */
     public function __construct($level, $msg, $section = '')
     {
-        // Convert new lines to a temp symbol, than we replace it and read for console debugs.
-        $msg = trim(preg_replace('/\n/', '[@]', $msg), "\n");
-
-        $this->init($level, $msg, $section);
+        // $this->init($level, $msg, $section);
     }
 
     // --------------------------------------------------------------------
@@ -42,6 +39,9 @@ Class Log_Adapter {
     public function init($level, $msg, $section = '')
     {
         global $config;
+
+        // Convert new lines to a temp symbol, than we replace it and read for console debugs.
+        $msg = trim(preg_replace('/\n/', '[@]', $msg), "\n");
 
         $this->setDriver($config['log_driver']);
         $this->setThreshold(1);

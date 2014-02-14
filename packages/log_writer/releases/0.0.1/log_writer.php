@@ -24,13 +24,14 @@ Class Log_Writer extends Log_Adapter {
     * @param    string   the section of the logs
     * @return   bool
     */
-    function dump($level = 'error', $msg = '', $section = '')
+    public function dump($level = 'error', $msg = '', $section = '')
     {   
-        parent::__construct($level, $msg, $section);
 
-        $logDriver = $this->getDriver(); 
+        // parent::__construct($level, $msg, $section);
 
-        return $logDriver->dump();       
+        // $logDriver = $this->getDriver(); 
+
+        // return $logDriver->dump();       
     }
 
 }

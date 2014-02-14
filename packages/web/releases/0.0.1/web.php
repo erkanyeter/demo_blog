@@ -32,6 +32,8 @@ Class Web {
     {
         $this->web_service_directory = $directory;
 
+        getInstance()->translator->load('web');
+
         $this->__assignObjects();   // Assign all controller objects and make available them in this class.
 
         if( ! isset(getInstance()->web))
@@ -123,10 +125,11 @@ Class Web {
             {
                 if(strpos($r['message'], 'translate:') === 0)  // Translate the message
                 {
-                    
+                    $line = substr($r['message'], 10);
+
+                    $r['message'] = translate($line); // failure translation
                 }
             }
-
         } 
         else 
         {
