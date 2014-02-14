@@ -24,14 +24,15 @@ $config = array(
 	'environment_config_files' => array('database','mongo','routes','sess'),   // Defined config files for each environments.
 
 	// Models & Schemas
-	'model_auto_sync' => true, 				// Auto sync should be enabled in development mode.
-							   				// Sync tool automatically show a sync edit screen for the schema & database synchronization.
-							   				// In LIVE mode you need set it to "false" because of the performance & security.
+	'model_auto_sync' => true, 				  // Auto sync should be enabled in development mode.
+							   				  // Sync tool automatically show a sync edit screen for the schema & database synchronization.
+							   				  // In LIVE mode you need set it to "false" because of the performance & security.
 	// Logs
-	'log_threshold'   => 0,    				// 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
-	'log_queries'     => true, 				// If true ALL SQL Queries gets logged.
-	'log_benchmark'   => true, 				// If true ALL framework benchmarks gets logged.
-	'log_date_format' => 'Y-m-d H:i:s', 	// Date format for log date() function.
+	'log_threshold'   => 0,    				  // 0 = Disables logging, 1 = Errors (PHP errors), 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
+	'log_driver'	  => new Log_Writer_File,
+	'log_queries'     => true, 				  // If true ALL SQL Queries gets logged.
+	'log_benchmark'   => true, 				  // If true ALL framework benchmarks gets logged.
+	'log_date_format' => 'Y-m-d H:i:s', 	  // Date format for log date() function.
 
 								  			// VERY IMPORTANT: * For a live site you'll usually only enable "Errors (1)" to be logged
 								  			// otherwise your log files will fill up very fast.
