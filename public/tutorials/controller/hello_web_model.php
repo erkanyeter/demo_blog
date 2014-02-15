@@ -1,7 +1,7 @@
 <?php
 
 /**
- * $c hello_web_model "local web service"
+ * $c hello_web_model
  * 
  * @var Controller
  */
@@ -12,20 +12,23 @@ $c = new Controller(function(){
 $c->func('index', function(){
 
     new Web;
-
-    $res = $this->web->query('members/create.new.json',function(){
+    /*
+    $r = $this->web->query('members/create.new.json',function(){
         
         $this->data['user_username'] = 'test';
         $this->data['user_email']    = 'ersin@test.com';
         $this->data['user_password'] = '123456';
     });
 
-    print_r($res);
+    print_r($r);
+*/
 
+    $r = $this->web->query('members/getby.id.json',function(){
+         $this->data['user_id'] = ''; // get one user
+    });
 
-    // $r = $this->web->query('members/getby.id.json',function(){
-    //     $this->data['user_id'] = ''; // get one user
-    // });
+    print_r($r);
+
 
     // if($r['success'] == 1)
     // {

@@ -9,12 +9,12 @@
 | Prototype
 | -------------------------------------------------------------------
 | 
-| $web_model['service_folder'] = '/web_model';
+| $models['service_folder'] = '/models';
 |
 */
-$web_model = array(
+$models = array(
 
-		'service_folder' => '/web_model',
+		'service_folder' => '/models',
 );
 
 /* End of file web_model.php */

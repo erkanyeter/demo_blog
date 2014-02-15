@@ -6,6 +6,9 @@
 	$firstSegment   = $this->uri->getSegment(0);	   // Get first segnment
 	$currentSegment = (empty($firstSegment)) ? 'home' : $firstSegment;  // Set current segment as "home" if its empty
 
+	// echo $this->web->get('views/header');
+	// @todo $this->view->get('@views/header');
+
 ?>
 
 <div id="header"> 

@@ -28,7 +28,7 @@ Class Web {
     /**
      * Constructor
      */
-    public function __construct($directory = 'web_model')
+    public function __construct($directory = 'models')
     {
         $this->web_service_directory = $directory;
 
@@ -88,20 +88,20 @@ Class Web {
 
         //-------- Check Web Model Standarts ----------//
         
-        $standards_of_web_model = "The web model standards requires below the structure. <pre>
+        $standards_of_web_request = "The web request standard requires below the structure. <pre>
 \$r = array(
 
     'success' => 1,
     'results' => array(),
-    'message' => '',         // optional key
+    'message' => '',         // optional
 
 )</pre>";
-        $standards_of_fail_e    = "The web model standards requires below the structure for failure operations. <pre>
+        $standards_of_fail_e    = "The web request standard requires below the structure for failure operations. <pre>
 \$r = array(
 
     'success' => 0,
     'message' => '',
-    'e' => \$e->getMessage(), // optional key
+    'e' => \$e->getMessage(), // optional
 
 )</pre>";
 
@@ -114,7 +114,7 @@ Class Web {
 
             if($r['success'] AND ! isset($r['results']))  // Successful operation.
             {
-                throw new Exception($standards_of_web_model);
+                throw new Exception($standards_of_web_request);
             } 
             elseif( $r['success'] == 0 AND ! isset($r['message']))  // Unsuccessful operation.
             {
@@ -133,7 +133,7 @@ Class Web {
         } 
         else 
         {
-            throw new Exception($standards_of_web_model);
+            throw new Exception($standards_of_web_request);
         }
 
         return $r; // return to validator messages
