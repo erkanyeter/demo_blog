@@ -9,20 +9,21 @@ namespace Cache\Src;
 
 Class Cache_Memcache {
 
-	private $_memcached;
 	public $connectionSet;
+
+	private $_memcached;
 
 	// ------------------------------------------------------------------------	
 
 	/**
      * Get
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function get($id)
+	public function get($key)
 	{
-		$data = $this->_memcached->get($id);
+		$data = $this->_memcached->get($key);
 		return (is_array($data)) ? $data[0] : false;
 	}
 
@@ -31,7 +32,7 @@ Class Cache_Memcache {
 	/**
      * Get
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
 	public function getAllKeys()
@@ -44,18 +45,18 @@ Class Cache_Memcache {
     /**
      * Save
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function set($id, $data, $ttl = 60)
+	public function set($key, $data, $ttl = 60)
 	{
 		if (get_class($this->_memcached) == 'Memcached')
 		{
-			return $this->_memcached->set($id, array($data, time(), $ttl), $ttl);
+			return $this->_memcached->set($key, array($data, time(), $ttl), $ttl);
 		}
 		elseif (get_class($this->_memcached) == 'Memcache')
 		{
-			return $this->_memcached->set($id, array($data, time(), $ttl), 0, $ttl);
+			return $this->_memcached->set($key, array($data, time(), $ttl), 0, $ttl);
 		}
 		
 		return false;
@@ -66,25 +67,33 @@ Class Cache_Memcache {
     /**
      * Delete
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function delete($id)
+	public function delete($key)
 	{
-		return $this->_memcached->delete($id);
+		return $this->_memcached->delete($key);
 	}
 
 	// ------------------------------------------------------------------------
 
-	public function replace($id, $data, $ttl = 60)
+	/**
+	 * Replace key value
+	 * 
+	 * @param  string $key
+	 * @param  string or array $data
+	 * @param  int $ttl sec
+	 * @return replace new value
+	 */
+	public function replace($key, $data, $ttl = 60)
 	{
 		if (get_class($this->_memcached) == 'Memcached')
 		{
-			return $this->_memcached->replace($id, array($data, time(), $ttl), $ttl);
+			return $this->_memcached->replace($key, array($data, time(), $ttl), $ttl);
 		}
 		elseif (get_class($this->_memcached) == 'Memcache')
 		{
-			return $this->_memcached->replace($id, array($data, time(), $ttl), 0, $ttl);
+			return $this->_memcached->replace($key, array($data, time(), $ttl), 0, $ttl);
 		}
 		
 		return false;
@@ -95,10 +104,10 @@ Class Cache_Memcache {
     /**
      * Clean all data
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-    public function clean()
+    public function flushAll()
 	{
 		return $this->_memcached->flush();
 	}
@@ -121,12 +130,12 @@ Class Cache_Memcache {
     /**
      * Get Meta Data
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function getMetaData($id)
+	public function getMetaData($key)
 	{
-		$stored = $this->_memcached->get($id);
+		$stored = $this->_memcached->get($key);
 
 		if (count($stored) !== 3)
 		{
@@ -160,6 +169,8 @@ Class Cache_Memcache {
 				else
 				{
 					$this->_memcached->addServer($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['weight']);
+
+					return true;
 				}
 			}
 
@@ -176,7 +187,7 @@ Class Cache_Memcache {
     /**
      * Controlling for supporting driver.
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
 	public function isSupported($driver)

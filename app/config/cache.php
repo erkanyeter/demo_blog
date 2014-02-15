@@ -11,10 +11,11 @@
 */
 
 $cache = array(
-			   'driver'  => 'memcached',
+			   'driver'  => 'redis',
 			   'servers' => array(
-								  'hostname' => 'localhost',
-								  'port'     => '11211',
+								  'hostname' => '127.0.0.1',
+								  'port'     => '6379',
+							   // 'timeout'	 => '2.5' 		// 2.5 sec timeout, just for redis cache
 								  'weight'   => '1'			// The weight parameter effects the consistent hashing 
 								  							// used to determine which server to read/write keys from.
 								  ),

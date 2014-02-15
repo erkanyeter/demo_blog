@@ -62,6 +62,7 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setTitle('<h3 style="color:#333">Personal Info</h3><hr style="margin-top:0px" />');
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',
@@ -111,6 +112,7 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setTitle('<h3 style="color:#333">Security Code</h3><hr style="margin-top:0px" />');
         $this->addCol(array(
             'label' => 'Security Image',
             'rules' => 'required',
@@ -149,5 +151,10 @@ $c->func('index', function(){
 
 });
 
+<<<<<<< HEAD
 /* End of file hello_form_builder.php */
 /* Location: .public/tutorials/controller/hello_form_builder.php */
+=======
+/* End of file hello_odm.php */
+/* Location: .public/tutorials/controller/hello_odm.php */
+>>>>>>> f4ba35013e6c2664a96b6741c9322d006c1c3aeb
