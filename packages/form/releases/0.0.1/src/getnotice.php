@@ -11,8 +11,7 @@ namespace Form\Src {
      */
     function getNotice($error = '', $suffix = '')
     {
-        $class        = getComponent('sess');
-        $sess         = (isset(getInstance()->sess)) ? getInstance()->sess : new $class;
+        $sess         = (isset(getInstance()->sess)) ? getInstance()->sess : new \Sess;
         $form         = getConfig('form');
         $errorKey     = 'errorMessage';
         $noticeString = '';

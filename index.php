@@ -134,8 +134,6 @@ require (DATA .'cache'. DS .'packages.cache');
 | Framework Component
 |--------------------------------------------------------------------------
 */
-$core = mb_strtolower($packages['components']['core']);  // * ( All Components are Replaceable )
-
-require (PACKAGES .$core. DS .'releases'. DS .$packages['dependencies'][$core]['version']. DS .$core. EXT);
+require (PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'obullo'. EXT);
 
 runFramework();

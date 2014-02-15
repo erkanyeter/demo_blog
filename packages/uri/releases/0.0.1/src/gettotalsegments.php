@@ -11,9 +11,9 @@ namespace Uri\Src {
      */
     function getTotalSegments()
     {
-        $uriObject = getComponentInstance('uri');
+        $uriObject = \Uri::getInstance();
 
-        return count($uriObject->segments);
+        return sizeof($uriObject->segments);
     }
     
 }

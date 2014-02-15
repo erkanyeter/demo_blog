@@ -144,10 +144,10 @@ $c->func('index', function(){
     $this->view->get('hello_form_builder', function() {
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $this->tpl('footer', false));
+        $this->set('footer', $this->getTpl('footer', false));
     });
 
 });
 
-/* End of file hello_odm.php */
-/* Location: .public/tutorials/controller/hello_odm.php */
+/* End of file hello_form_builder.php */
+/* Location: .public/tutorials/controller/hello_form_builder.php */

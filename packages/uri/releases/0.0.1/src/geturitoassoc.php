@@ -26,9 +26,7 @@ namespace Uri\Src {
     */
     function getUriToAssoc($n = 3, $default = array())
     {
-        $uriObject = getComponentInstance('uri');
-
-        return $uriObject->_uriToAssoc($n, $default, 'segment');
+        return \Uri::getInstance()->_uriToAssoc($n, $default, 'segment');
     }
     
 }

@@ -9,9 +9,7 @@ namespace Uri\Src {
      */
     function getRoutedUriToAssoc($n = 3, $default = array())
     {
-    	$uriObject = getComponentInstance('uri');
-
-    	return $uriObject->_uriToAssoc($n, $default, 'routedSegment');
+    	return \Uri::getInstance()->_uriToAssoc($n, $default, 'routedSegment');
     }
 
 }

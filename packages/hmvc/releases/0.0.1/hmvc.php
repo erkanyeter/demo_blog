@@ -3,14 +3,17 @@
  /**
  * HMVC Class
  * Hierarcial Model View Controller Library
- *
+ * 2009 -2014
+ * 
+ * @author        obullo - obulloframework@gmail.com
  * @package       packages
  * @subpackage    hmvc
  * @category      hmvc
  * 
  */
-Class Hmvc
-{
+
+Class Hmvc {
+
     // Controller Object
     public $_this            = null;  // Clone original getInstance();
 
@@ -49,7 +52,7 @@ Class Hmvc
             getInstance()->hmvc = $this; // Make available it in the controller $this->hmvc->method();
         }
 
-        logMe('debug', "Hmvc Class Initialized");
+        logMe('debug', 'Hmvc Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -84,7 +87,7 @@ Class Hmvc
             # CLONE
             #######################################
             
-            $this->uri    = clone $Uri;     // Create copy of original URI class.
+            $this->uri    = clone $Uri;     // Create copy of original Uri class.
             $this->router = clone $Router;  // Create copy of original Router class.
             $this->config = clone $Config;  // Create copy of original Config class.
 
@@ -95,8 +98,6 @@ Class Hmvc
             getInstance()->router->clear();        // Reset router objects we will reuse it for hmvc.
 
             #######################################
-            
-            $this->cache_time = $ttl;
 
             //----------------------------------------------
             // Set Uri String to Uri Object
@@ -107,7 +108,7 @@ Class Hmvc
                 $uri_part           = explode('?', urldecode($uriString));  // support any possible url encode operation
                 $this->query_string = $uri_part[1]; // .json?id=2
 
-                $Uri->setUriString($uri_part[0], false); // false null filter
+                $Uri->setUriString($uri_part[0], false); // false = null filter
             }
             else
             {
@@ -471,13 +472,9 @@ Class Hmvc
         # Set original objects foreach HMVC requests we backup before  ..
         ######################################
         
-        $uri    = getComponent('uri');
-        $router = getComponent('router');
-        $config = getComponent('config');
-        
-        $this->_this->uri     = $uri::setInstance($this->uri);
-        $this->_this->router  = $router::setInstance($this->router);
-        $this->_this->config  = $config::setInstance($this->config);
+        $this->_this->uri     = Uri::setInstance($this->uri);
+        $this->_this->router  = Router::setInstance($this->router);
+        $this->_this->config  = Config::setInstance($this->config);
         
         getInstance($this->_this);         // Set original $this to controller instance that we backup before.
     

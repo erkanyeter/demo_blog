@@ -47,6 +47,11 @@ Class Hooks {
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get instance of this class
+     * 
+     * @return object
+     */
     public static function getInstance()
     {
        if( ! self::$instance instanceof self)

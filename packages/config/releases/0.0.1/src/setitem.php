@@ -14,7 +14,7 @@ namespace Config\Src {
     */
     function setItem($item, $value)
     {
-        $configObject = getComponentInstance('config');
-        $configObject->config[$item] = $value;
+        \Config::getInstance()->config[$item] = $value;
     }
+    
 }

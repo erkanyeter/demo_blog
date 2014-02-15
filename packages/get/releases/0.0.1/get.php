@@ -78,7 +78,7 @@ Class Get
         
         if ($xss_clean)
         {
-            return getComponentInstance('security')->xssClean($array[$index]);
+            return Security::getInstance()->xssClean($array[$index]);
         }
 
         return $array[$index];

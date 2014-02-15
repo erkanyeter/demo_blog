@@ -28,6 +28,11 @@ Class Response {
 
     // --------------------------------------------------------------------
     
+    /**
+     * Get instance of class
+     * 
+     * @return object
+     */
     public static function getInstance()
     {
        if( ! self::$instance instanceof self)
@@ -38,36 +43,6 @@ Class Response {
        return self::$instance;
     }
 
-    // ------------------------------------------------------------------------
-
-    /**
-    * Get Output
-    *
-    * Returns the current output string
-    *
-    * @access    public
-    * @return    string
-    */    
-    public function getOutput()
-    {
-        return $this->final_output;
-    }
-
-    // --------------------------------------------------------------------
-    
-    /**
-    * Set Output
-    *
-    * Sets the output string
-    *
-    * @access    public
-    * @param     string
-    * @return    void
-    */    
-    public function setOutput($output)
-    {
-        $this->final_output = $output;
-    }
 
     // --------------------------------------------------------------------
 
@@ -90,35 +65,6 @@ Class Response {
         {
             $this->final_output.= $output;
         }
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-    * Set Header
-    *
-    * Lets you set a server header which will be outputted with the final display.
-    *
-    * Note:  If a file is cached, headers will not be sent.  We need to figure out
-    * how to permit header data to be saved with the cache data...
-    *
-    * @access   public
-    * @param    string
-    * @return   void
-    */    
-    public function setHeader($header, $replace = true)
-    {
-        // If zlib.output_compression is enabled it will compress the output,
-        // but it will not modify the content-length header to compensate for
-        // the reduction, causing the browser to hang waiting for more data.
-        // We'll just skip content-length in those cases.
-
-        if (@ini_get('zlib.output_compression') AND strncasecmp($header, 'content-length', 14) == 0)
-        {
-            return;
-        }
-        
-        $this->headers[] = array($header, $replace);
     }
 
     // --------------------------------------------------------------------

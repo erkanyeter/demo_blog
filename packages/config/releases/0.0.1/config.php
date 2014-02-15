@@ -11,8 +11,8 @@
  * @link        
  */
 
-Class Config
-{    
+Class Config {    
+
     public $config          = array();
     public $is_loaded       = array();
 
@@ -44,11 +44,9 @@ Class Config
     {
         global $packages;
 
-        $package = strtolower(getComponent('config'));
-
         if( ! function_exists('Config\Src\\'.$method))
         {
-            require PACKAGES .$package. DS .'releases'. DS .$packages['dependencies'][$package]['version']. DS .'src'. DS .mb_strtolower($method). EXT;
+            require PACKAGES .'config'. DS .'releases'. DS .$packages['dependencies']['config']['version']. DS .'src'. DS .strtolower($method). EXT;
         }
 
         return call_user_func_array('Config\Src\\'.$method, $arguments);
@@ -56,6 +54,11 @@ Class Config
 
     // --------------------------------------------------------------------
     
+    /**
+     * Get instance of config class
+     * 
+     * @return object
+     */
     public static function getInstance()
     {
        if( ! self::$instance instanceof self)
@@ -68,6 +71,12 @@ Class Config
     
     // --------------------------------------------------------------------
     
+    /**
+     * Set instance of config class
+     * 
+     * @param $object of instance
+     * @return  void
+     */
     public static function setInstance($object)
     {
         if(is_object($object))

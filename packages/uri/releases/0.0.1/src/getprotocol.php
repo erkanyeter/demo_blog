@@ -12,9 +12,7 @@ namespace Uri\Src {
      */
     function getProtocol()
     {
-        $uriObject = getComponentInstance('uri');
-
-        return $uriObject->uri_protocol;
+        return \Uri::getInstance()->uri_protocol;
     }
 
 }

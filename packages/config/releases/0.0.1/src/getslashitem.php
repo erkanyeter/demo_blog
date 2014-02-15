@@ -16,7 +16,7 @@ namespace Config\Src {
     */
     function getSlashItem($item)
     {
-        $configObject = getComponentInstance('config');
+        $configObject = \Config::getInstance();
 
         if ( ! isset($configObject->config[$item]))
         {

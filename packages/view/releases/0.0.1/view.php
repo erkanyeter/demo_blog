@@ -88,7 +88,7 @@ Class View {
             return $output;
         }
         
-        getComponentInstance('response')->appendOutput($output);
+        Response::getInstance()->appendOutput($output);
 
         return;
     }
@@ -199,7 +199,7 @@ Class View {
      * @param  boolean $include            no include ( fetch as string )
      * @return string                      
      */
-    public function tpl($filename, $data_or_no_include = null, $include = true)
+    public function getTpl($filename, $data_or_no_include = null, $include = true)
     {
         return $this->fetch(APP .'templates'. DS, $filename, $data_or_no_include, $include);
     }

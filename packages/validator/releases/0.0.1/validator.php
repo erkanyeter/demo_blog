@@ -233,7 +233,7 @@ Class Validator {
                 return false;
             }
             
-            $uriClass = getComponentInstance('uri');
+            $uriClass = Uri::getInstance();
             
             $uri = ($group == '') ? trim($uriClass->getRoutedUriString(), '/') : $group; // Is there a validation rule for the particular URI being accessed?
             

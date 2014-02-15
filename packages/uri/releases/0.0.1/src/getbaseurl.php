@@ -13,7 +13,7 @@ namespace Uri\Src {
     */
     function getBaseUrl($uri = '')
     {
-        return getComponentInstance('config')->getSlashItem('base_url').ltrim($uri,'/');
+        return \Config::getInstance()->getSlashItem('base_url').ltrim($uri,'/');
     }
     
 }

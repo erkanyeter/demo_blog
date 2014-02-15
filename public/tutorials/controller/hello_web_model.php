@@ -14,6 +14,7 @@ $c->func('index', function(){
     new Web;
 
     $res = $this->web->query('members/create.new.json',function(){
+        
         $this->data['user_username'] = 'test';
         $this->data['user_email']    = 'ersin@test.com';
         $this->data['user_password'] = '123456';

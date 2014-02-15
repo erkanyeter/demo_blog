@@ -10,7 +10,7 @@ namespace Uri\Src {
     */
     function getExtension()
     {
-        return getComponentInstance('uri')->uri_extension;
+        return \Uri::getInstance()->uri_extension;
     }
     
 }

@@ -48,7 +48,7 @@ $c->func('index', function() use($c){
     $this->view->get('hello_forms', function(){
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $this->tpl('footer', false));
+        $this->set('footer', $this->getTpl('footer', false));
 
     });
 

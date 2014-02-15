@@ -11,9 +11,7 @@ namespace Uri\Src {
      */
     function getUriString()
     {
-        $uriObject = getComponentInstance('uri');
-
-        return $uriObject->uri_string;
+        return \Uri::getInstance()->uri_string;
     }
     
 }

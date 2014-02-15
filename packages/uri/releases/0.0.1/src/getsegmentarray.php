@@ -11,9 +11,7 @@ namespace Uri\Src {
      */
     function getSegmentArray()
     {
-        $uriObject = getComponentInstance('uri');
-
-        return $uriObject->segments;
+        return \Uri::getInstance()->segments;
     }
 
 }

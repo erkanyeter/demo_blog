@@ -16,9 +16,9 @@ $c = new Controller(function(){
 
 $c->func('index',function() {
 
-    // multiple
+    // multiple request
+    /
     $response_a = $this->web->get('tutorials/hello_dummy/test/1/2/3');
-    
     $response_b = $this->web->get('tutorials/hello_dummy/test/4/5/6');
 
     $this->view->get('hello_hmvc', function() use($response_a, $response_b) {
@@ -27,7 +27,7 @@ $c->func('index',function() {
         $this->set('response_b', $response_b);
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $this->tpl('footer', false));
+        $this->set('footer', $this->getTpl('footer', false));
 
     });
 });

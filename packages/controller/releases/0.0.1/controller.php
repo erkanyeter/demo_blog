@@ -34,11 +34,11 @@ Class Controller {
         // Assign Core Libraries
         // ------------------------------------
         
-        $this->config     = getComponentInstance('config');
-        $this->router     = getComponentInstance('router');
-        $this->uri        = getComponentInstance('uri');
-        $this->translator = getComponentInstance('translator');
-        $this->response   = getComponentInstance('response');
+        $this->config     = Config::getInstance();
+        $this->router     = Router::getInstance();
+        $this->uri        = Uri::getInstance();
+        $this->translator = Translator::getInstance();
+        $this->response   = Response::getInstance();
 
         // Run Construct Method
         // ------------------------------------

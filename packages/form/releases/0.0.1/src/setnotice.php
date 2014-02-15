@@ -11,8 +11,7 @@ namespace Form\Src {
      */
     function setNotice($message, $key = '0', $suffix = null)
     {
-        $Class  = getComponent('sess');
-        $sess   = (isset(getInstance()->sess)) ? getInstance()->sess : new $Class;
+        $sess   = (isset(getInstance()->sess)) ? getInstance()->sess : new \Sess;
         $suffix = ($suffix === null) ? uniqid() : $suffix;
 
         if(is_bool($key)) // Boolean support
