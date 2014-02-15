@@ -62,6 +62,7 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setTitle('<h3 style="color:#333">Personal Info</h3><hr style="margin-top:0px" />');
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',
@@ -111,6 +112,7 @@ $c->func('index', function(){
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setTitle('<h3 style="color:#333">Security Code</h3><hr style="margin-top:0px" />');
         $this->addCol(array(
             'label' => 'Security Image',
             'rules' => 'required',

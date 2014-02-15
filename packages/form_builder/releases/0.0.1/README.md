@@ -46,13 +46,16 @@ new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), fun
 
         $this->addRow();
         $this->setPosition('label', 'left');
+        $this->setClass('class1','class2'); // set a class to row
         $this->addCol(array(
             'label' => 'Email',
             'rules' => 'required|validEmail',
             'input' => $this->input('user_email', $this->setValue('user_email')),
+            'attr'  => ' id="emailDIV" class="customEmail" ',
         ));
 
         $this->addRow();
+        $this->setTitle('<h1>Privacy & Policy</h1>'); // set title to row
         $this->addCol(array(
             'label' => 'Policy : ',
             'rules' => 'required|contains(n,y)',
@@ -157,6 +160,17 @@ Example from form_builder.css :
 {
   /*--*/
 }
+```
+
+You can add custom styles to your form by setting a class for any element you want to customize, FormBuilder allows you to set class to row, column and input.
+
+Setting a class to row can be done like the following example 'while building the form' :
+
+```php 
+<?php
+    $this->addRow();
+    $this->setClass('class1','class2','class_etc_');
+ ?>
 ```
 
 ### Validation <a name='validation'></a>

@@ -29,6 +29,8 @@ Class Form_Builder
     private $colNames = array();
     private $closure;
     private $_identifier;
+    public  $config;
+    private $schemaRules;
 
     private static $css   = 'form_builder.css';
     private static $forms = array();     // multiforms
@@ -50,6 +52,8 @@ Class Form_Builder
         {
             getInstance()->form = new Form;
         }
+
+        $this->config = getConfig('form_builder');
 
         $args = func_get_args();
         $this->closure = $args[2];  // saving builder function
@@ -87,6 +91,7 @@ Class Form_Builder
             case 'dropdown':
             case 'textarea':
             case 'multiselect':
+            case 'button':
             {
                 $colname = $arguments[0];
                 $this->_setColumnArray('field_name', $arguments[0]);
@@ -96,6 +101,7 @@ Class Form_Builder
             }
             case 'isValid':
             case 'printForm':
+            case 'getNotice':
             {
                 $identifier = $arguments[0];
 
@@ -148,6 +154,32 @@ Class Form_Builder
                 break;
             }
         }
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * 
+     */
+    public function __get($name)
+    {
+        if( isset(getInstance()->$name) )
+        {
+            $appModelName = 'AppModel_'.$name;
+            if(getInstance()->{$name} instanceof $appModelName)
+            {
+                foreach(getInstance()->$name->_odmSchema as $column_name => $values)
+                {
+                    if(! empty($values['rules']) )
+                    {
+                        $this->schemaRules[$column_name] = $values['rules'];
+                    }
+                    
+                }
+            }
+        }
+
+        return $this;
     }
 
     // --------------------------------------------------------------------
@@ -206,7 +238,7 @@ Class Form_Builder
                 if (isset($item['input']))
                 {
                     $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['input'][]     = $item['input'];
-                    $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($item['label'])) ? $item['label'] : ' ';
+                    $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($item['label'])) ? $item['label'] : '';
                 }
             }
         }
@@ -218,17 +250,12 @@ Class Form_Builder
         if(array_key_exists('label', $data))
         {
             $tempLabel = $data['label'];
-            // if(preg_match('/^(translate\s?\:)/i', $data['label']) )
-            // {
-            //     $tempLabel = preg_replace('/^(translate\s?\:)/i','',$data['label']);
-            //     $tempLabel = translate($tempLabel);
-            // }
             $this->_setColumnArray('label', $tempLabel);
         }
 
         if(array_key_exists('rules', $data))
         {
-            $label = (isset($data['label'])) ? $data['label'] : ucfirst(strtolower($data['label']));
+            $label = (isset($data['label'])) ? ucfirst(strtolower( $data['label'] )) : '';
             $this->_setColumnArray('rules', $data['rules']);
         }
 
@@ -298,6 +325,7 @@ Class Form_Builder
                 case 'dropdown':
                 case 'textarea':
                 case 'multiselect':
+                case 'button':
                 {
                     return call_user_func_array(array(getInstance()->form, $input['method']), $input['arguments']);
                     break;
@@ -330,6 +358,20 @@ Class Form_Builder
         {
             $this->columnStorage[$this->rowNum]['position'][$element] = $position;
         }
+    }
+
+    // --------------------------------------------------------------------
+    
+    /**
+     * Set Title for row
+     * 
+     * 
+     * @param string element name
+     * @param string position
+     */
+    protected function setTitle($title = '')
+    {
+        $this->columnStorage[$this->rowNum]['title'] = $title;
     }
 
     // --------------------------------------------------------------------
@@ -369,7 +411,9 @@ Class Form_Builder
         {
             foreach ($this->columnStorage as $rowNum => $v)
             {
-                $rowClass = ( !empty($v['class']) ? 'form-builder-row '.$v['class'] : 'form-builder-row' );
+                $out .= (! empty($v['title']) ) ? "<div class='form-builder-row-title'>$v[title]</div>" : ''; // printing row title
+
+                $rowClass = ( !empty($v['class']) ? 'form-builder-row '.$v['class'] : 'form-builder-row' ); // row class
                 
                 $out .= "\n\t\t<div class='$rowClass'>";  // printing a row "<div>"
 
@@ -504,11 +548,24 @@ Class Form_Builder
         if ( ! isset($col['input']['method']) AND isset($col['label']))  // it will be an array with "radios, checkboxs";
         {
             $i = 0;
-            
             foreach ($col['input'] as $col_v)
             {
-                $out .= (isset($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
-                $out .= $this->_printInput($col_v);
+                if(! empty($row['position']['label']))
+                {
+                    if($row['position']['label'] == 'right')
+                    {
+                        $out .= $this->_printInput($col_v);
+                        $out .= (!empty($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
+                    }
+                    else
+                    {
+                        $out .= (!empty($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
+                        $out .= $this->_printInput($col_v);
+                    }
+                }else{
+                    $out .= (!empty($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
+                    $out .= $this->_printInput($col_v);
+                }
                 $i ++;
             }
         }
@@ -572,14 +629,25 @@ Class Form_Builder
      */
     protected function _printLabel()
     {
+        $out = '';
         $arg = func_get_args();
 
         $row = $this->columnStorage[$arg[0]];
         $addon_class = (isset($row['position']['label'])) ? 'form-builder-label-' . $row['position']['label'] : 'form-builder-label-top';
 
-        $out  = "<div class='form-builder-label-wrapper $addon_class'>";
-        $out .= (isset($row['columns'][$arg[1]]['label'])) ? getInstance()->form->label($row['columns'][$arg[1]]['label']) : ' ';
-        $out .= '</div>';
+        if(! empty($row['columns'][$arg[1]]['label']))
+        {
+            $out  = "<div class='form-builder-label-wrapper $addon_class'>";
+            if(! empty( $row['columns'][$arg[1]]['rules'] ))
+            {
+                if( preg_match('/required/i', $row['columns'][$arg[1]]['rules']) )
+                {
+                    $out .= ' <span class=\'required-start\'>*</span> ';
+                }
+            }
+            $out .= (isset($row['columns'][$arg[1]]['label'])) ? getInstance()->form->label($row['columns'][$arg[1]]['label']) : ' ';
+            $out .= '</div>';
+        }
 
         return $out;
     }
@@ -599,8 +667,36 @@ Class Form_Builder
                 {
                     foreach($rowVars as $colKey => $col )
                     {
+                        $rules = '';
                         if( ! empty($col['rules']) )
-                        getInstance()->form->setRules($col['field_name'], $col['label'], $col['rules']);
+                        {
+                            $rules = $col['rules'];
+                        }
+
+                        if( ! empty($this->schemaRules) )
+                        {
+                            if( array_key_exists($col['field_name'],$this->schemaRules) )
+                            {
+                                $sch_rule = $this->schemaRules[$col['field_name']];
+                                $sch_rule = explode('|', $sch_rule);
+
+                                if(! empty ($sch_rule) )
+                                {
+                                    foreach($sch_rule as $rule)
+                                    {
+                                        if( ! preg_match("/$rule/i", $rules) )
+                                        {
+                                            $rules .= '|'.$rule;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if(! empty($rules))
+                        {
+                            getInstance()->form->setRules($col['field_name'], $col['label'], $rules);
+                        }
                     }
                 }
             }
@@ -644,8 +740,6 @@ Class Form_Builder
                 $out.= "\t".sprintf($img_template, $captcha['image_url'])."\n";
                 // captcha hidden field preceded by form _identifier
                 $out.= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($config['hidden_input_name'], $captcha['image_id']))."\n";
-                // $out.= "\t".sprintf($captcha['hidden_input_template'], $captcha['image_id'])."\n";
-                // $out.= "\t".sprintf($captcha['image_template'], $captcha['image_url'])."\n";
                 $out.= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
 
             $out.= "\t</div>\n";
@@ -656,6 +750,39 @@ Class Form_Builder
         {
             throw new Exception('Form Builder error : Captcha key must be a callable function in form_builder.php config file.');
         }
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Create a callback function
+     * for validator
+     * 
+     * @param  string $func
+     * @param  closure $closure
+     * @return void
+     */
+    public function func($func,$closure)
+    {
+        getInstance()->form->func($func,$closure);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setMessage($key, $val)
+    {
+        getInstance()->validator->setMessage($key, $val);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * 
+     */
+
+    protected function getMessage()
+    {
+        return getInstance()->form->getNotice();
     }
 
 }
