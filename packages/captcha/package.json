@@ -13,6 +13,10 @@
     "log":"*",
     "sess": "*"
   },
+  "shell" : {
+    "mkdir": "-p $DATA/temp/captcha",
+    "chmod": "-R 777 $DATA/temp/captcha",
+  },
   "keywords": [
     "captcha",
     "security",

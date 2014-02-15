@@ -23,7 +23,7 @@ namespace Form\Src {
         
         $data['type'] = 'file';
         
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['file'], getInstance()->form->input($data, $value, $extra));
     }

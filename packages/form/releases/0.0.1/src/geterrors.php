@@ -19,7 +19,7 @@ namespace Form\Src {
     {   
         global $config;
         
-        $form   = \Form::getFormConfig();
+        $form   = \Form::getConfig();
 
         if($config['enable_query_strings'] AND isset($_GET['errors'][$field])) // GET Support
         {

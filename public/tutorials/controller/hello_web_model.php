@@ -13,24 +13,28 @@ $c->func('index', function(){
 
     new Web;
 
-    // $res = $this->web->query('members/create.one.json',function(){
-    //     $this->data['user_username'] = 'test';
-    //     $this->data['user_email']    = 'me@test.com';
-    // });
-
-    // print_r($res);
-    // print_r($this->web->getResultArray());
-
-    // var_dump($this->web->getResultArray());
-
-    $r = $this->web->query('members/getby.id.json',function(){
-        $this->data['user_id'] = '3'; // get one user
+    $res = $this->web->query('members/create.new.json',function(){
+        $this->data['user_username'] = 'test';
+        $this->data['user_email']    = 'ersin@test.com';
+        $this->data['user_password'] = '123456';
     });
 
-    if($r['success'])
-    {
-        print_r($this->web->getRowArray());
-    }
+    print_r($res);
+
+
+    // $r = $this->web->query('members/getby.id.json',function(){
+    //     $this->data['user_id'] = ''; // get one user
+    // });
+
+    // if($r['success'] == 1)
+    // {
+
+    // } else {
+
+    //     echo $r['message'];
+    // }
+
+    // print_r($r);
 
     echo '<br>';
     echo '<br>aksldhaksjdkasjd';

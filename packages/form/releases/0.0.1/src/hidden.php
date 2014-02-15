@@ -18,7 +18,7 @@ namespace Form\Src {
     {
         static $hiddenTag;
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         if(is_object($value)) // $_POST & Db value schema sync
         {

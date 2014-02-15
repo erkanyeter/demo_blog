@@ -38,7 +38,7 @@ namespace Form\Src {
 
         $name = (is_array($data)) ? $data['name'] : $data;
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         $textarea = '<textarea '.\Form::_parseFormAttributes($data, $defaults).$extra.">".getInstance()->form->prep($val, $name).'</textarea>';
 

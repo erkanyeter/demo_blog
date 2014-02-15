@@ -127,7 +127,6 @@ $html = '<!DOCTYPE html>
                                                             <tr>
                                                                 <th>Data</th>
                                                                 <th>Type</th>
-                                                                <th>Rules</th>
                                                                 <th>Is Require</th>
                                                                 <th>Description</th>
                                                                 <th>Example</th>
@@ -153,7 +152,6 @@ $html = '<!DOCTYPE html>
                                                             <tr>
                                                                 <td>'.$feeditem->getAttribute('key') .'</td>
                                                                 <td>'.$feeditem->getAttribute('type').'</td>
-                                                                <td>'.$feeditem->getAttribute('rules').'</td>
                                                                 <td>'.$required.'</td>
                                                                 <td>'.$feeditem->getAttribute('desc').'</td>
                                                                 <td>'.$dataData.'</td>

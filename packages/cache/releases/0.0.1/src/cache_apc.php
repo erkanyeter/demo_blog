@@ -13,12 +13,12 @@ Class Cache_Apc {
 	/**
      * Get
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function get($id)
+	public function get($key)
 	{
-		$data = apc_fetch($id);
+		$data = apc_fetch($key);
 
 		return (is_array($data)) ? $data[0] : false;
 	}
@@ -28,12 +28,12 @@ Class Cache_Apc {
     /**
      * Save
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function set($id, $data, $ttl = 60)
+	public function set($key, $data, $ttl = 60)
 	{
-		return apc_store($id, array($data, time(), $ttl), $ttl);
+		return apc_store($key, array($data, time(), $ttl), $ttl);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -41,12 +41,12 @@ Class Cache_Apc {
     /**
      * Delete
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function delete($id)
+	public function delete($key)
 	{
-		return apc_delete($id);
+		return apc_delete($key);
 	}
 
 	// ------------------------------------------------------------------------
@@ -54,14 +54,14 @@ Class Cache_Apc {
     /**
      * Replace
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function replace($id, $data, $ttl=60)
+	public function replace($key, $data, $ttl=60)
 	{
-		$this->delete($id);
+		$this->delete($key);
 		
-		return apc_store($id, array($data, time(), $ttl), $ttl);
+		return apc_store($key, array($data, time(), $ttl), $ttl);
 	}
 
 	// ------------------------------------------------------------------------
@@ -69,10 +69,10 @@ Class Cache_Apc {
     /**
      * Clean all data
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function clean()
+	public function flushAll()
 	{
 		return apc_clear_cache('user');
 	}
@@ -95,12 +95,12 @@ Class Cache_Apc {
     /**
      * Get Meta Data
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
-	public function getMetaData($id)
+	public function getMetaData($key)
 	{
-		$stored = apc_fetch($id);
+		$stored = apc_fetch($key);
 
 		if (count($stored) !== 3)
 		{
@@ -121,7 +121,7 @@ Class Cache_Apc {
 	/**
      * Controlling for supporting driver.
      * 
-     * @param string $id
+     * @param string $key
      * @return object
      */
 	public function isSupported()

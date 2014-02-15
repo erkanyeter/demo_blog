@@ -1869,7 +1869,7 @@ Class Email {
     {
         getInstance()->translator->load('email');
 
-        if (hasLingo($msg) == false)
+        if (hasTranslate($msg) == false)
         {
             $this->_debug_msg[] = str_replace('%s', $val, $msg)."<br />";
         }

@@ -14,7 +14,7 @@ namespace Form\Src {
     */
     function button($data = '', $content = '', $extra = '')
     {
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         $defaults = array('name' => (( ! is_array($data)) ? $data : ''), 'type' => 'button');
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Cookie Helper
+* Cookie Class
 *
 * @package       packages
 * @subpackage    cookie

@@ -24,8 +24,6 @@ $form = array(
 
 	// Settings
 	'use_template' => false,
-	'post'         => new Post,    	 // Post Object
-	'validator'    => new Validator, // Validator Object
 
 	// Form Templates
 	'templates' => array(

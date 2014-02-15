@@ -29,6 +29,13 @@ Class Model {
             $dbObject = new Db;
         }
 
+        //------ If we have database connection load it from controller -------//
+
+        if(isset(getInstance()->{Db::$var}))
+        {
+            $dbObject = getInstance()->{Db::$var};
+        }
+
         //------------------- Include Form Class -----------------------//
 
         if( ! isset(getInstance()->form))  // Initialize to Form Validator Class 

@@ -9,13 +9,13 @@
 | Prototype
 | -------------------------------------------------------------------
 | 
-| $web_service['service_folder'] = '/web_model';
+| $web_service['service_folder'] = '/web_service';
 |
 */
 $web_service = array(
 
-		'secret_key'	 => 'CXA0DhekFHL4iiasrmeKmg', 
-		'service_folder' => '/web_model',  // default service folder
+		'secret_key'	 => '...', 
+		'service_folder' => '/web_service',  // default service folder
 );
 
 

@@ -16,7 +16,7 @@ namespace Form\Src {
     {
         $defaults = array('type' => 'submit', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['submit'], '<input '.\Form::_parseFormAttributes($data, $defaults).$extra.' />');
     }

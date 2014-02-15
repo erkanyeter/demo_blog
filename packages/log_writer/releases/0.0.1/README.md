@@ -36,6 +36,7 @@ On your localhost to see all log messages set <kbd>$config['log_threshold'] = 1;
 |
 */
 $config['log_threshold']         = 0;
+$config['log_driver']            = 'mongo';
 $config['log_queries']           = true;
 $config['log_benchmark']         = true;
 $config['log_date_format']       = 'Y-m-d H:i:s';
@@ -73,15 +74,26 @@ else
 logMe('info', 'The purpose of some variable is to provide some value.');
 ```
 
-**Note:** In order for the log file to actually be written, the <b>"logs"</b> folder must be writable which is located at <kbd>app/logs</kbd>. In addition, you must set the "threshold" for logging. You might, for example, only want error messages to be logged, and not the other two types. If you set it to zero logging will be disabled. (Look at <kbd>app/config/config.php</kbd>)
+**Note:** In order for the log file to actually be written, the <b>"logs"</b> folder must be writable which is located at <kbd>app/logs</kbd>. In addition, you must set the "threshold" for logging. You might, for example, only want error messages to be logged, and not the other two types. If you set it to zero logging will be disabled. (Look at <kbd>app/config/debug/config.php</kbd>)
 
-#### logMe('level', '[ subject ]: message')
+#### logMe('level', 'message')
 
 If you want to keep logs in different color use "[ ]" brackets before the log message.
 
 ```php
-logMe('debug', '[ welcome ]: Example message.');
+logMe('debug', 'Example message.');
 ```
+
+### Mongo Driver
+
+You can set log write  to set mongo database from <kbd>app/config/debug/config.php</kbd> file.
+
+```php
+$config['log_driver'] = 'mongo';
+```
+### logMe('level', 'message', 'collection')
+
+After that driver update you set your mongo collection using third parameter to split log data. Otherwise it use default collection from your <b>log_writer_mongo.php</b> config file.
 
 Now above the message will be shown with different color on your console.
 

@@ -17,11 +17,10 @@ Class Web {
     
     public $data          = array();   // request data
     public $uri_extension = 'json';    // response format
-    public $array_output  = array();   // array output of json response
 
     // ------------------------------------------------------------------------
 
-    protected $raw_output;             // response raw output of current web request
+    protected $raw_output;             // response raw output of the current web request
     protected $web_service_directory;  // default web service directory
 
     // ------------------------------------------------------------------------
@@ -32,6 +31,10 @@ Class Web {
     public function __construct($directory = 'web_model')
     {
         $this->web_service_directory = $directory;
+
+        getInstance()->translator->load('web');
+
+        $this->__assignObjects();   // Assign all controller objects and make available them in this class.
 
         if( ! isset(getInstance()->web))
         {
@@ -51,7 +54,14 @@ Class Web {
      */
     public function __set($key, $val)
     {
-        $this->data[$key] = $val;   // set query string params
+        if($key == 'data')
+        {
+            $this->data[$key] = $val;   // set query string params
+        } 
+        else 
+        {
+            $this->{$key} = $val;       // assign controller variables
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -74,10 +84,59 @@ Class Web {
 
         $this->exec(strtoupper($method), $this->web_service_directory.'/'.$methodQueryString, $data, $ttl);
 
-        // Decode json data.
-        $this->array_output = json_decode($this->getRawOutput(), true);
+        $r = json_decode($this->getRawOutput(), true); // Decode json data.
 
-        return $this->array_output['messages']; // return to validator messages
+        //-------- Check Web Model Standarts ----------//
+        
+        $standards_of_web_model = "The web model standards requires below the structure. <pre>
+\$r = array(
+
+    'success' => 1,
+    'results' => array(),
+    'message' => '',         // optional key
+
+)</pre>";
+        $standards_of_fail_e    = "The web model standards requires below the structure for failure operations. <pre>
+\$r = array(
+
+    'success' => 0,
+    'message' => '',
+    'e' => \$e->getMessage(), // optional key
+
+)</pre>";
+
+        if(isset($r['success']))
+        {
+            $r['success'] = ($r['success'] === '1' 
+                OR $r['success'] === 1 
+                OR $r['success'] === 'true' 
+                OR $r['success'] === true) ? true : false;
+
+            if($r['success'] AND ! isset($r['results']))  // Successful operation.
+            {
+                throw new Exception($standards_of_web_model);
+            } 
+            elseif( $r['success'] == 0 AND ! isset($r['message']))  // Unsuccessful operation.
+            {
+                throw new Exception($standards_of_fail_e);
+            }
+
+            if(isset($r['message']))
+            {
+                if(strpos($r['message'], 'translate:') === 0)  // Translate the message
+                {
+                    $line = substr($r['message'], 10);
+
+                    $r['message'] = translate($line); // failure translation
+                }
+            }
+        } 
+        else 
+        {
+            throw new Exception($standards_of_web_model);
+        }
+
+        return $r; // return to validator messages
     }
 
     // ------------------------------------------------------------------------
@@ -196,24 +255,6 @@ Class Web {
     // ------------------------------------------------------------------------
 
     /**
-     * Generate query results using
-     * Web_Results_$driver
-     * 
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        if( ! method_exists($this, $method))  // Call the Web_Results object methods
-        {   
-            $resultObject  = new Web_Results($this->array_output); // Send raw output to result object.
-
-            return call_user_func_array(array($resultObject, $method), $arguments);
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
      * Clear variables after that
      * for each execute of web request.
      * 
@@ -236,6 +277,24 @@ Class Web {
     public function getRawOutput()
     {
         return (string)$this->raw_output;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Assign all objects.
+     * 
+     * @return void
+     */
+    private function __assignObjects()
+    {
+        foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
+        {
+            if(is_object($v)) // Do not assign again reserved variables
+            {
+                $this->{$k} = getInstance()->{$k};
+            }
+        }
     }
 
 }
