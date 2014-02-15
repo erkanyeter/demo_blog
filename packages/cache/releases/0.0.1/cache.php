@@ -41,7 +41,7 @@ Class Cache {
         $this->_isSupported($this->_config['driver']); // Checking for supporting driver.
         $this->_setConnection($this->_config);
 
-        logMe('debug', "Cache Class Initialized");
+        logMe('debug', 'Cache Class Initialized');
     }
 
     // --------------------------------------------------------------------

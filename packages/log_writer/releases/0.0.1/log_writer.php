@@ -24,7 +24,7 @@ Class Log_Writer {
     * @param    string   the folder of the logs
     * @return   bool
     */
-    public function dump($level = 'error', $message = '', $folder = '')
+    public static function dump($level = 'error', $message = '', $folder = '')
     {   
         $log_writer = getConfig('log_writer');
 

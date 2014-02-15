@@ -1,10 +1,9 @@
 <?php
  
  /**
- * Obullo Core Component
+ * Obullo Package
  * 
- * ( All Components are Replaceable )
- * 
+ * @author 2009 - 2014 - obullo.
  * @package       packages 
  * @subpackage    obullo
  * @category      core
@@ -286,9 +285,7 @@
             return;
         }
 
-        $log = new Log_Writer;
-        
-        return $log->dump($level, $message, $folder);
+        return Log_Writer::dump($level, $message, $folder);
     }
 
     // --------------------------------------------------------------------
@@ -583,9 +580,10 @@
             if(defined('STDIN'))  // If Command Line Request.
             {
                 echo $type .': '. $e->getMessage(). ' File: ' .$error->getSecurePath($e->getFile()). ' Line: '. $e->getLine(). "\n";
+                
                 $cmdType = (defined('TASK')) ? 'Task' : 'Cmd';
 
-                logMe('error', '('.$cmdType.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine(), true);
+                logMe('error', '('.$cmdType.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine());
 
                 return;
             }
@@ -623,7 +621,7 @@
                 include(APP .'errors'. DS .'disabled_error'. EXT);
             }
 
-            logMe('error', $type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine(), true); 
+            logMe('error', $type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine()); 
         } 
         else  // Is It Exception ? Initialize to Exceptions Component.
         {

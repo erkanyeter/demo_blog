@@ -17,7 +17,7 @@ $c = new Controller(function(){
 $c->func('index',function() {
 
     // multiple request
-    /
+
     $response_a = $this->web->get('tutorials/hello_dummy/test/1/2/3');
     $response_b = $this->web->get('tutorials/hello_dummy/test/4/5/6');
 

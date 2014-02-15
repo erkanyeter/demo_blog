@@ -58,7 +58,7 @@ Class Log_Adapter {
 
         if (defined('STDIN') AND defined('TASK'))  // Cli Task Request
         {
-            $this->path   = rtrim($this->getPath(), DS) . DS .'tasks' . DS;
+            $this->path   = rtrim($this->path, DS) . DS .'tasks' . DS;
             $this->folder = 'tasks_'.$folder;  // Change the foldername
         } 
         elseif(defined('STDIN'))  // Command Line && Task Requests
@@ -68,7 +68,7 @@ Class Log_Adapter {
                 $this->enabled = false;
             }
 
-            $this->path   = rtrim($this->getPath(), DS) . DS .'cli' . DS;
+            $this->path   = rtrim($this->path, DS) . DS .'cli' . DS;
             $this->folder = 'cli_'.$folder;  // Change the foldername
         }
     }

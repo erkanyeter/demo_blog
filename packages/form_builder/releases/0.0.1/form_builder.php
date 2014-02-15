@@ -159,18 +159,19 @@ Class Form_Builder
     // --------------------------------------------------------------------
 
     /**
-     * 
+     * Check the model instance
      */
     public function __get($name)
     {
         if( isset(getInstance()->$name) )
         {
             $appModelName = 'AppModel_'.$name;
+
             if(getInstance()->{$name} instanceof $appModelName)
             {
                 foreach(getInstance()->$name->_odmSchema as $column_name => $values)
                 {
-                    if(! empty($values['rules']) )
+                    if( ! empty($values['rules']) )
                     {
                         $this->schemaRules[$column_name] = $values['rules'];
                     }
@@ -777,10 +778,9 @@ Class Form_Builder
     // --------------------------------------------------------------------
 
     /**
-     * 
+     * Get notice from form object
      */
-
-    protected function getMessage()
+    public function getNotice()
     {
         return getInstance()->form->getNotice();
     }

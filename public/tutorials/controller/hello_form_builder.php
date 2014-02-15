@@ -9,15 +9,17 @@ $c = new Controller(function(){
     new Post;      
     new Url;
     new Html;
-    //new Form_Builder;
     new View;
     
     new Model('user', 'users');
 });
 
 $c->func('index', function(){
-
+    
+    //----------------------------------------------
     // creating the first form
+    //----------------------------------------------
+
     new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
@@ -57,7 +59,10 @@ $c->func('index', function(){
 
     $this->form_builder->create('login');
 
+    //----------------------------------------------
     // creating the second form
+    //----------------------------------------------
+    
     new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
@@ -129,16 +134,12 @@ $c->func('index', function(){
 
     $this->form_builder->create('test');
 
-
-    // validating the second form
-    if($this->post->get('dopost'))
+    if($this->post->get('dopost'))     // validating the second form
     {
         $this->form_builder->isValid('test');
     }
 
-
-    // validation the first form
-    if($this->post->get('udopost'))
+    if($this->post->get('udopost'))    // validation the first form
     {
         $this->form_builder->isValid('login');
     }
@@ -151,10 +152,6 @@ $c->func('index', function(){
 
 });
 
-<<<<<<< HEAD
+
 /* End of file hello_form_builder.php */
 /* Location: .public/tutorials/controller/hello_form_builder.php */
-=======
-/* End of file hello_odm.php */
-/* Location: .public/tutorials/controller/hello_odm.php */
->>>>>>> f4ba35013e6c2664a96b6741c9322d006c1c3aeb

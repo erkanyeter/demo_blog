@@ -31,7 +31,6 @@ Class Exceptions {
         global $packages, $config;
 
         $error  = new Error;
-        $core   = strtolower($packages['components']['core']);
         $type   = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
         
         // If user want to close error_reporting in some parts of the application.
