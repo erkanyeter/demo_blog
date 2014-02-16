@@ -12,7 +12,7 @@ $c = new Controller(function(){
     new Sess;
     new Auth;
 
-    new Trigger('private','header');
+    new Trigger('private');
     new Model('posts');
 });
 

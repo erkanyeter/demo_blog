@@ -14,7 +14,7 @@ $c = new Controller(function(){
     new Sess;
     new Auth;
 
-    new Trigger('public','header');
+    new Trigger('public');
 });
 
 $c->func('index', function($tag){

@@ -28,7 +28,6 @@ $scheme = array(
 
 	'default' => function()
 	{
-		new Web;
 		$this->set('header', $this->getTpl('header',false));
 		$this->set('sidebar',$this->getTpl('sidebar',false));
 	    $this->set('footer', $this->getTpl('footer',false));

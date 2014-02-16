@@ -1,25 +1,42 @@
 <?php
 
 /**
- * $c Header Functions
- * @var Controller
+ * $c Header
+ *
+ * @var "View Controller"
  */
 $c = new Controller(function(){
     // __construct
 
-    new Sess;
-    new Auth;
-    
-	new Trigger('private', 'header');
+	new Url;
+	new Auth;
+
+	$this->config->load('navbar');  // load navigation bar in header template.
 });
 
-$c->func('index', function(){
+// $c->func('a', function(){});
 
-	$menuConfig      = $this->config->getItem('menu');  // Get menu array
-	$firstSegment    = $this->uri->getSegment(0);	    // Get first segnment
+$c->func('navbar', function(){
+
+	$firstSegment    = $this->uri->getSegment(0);	   // Get first segnment
 	$currentSegment  = (empty($firstSegment)) ? 'home' : $firstSegment;  // Set current segment as "home" if its empty
-	$userHasIdentity = $this->auth->hasIdentity(); 		// get auth Identity of user
 
-	echo $this->uri->getSegment(0);
+	$li = '';
+
+	foreach ($this->config->getItem('navigation') as $key => $value)
+	{
+		$active = ($currentSegment == $key) ? ' id="active" ' : '';
+
+		if(($key == 'login' OR $key == 'signup') AND $this->auth->hasIdentity() == true)
+		{
+			// don't show login button
+		} 
+		else 
+		{
+			$li.= '<li>'.$this->url->anchor($key, $value, " $active ").'</li>';
+		}
+	}
+
+	return $li;
 
 });

@@ -14,7 +14,7 @@ $c = new Controller(function(){
 	new Sess;
 	new Auth;
 
-	new Trigger('public','header'); // run triggers
+	new Trigger('public'); // run triggers
 });
 
 $c->func('index', function(){

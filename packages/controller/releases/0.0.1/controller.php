@@ -16,8 +16,8 @@ Class Controller {
     public static $instance;                        // Controller instance
     public $_controllerAppMethods       = array();  // Controller user defined methods. ( @private )
     public $_controllerAppPublicMethods = array();  // Controller user defined methods. ( @private )
-
     public $config, $router, $uri, $translator, $response; // Component instances
+    public $is_view_controler = false;  // if view controller used we allow store public methods more than one.
         
     // ------------------------------------------------------------------------
 
@@ -61,7 +61,9 @@ Class Controller {
      */
     public function __set($key, $val)  // Custom variables is not allowed !!! 
     {
-        if( ! is_object($val) AND $key != '_controllerAppMethods' AND $key != '_controllerAppPublicMethods')
+        if( ! is_object($val) 
+            AND $key != '_controllerAppMethods' 
+            AND $key != '_controllerAppPublicMethods')
         {
             throw new Exception('Manually storing variables into Controller is not allowed');
         }
@@ -93,8 +95,11 @@ Class Controller {
             $this->_controllerAppPublicMethods[$method] = $methodName;
 
             if(sizeof($this->_controllerAppPublicMethods) > 1)
-            {
-                throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
+            {    
+                if($this->is_view_controler == false) // Except the view controllers
+                {
+                    throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
+                }
             }
         }
 
