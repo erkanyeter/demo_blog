@@ -26,6 +26,7 @@ Class Form_Builder
     private $columnStorage;   // form columns informations
     private $rowNum   = 0;
     private $colNum   = 0;
+    private $inputNum = 0;
     private $colNames = array();
     private $closure;
     private $_identifier;
@@ -94,9 +95,8 @@ Class Form_Builder
             case 'button':
             {
                 $colname = $arguments[0];
-                $this->_setColumnArray('field_name', $arguments[0]);
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
-                return array("method" => $method, "arguments" => $arguments);
+                return array("field_name" => $colname,"method" => $method, "arguments" => $arguments);
                 break;
             }
             case 'isValid':
@@ -142,10 +142,9 @@ Class Form_Builder
                 $colname = $arguments[0];
 
                 $this->_setColumnArray('rules', 'callback_captcha_'.$this->_identifier);
-                $this->_setColumnArray('field_name', $arguments[0]);
 
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
-                return array("method" => $method, "arguments" => $arguments);
+                return array("field_name" => $colname, "method" => $method, "arguments" => $arguments);
                 break;
             }
             default:
@@ -231,20 +230,36 @@ Class Form_Builder
      */
     protected function addCol($data)
     {
-        if ( ! array_key_exists('input', $data))  // for radios & checkboxes "input" isn't set directly in $arg
+        if ( ! array_key_exists('input', $data))  // for radios & checkboxes & more than one input per column : "input" isn't set directly in $arg
         {
-            foreach ($data as $item)
+            foreach ($data as $key => $item)
             {
-                if (isset($item['input']))
+                if(is_array($item))
                 {
-                    $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['input'][]     = $item['input'];
-                    $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['listLabel'][] = (isset($item['label'])) ? $item['label'] : '';
+                    foreach($item as $key2 => $value2)
+                    {
+                        if($key2 == 'label')
+                        {
+                            $this->_setInputInfo('inner_label', $value2);                            
+                        }
+                        if($key2 == 'rules')
+                        {
+                            $this->_setInputInfo('rules', $value2);
+                        }
+                        if($key2 == 'input')
+                        {
+                            $this->_setInputInfo('field', $value2);
+                        }
+                    }
                 }
+                
+                $this->inputNum++;
             }
         }
         else // normal set
         {
-            $this->_setColumnArray('input', $data['input']);
+            $this->_setInputInfo('field', $data['input']);
+            $this->inputNum++;
         }
 
         if(array_key_exists('label', $data))
@@ -267,6 +282,7 @@ Class Form_Builder
 
         // increase column index in the columns array
         $this->colNum ++;
+        $this->inputNum = 0;
     }
 
     protected function _processColumnClass($attr = '' , $defaultClass)
@@ -299,6 +315,26 @@ Class Form_Builder
             }
         }
         $this->columnStorage[$this->rowNum]['columns'][$this->colNum][$index] = $value;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Assign values to the input Array
+     * 
+     * @param string $index index name of the array element
+     * @param string $value value 
+     */
+    protected function _setInputInfo($index, $value)
+    {
+        if($index === 'rules')
+        {
+            if( ! empty ($this->columnStorage[$this->rowNum]['columns'][$this->colNum]['input'][$this->inputNum][$index]) )
+            {
+                $value .= '|'.$this->columnStorage[$this->rowNum]['columns'][$this->colNum]['input'][$this->inputNum][$index];
+            }
+        }
+        $this->columnStorage[$this->rowNum]['columns'][$this->colNum]['input'][$this->inputNum][$index] = $value;
     }
 
     // --------------------------------------------------------------------
@@ -435,9 +471,7 @@ Class Form_Builder
                         $out  .= "\n\t\t\t<div ".( ( !empty( $attrs ) ) ? $attrs : '' )." >";  // add the column TD
                         $label = "\n\t\t\t\t".$this->_printLabel($rowNum, $colNum);
                         
-                        $columnContent = "\n\t\t\t\t\t".$this->_printColumnContent($rowNum, $colNum);  // retrive column content.
-
-                        $error = getInstance()->form->error($v2['field_name'], "<div class='form-builder-error' >", "</div>");
+                        list($columnContent, $error) = $this->_printColumnContent($rowNum, $colNum);  // retrive column content.
 
                         $inputWrapper = "\n\t\t\t\t<div class='form-builder-field-wrapper'>\n";
                         
@@ -543,38 +577,35 @@ Class Form_Builder
         
         $row   = $this->columnStorage[$rowNum];
         $col   = $this->columnStorage[$rowNum]['columns'][$colNum];
-        $out   = '';
+        $out   = "\n\t\t\t";
+        $error = '';
 
-        if ( ! isset($col['input']['method']) AND isset($col['label']))  // it will be an array with "radios, checkboxs";
+        if ( ! isset($col['input']['method']) ) 
         {
             $i = 0;
             foreach ($col['input'] as $col_v)
             {
-                if(! empty($row['position']['label']))
+                // unset all keys except label,field.
+                $tempCol = $col_v;
+                unset($tempCol['rules']);
+
+                foreach($tempCol as $key => $value)
                 {
-                    if($row['position']['label'] == 'right')
-                    {
-                        $out .= $this->_printInput($col_v);
-                        $out .= (!empty($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
-                    }
-                    else
-                    {
-                        $out .= (!empty($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
-                        $out .= $this->_printInput($col_v);
-                    }
-                }else{
-                    $out .= (!empty($col['listLabel'][$i])) ? getInstance()->form->label($col['listLabel'][$i], $col['field_name'] , ' class="form-builder-radio-label" ' ) : '';
-                    $out .= $this->_printInput($col_v);
+                    if($key == 'inner_label')
+                        $out .= (!empty($col_v['inner_label'])) ? getInstance()->form->label($col_v['inner_label'], $col_v['field']['field_name'] , ' class="form-builder-radio-label" ' ) : '';
+
+                    if($key == 'field')
+                        $out .= $this->_printInput($col_v['field']);
                 }
+
+                if( ($i < 1 && in_array($col_v['field']['method'], array('radio','checkbox'))) || !in_array($col_v['field']['method'], array('radio','checkbox')) )
+                    $error .= getInstance()->form->error($col_v['field']['field_name'], "\n\t\t\t\t<div class='form-builder-error' >", "</div>");
+
                 $i ++;
             }
         }
-        else
-        {
-            $out = $this->_printInput($col['input']);
-        }
 
-        return $out;
+        return array($out, $error);
     }
 
     // --------------------------------------------------------------------
@@ -667,40 +698,72 @@ Class Form_Builder
                 {
                     foreach($rowVars as $colKey => $col )
                     {
-                        $rules = '';
-                        if( ! empty($col['rules']) )
+                        if(is_array($col['input']))
                         {
-                            $rules = $col['rules'];
-                        }
-
-                        if( ! empty($this->schemaRules) )
-                        {
-                            if( array_key_exists($col['field_name'],$this->schemaRules) )
+                            foreach($col['input'] as $input)
                             {
-                                $sch_rule = $this->schemaRules[$col['field_name']];
-                                $sch_rule = explode('|', $sch_rule);
+                                $colRules = '';
+                                $rules = '';
 
-                                if(! empty ($sch_rule) )
+                                if( ! empty($input['rules']) )
                                 {
-                                    foreach($sch_rule as $rule)
+                                    $rules = $input['rules'];
+                                }
+
+                                if( isset($col['rules']) && ( in_array($input['field']['method'], array('input','password','checkbox','radio','select','textarea') ) ) )
+                                {
+                                    $colRules = $col['rules'];
+                                    // unset($col['rules']);
+                                }
+
+                                if(isset($colRules))
+                                {
+                                    $rules = $this->_distinctRules($rules, $colRules);
+                                }
+
+                                if( ! empty($this->schemaRules) )
+                                {
+                                    if( array_key_exists($input['field']['field_name'],$this->schemaRules) )
                                     {
-                                        if( ! preg_match("/$rule/i", $rules) )
-                                        {
-                                            $rules .= '|'.$rule;
-                                        }
+                                        $sch_rule = $this->schemaRules[$input['field']['field_name']];
+                                        
+                                        $this->_distinctRules($rules, $sch_rule);
                                     }
                                 }
-                            }
-                        }
 
-                        if(! empty($rules))
-                        {
-                            getInstance()->form->setRules($col['field_name'], $col['label'], $rules);
+                                if(! empty($rules))
+                                {
+                                    if( isset($input['inner_label']) && !( in_array($input['field']['method'], array('radio','checkbox','hidden')) ) )
+                                    {
+                                        $label = $input['inner_label'];
+                                    }else{
+                                        $label = $col['label'];
+                                    }
+                                    getInstance()->form->setRules($input['field']['field_name'], $label, $rules);
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    protected function _distinctRules($rules, $mixWith)
+    {
+        $sch_rule = explode('|', $mixWith);
+
+        if(! empty ($sch_rule) )
+        {
+            foreach($sch_rule as $rule)
+            {
+                if( ! preg_match("/$rule/i", $rules) )
+                {
+                    $rules .= '|'.$rule;
+                }
+            }
+        }
+        return $rules;
     }
 
     // --------------------------------------------------------------------
