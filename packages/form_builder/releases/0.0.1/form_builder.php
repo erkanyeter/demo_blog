@@ -691,6 +691,9 @@ Class Form_Builder
      */
     protected function _setRules()
     {
+		// inputs acceptable to apply rules
+		$rulesJustFor = array('captcha','input','password','checkbox','radio','dropdown','multiselect','textarea');
+		
         foreach($this->columnStorage as $row )
         {
             foreach($row as $key => $rowVars)
@@ -701,6 +704,8 @@ Class Form_Builder
                     {
                         if(is_array($col['input']))
                         {
+							$counter = 0; // inputs counter
+							$count = count($col['input']); // count of inputs per column
                             foreach($col['input'] as $input)
                             {
                                 $colRules = '';
@@ -710,12 +715,16 @@ Class Form_Builder
                                 {
                                     $rules = $input['rules'];
                                 }
-
-                                if( isset($col['rules']) && ( in_array($input['field']['method'], array('input','password','checkbox','radio','select','textarea') ) ) )
+                                
+                                if( in_array($input['field']['method'], $rulesJustFor ) ) // if input acceptable to apply rules
                                 {
-                                    $colRules = $col['rules'];
-                                    // unset($col['rules']);
-                                }
+									if( isset($col['rules']))
+									{
+										$colRules = $col['rules'];
+										// unset($col['rules']);
+									}
+									$counter++; // increase the counter			
+								}
 
                                 if(isset($colRules))
                                 {
@@ -739,6 +748,7 @@ Class Form_Builder
                                         $label = $input['inner_label'];
                                     }else{
                                         $label = $col['label'];
+                                        $label = ($count > 1) ? $label . " ($counter) " : $label;
                                     }
                                     getInstance()->form->setRules($input['field']['field_name'], $label, $rules);
                                 }

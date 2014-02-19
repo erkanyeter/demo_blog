@@ -100,7 +100,7 @@ $c->func('index', function(){
         ));
         $this->addCol(array(
                    'label' => 'Country',
-                   'input' => $this->dropdown('country', array(1 => 'Germany' , 2 => 'US' , 3 => 'Syria'), $this->setValue('country'), " id='cntry' "),
+                   'input' => $this->dropdown('country', array('' => 'choose one' ,1 => 'Germany' , 2 => 'US' , 3 => 'Syria'), $this->setValue('country'), " id='cntry' "),
                    'rules' => 'required|xssClean'
                   )
                );
