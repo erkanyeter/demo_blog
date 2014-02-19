@@ -15,7 +15,7 @@ namespace Config\Src {
     */
     function getItem($item, $index = '')
     {    
-        $configObject = getComponentInstance('config');
+        $configObject = \Config::getInstance();
 
         if ($index == '')
         {    

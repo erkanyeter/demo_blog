@@ -16,7 +16,7 @@ $c = new Controller(function(){
     new Auth;
     new Post;
     
-    new Trigger('public','header');
+    new Trigger('public');
     new Model('comment', 'comments');
 });
 

@@ -9,7 +9,7 @@
  * @link          
  */
 
-Class Log_Writer extends Log_Adapter {
+Class Log_Writer {
 
     // --------------------------------------------------------------------
     
@@ -21,17 +21,14 @@ Class Log_Writer extends Log_Adapter {
     * @access   public
     * @param    string   the error level
     * @param    string   the error message
-    * @param    string   the section of the logs
+    * @param    string   the folder of the logs
     * @return   bool
     */
-    public function dump($level = 'error', $msg = '', $section = '')
+    public static function dump($level = 'error', $message = '', $folder = '')
     {   
+        $log_writer = getConfig('log_writer');
 
-        // parent::__construct($level, $msg, $section);
-
-        // $logDriver = $this->getDriver(); 
-
-        // return $logDriver->dump();       
+        return $log_writer['driver']->dump($level, $message, $folder);
     }
 
 }

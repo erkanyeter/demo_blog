@@ -13,7 +13,7 @@ namespace Uri\Src {
      */
     function getRequestUri($urlencode = false)
     {
-        $uriObject = getComponentInstance('uri');
+        $uriObject = \Uri::getInstance();
 
         if(isset($_SERVER[$uriObject->getProtocol()]))
         {

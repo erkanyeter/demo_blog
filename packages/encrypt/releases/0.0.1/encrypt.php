@@ -34,7 +34,7 @@ Class Encrypt {
         
         $this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? false : true;
         
-        logMe('debug', "Encrypt Class Initialized");
+        logMe('debug', 'Encrypt Class Initialized');
     }
     
     // ------------------------------------------------------------------------

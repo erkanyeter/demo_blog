@@ -30,7 +30,7 @@ Class Cart {
    
         $this->init($params);
             
-        logMe('debug', "Cart Class Initialized");
+        logMe('debug', 'Cart Class Initialized');
     }
 
     /**

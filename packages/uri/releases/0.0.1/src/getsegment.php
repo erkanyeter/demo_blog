@@ -15,7 +15,7 @@ namespace Uri\Src {
      */
     function getSegment($n, $no_result = false)
     {
-        $uriObject = getComponentInstance('uri');
+        $uriObject = \Uri::getInstance();
         
         return ( ! isset($uriObject->segments[$n])) ? $no_result : $uriObject->segments[$n];
     }

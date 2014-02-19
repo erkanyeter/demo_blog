@@ -10,7 +10,7 @@ $c = new Controller(function(){
 	new Sess;
 	new Auth;
 
-	new Trigger('private','header');
+	new Trigger('private');
 });
 
 $c->func('index', function($comment_id, $status = 'approve'){

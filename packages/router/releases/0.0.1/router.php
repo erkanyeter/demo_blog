@@ -34,7 +34,7 @@ Class Router {
     public function __construct()
     {                
         $routes    = getConfig('routes');
-        $this->uri = getComponentInstance('uri'); // Warning : Don't load any library in core level.
+        $this->uri = Uri::getInstance(); // Warning : Don't load any library in core level.
 
         $this->routes = ( ! isset($routes) OR ! is_array($routes) ) ? array() : $routes;
         unset($routes);
@@ -88,7 +88,7 @@ Class Router {
     */
     public function clear()
     {
-        $this->uri                 = getComponentInstance('uri');   // reset cloned URI object.
+        $this->uri                 = Uri::getInstance();   // reset cloned URI object.
         $this->response            = array();
         
         // route config dont't reset "$this->routes" there cause some isset errors
@@ -172,7 +172,7 @@ Class Router {
                     return false; // Returns to false if we have hmvc connection error.
                 }
 
-                $response = getComponentInstance('response');
+                $response = Response::getInstance();
                 $reponse->showError($this->response['404'], 404);
             }
 
@@ -367,7 +367,7 @@ Class Router {
 
         $error_page = (isset($segments[1])) ? $segments[0].'/'.$segments[1] : $segments[0];
 
-        $response = getComponentInstance('response');
+        $response = Response::getInstance();
         $response->show404($error_page);
     }
                

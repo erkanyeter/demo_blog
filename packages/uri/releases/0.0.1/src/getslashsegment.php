@@ -13,9 +13,7 @@ namespace Uri\Src {
      */
     function getSlashSegment($n, $where = 'trailing')
     {
-        $uriObject = getComponentInstance('uri');
-
-        return $uriObject->_slashSegment($n, $where, 'segment');
+        return \Uri::getInstance()->_slashSegment($n, $where, 'segment');
     }
 
 }

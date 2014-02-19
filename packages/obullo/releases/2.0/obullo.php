@@ -1,10 +1,9 @@
 <?php
  
  /**
- * Obullo Core Component
+ * Obullo Package
  * 
- * ( All Components are Replaceable )
- * 
+ * @author 2009 - 2014 - obullo.
  * @package       packages 
  * @subpackage    obullo
  * @category      core
@@ -15,8 +14,8 @@
    {
         global $packages, $config;
 
-        $router = getComponentInstance('router');
-        $uri    = getComponentInstance('uri');
+        $router = Router::getInstance();
+        $uri    = Uri::getInstance();
 
         /*
          * ------------------------------------------------------
@@ -25,7 +24,7 @@
          */
         if($config['enable_hooks'])
         {
-            $hooks = getComponentInstance('hooks');
+            $hooks = Hooks::getInstance();
 
             /*
              * ------------------------------------------------------
@@ -54,7 +53,7 @@
 
         if ($config['csrf_protection'])    // CSRF Protection check
         {
-            getComponentInstance('security')->csrfVerify();
+            Security::getInstance()->csrfVerify();
         }
 
         // Clean $_COOKIE Data
@@ -93,7 +92,7 @@
          *  Load core components
          * ------------------------------------------------------
          */
-        $response = getComponentInstance('response');
+        $response = Response::getInstance();
 
         $pageUri    = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
         $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .$router->getControllerDirectory(). DS .$router->fetchClass(). EXT;
@@ -234,7 +233,7 @@
 
         if ($config['global_xss_filtering']) // Should we filter the input data?
         {
-            $str = getComponentInstance('security')->xssClean($str);
+            $str = Security::getInstance()->xssClean($str);
         }
         
         return $str;
@@ -272,9 +271,12 @@
     * functions and send messages to be logged.
     *
     * @access    public
+    * @param     string $level options : ( debug, error, info, bench )
+    * @param     string $message
+    * @param     string $folder foldername or "nosql" database name
     * @return    void
     */
-    function logMe($level = 'error', $message = '', $php_errors = true)
+    function logMe($level = 'error', $message = '', $folder = '')
     {    
         global $config;
 
@@ -282,11 +284,8 @@
         {
             return;
         }
-        
-        $class        = getComponent('log');
-        $logComponent = new $class();
 
-        return $logComponent->dump($level, $message);
+        return Log_Writer::dump($level, $message, $folder);
     }
 
     // --------------------------------------------------------------------
@@ -403,52 +402,9 @@
 
     // --------------------------------------------------------------------
 
-    /**
-     * If custom component available get it 
-     * otherwise return to given value.
-     *
-     * @access public
-     * @param string $component
-     * @return string
-     */
-    function getComponent($component)
-    {
-        global $packages;
-
-        if(isset($packages['components'][$component]))
-        {
-            return $packages['components'][$component];
-        } 
-
-        die('Component '.$component.' not found please add it to your package.json then run obm update.');
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * If custom component available get it instance.
-     *
-     * @access public
-     * @param string $component
-     * @return string
-     */
-    function getComponentInstance($component)
-    {
-        global $packages;
-
-        if(isset($packages['components'][$component]))
-        {
-            $className = $packages['components'][$component];
-            
-            return $className::getInstance();
-        }
-    }
-
-    // --------------------------------------------------------------------
-
     function hasTranslate($item)
     {        
-        $translator = getComponentInstance('translator');
+        $translator = Translator::getInstance();
 
         if( isset($translator->language[$item])) 
         {
@@ -472,7 +428,7 @@
         $args  = func_get_args();
         $item  = $args[0];
         
-        $translator = getComponentInstance('translator');
+        $translator = Translator::getInstance();
         
         if(hasTranslate($item))
         {
@@ -602,8 +558,6 @@
     function exceptionsHandler($e, $type = '')
     { 
         global $packages, $config;
-        
-        $core = strtolower($packages['components']['core']);
 
         $shutdownErrors = array(
         'ERROR'            => 'ERROR',            // E_ERROR 
@@ -626,9 +580,10 @@
             if(defined('STDIN'))  // If Command Line Request.
             {
                 echo $type .': '. $e->getMessage(). ' File: ' .$error->getSecurePath($e->getFile()). ' Line: '. $e->getLine(). "\n";
+                
                 $cmdType = (defined('TASK')) ? 'Task' : 'Cmd';
 
-                logMe('error', '('.$cmdType.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine(), true);
+                logMe('error', '('.$cmdType.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine());
 
                 return;
             }
@@ -658,9 +613,7 @@
 
                 if(isset($allowedErrors[$code]))
                 {
-                    $exception = getComponent('exception');
-
-                    include (PACKAGES .$exception. DS .'releases'. DS .$packages['dependencies'][$exception]['version']. DS .'src'. DS .'view'. EXT);
+                    include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
                 }
             }
             else  // If error_reporting = 0, we show a blank page template.
@@ -668,14 +621,12 @@
                 include(APP .'errors'. DS .'disabled_error'. EXT);
             }
 
-            logMe('error', $type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine(), true); 
+            logMe('error', $type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine()); 
         } 
         else  // Is It Exception ? Initialize to Exceptions Component.
         {
-            $exception = getComponent('exception');
-            
-            $exceptionObject = new $exception;     
-            $exceptionObject->write($e, $type);
+            $exception = new Exceptions;     
+            $exception->write($e, $type);
         }
 
         return;

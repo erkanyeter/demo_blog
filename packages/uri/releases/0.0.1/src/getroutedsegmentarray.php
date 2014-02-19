@@ -11,9 +11,7 @@ namespace Uri\Src {
      */
     function getRoutedSegmentArray()
     {
-        $uriObject = getComponentInstance('uri');
-
-        return $uriObject->rsegments;
+        return \Uri::getInstance()->rsegments;
     }
 
 }

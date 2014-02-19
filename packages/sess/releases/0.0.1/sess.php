@@ -31,7 +31,7 @@ Class Sess {
             $this->start(self::$params);
         }
 
-        logMe('debug', "Sess Class Initialized");
+        logMe('debug', 'Sess Class Initialized');
 
         global $config;
         static $logged = null;

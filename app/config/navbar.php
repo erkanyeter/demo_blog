@@ -2,12 +2,12 @@
 
 /*
 | -------------------------------------------------------------------
-| Menu Segment Config
+| Application Navigation Bar Config
 | -------------------------------------------------------------------
 |
 */
 
-$config['menu'] = array(
+$config['navigation'] = array(
 	
 	'home'    => 'Home',
 	'about'   => 'About', 
@@ -17,5 +17,5 @@ $config['menu'] = array(
 );
 
 
-/* End of file menu.php */
-/* Location: .app/config/menu.php */
+/* End of file navbar.php */
+/* Location: .app/config/navbar.php */

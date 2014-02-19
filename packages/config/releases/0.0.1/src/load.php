@@ -12,7 +12,7 @@ namespace Config\Src {
     */    
     function load($filename = '', $use_sections = false)
     {
-        $configObject = getComponentInstance('config');
+        $configObject = \Config::getInstance();
 
         $file = APP .'config'. DS .$filename. EXT;
 

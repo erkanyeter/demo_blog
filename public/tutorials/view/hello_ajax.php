@@ -77,7 +77,7 @@ function submitAjax(formId){
             //-------------------------------------------------------
             // No Response
             if(typeof obj.messages == 'undefined'){
-                console.log('Data connection lost, no response data.');
+                console.logMe('Data connection lost, no response data.');
                 return false;
             }
             //-------------------------------------------------------

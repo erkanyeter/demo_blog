@@ -10,8 +10,8 @@
  * @link
  */
 
-Class Uri
-{
+Class Uri {
+    
     public $keyval        = array();
     public $uri_string;
     public $segments      = array();
@@ -46,11 +46,9 @@ Class Uri
     {
         global $packages;
 
-        $package = strtolower(getComponent('uri'));
-
         if( ! function_exists('Uri\Src\\'.$method))
         {
-            require PACKAGES .$package. DS .'releases'. DS .$packages['dependencies'][$package]['version']. DS .'src'. DS .mb_strtolower($method). EXT;
+            require PACKAGES .'uri'. DS .'releases'. DS .$packages['dependencies']['uri']['version']. DS .'src'. DS .strtolower($method). EXT;
         }
 
         return call_user_func_array('Uri\Src\\'.$method, $arguments);
@@ -88,23 +86,6 @@ Class Uri
         }
         
         return self::$instance;
-    }
-    
-    // --------------------------------------------------------------------
-    
-    /**
-    * When we use HMVC we need to Clean
-    * all data.
-    *
-    * @return  void
-    */
-    public function clear()
-    {
-        $this->keyval        = array();
-        $this->uri_string    = '';
-        $this->segments      = array();
-        $this->rsegments     = array();
-        $this->uri_extension = '';
     }
 
     // --------------------------------------------------------------------
@@ -296,7 +277,7 @@ Class Uri
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
             if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote($config['permitted_uri_chars'], '-')).']+$|i', $str))
             {
-                $response = getComponentInstance('response');
+                $response = Response::getInstance();
                 $response->showError('The URI you submitted has disallowed characters.', 400);
             }
         }

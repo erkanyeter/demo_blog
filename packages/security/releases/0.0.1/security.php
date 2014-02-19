@@ -118,11 +118,16 @@ Class Security {
             $this->_csrfSetHash();  // Set the CSRF hash
         }
 
-        logMe('debug', "Security Class Initialized");
+        logMe('debug', 'Security Class Initialized');
     }
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get instance of security class
+     * 
+     * @return $object
+     */
     public static function getInstance()
     {
        if( ! self::$instance instanceof self)

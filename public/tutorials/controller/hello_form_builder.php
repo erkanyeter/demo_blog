@@ -9,15 +9,17 @@ $c = new Controller(function(){
     new Post;      
     new Url;
     new Html;
-    //new Form_Builder;
     new View;
     
     new Model('user', 'users');
 });
 
 $c->func('index', function(){
-
+    
+    //----------------------------------------------
     // creating the first form
+    //----------------------------------------------
+
     new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
@@ -57,7 +59,10 @@ $c->func('index', function(){
 
     $this->form_builder->create('login');
 
+    //----------------------------------------------
     // creating the second form
+    //----------------------------------------------
+    
     new Form_Builder('/tutorials/hello_form_builder', array('method' => 'post'), function(){
 
         $this->addRow();
@@ -129,16 +134,12 @@ $c->func('index', function(){
 
     $this->form_builder->create('test');
 
-
-    // validating the second form
-    if($this->post->get('dopost'))
+    if($this->post->get('dopost'))     // validating the second form
     {
         $this->form_builder->isValid('test');
     }
 
-
-    // validation the first form
-    if($this->post->get('udopost'))
+    if($this->post->get('udopost'))    // validation the first form
     {
         $this->form_builder->isValid('login');
     }
@@ -146,10 +147,11 @@ $c->func('index', function(){
     $this->view->get('hello_form_builder', function() {
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $this->tpl('footer', false));
+        $this->set('footer', $this->getTpl('footer', false));
     });
 
 });
 
-/* End of file hello_odm.php */
-/* Location: .public/tutorials/controller/hello_odm.php */
+
+/* End of file hello_form_builder.php */
+/* Location: .public/tutorials/controller/hello_form_builder.php */

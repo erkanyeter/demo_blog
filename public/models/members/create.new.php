@@ -10,12 +10,11 @@ $c = new Controller(function(){
     new Post;
     new Db;
     new Bcrypt; 
-    new Json;
 });
 
 $c->func('index', function(){
 
-    $data = $this->post->get(); // Set all post data
+    $data = $this->post->get(); // Get all post data
 
     $data['user_password'] = $this->bcrypt->hashPassword($data['user_password'], 8);
 
@@ -26,21 +25,19 @@ $c->func('index', function(){
         $this->db->where('user_emaile', 'me@test.com');
         $rows = $this->db->update('users', $data);
 
-        // Set results
-
-        $this->json->data = array(
+        $r = array(
             'success' => 1,
             'results' => array(
                 'user_id' => $this->db->insertId(), 
                 'count' => $rows
-                ),
+            ),
         );
 
         $this->db->commit();
     } 
     catch(Exception $e)
     {
-        $this->json->data = array(
+        $r = array(
             'success' => 0,
             'message' => 'translate:failure',
             'e' => $e->getMessage(),
@@ -49,6 +46,6 @@ $c->func('index', function(){
         $this->db->rollBack();
     }
 
-    echo $this->json->encode();
+    echo json_encode($r);
 
 });

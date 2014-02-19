@@ -92,28 +92,29 @@ $c->func('_follow', function($file, $level = ''){
             $line = str_replace('<?php defined(\'ROOT\') or die(\'Access Denied\') ?>','',$line);
             
             // remove all newlines
-            $line = trim(preg_replace('/[\r\n]/', ' ', $line), "\n");
+            // $line = trim(preg_replace('/[\r\n]/', ' ', $line), "\n");
+            $line = trim(preg_replace('/[\r\n]/', "\n", $line), "\n");
             $line = str_replace('[@]', "\n", $line); // new line
             $out  = explode(" ",$line);  // echo print_r($out, true)."\n\n";
             
             if($level == '' OR $level == 'debug')
             {
-                if(isset($out[5]))
+                if(isset($out[4]))
                 {
-                    if(strpos($out[5], '[') !== false)  // colorful logs.
+                    if(strpos($out[4], '[') !== false)  // colorful logs.
                     {
                         $line = "\033[0;33m".$line."\033[0m";
                     }
-                    if(strpos($out[5],'SQL') !== false)  // remove unnecessary spaces from sql output
+                    if(strpos($out[4],'SQL') !== false)  // remove unnecessary spaces from sql output
                     {
                         $line = str_replace('SQL: ','', "\033[1;32m".preg_replace('/\s+/', ' ', $line)."\033[0m");
                     }
-                    if(strpos($out[5],'$_') !== false)
+                    if(strpos($out[4],'$_') !== false)
                     {
                         $line = preg_replace('/\s+/', ' ', $line);
                         $line = preg_replace('/\[/', "\n[", $line);
 
-                        if(strpos($out[5],'$_REQUEST_URI') !== false)
+                        if(strpos($out[4],'$_REQUEST_URI') !== false)
                         {
                             $break = "\n------------------------------------------------------------------------------------------";
                             $line = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
@@ -122,13 +123,13 @@ $c->func('_follow', function($file, $level = ''){
                         {
                             $line = "\033[1;35m".$line."\033[0m";
                         }
-
                     }                  
-                    if(strpos($out[5], 'Task') !== false)
+
+                    if(strpos($out[4], 'Task') !== false)
                     {
-                        $line = "\033[0;35m".$line."\033[0m";
+                        $line = "\033[1;34m".$line."\033[0m";
                     }
-                    if(isset($out[7]) AND strpos($out[7], 'loaded:') !== false)
+                    if(isset($out[6]) AND strpos($out[6], 'loaded:') !== false)
                     {
                         $line = "\033[0;35m".$line."\033[0m";
                     }

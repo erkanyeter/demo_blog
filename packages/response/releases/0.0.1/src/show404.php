@@ -14,7 +14,7 @@ namespace Response\Src {
     {
         logMe('error', '404 Page Not Found --> '.$page, false);
 
-        echo getComponentInstance('response')->showHttpError('404 Page Not Found', $page, '404', 404);
+        echo \Response::getInstance()->showHttpError('404 Page Not Found', $page, '404', 404);
         exit();
     }
 

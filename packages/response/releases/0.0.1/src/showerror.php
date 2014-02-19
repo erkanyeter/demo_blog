@@ -19,7 +19,7 @@ namespace Response\Src {
         
         logMe('error', 'HTTP Error --> '.$message, false);
 
-        echo getComponentInstance('response')->showHttpError($heading, $message, 'general', $statusCode);
+        echo \Response::getInstance()->showHttpError($heading, $message, 'general', $statusCode);
         exit();
     }
 

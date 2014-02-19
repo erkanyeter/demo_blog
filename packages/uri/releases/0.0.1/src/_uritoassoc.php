@@ -14,7 +14,7 @@ namespace Uri\Src {
      */
     function _uriToAssoc($n = 3, $default = array(), $which = 'getSegment')
     {
-        $uriObject = getComponentInstance('uri');
+        $uriObject = \Uri::getInstance();
 
         if ($which == 'getSegment')
         {

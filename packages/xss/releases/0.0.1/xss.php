@@ -33,7 +33,7 @@ Class Xss {
      */
     public function clean($str, $is_image = false)
     {
-        return getComponentInstance('security')->xssClean($str, $is_image);
+        return Security::getInstance()->xssClean($str, $is_image);
     }
 
     // ------------------------------------------------------------------------
@@ -47,7 +47,7 @@ Class Xss {
      */
     public function sanitizeFilename($filename)
     {
-        return getComponentInstance('security')->sanitizeFilename($filename);
+        return Security::getInstance()->sanitizeFilename($filename);
     }
 
     // ------------------------------------------------------------------------

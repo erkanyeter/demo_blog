@@ -11,8 +11,7 @@ namespace Form\Src {
      */
     function keepNotice($error = 'error', $suffix = '')
 	{
-        $class             = getComponent('sess');
-        $sess              = (isset(getInstance()->sess)) ? getInstance()->sess : new $class;
+        $sess              = (isset(getInstance()->sess)) ? getInstance()->sess : new Sess;
         $new_flashdata_key = 'flash:new:';
         $old_flashdata_key = 'flash:old:';
 

@@ -40,7 +40,7 @@ Class Pager
             getInstance()->pager = $instance; // Available it in the contoller $this->auth->method();
         }
         
-        logMe('debug', "Pager Class Initialized");
+        logMe('debug', 'Pager Class Initialized');
     }
 }
 

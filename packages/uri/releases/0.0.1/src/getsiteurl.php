@@ -13,8 +13,8 @@ namespace Uri\Src {
     */
     function getSiteUrl($uri = '', $suffix = true)
     {
-        $config    = getComponentInstance('config');
-        $uriObject = getComponentInstance('uri');
+        $config    = \Config::getInstance();
+        $uriObject = \Uri::getINstance();
 
         if (is_array($uri))
         {

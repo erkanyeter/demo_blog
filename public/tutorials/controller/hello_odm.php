@@ -47,7 +47,7 @@ $c->func('index', function(){
     $this->view->get('hello_odm',function() {
 
         $this->set('name', 'Obullo');
-        $this->set('footer', $this->tpl('footer', false));
+        $this->set('footer', $this->getTpl('footer', false));
     });
 
 });

@@ -35,12 +35,6 @@ print_r($myconfig);
 $transliteration = getConfig('i18n/en_US/transliteration');
 ```
 
-#### getComponent('name');
-
-If custom component available in <kbd>data/cache/packages.cache</kbd> file, it gives <b>component name</b> otherwise returns to given value.
-
-#### getComponentInstance('name');
-
 If component is a library it returns to instance of the component.
 
 #### getInstance()
@@ -118,9 +112,23 @@ echo translate('There are %d monkeys in the %s.',5,'tree');
 
 Look at <kbd>translate</kbd> package for more details.
 
-### Error Functions and Headers
+### Loaded Classes
 
 ------
+
+### $this->config->method();
+
+### $this->uri->method();
+
+### $this->router->method();
+
+### $this->translator->method();
+
+### $this->response->method();
+
+------
+
+### Error Functions and Headers
 
 #### $this->response->show404();
 

@@ -37,10 +37,6 @@ $triggers['func'] = array(
 	'public' => function(){ 		 
 
 	},
-    'header' => function(){	 // load menu config file in header level
-
-    	$this->config->load('menu');   	
-    },  
 );
 
 /* End of file triggers.php */

@@ -12,7 +12,7 @@ namespace Uri\Src {
     */
     function getAssetsUrl($uri = '')
     {
-        return getComponentInstance('config')->getSlashItem('assets_url').ltrim($uri,'/');
+        return \Config::getInstance()->getSlashItem('assets_url').ltrim($uri,'/');
     }
     
 }

@@ -14,7 +14,7 @@ $c = new Controller(function(){
     new Auth;
     new Post;
 
-    new Trigger('private','header');
+    new Trigger('private');
 });
 
 $c->func('index', function(){

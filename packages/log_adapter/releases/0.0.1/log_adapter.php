@@ -11,20 +11,14 @@
 
 Class Log_Adapter {
 
-    public $log_driver; // string
-
-    /**
-     * Build config and levels
-     *
-     * @param string $level 
-     * @param string $msg 
-     * @param string $section 
-     * @return void
-     */
-    public function __construct($level, $msg, $section = '')
-    {
-        // $this->init($level, $msg, $section);
-    }
+    public $enabled;          // enable or disable logs usign log levels
+    public $threshold;        // log threshold
+    public $levels = array(); // default log levels
+    public $date_format;      // date format
+    public $path;             // current log path
+    public $folder;           // current log folder
+    public $level;            // current log level
+    public $message;          // current log message
 
     // --------------------------------------------------------------------
 
@@ -33,79 +27,83 @@ Class Log_Adapter {
      *
      * @param string $level 
      * @param string $msg 
-     * @param string $section 
+     * @param string $folder 
      * @return void
      */
-    public function init($level, $msg, $section = '')
+    public function init($level, $message = '', $folder = '')
     {
         global $config;
 
-        // Convert new lines to a temp symbol, than we replace it and read for console debugs.
-        $msg = trim(preg_replace('/\n/', '[@]', $msg), "\n");
+        //---------------------------------------------------------------------
+        // Get log writer config
+        // --------------------------------------------------------------------
+        
+        $log_writer = getConfig('log_writer');
+        
+        // --------------------------------------------------------------------
+        // Set Defaults
+        // --------------------------------------------------------------------
+        
+        $this->enabled     = true;
+        $this->threshold   = $config['log_threshold'];
+        $this->levels      = array('ERROR' => '1', 'DEBUG' => '2',  'INFO' => '3', 'BENCH' => '4', 'ALL' => '5');
+        $this->date_format = $log_writer['date_format'];
+        $this->path        = DATA .'logs'. DS;
+        $this->folder      = $folder;
+        $this->level       = strtoupper($level);
+        $this->message     = $message;
 
-        $this->setDriver($config['log_driver']);
-        $this->setThreshold(1);
-        $this->setEnabled(true);  // default true
-        $this->setDefaultLevels(array('ERROR' => '1', 'DEBUG' => '2',  'INFO' => '3', 'BENCH' => '4', 'ALL' => '5'));
-        $this->setLevel($level);
+        // Task & Cli logs
+        // --------------------------------------------------------------------
 
-        $this->setLogPath(DATA .'logs'. DS);
-        $this->setLogThreshold($config['log_threshold']);
-        $this->setLogDateFormat($config['log_date_format']);
-
-
-        if (defined('STDIN') AND defined('TASK'))   // Internal Task Request
+        if (defined('STDIN') AND defined('TASK'))  // Cli Task Request
         {
-
-
-            $logPath = rtrim($logPath, DS) . DS .'tasks' . DS;
-
-            $this->setLogPath();
-
+            $this->path   = rtrim($this->path, DS) . DS .'tasks' . DS;
+            $this->folder = 'tasks_'.$folder;  // Change the foldername
         } 
         elseif(defined('STDIN'))  // Command Line && Task Requests
         {
             if(isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') //  Do not keep clear command logs.
             {
-                $this->setEnabled(false);
+                $this->enabled = false;
             }
 
-            $logPath = rtrim($logPath, DS) . DS .'cli' . DS; 
-        }         
-
-
-
-
-        // $threshold = 1;
-        // $date_fmt  = 'Y-m-d H:i:s';
-        $enabled   = true;
-        $levels    = array('ERROR' => '1', 'DEBUG' => '2',  'INFO' => '3', 'BENCH' => '4', 'ALL' => '5');
-        $level     = strtoupper($level);
-
-        $logPath         = DATA .'logs'. DS;
-        $log_threshold   = $config['log_threshold'];
-        $log_date_format = $config['log_date_format'];
+            $this->path   = rtrim($this->path, DS) . DS .'cli' . DS;
+            $this->folder = 'cli_'.$folder;  // Change the foldername
+        }
     }
 
     // --------------------------------------------------------------------
 
-    public function getLogPath()
+    /**
+     * Get property value from log 
+     * adapter class
+     * 
+     * @param  string $key
+     * @return mixed 
+     */
+    public function getItem($key)
     {
-        return DATA .'logs'. DS;
+        return $this->{$key};
     }
 
     // --------------------------------------------------------------------
 
-    public function setDriver($driver)
+    /**
+     * Set property value to log 
+     * adapter class
+     * 
+     * @param string $key
+     * @param mixed $val
+     */
+    public function setItem($key, $val)
     {
-        $this->log_driver = $config['log_driver'];
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getDriver()
-    {
-        return $this->log_driver;
+        $this->{$key} = $val;
     }
 
 }
+
+// END log_adapter class
+
+/* End of file Log_Adapter.php */
+/* Location: ./packages/log_adapter/releases/0.0.1/log_adapter.php */

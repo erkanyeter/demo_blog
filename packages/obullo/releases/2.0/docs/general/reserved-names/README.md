@@ -20,7 +20,7 @@ Since your controller classes will extend the main application controller you mu
 - Config
 - Db
 - Database
-- Database_Pdo
+- Pdo_Adapter
 - Hooks
 - Hmvc
 - Model
@@ -39,8 +39,6 @@ Since your controller classes will extend the main application controller you mu
 
 - autoloader()
 - getConfig()
-- getComponent()
-- getComponentInstance()
 - getInstance()
 - getStatic()
 - hasTranslate()

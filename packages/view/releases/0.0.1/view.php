@@ -30,7 +30,7 @@ Class View {
             getInstance()->view = $this; // Make available it in the controller $this->view->method();
         }
 
-        logMe('debug', "View Class Initialized");
+        logMe('debug', 'View Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -88,7 +88,7 @@ Class View {
             return $output;
         }
         
-        getComponentInstance('response')->appendOutput($output);
+        Response::getInstance()->appendOutput($output);
 
         return;
     }
@@ -186,6 +186,23 @@ Class View {
      */
     public function get($filename, $data_or_no_include = null, $include = true)
     {
+        if(strpos($filename, '@') === 0)  // View controllers support.
+        {     
+            $filename = trim($filename, '@');
+
+            $backup_instance = getInstance(); // backup old controller instance.
+
+            require_once(PUBLIC_DIR. 'views'. DS .'controller'. DS .$filename. EXT);
+
+            getInstance($backup_instance);  // restore old controller instance.
+
+            $this->{$filename} = &$c;   // Store view controller variable.
+
+            // $this->_view_controler = true;
+
+            return;
+        }
+
         return $this->fetch(PUBLIC_DIR .getInstance()->router->fetchDirectory(). DS .'view'. DS, $filename, $data_or_no_include, $include);    
     }
 
@@ -199,7 +216,7 @@ Class View {
      * @param  boolean $include            no include ( fetch as string )
      * @return string                      
      */
-    public function tpl($filename, $data_or_no_include = null, $include = true)
+    public function getTpl($filename, $data_or_no_include = null, $include = true)
     {
         return $this->fetch(APP .'templates'. DS, $filename, $data_or_no_include, $include);
     }
