@@ -32,6 +32,13 @@ Class Form_Builder
     private $_identifier;
     public  $config;
     private $schemaRules;
+    private $formTagArgs = '';
+    private $_jsObj;
+
+    private $options = array(
+        'ajax' => false,
+        'wrapperClass' => '',
+        );
 
     private static $css   = 'form_builder.css';
     private static $forms = array();     // multiforms
@@ -61,7 +68,9 @@ Class Form_Builder
         
         unset($args[2]); // unset argument
 
-        $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $args); // open form tag
+        $this->formTagArgs = $args;
+
+        $this->options['ajax'] = false;
 
         logMe('debug', 'Form Builder Class Initialized');
     }
@@ -101,18 +110,19 @@ Class Form_Builder
             }
             case 'isValid':
             case 'printForm':
-            case 'getNotice':
             {
                 $identifier = $arguments[0];
+                unset($arguments[0]);
 
-                $config = getConfig('form_builder');
+                $config = $this->config;
                 
                 if(empty(self::$forms[$identifier]))
                 {
                     throw new Exception('Form Builder Error : trying to printForm for a not created form.');
                 }
 
-                return self::$forms[$identifier]->$method();
+                //return self::$forms[$identifier]->$method();
+                return call_user_func_array(array(self::$forms[$identifier], 'fb_'.$method), $arguments);
             }
             case 'captcha':
             {
@@ -120,14 +130,14 @@ Class Form_Builder
                 {
                     getInstance()->sess = new Sess;
                 }
+                $config = $this->config;
                 
                 $identifier = $this->_identifier;
 
                 // creating validation callback function for captcha.
-                getInstance()->form->func('callback_captcha_'.$identifier, function() use ($arguments,$identifier) {
+                getInstance()->form->func('callback_captcha_'.$identifier, function() use ($arguments,$identifier, $config) {
                 
-                    $config = getConfig('form_builder');
-
+                    
                     $code = $this->sess->get($this->post->get($config['captcha']['hidden_input_name']));
 
                     if( $this->post->get($arguments[0]) != $code )
@@ -145,6 +155,18 @@ Class Form_Builder
 
                 $this->colNames[$this->rowNum][$this->colNum] = $colname; // set column name
                 return array("field_name" => $colname, "method" => $method, "arguments" => $arguments);
+                break;
+            }
+            case 'inputList':
+            {
+                $i = 0;
+                $test = '';
+                foreach($arguments[0] as $key => $arg)
+                {
+                    $this->_processSecondInput($arg);
+                }
+
+                return eval($test);
                 break;
             }
             default:
@@ -192,9 +214,14 @@ Class Form_Builder
     public function create($identifier)
     {
         $this->_identifier = $identifier;
-        
+
         call_user_func_array(Closure::bind($this->closure, $this, get_class()), array());
         
+        $this->formTagArgs[1]['data-identifier'] = $identifier;
+        $this->formTagArgs[1]['id'] = $identifier;
+        $this->formTagArgs[1]['data-ajax'] = ($this->options['ajax']) ? '1' : '0';
+        $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $this->formTagArgs); // open form tag
+
         self::$forms[$identifier] = $this;
     }
 
@@ -204,7 +231,7 @@ Class Form_Builder
      * 
      * @return boolean
      */
-    protected function isValid()
+    protected function fb_isValid()
     {
         $this->_setRules();
 
@@ -235,31 +262,16 @@ Class Form_Builder
         {
             foreach ($data as $key => $item)
             {
-                if(is_array($item))
-                {
-                    foreach($item as $key2 => $value2)
-                    {
-                        if($key2 == 'label')
-                        {
-                            $this->_setInputInfo('inner_label', $value2);                            
-                        }
-                        if($key2 == 'rules')
-                        {
-                            $this->_setInputInfo('rules', $value2);
-                        }
-                        if($key2 == 'input')
-                        {
-                            $this->_setInputInfo('field', $value2);
-                        }
-                    }
-                }
-                
-                $this->inputNum++;
+                $tempRules = (isset($data['rules'])) ? $data['rules'] : '';
+                $this->_processSecondInput($item, $tempRules );
+                // var_dump($item);
+                // $this->_buildJSObj('label', $data['label'], $item['input']['field']['field_name'] );
             }
         }
         else // normal set
         {
             $this->_setInputInfo('field', $data['input']);
+            $this->_buildJSObj($data);
             $this->inputNum++;
         }
 
@@ -273,6 +285,10 @@ Class Form_Builder
         {
             $label = (isset($data['label'])) ? ucfirst(strtolower( $data['label'] )) : '';
             $this->_setColumnArray('rules', $data['rules']);
+            
+            // the following mixs rules for jsObj for 'array inputs' with 'col' rules.
+            if(isset($data['input'])) // add rules to js obj
+                $this->_buildJSObj('rules', $data['rules'], $data['input']['field_name'] );
         }
 
         if(isset($data['attr']))
@@ -284,6 +300,109 @@ Class Form_Builder
         // increase column index in the columns array
         $this->colNum ++;
         $this->inputNum = 0;
+    }
+
+    // ---------------------------------------------------------------
+    
+    /**
+     * [_processSecondInput description]
+     * @param  [type] $item  [description]
+     * @param  string $rules [this param is optional, used to pass rules to _buildJSObj , to mix column rules with input rules.]
+     */
+    protected function _processSecondInput($item, $rules = '')
+    {
+        if(is_array($item))
+        {
+            foreach($item as $key2 => $value2)
+            {   
+                if($key2 == 'label')
+                {
+                    $this->_setInputInfo('inner_label', $value2);
+                }
+                if($key2 == 'rules')
+                {
+                    $this->_setInputInfo('rules', $value2);
+                }
+                if($key2 == 'input')
+                {
+                    $this->_setInputInfo('field', $value2);
+                    
+                    // if( ! in_array($value2['method'], array('radio','checkbox')) )
+                    {
+                        $this->_buildJSObj($item, $rules);
+                    }
+                }
+                if($key2 == 'attr')
+                {
+                    $this->_setInputInfo('attr', $value2);
+                }
+                
+            }
+        }
+        $this->inputNum++;
+    }
+
+    // -------------------------------------------------------------------
+    
+    /**
+     * [_buildJSObj This function builds a javascript object for all form elements which can be used for validation and so.]
+     * @param  [array||string] $item       [can be column input array if you are setting a column, or can be a string if you are setting an attribute. 
+     *                                     ie : for rules 'rules']
+     * @param  string $new        [used for mixing column rules with input rules.]
+     * @param  string $field_name [the input name (field name)]
+     * @return [null]             [null]
+     */
+    protected function _buildJSObj($item, $new = '', $field_name = '')
+    {
+        if( $item == 'rules' && isset($field_name))
+        {
+            $rules = preg_replace('/(callback[_a-z]*\|?)(\'|\"|)/i','',$new);
+
+            if(isset($this->_jsObj[$field_name]['rules'])){
+                $oldRules = $this->_jsObj[$field_name]['rules'];
+                $rules = $this->_distinctRules($rules, $oldRules);
+            }
+            
+            $this->_jsObj[$field_name][$item] = $rules;
+
+        }elseif( $item == 'label' && isset($field_name))
+        {
+            $rules = preg_replace('/(callback[_a-z]*\|?)(\'|\"|)/i','',$new);
+
+            if(empty($this->_jsObj[$field_name]['label'])){
+                $this->_jsObj[$field_name][$item] = $new;
+            }
+        }elseif(is_array($item)){
+
+            $type = $item['input']['method'];
+
+            if(in_array($item['input']['method'], array('button', 'submit', 'hidden')))
+            {
+                return false;
+            }
+
+            if(preg_match('/^input/i', $item['input']['method']))
+            {
+                $type = 'text';
+            }
+
+            if(preg_match('/^dropdown/i', $item['input']['method']))
+            {
+                $type = 'select';
+            }
+
+            $columnRules = (isset($new)) ? preg_replace('/(callback[_a-z]*\|?)(\'|\"|)/i','',$new) : '';
+
+            $rules = (isset($item['rules'])) ? preg_replace('/(callback[_a-z]*\|?)(\'|\"|)/i','',$item['rules']) : '';
+
+            $rules = $this->_distinctRules($rules, $columnRules);
+
+            $this->_jsObj[$item['input']['field_name']] = array(
+                'label' => (isset($item['label'])) ? translate($item['label']) : '',
+                'rules' => $rules,
+                'input' => array('type' => $type, 'name' => $item['input']['field_name'])
+                );
+        }
     }
 
     protected function _processColumnClass($attr = '' , $defaultClass)
@@ -432,6 +551,14 @@ Class Form_Builder
         }
     }
 
+    protected function _printJSObj()
+    {
+        $out = "\n<script>";
+        $out .= "\tvar {$this->_identifier}_fields = '".json_encode($this->_jsObj)."';" ;
+        $out .= "\n</script>";
+        return $out;
+    }
+
     // --------------------------------------------------------------------
 
     /**
@@ -439,10 +566,12 @@ Class Form_Builder
      * 
      * @return string
      */
-    protected function printForm()
+    protected function fb_printForm()
     {
-        $out = "\n<div class='form-builder-div-wrapper'>\n";         // check the printout type "table or div"
-        $out.= $this->output;
+        $out = "\n<!-- Start Form-Builder '$this->_identifier' -->\n";
+        $out .= $this->_printJSObj();
+        $out .= "\n<div class='form-builder-div-wrapper ".($this->options['wrapperClass'])."'>\n";         // check the printout type "table or div"
+        $out .= $this->output;
 
         if (is_array($this->columnStorage))         // looping the fields array
         {
@@ -511,7 +640,10 @@ Class Form_Builder
         $out .= "\t".getInstance()->form->close()."\n";
         $out .= "</div>\n";
 
-        return $out.'<div class="clear" ></div>';
+        $out .= "<div class='clear' ></div>";
+        $out .= "\n<!-- End Form-Builder '$this->_identifier' -->\n";
+
+        return $out;
     }
 
     // --------------------------------------------------------------------
@@ -592,11 +724,23 @@ Class Form_Builder
 
                 foreach($tempCol as $key => $value)
                 {
+                    $idForLabel = $col_v['field']['field_name'].'_'.$i; // this var is used to set input id and 'for' attribue for 'label'.
+
                     if($key == 'inner_label')
-                        $out .= (!empty($col_v['inner_label'])) ? getInstance()->form->label($col_v['inner_label'], $col_v['field']['field_name'] , ' class="form-builder-radio-label" ' ) : '';
+                    {
+                        if(in_array($col_v['field']['method'], array('radio', 'checkbox')))
+                            $classLabel = "form-builder-radio-label";
+                        else
+                            $classLabel = "form-builder-input-label";
+                        $out .= (!empty($col_v['inner_label'])) ? getInstance()->form->label($col_v['inner_label'], $idForLabel , " class='$classLabel' " ) : '';
+                    }
 
                     if($key == 'field')
+                    {
+                        if(isset($col_v['field']['arguments'][3]))
+                            $col_v['field']['arguments'][3] .= " id='$idForLabel' ";
                         $out .= $this->_printInput($col_v['field']);
+                    }
                 }
 
                 if( ($i < 1 && in_array($col_v['field']['method'], array('radio','checkbox'))) || !in_array($col_v['field']['method'], array('radio','checkbox')) )
@@ -691,9 +835,9 @@ Class Form_Builder
      */
     protected function _setRules()
     {
-		// inputs acceptable to apply rules
-		$rulesJustFor = array('captcha','input','password','checkbox','radio','dropdown','multiselect','textarea');
-		
+        // inputs acceptable to apply rules
+        $rulesJustFor = array('captcha','input','password','checkbox','radio','dropdown','multiselect','textarea');
+        
         foreach($this->columnStorage as $row )
         {
             foreach($row as $key => $rowVars)
@@ -704,8 +848,8 @@ Class Form_Builder
                     {
                         if(is_array($col['input']))
                         {
-							$counter = 0; // inputs counter
-							$count = count($col['input']); // count of inputs per column
+                            $counter = 0; // inputs counter
+                            $count = count($col['input']); // count of inputs per column
                             foreach($col['input'] as $input)
                             {
                                 $colRules = '';
@@ -718,13 +862,13 @@ Class Form_Builder
                                 
                                 if( in_array($input['field']['method'], $rulesJustFor ) ) // if input acceptable to apply rules
                                 {
-									if( isset($col['rules']))
-									{
-										$colRules = $col['rules'];
-										// unset($col['rules']);
-									}
-									$counter++; // increase the counter			
-								}
+                                    if( isset($col['rules']))
+                                    {
+                                        $colRules = $col['rules'];
+                                        // unset($col['rules']);
+                                    }
+                                    $counter++; // increase the counter         
+                                }
 
                                 if(isset($colRules))
                                 {
@@ -748,7 +892,7 @@ Class Form_Builder
                                         $label = $input['inner_label'];
                                     }else{
                                         $label = $col['label'];
-                                        $label = ($count > 1) ? $label . " ($counter) " : $label;
+                                        $label = ( $count > 1 && !( in_array($input['field']['method'], array('radio','checkbox','hidden')) ) ) ? $label . " ($counter) " : $label;
                                     }
                                     getInstance()->form->setRules($input['field']['field_name'], $label, $rules);
                                 }
@@ -763,14 +907,19 @@ Class Form_Builder
     protected function _distinctRules($rules, $mixWith)
     {
         $sch_rule = explode('|', $mixWith);
+        if(empty($rules))
+            $rules = '';
 
         if(! empty ($sch_rule) )
         {
             foreach($sch_rule as $rule)
             {
-                if( ! preg_match("/$rule/i", $rules) )
+                if(! empty($rule))
                 {
-                    $rules .= '|'.$rule;
+                    if( strpos($rules, $rule) === false )
+                    {
+                        $rules .= '|'.$rule;
+                    }
                 }
             }
         }
@@ -789,7 +938,7 @@ Class Form_Builder
         $args = func_get_args();
         $args = $args[0];
         
-        $config = getConfig('form_builder');
+        $config = $this->config;
         $config = $config['captcha'];
 
         if( empty($config['hidden_input_name']) )
@@ -809,9 +958,13 @@ Class Form_Builder
 
             $out = "\t<div class='form-builder-captcha-wrapper'>\n";
 
-                $img_template =  ( empty($config['image_template']) ) ? '<img src="%s" />' : $config['image_template'];
+                $img_template =  ( empty($config['image_template']) ) ? '<img src="%s" data-id="%s" />' : $config['image_template'];
 
-                $out.= "\t".sprintf($img_template, $captcha['image_url'])."\n";
+                $out.= "\t".sprintf($img_template, $captcha['image_url'], $captcha['image_id'])."\n";
+                // $out .= '<img src="/membership/captcha_refresh" />';
+
+                $out .= "<a href='javascript:;' id='captcha-refresh-{$this->_identifier}' data-do='refresh-captcha' class='form-builder-captcha-refresh' >Get a new security code</a>";
+                $out .= "<div class='clear' ></div>";
                 // captcha hidden field preceded by form _identifier
                 $out.= "\t". call_user_func_array(array(getInstance()->form, 'hidden'), array($config['hidden_input_name'], $captcha['image_id']))."\n";
                 $out.= "\t". call_user_func_array(array(getInstance()->form, 'input'), $args)."\n";
@@ -845,7 +998,22 @@ Class Form_Builder
 
     public function setMessage($key, $val)
     {
-        getInstance()->validator->setMessage($key, $val);
+        getInstance()->form->setMessage($key, $val);
+    }
+
+    /**
+     * Get message from form object
+     */
+    public function getMessage()
+    {
+        return getInstance()->form->getMessage();
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setNotice($key, $val)
+    {
+        getInstance()->form->setNotice($key, $val);
     }
 
     // --------------------------------------------------------------------
@@ -856,6 +1024,27 @@ Class Form_Builder
     public function getNotice()
     {
         return getInstance()->form->getNotice();
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get JS object
+     */
+    protected function _getJavascriptObject()
+    {
+
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * set Option
+     */
+    protected function setOption($name, $value)
+    {
+        if(isset($this->options[$name]))
+            $this->options[$name] = $value;
     }
 
 }
