@@ -11,13 +11,12 @@
 
 Class Schema {
 
-	public $tablename;  // Schema tablename
-	public $modelName;	// Schema modelname
-	public $driver;		// Schema driver object
-    public $debug;      // Debug on / off
+	public $tablename;    // Schema tablename
+	public $driver;		  // Schema driver object
+    public $debug;        // Debug on / off
     public $debugOutput;  // Debug output string
-    public $config;     // Schema config
-    public $output;     // Set schema content
+    public $config;       // Schema config
+    public $output;       // Set schema content
     public $requestUri;
 
 	/**
@@ -25,10 +24,11 @@ Class Schema {
 	 * 
 	 * @param string $tablename
 	 */
-	public function __construct($tablename, $modelName, $dbObject = null, $requestUri)
+	public function __construct($tablename, $dbObject = null, $requestUri)
 	{
+        global $logger;
+
         $this->tablename   = strtolower($tablename);
-        $this->modelName   = strtolower($modelName);
         $this->dbObject    = $dbObject;
         $this->debug       = false;  // debug for developers
         $this->debugOutput = '';
@@ -44,7 +44,7 @@ Class Schema {
 
 		$this->driver = new $schemaDriver($this);  // Call valid schema driver
 
-		logMe('debug', 'Schema Class Initialized');
+        $logger->debug('Schema Class Initialized');
 	}
 
     // --------------------------------------------------------------------
@@ -109,8 +109,51 @@ Class Schema {
         }
     }
     
-    // --------------------------------------------------------------------
+    // ---------------------------------------------------------
 
+    /**
+     * Run schema sync tool
+     * 
+     * @return void
+     */
+    public static function runSync($tablename)
+    {
+        global $logger;
+
+        // ** Auto sync just enabled in "debug" mode.
+        // ---------------------------------------------------------
+        
+        $requestUri = base64_encode(getInstance()->uri->getRequestUri());
+        $postData   = 'false';
+
+        if(sizeof($_POST) > 0) // Don't send empty post data
+        {
+            $postData = base64_encode(serialize($_POST));
+        }
+
+        $task      = new Task;    // Get tablename from "sync form" if we have sync request otherwise use current tablename.
+        $tablename = isset($_POST['lastCurrentSchema']) ? $_POST['lastCurrentSchema'] : $tablename ;
+        $output    = $task->run('sync/index/'.$tablename.'/'.$requestUri.'/'.$postData, true);
+
+        // print_r($_POST); exit; // debug On / Off
+
+        if( ! empty($output))
+        {
+            echo $output;
+            exit;
+        }
+        
+        if(isset($_POST['lastCurrentPage']))  // Do redirect while post array is empty, in cli mode we need do redirect to current page.
+        {
+            $url = new Url;
+            $url->redirect(urldecode($_POST['lastCurrentPage']));
+        }
+
+        $logger->info('Auto sync enabled on your config file you need to close it in production mode');
+    }
+
+    // --------------------------------------------------------------------
+    
     public function syncTable()
     {
         $this->driver->sync();
@@ -126,7 +169,7 @@ Class Schema {
      */
     public function displaySqlQueryForm($sql, $queryWarning = '',$disabled = false)
     {
-        $form = new \Form;
+        $form = new Form;
 
         $html = '<h1>Run sql query for <i><u>'.strtolower($this->getTableName()).'</u></i> table</h1>';
         $html.= $form->open('/'.$this->getRequestUri(), array('method' => 'POST', 'name' => 'query_form', 'id' => 'query_form'));
@@ -182,10 +225,13 @@ Class Schema {
      */
     public function writeToFile($fileContent)
     {
+        global $logger;
+
         if(file_exists($this->getPath()))
         {
             $currentSchema = getSchema($this->tablename); // Get current schema
         }
+
         // We need this for first time schema creation
 
         if($fileContent != false AND ! empty($fileContent)) // Write schema content.
@@ -219,7 +265,7 @@ Class Schema {
 
                 chmod($this->getPath(), 0777);
 
-                logMe('debug', 'New Schema '.$this->getTableName().' Created');
+                $logger->debug('New Schema '.$this->getTableName().' Created');
             }
 
             $this->redirect(); // redirect to user current page
@@ -253,18 +299,6 @@ Class Schema {
     // --------------------------------------------------------------------
 
     /**
-     * Get valid modelname
-     * 
-     * @return string
-     */
-    public function getModelName()
-    {
-    	return $this->modelName;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
      * Get valid database object
      * 
      * @return object
@@ -284,6 +318,7 @@ Class Schema {
     public function getDriverName()
     {
         $dbConfig = getConfig('database');
+
         $exp = explode('_', get_class($dbConfig[Db::$var]));
         return 'Schema_'.ucfirst($exp[1]);
     }
@@ -297,7 +332,7 @@ Class Schema {
      */
     public function redirect()
     {
-        $url = new \Url;
+        $url = new Url;
 
         if($this->debug == false)
         {

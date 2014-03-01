@@ -43,8 +43,9 @@ function parseNode(obj, element, i){
     var name = element.name;
     var inputError = document.getElementById(i + '_inputError');
     //-------------------------------------------------------
-    // Errors
-    if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '0'){
+    
+    // Parse Errors
+    if(typeof obj['success'] !== 'undefined' && obj['success'] == '0'){
         if(typeof obj.errors[name] !== 'undefined'){
             if(inputError){
                 document.getElementById(i + '_inputError').innerHTML = obj.errors[name];
@@ -59,6 +60,7 @@ function parseNode(obj, element, i){
         }
     }
 }
+
 function submitAjax(formId){
     var myform = document.getElementById(formId);
     myform.onsubmit = function(){
@@ -76,18 +78,16 @@ function submitAjax(formId){
 
             //-------------------------------------------------------
             // No Response
-            if(typeof obj.messages == 'undefined'){
-                console.logMe('Data connection lost, no response data.');
+            if(typeof obj['success'] == 'undefined'){
+                alert('Data connection lost, no response data.');
                 return false;
             }
+
             //-------------------------------------------------------
             // Success
-            if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '1'){
-                if(typeof obj.messages['redirect'] !== 'undefined'){
-                    window.location.replace(obj.messages['redirect']);
-                }
-                if(typeof obj.messages['alert'] !== 'undefined'){
-                    alert(obj.messages['alert']);
+            if(typeof obj['success'] !== 'undefined' && obj['success'] == '1'){
+                if(typeof obj['message'] !== 'undefined'){
+                    alert(obj['message']);
                     return false;
                 }
             }

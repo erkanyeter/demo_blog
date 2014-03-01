@@ -13,7 +13,9 @@ namespace Response\Src {
     */    
     function getOutput()
     {
-        return \Response::getInstance()->final_output;
+        global $response;
+
+        return $response->final_output;
     }
 
 }

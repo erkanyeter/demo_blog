@@ -19,6 +19,8 @@ namespace Form\Src {
             $key = ($key) ? '1' : '0';
         }
 
+        $message = translate($message);
+
         switch ($key)  // set custom notice
         {
             case '0':

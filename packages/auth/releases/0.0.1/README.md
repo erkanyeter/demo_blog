@@ -32,37 +32,53 @@ You can set authentication options in <dfn>app/config/auth.php</dfn> file.
 |
 */
 $auth = array(
-    
-    'db'                 => new Db,      // Set Database,
-    'sess'               => new Sess,  // Session Object
-    'get'                => new Get,    // Input Object
-    'bcrypt'             => new Bcrypt,  // Bcrypt password hash / verify object
-    'session_prefix'     => 'auth_',      // Set a prefix to prevent collisions with original session object.
-    'password_col'       => 'user_password', // The name of the database table field that contains the password.
-    'login_url'          => '/login',        // Redirect Url for Unsuccessfull logins
-    'dashboard_url'      => '/home',  // Redirect Url Successfull logins
-    // Security Settings
-    'password_salt_str'  => '',        // Password salt string for more strong passwords. * Leave it blank if you don't want to use it.
-    'algorithm'          => 'bcrypt',  // Whether to use "bcrypt" or "sha256" or "sha512" hash. ( Do not use md5 )
+
+    'session_prefix'     => 'auth_',   // Set a prefix to prevent collisions with original session object.
     'allow_login'        => true,      // Whether to allow logins to be performed on login form.
     'regenerate_sess_id' => false,     // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
-    'xss_clean'          => true,      // Do xss clean for username 
 );
 
-// Auth Query
-// Build your sql ( or nosql query ) using db or crud oject.
-
-$auth['query'] = function($username)
-{
-    $this->db->prep();
-    $this->db->select('user_id, user_username, user_password, user_email');
-    $this->db->where('user_email', ':username');
-    $this->db->get('users');
-    $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),
-    $this->db->exec();
-    
-    return $this->db->getRow();  // return to object.
+/*
+|--------------------------------------------------------------------------
+| Dependeny Injection Objects
+|--------------------------------------------------------------------------
+| Configure dependecies
+|
+*/
+$auth['database']  = 'db';         // Your database variable which is strored in the controller name e.g. getInstance()->{db}
+$auth['session']   = function(){   // Session Dependency
+    return new Sess;               // Start the sessions
 };
+$auth['algorithm'] = function(){    // Whether to use "bcrypt" or another custom object 
+    return new Bcrypt;   // return 'sha256'    // if you don't want to use Bcrypt object return "sha1", "sha256" or any hash type ,.
+};
+
+/*
+|--------------------------------------------------------------------------
+| Dependeny Injection Methods
+|--------------------------------------------------------------------------
+| Configure Methods
+|
+*/
+$auth['method_hashPassword']   = function($password) use($auth){  //  Whether to use "bcrypt" "sha1","sha256","sha512" type hashes. ( Do not use md5 )
+    $algorithm = $auth['algorithm']();
+    if(is_object($algorithm)){
+        return $algorithm->hashPassword($password);   // returns to hashed string
+    }
+    return hash($algorithm, $password);  // Default Native hash
+};
+
+$auth['method_verifyPassword'] = function($password, $hashedPassword) use($auth) {
+    $algorithm = $auth['algorithm']();                               
+    if(is_object($algorithm)){                                      // Initialize your algorithm class
+        return $algorithm->verifyPassword($password, $hashedPassword);  // Returns "true" if password verify success otherwise "false"
+    }
+    return ($hashedPassword === hash($algorithm, $password));  // Default Native hash
+};
+
+
+/* End of file auth.php */
+/* Location: .app/config/auth.php */
 ```
 
 ### Sending Data to Auth Query
@@ -71,17 +87,45 @@ $auth['query'] = function($username)
 
 ```php
 <?php
+new Db;
 new Auth;
 
-$row = $this->auth->query($_POST['email'], $_POST['password']);
-        
+$email    = $this->post->get('email');     // identifier input
+$password = $this->post->get('password');  // password input
+
+$row = $this->auth->query($password, function() use($email){
+
+    $this->db->prep();
+    $this->db->select('id, username, password, email');
+    $this->db->where('email', ':email');
+    $this->db->get('users');
+    $this->db->bindParam(':email', $email, PARAM_STR, 60); // String (int Length),
+    $this->db->exec();
+
+    $row = $this->db->getRow();
+
+    if($row !== false)
+    {
+        //-------- Set password for verify ------------//
+
+        $this->setPassword($row->user_password); 
+
+        //------------------------------------------------
+    }
+
+    return $row;   // return to database row
+});
+
 if($row !== false) // validate the auth !
 {
-    $this->auth->authorizeMe(); // Authorize to user
-    $this->auth->setIdentity('username', $row->user_username);    // Set user identity items.
-    $this->auth->setIdentity('email', $row->user_email);
+    $this->auth->authorize(function() use($row){    // Authorize to user
 
-    $this->url->redirect('/dashboard');
+        $this->setIdentity('user_username', $row->user_username); // Set user data to auth container
+        $this->setIdentity('user_email', $row->user_email);
+        $this->setIdentity('user_id', $row->user_id);
+    });
+
+    $this->url->redirect('/home'); // Success redirect
 }
 
 $this->url->redirect('/login');
@@ -129,7 +173,7 @@ $this->auth->getIdentity('username');
 ------
 
 ```php
-print_r($this->auth->getAllIdentityData());  //  gives array('auth_identity' => 'yes', 'auth_username' => 'John', 'auth_active' => 1);
+print_r($this->auth->getAllData());  //  gives array('auth_identity' => 'yes', 'auth_username' => 'John', 'auth_active' => 1);
 ```
 
 ### Logout User
@@ -142,36 +186,15 @@ This function will destroy the user identity data.
 $this->auth->clearIdentity();
 ```
 
-### Customizing Database SQL Query
-
-Using query config variable in <kbd>app/config/auth.php</kbd>, you can build your own sql queries.
-
-**Note:** The query result must be in row (object) format.
-
-
-```php
-$auth['query'] = function($username)
-{
-    $this->db->prep();
-    $this->db->select('user_id, user_username, user_password, user_email');
-    $this->db->where('user_email', ':username');
-    $this->db->get('users');
-    $this->db->bindParam(':username', $username, PARAM_STR, 60); // String (int Length),
-    $this->db->exec();
-    
-    return $this->db->getRow();  // return to object.
-};
-```
-
 ### Function Reference
 
 ------
 
-#### $this->auth->attemptQuery($username = '', $password = '')
+#### $this->auth->query($username = '', $password = '')
 
 Tries authentication attempt and do sql query using username and password combination, if no data provided as parameter , it will look at the $_POST data.
 
-#### $this->auth->authorizeMe()
+#### $this->auth->authorize()
 
 Authorizes and gives identity to the user.
 
@@ -210,3 +233,7 @@ Gets auth config item.
 #### $this->auth->setItem($key, $val)
 
 Sets auth config item.
+
+#### $this->auth->getAllData()
+
+Gets all identity data from user session.

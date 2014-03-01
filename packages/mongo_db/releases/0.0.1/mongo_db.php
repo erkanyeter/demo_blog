@@ -56,12 +56,12 @@ Class Mongo_Db {
             throw new Exception('The MongoDB PECL extension has not been installed or enabled.');
         }
         
-        $this->setConnectionString(); // Build the connection string from the config file
-        $this->connect();
-        
-        if( ! isset(getInstance()->mongo))
+        if( ! isset(getInstance()->mongo_db))
         {
-            getInstance()->mongo = $this; // Available it in the contoller $this->mongo->method();
+            $this->setConnectionString(); // Build the connection string from the config file
+            $this->connect();
+
+            getInstance()->mongo_db = $this; // Available it in the contoller $this->mongo->method();
         }
     }
     
@@ -658,8 +658,6 @@ Class Mongo_Db {
             throw new Exception('Nothing to insert into Mongo collection or insert data is not an array.');
         }
 
-        $data = $this->_parseSchema($data);  // check for the odm schema.
-
         $this->db->{$collection}
             ->insert($data, 
                 array_merge($this->config_options, $options));
@@ -670,7 +668,7 @@ Class Mongo_Db {
         {
             $this->insert_id = $data['_id'];
             
-            return count(array_pop($data)); // affected rows.
+            return sizeof(array_pop($data)); // affected rows.
         }
         else
         {
@@ -707,8 +705,6 @@ Class Mongo_Db {
             throw new Exception('Nothing to insert into Mongo collection or insert data is not an array.');
         }
 
-        $data = $this->_parseSchema($data);  // check for the odm schema.
-
         $this->_resetSelect();
 
         return $this->db->{$collection}
@@ -733,8 +729,6 @@ Class Mongo_Db {
     {
         $this->operation  = 'update';  // Set operation for getLastQuery output.
         $this->collection =  $collection;
-
-        $data = $this->_parseSchema($data);  // check for the odm schema.
 
         if (is_array($data) AND count($data) > 0)
         {
@@ -1270,53 +1264,6 @@ Class Mongo_Db {
     }
     
     // --------------------------------------------------------------------
-    
-    /**
-     * Parse Schema Configuration file from
-     * app/schemas folder.
-     * 
-     * @param $key schema object
-     * @return array | object
-     */
-    private function _parseSchema($key)
-    {
-        //-------------- Schema Support Begin -----------------//
-
-        if(is_object($key) AND ! empty($this->collection))  // Model Object ( Schema Support )
-        {
-            $tablename   = $this->collection; // remove escape char "`" get pure tablename
-            $schemaArray = $key->getMultiSchema();  // Get current multi schema array
-
-            if( ! isset($schemaArray[$tablename]))  // Get schemas using tablenames
-            {
-                throw new Exception('Schema '.$tablename.' file not found for crud operation.');
-            }
-
-            $setSchemaArray = array();
-            foreach(array_keys($schemaArray[$tablename]) as $field)
-            {
-                if(isset($key->data[$tablename.'.'.$field]))  // Is column join request ? 
-                {
-                    $key->data[$field] = $key->data[$tablename.'.'.$field]; // Remove column join prefix
-                    unset($key->data[$tablename.'.'.$field]);
-                }
-
-                if(isset($key->data[$field])) // Is schema field selected ?
-                {
-                    $setSchemaArray[$field] = $key->data[$field]; // Let's build insert data.
-                }
-            }
-
-            unset($key);
-            $key = $setSchemaArray;
-        }
-        
-        $this->updateData = $key;  // store update data for debug.
-
-        return $key;
-
-        //-------------- Schema Support End -----------------//
-    }
 
     /**
      * Close the connection.

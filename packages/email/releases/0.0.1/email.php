@@ -65,6 +65,8 @@ Class Email {
     */
     function __construct($config = array())
     {
+        global $logger;
+
         if( ! isset(getInstance()->email))
         {
             getInstance()->email = $this; // Make available it in the controller $this->email->method();
@@ -80,7 +82,7 @@ Class Email {
             $this->_safe_mode = ((boolean)@ini_get('safe_mode') === false) ? false : true;
         }
 
-        logMe('debug', 'Email Class Initialized');
+        $logger->debug('Email Class Initialized');
     }
     
     
@@ -111,7 +113,7 @@ Class Email {
         }
 
         $this->_smtp_auth = ($this->smtp_user == '' AND $this->smtp_pass == '') ? false : true;
-        $this->_safe_mode = ((boolean)@ini_get("safe_mode") === false) ? false : true;
+        $this->_safe_mode = ((boolean)@ini_get('safe_mode') === false) ? false : true;
         
         return $this;
     }

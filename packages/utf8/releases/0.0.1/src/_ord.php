@@ -21,6 +21,8 @@ namespace Utf8\Src {
      */
     function _ord($chr)
     {
+        global $logger;
+
         $ord0 = ord($chr);
 
         if ($ord0 >= 0 AND $ord0 <= 127)
@@ -30,7 +32,7 @@ namespace Utf8\Src {
 
         if ( ! isset($chr[1]))
         {
-            logMe('debug', 'Utf8->_ord: Short sequence - at least 2 bytes expected, only 1 seen in this char: '. $chr);
+            $logger->debug('Utf8->_ord: Short sequence - at least 2 bytes expected, only 1 seen in this char: '. $chr);
             
             return false;
         }
@@ -44,7 +46,7 @@ namespace Utf8\Src {
 
         if ( ! isset($chr[2]))
         {
-            logMe('debug', 'Utf8->_ord: Short sequence - at least 3 bytes expected, only 2 seen in this char: '. $chr);
+             $logger->debug('Utf8->_ord: Short sequence - at least 3 bytes expected, only 2 seen in this char: '. $chr);
 
             return false;
         }
@@ -58,7 +60,7 @@ namespace Utf8\Src {
 
         if ( ! isset($chr[3]))
         {
-            logMe('debug', 'Utf8->_ord: Short sequence - at least 4 bytes expected, only 3 seen in this char: '. $chr);
+            $logger->debug('Utf8->_ord: Short sequence - at least 4 bytes expected, only 3 seen in this char: '. $chr);
 
             return false;
         }
@@ -72,7 +74,7 @@ namespace Utf8\Src {
 
         if ( ! isset($chr[4]))
         {
-            logMe('debug', 'Utf8->_ord: Short sequence - at least 5 bytes expected, only 4 seen in this char: '. $chr);
+            $logger->debug('Utf8->_ord: Short sequence - at least 5 bytes expected, only 4 seen in this char: '. $chr);
 
             return false;
         }
@@ -86,7 +88,7 @@ namespace Utf8\Src {
 
         if ( ! isset($chr[5]))
         {
-            logMe('debug', 'Utf8->_ord: Short sequence - at least 6 bytes expected, only 5 seen in this char: '. $chr);
+            $logger->debug('Utf8->_ord: Short sequence - at least 6 bytes expected, only 5 seen in this char: '. $chr);
 
             return false;
         }
@@ -98,7 +100,7 @@ namespace Utf8\Src {
 
         if ($ord0 >= 254 AND $ord0 <= 255)
         {
-            logMe('debug', 'Utf8->_ord: Invalid surrogate ordinal '.$ord0 . 'in this char: '. $chr);
+            $logger->debug('Utf8->_ord: Invalid surrogate ordinal '.$ord0 . 'in this char: '. $chr);
 
             return false;
         }

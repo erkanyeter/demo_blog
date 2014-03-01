@@ -23,6 +23,8 @@ Class Trigger {
      */
     public function __construct()
     {   
+        global $logger;
+
         $arguments = func_get_args();
         $triggers  = getConfig('triggers');
 
@@ -40,7 +42,7 @@ Class Trigger {
             }
         }
 
-        logMe('debug', 'Trigger Class Initialized');
+        $logger->debug('Trigger Class Initialized');
     }
 
 }

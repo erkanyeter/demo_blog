@@ -17,26 +17,25 @@
 | -------------------------------------------------------------------
 |
 | $tiggers['func'] = array(
-|	'trigger_function' => function(){
-|						
-|	}
+|   'trigger_function' => function(){
+|                       
+|   }
 | )
 |
 */
-
 $triggers['func'] = array(
-	
-	'private' => function(){ 	// identity level
+    
+    'private' => function () {  // identity level
 
-		if( ! $this->auth->hasIdentity()) {  // if user has not identity ?
- 			new Url;
-			$this->url->redirect('/login');  // redirect user to login page
-		}
+        if ( ! $this->auth->hasIdentity()) {  // if user has not identity ?
+            new Url;
+            $this->url->redirect('/login');  // redirect user to login page
+        }
 
-	},
-	'public' => function(){ 		 
+    },
+    'public' => function () {        
 
-	},
+    },
 );
 
 /* End of file triggers.php */

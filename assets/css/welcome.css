@@ -51,6 +51,7 @@ pre{
   font-size:12px;
 }
 pre code{background:transparent;border:none;padding:0;}
+pre span.string {color: #cc0000;}
 a{color:#069586;}
 header{padding: 30px 0;text-align:center;}
 

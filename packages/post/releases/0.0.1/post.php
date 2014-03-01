@@ -17,12 +17,14 @@ Class Post
      */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->post))
         {
             getInstance()->post = $this; // Make available it in the controller $this->post->method();
         }
 
-        logMe('debug', 'Post Class Initialized');
+        $logger->debug('Post Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -33,12 +35,12 @@ Class Post
     * @access   public
     * @param    string
     * @param    bool
-    * @param    bool    Use global post values instead of HMVC scope.
+    * @param    bool    Use global post values instead of HVC scope.
     * @return   string
     */
     public function get($index = NULL, $xss_clean = FALSE, $use_global_var = false)
     {
-        $VAR = ($use_global_var) ? $GLOBALS['_POST_BACKUP'] : $_POST;  // People may want to use hmvc or app superglobals.
+        $VAR = ($use_global_var) ? $GLOBALS['_POST_BACKUP'] : $_POST;  // People may want to use hvc or app superglobals.
 
         if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
         {

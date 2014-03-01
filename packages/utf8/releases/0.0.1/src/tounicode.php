@@ -101,8 +101,10 @@ namespace Utf8\Src {
                 }
                 else
                 {
+                    global $logger;
+
                     // Current octet is neither in the US-ASCII range nor a legal first octet of a multi-octet sequence.
-                    logMe('debug', 'Utf8->toUnicode: Illegal sequence identifier in UTF-8 at byte '.$i. 'in this string: '.$str);
+                    $logger->debug('Utf8->toUnicode: Illegal sequence identifier in UTF-8 at byte '.$i. 'in this string: '.$str);
 
                     return false;
                 }
@@ -133,7 +135,9 @@ namespace Utf8\Src {
                                 // Codepoints outside the Unicode range are illegal
                                 ($m_ucs4 > 0x10FFFF))
                         {
-                            logMe('debug', 'Utf8->toUnicode: Illegal sequence or codepoint in UTF-8 at byte '.$i.' in this string: '.$str);
+                            global $logger;
+
+                            $logger->debug('Utf8->toUnicode: Illegal sequence or codepoint in UTF-8 at byte '.$i.' in this string: '.$str);
 
                             return false;
                         }
@@ -151,10 +155,12 @@ namespace Utf8\Src {
                 }
                 else
                 {
+                    global $logger;
+
                     // ((0xC0 & (*in) != 0x80) AND (m_state != 0))
                     // Incomplete multi-octet sequence
                     
-                    logMe('debug', 'Utf8->toUnicode: Incomplete multi-octet sequence in UTF-8 at byte '.$i. 'in this string: '.$str);
+                    $logger->debug('Utf8->toUnicode: Incomplete multi-octet sequence in UTF-8 at byte '.$i. 'in this string: '.$str);
 
                     return false;
                 }

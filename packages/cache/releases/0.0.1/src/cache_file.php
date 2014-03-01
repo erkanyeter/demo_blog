@@ -10,12 +10,12 @@ namespace Cache\Src;
 
 Class Cache_File {
 
-	private $_cache_path;
+	private $cache_path;
 
 	public function __construct()
 	{
-		$this->config      = getConfig('cache');  // app/config/cache.php config
-		$this->_cache_path = ROOT .str_replace('/', DS, trim($this->config['cache_path'], '/')). DS;
+		$this->config     = getConfig('cache');  // app/config/cache.php config
+		$this->cache_path = ROOT .str_replace('/', DS, trim($this->config['cache_path'], '/')). DS;
 	}
 
 	// ------------------------------------------------------------------------
@@ -28,21 +28,39 @@ Class Cache_File {
      */
 	public function get($key)
 	{
-		if ( ! file_exists($this->_cache_path.$key))
+		if ( ! file_exists($this->cache_path.$key))
 		{
 			return false;
 		}
 		
-		$data = file_get_contents($this->_cache_path.$key);
+		$data = file_get_contents($this->cache_path.$key);
 		$data = unserialize($data);
 		
 		if (time() >  $data['time'] + $data['ttl'])
 		{
-			unlink($this->_cache_path.$key);
+			unlink($this->cache_path.$key);
 			return false;
 		}
 		
 		return $data['data'];
+	}
+
+	// ------------------------------------------------------------------------	
+
+	/**
+     * Verify if the specified key exists.
+     * 
+     * @param string $key
+     * @return boolean true or false
+     */
+	public function keyExists($key)
+	{
+		if($this->get($key) == false)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	// ------------------------------------------------------------------------
@@ -77,7 +95,7 @@ Class Cache_File {
 						  'data' => $data
 						  );
 
-		$fileName = $this->_cache_path.$key;
+		$fileName = $this->cache_path.$key;
         if ( ! $fp = fopen($fileName, 'wb'))
         {
             return false;
@@ -103,7 +121,7 @@ Class Cache_File {
      */
 	public function delete($key)
 	{
-		return unlink($this->_cache_path.$key);
+		return unlink($this->cache_path.$key);
 	}
 
 	// ------------------------------------------------------------------------
@@ -116,7 +134,7 @@ Class Cache_File {
      */
 	public function flushAll()
 	{
-		return delete_files($this->_cache_path);
+		return delete_files($this->cache_path);
 	}
 
 	// ------------------------------------------------------------------------
@@ -129,7 +147,7 @@ Class Cache_File {
      */
 	public function cacheInfo($type = NULL)
 	{
-		return get_dir_file_info($this->_cache_path);
+		return get_dir_file_info($this->cache_path);
 	}
 
 	// ------------------------------------------------------------------------
@@ -142,17 +160,17 @@ Class Cache_File {
      */
 	public function getMetaData($key)
 	{
-		if ( ! file_exists($this->_cache_path.$key))
+		if ( ! file_exists($this->cache_path.$key))
 		{
 			return false;
 		}
 
-		$data = file_get_contents($this->_cache_path.$key);
+		$data = file_get_contents($this->cache_path.$key);
 		$data = unserialize($data);
 
 		if (is_array($data))
 		{
-			$mtime = filemtime($this->_cache_path.$key);
+			$mtime = filemtime($this->cache_path.$key);
 
 			if ( ! isset($data['ttl']))
 			{
@@ -178,9 +196,9 @@ Class Cache_File {
      */
 	public function isSupported()
 	{
-		if(!is_writable($this->_cache_path))
+		if(!is_writable($this->cache_path))
 		{
-			throw new \Exception('Cache path '.$this->_cache_path.' is not writable.');
+			throw new \Exception('Cache path '.$this->cache_path.' is not writable.');
 		}
 
 		return false;

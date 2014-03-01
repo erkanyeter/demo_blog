@@ -25,12 +25,14 @@ Class View {
      */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->view))
         {
             getInstance()->view = $this; // Make available it in the controller $this->view->method();
         }
 
-        logMe('debug', 'View Class Initialized');
+        $logger->debug('View Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -47,6 +49,8 @@ Class View {
     */
     public function fetch($__vPath, $__vFilename, $__vData = null, $__vInclude = true)
     {
+        global $response, $logger;
+
         $file_extension = substr($__vFilename, strrpos($__vFilename, '.')); // Detecet the file extension ( e.g. '.tpl' )
         $ext            = (strpos($file_extension, '.') === 0) ? '' : EXT;
 
@@ -75,7 +79,7 @@ Class View {
             extract($this->_object, EXTR_SKIP); 
         }
 
-        logMe('debug', 'View file loaded: '.$__vPath. $__vFilename . $ext);
+        $logger->debug('View file loaded: '.$__vPath. $__vFilename . $ext);
 
         ob_start();   // Please open short tags in your php.ini file. ( short_tag = On ).
 
@@ -88,7 +92,7 @@ Class View {
             return $output;
         }
         
-        Response::getInstance()->appendOutput($output);
+        $response->appendOutput($output);
 
         return;
     }
@@ -186,23 +190,6 @@ Class View {
      */
     public function get($filename, $data_or_no_include = null, $include = true)
     {
-        if(strpos($filename, '@') === 0)  // View controllers support.
-        {     
-            $filename = trim($filename, '@');
-
-            $backup_instance = getInstance(); // backup old controller instance.
-
-            require_once(PUBLIC_DIR. 'views'. DS .'controller'. DS .$filename. EXT);
-
-            getInstance($backup_instance);  // restore old controller instance.
-
-            $this->{$filename} = &$c;   // Store view controller variable.
-
-            // $this->_view_controler = true;
-
-            return;
-        }
-
         return $this->fetch(PUBLIC_DIR .getInstance()->router->fetchDirectory(). DS .'view'. DS, $filename, $data_or_no_include, $include);    
     }
 

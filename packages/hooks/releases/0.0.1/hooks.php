@@ -16,8 +16,6 @@ Class Hooks {
     public $hooks          = array();  // List of all hooks set in config/hooks.php
     public $in_progress    = false;    // Determines wether hook is in progress, used to prevent infinte loops
 
-    private static $instance;
-
     // --------------------------------------------------------------------
 
     /**
@@ -25,7 +23,7 @@ Class Hooks {
      */
     public function __construct()
     {
-        global $config;
+        global $config, $logger;
 
         if ($config['enable_hooks'] == FALSE)  // If hooks are not enabled in the config
         {                                            // file there is nothing else to do
@@ -42,24 +40,7 @@ Class Hooks {
         $this->hooks   =& $hooks;
         $this->enabled = true;
 
-        logMe('debug', 'Hooks Class Initialized');
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get instance of this class
-     * 
-     * @return object
-     */
-    public static function getInstance()
-    {
-       if( ! self::$instance instanceof self)
-       {
-           self::$instance = new self();
-       } 
-       
-       return self::$instance;
+        $logger->debug('Hooks Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -100,7 +81,7 @@ Class Hooks {
     {
         if( ! is_callable($closure))
         {
-            logMe('debug', 'Hooks closure isn\'t callable');
+            $logger->debug('Hooks closure isn\'t callable');
 
             return false;
         }
@@ -128,7 +109,7 @@ Class Hooks {
 
         $closure();
 
-        logMe('debug', 'Hooks closure called succesfully');
+        $logger->debug('Hooks closure called succesfully');
         
         $this->in_progress = false;
 

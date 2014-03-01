@@ -18,7 +18,7 @@ namespace Form\Src {
     {
         if(is_object($value)) // $_POST & Db value schema sync
         {
-            $value = getInstance()->form->_getSchemaPost($value, $data); 
+            $value = getInstance()->form->_getRowValue($value, $data); 
         }
         
         if ( ! is_array($data))

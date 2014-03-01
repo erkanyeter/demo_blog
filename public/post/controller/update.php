@@ -13,57 +13,48 @@ $c = new Controller(function(){
     new Sess;
     new Auth;
     new Post;
+    new Hvc;
+    new Db;
 
     new Trigger('private');
-	new Model('posts');
 });
 
 $c->func('index', function($id){
 
     if($this->post->get('dopost')) // if do post click
     {
-        $this->posts->data = array(
-            'post_user_id'           => $this->auth->getIdentity('user_id'),
-            'post_title'             => $this->post->get('post_title'),
-            'post_content'           => $this->post->get('post_content'),
-            'post_tags'              => $this->post->get('post_tags'),
-            'post_status'            => $this->post->get('post_status'),
-            'post_modification_date' => date('Y-m-d H:i:s'),
-        );
-        
-        $this->posts->func('save', function() use($id) {
-            if ($this->isValid()){
+        $this->form->setRules('post_title', 'Title', 'required');
+        $this->form->setRules('post_content', 'Content', 'required|xssClean');
+        $this->form->setRules('post_status', 'Status', 'required');
 
-                $this->db->where('post_id', $id);
-                $this->db->update('posts', $this);
+        if($this->form->isValid())  // update post
+        {
+            $r = $this->hvc->post('private/posts/update/{'.$id.'}', array('user_id' => $this->auth->getIdentity('user_id')));
 
-                return true;
+            if($r['success'])
+            {
+                $this->form->setNotice($r['message'],SUCCESS);
+                $this->url->redirect('post/update/index/'.$id);
+            } 
+            else 
+            {
+                $this->form->setMessage($r['message']);
             }
-            return false;
-        });
-        
-        if($this->posts->save())  // save post
-        {        
-            $this->form->setNotice('Post saved successfully.',SUCCESS);
-            $this->url->redirect('/post/update/index/'.$id);
         }
     } 
 
+    $row = $this->hvc->get('private/posts/getone/{'.$id.'}');
 
-    $this->db->where('post_id', $id); // get db data
-    $this->db->get('posts');
-    $row = $this->db->getRow();
-
-    if($row == false)
+    if(count($row['results']) == 0)
     {
-        $this->response->show404();
+        $this->response->show404(); // record not found
     }
 
 	$this->view->get('update', function() use($id, $row){
 
 		$this->set('title', 'Update Post');
         $this->set('post_id', $id);
-        $this->set('row', $row);
+        $this->set('row', (object)$row['results']);  // send as object
 
 		$this->getScheme();
 	});

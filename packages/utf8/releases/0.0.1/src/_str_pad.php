@@ -73,7 +73,9 @@ namespace Utf8\Src {
             return $pad_left.$str.$pad_right;
         }
 
-        logMe('debug', 'Utf8->_str_pad: Unknown padding type ('.$pad_type.') in this string: '.$str);
+        global $logger;
+
+        $logger->debug('Utf8->_str_pad: Unknown padding type ('.$pad_type.') in this string: '.$str);
     }
 
 }

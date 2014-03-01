@@ -2,26 +2,31 @@
 
 /**
  * $c hello_scheme
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-    
-    new Html;
-    new Url;
-    new View;
-});
+$c = new Controller(
+    function () {
+        new Html;
+        new Url;
+        new View;
+    }
+);
 
-$c->func('index',function() {
-    
-    $this->view->get('hello_scheme', function() {
+$c->func(
+    'index',
+    function () {
 
-        $this->set('name', 'Obullo');
-        $this->set('title', 'Hello Scheme World !');
-
-        $this->getScheme('welcome');
-    });
-});
+        $this->view->get(
+            'hello_scheme',
+            function () {
+                $this->set('name', 'Obullo');
+                $this->set('title', 'Hello Scheme World !');
+                $this->getScheme('welcome');
+            }
+        );
+    }
+);
 
 
 /* End of file hello_scheme.php */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Auth Class
+ * Simple Auth Class
  *
  * A lightweight and simple user authentication control class.
  *
@@ -16,17 +16,14 @@
 
 Class Auth {
    
-    public $db;     // Databasse object
-    public $sess;   // Session Object
-    public $bcrypt; // Password hash / verify object
+    public $database;       // Databasse object variable name
+    public $sess;           // Session Object
+    public $algorithm;      // Password hash / verify object
     public $session_prefix     = 'auth_';
-    public $login_url          = '/login';
-    public $dashboard_url      = '/dashboard';
-    public $algorithm          = 'sha256'; // Set algorithm you want to use.
-    public $allow_login        = true;     // Whether to allow logins to be performed on this page.
-    public $regenerate_sess_id = false;  // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
+    public $allow_login        = true;    // Whether to allow logins to be performed on this page.
+    public $regenerate_sess_id = false;   // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
 
-    protected $database_password; // password string comes from databas column
+    protected $database_password; // password string comes from database column
     
     /**
     * Constructor
@@ -38,14 +35,26 @@ Class Auth {
     */
     public function __construct($config = array())
     {   
+        global $logger;
+
+        $auth = getConfig('auth');
+
         if( ! isset(getInstance()->auth))
         {
-            getInstance()->auth = $this->init($config); // Make available it in the controller.
+            $params = array_merge($auth, $config);
+
+            getInstance()->auth = $this; // Make available it in the controller.
+
+            $this->init($params);
         }
 
-        $this->db = $this->db->connect(); // connect to database and assign db object.
+        // initialize to session object
+        // because of its global
 
-        logMe('debug', 'Auth Class Initialized');
+        $session    = $auth['session'];    // run new Sess object
+        $this->sess = $session();
+
+        $logger->debug('Auth Class Initialized');
     }
     
     // --------------------------------------------------------------------
@@ -58,12 +67,16 @@ Class Auth {
      */
     public function init($params = array())
     {
-        $auth   = getConfig('auth');
-        $config = array_merge($auth , $params);
-
-        foreach($config as $key => $val)
+        foreach($params as $key => $val)
         {
-            $this->{$key} = $val; // assign config items
+            $this->{$key} = $val;     // assign config items
+        }
+
+        $db_var = $this->database;    // assign database object if its exists
+
+        if(isset(getInstance()->{$db_var}))
+        {
+            $this->{$db_var} = getInstance()->{$db_var};
         }
 
         return ($this);
@@ -74,8 +87,8 @@ Class Auth {
     /**
     * Send post query to login
     * 
-    * @param string $username  manually login username
     * @param string $password  manually login password
+    * @param string $closure
     * 
     * @return boolean | object  If auth is fail it returns to false otherwise "Object"
     */
@@ -129,26 +142,8 @@ Class Auth {
      */
     public function hashPassword($password)
     {
-        switch($this->algorithm)
-        {
-            case 'bcrypt':{
-                $bcrypt = new Bcrypt;
-                $hash = $bcrypt->hashPassword($password);
-                break;
-            }
-            case 'md5':
-            case 'sha1':
-            case 'sha256':
-            case 'sha512':{
-                $hash = hash($this->algorithm, $password);
-                break;
-            }
-            default: 
-            throw new Exception('Security alert: Please set the password encryption algorithm on app/config/auth'. EXT);
-                break;
-        }
-
-        return $hash;
+        $method_hashPassword = $this->method_hashPassword; //  run the closure function
+        return $method_hashPassword($password);
     }
 
     // ------------------------------------------------------------------------
@@ -159,23 +154,19 @@ Class Auth {
      * @param  string $password
      * @return string $hash
      */
-    public function verifyPassword($password, $dbPassword)
+    public function verifyPassword($password)
     {
-        switch($this->algorithm)
+        $algorithm_closure = $this->algorithm;
+        $algorithm         = $algorithm_closure();
+
+        if(is_object($algorithm))
         {
-            case 'bcrypt':{
-                $bcrypt = new Bcrypt;
-                return $bcrypt->verifyPassword($password, $dbPassword);
-                break;
-            }
-            case 'md5':
-            case 'sha1':
-            case 'sha256':
-            case 'sha512':{
-                $hash = hash($this->algorithm, $password);
-                return ($dbPassword === $hash);
-                break;
-            }
+            $method_verifyPassword = $this->method_verifyPassword;      //  run the closure function
+            return $method_verifyPassword($password, $this->database_password);
+        } 
+        else  // if it is a native hash() function
+        {
+            return $algorithm;
         }
 
         return false;
@@ -207,7 +198,7 @@ Class Auth {
      * @param bool $fakeAuth authorize to user.
      * @return bool
      */
-    public function setIdentity($key, $val)
+    public function setIdentity($key, $val = '')
     {        
         if(is_array($key))
         {
@@ -250,7 +241,7 @@ Class Auth {
         {
             return;
         }
-        
+
         return $this->sess->get($key, $this->session_prefix);
     }
     
@@ -314,7 +305,7 @@ Class Auth {
     */
     public function clearIdentity()
     {
-        $this->sess->remove($this->getAllIdentities());
+        $this->sess->remove($this->getAllData());
     }
     
     // ------------------------------------------------------------------------
@@ -324,7 +315,7 @@ Class Auth {
      * 
      * @return type
      */
-    public function getAllIdentities()
+    public function getAllData()
     {
         $identityData = array();
         foreach($this->sess->getAllData() as $key => $val)

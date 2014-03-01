@@ -16,8 +16,7 @@ Class Controller {
     public static $instance;                        // Controller instance
     public $_controllerAppMethods       = array();  // Controller user defined methods. ( @private )
     public $_controllerAppPublicMethods = array();  // Controller user defined methods. ( @private )
-    public $config, $router, $uri, $translator, $response; // Component instances
-    public $is_view_controler = false;  // if view controller used we allow store public methods more than one.
+    public $config, $uri, $router, $translator, $response;  // Default packages
         
     // ------------------------------------------------------------------------
 
@@ -29,16 +28,18 @@ Class Controller {
      */
     public function __construct($closure)       
     {   
+        global $cfg, $uri, $router, $translator, $response;
+
         self::$instance = &$this;
 
-        // Assign Core Libraries
+        // Assign Default Loaded Packages
         // ------------------------------------
-        
-        $this->config     = Config::getInstance();
-        $this->router     = Router::getInstance();
-        $this->uri        = Uri::getInstance();
-        $this->translator = Translator::getInstance();
-        $this->response   = Response::getInstance();
+                                                // NOTICE:
+        $this->config     = &$cfg;              // If we don't use pass by reference this will cause some errors in Hvc.
+        $this->uri        = &$uri;              // The bug is insteresting, when we work with multiple page not found requests
+        $this->router     = &$router;           // The objects of getInstance() keep the last instances of the last request.
+        $this->translator = &$translator;       // that means the instance don't do the reset. Keep in your mind we need use pass by reference
+        $this->response   = &$response;         // for variables.
 
         // Run Construct Method
         // ------------------------------------
@@ -54,7 +55,8 @@ Class Controller {
     /**
      * We prevent custom variables
      *
-     * this is not allowed $this->user_variable 
+     * this is not allowed $this->user_variable = 'this is disgusting'
+     * in controller
      * 
      * @param string $key
      * @param string $val
@@ -68,7 +70,8 @@ Class Controller {
             throw new Exception('Manually storing variables into Controller is not allowed');
         }
 
-        $this->{$key} = $val; // store only application classes & packages
+        $this->{$key} = $val; // store only application classes & packages 
+                              // and any variable which type is object
     }
 
     // ------------------------------------------------------------------------
@@ -95,11 +98,8 @@ Class Controller {
             $this->_controllerAppPublicMethods[$method] = $methodName;
 
             if(sizeof($this->_controllerAppPublicMethods) > 1)
-            {    
-                if($this->is_view_controler == false) // Except the view controllers
-                {
-                    throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
-                }
+            {
+                throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');   
             }
         }
 

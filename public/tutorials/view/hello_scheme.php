@@ -23,7 +23,7 @@
 <pre>$scheme = array(
     'welcome' => function()
     {
-        $this->set('footer', $this->tpl('footer',false));
+        $this->set('footer', $this->getTpl('footer',false));
     },
 );
 </pre>

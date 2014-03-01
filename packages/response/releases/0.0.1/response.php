@@ -15,34 +15,16 @@
 Class Response {
     
     public $final_output;
-    public $headers      = array();
-
-    public static $instance;
+    public $headers = array();
 
     // --------------------------------------------------------------------
 
     public function __construct()
-    {
-        logMe('debug', 'Response Class Initialized');
+    {   
+        global $logger;
+     
+        $logger->debug('Response Class Initialized');
     }
-
-    // --------------------------------------------------------------------
-    
-    /**
-     * Get instance of class
-     * 
-     * @return object
-     */
-    public static function getInstance()
-    {
-       if( ! self::$instance instanceof self)
-       {
-           self::$instance = new self();
-       } 
-       
-       return self::$instance;
-    }
-
 
     // --------------------------------------------------------------------
 
@@ -85,7 +67,7 @@ Class Response {
      */        
     public function _sendOutput($output = '')
     {
-        global $config;
+        global $config, $logger;
 
         if ($output == '')  // Set the output data
         {
@@ -108,6 +90,7 @@ Class Response {
 
         // Are there any server headers to send ?
         // --------------------------------------------------------------------
+        
         if(count($this->headers) > 0 ) 
         {       
             if ( ! headers_sent())
@@ -121,41 +104,36 @@ Class Response {
 
         // --------------------------------------------------------------------
         
-        // Does the getInstance() function exist?
-        // If not we know we are dealing with a cache file so we'll
-        // simply echo out the data and exit.
-        if ( ! function_exists('getInstance'))
-        {
-            echo $output;
+        if ( ! function_exists('getInstance'))              // Does the getInstance() function exist?
+        {                                                   // If not we know we are dealing with a cache file so we'll
+            echo $output;                                   // simply echo out the data and exit. 
             
-            logMe('debug', "Final output sent to browser");
+            $logger->debug('Final output sent to browser');
             
             return true;
         }
         
-        // Does the controller contain a function named _output()?
-        // If so send the output there.  Otherwise, echo it.
-        if (method_exists(getInstance(), '_response'))
-        {
-            getInstance()->_response($output);
+        if (method_exists(getInstance(), '_response'))  // Does the controller contain a function named _output()?
+        {           
+            getInstance()->_response($output);          // If so send the output there.  Otherwise, echo it.
         }
         else
         {
             echo $output;  // Send it to the browser!
         }
         
-        logMe('debug', "Final output sent to browser");
+        $logger->debug('Final output sent to browser');
 
         if ($config['log_benchmark']) // Do we need to generate benchmark data ? If so, enable and run it.
         {
-            $memory_usage = "memory_get_usage() function not found on your php configuration.";
+            $memory_usage = 'memory_get_usage() function not found on your php configuration.';
 
             if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '')
             {
-                $memory_usage = number_format($usage)." bytes";
+                $memory_usage = number_format($usage).' bytes';
             }
             
-            logMe('bench', "Memory Usage: ". $memory_usage); 
+            $logger->bench('Memory Usage: '. $memory_usage);
         }           
     }
 

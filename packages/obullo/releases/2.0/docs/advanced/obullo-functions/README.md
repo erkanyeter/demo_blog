@@ -66,22 +66,22 @@ If package installed it returns to <b>true</b> otherwise <b>false</b>.
 
 ------
 
-#### logMe('level', 'message');
+#### $this->logger->level('message')
 
 This function lets you write messages to your log files. You must supply one of three "levels" in the first parameter, indicating what type of message it is (debug, error, info), with the message itself in the second parameter. Example:
 
 ```php
 if (empty($someVar))
 {
-    logMe('error', 'Some variable did not contain a value.');
+    $this->logger->error('Some variable did not contain a value.');
 }
 else
 {
-    logMe('debug', 'Some variable was correctly set');
+    $this->logger->error('debug', 'Some variable was correctly set');
 }
 
-logMe('info', 'The purpose of some variable is to provide some value.');
-```
+$this->logger->info('The purpose of some variable is to provide some value.');
+
 
 **Note:** In order for the log file to actually be written, the <b>"logs"</b> folder must be writable which is located at <kbd>app/logs</kbd>. In addition, you must set the "threshold" for logging. You might, for example, only want error messages to be logged, and not the other two types. If you set it to zero logging will be disabled. (Look at <kbd>app/config/config.php</kbd>)
 
@@ -115,6 +115,8 @@ Look at <kbd>translate</kbd> package for more details.
 ### Loaded Classes
 
 ------
+
+### $this->logger->method();
 
 ### $this->config->method();
 

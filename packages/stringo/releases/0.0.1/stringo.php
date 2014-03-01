@@ -13,12 +13,14 @@ Class Stringo {
     
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->stringo))
         {
             getInstance()->stringo = $this; // Make available it in the controller $this->stringo->method();
         }
 
-        logMe('debug', 'Stringo Class Initialized');
+        $logger->debug('Stringo Class Initialized');
     }
 
     // ------------------------------------------------------------------------

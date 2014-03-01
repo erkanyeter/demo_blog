@@ -23,6 +23,19 @@ Class Cache_Apc {
 		return (is_array($data)) ? $data[0] : false;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+     * Verify if the specified key exists.
+     * 
+     * @param string $key
+     * @return boolean true or false
+     */
+	public function keyExists($key)
+	{
+		return apc_exists($key);
+	}
+
 	// ------------------------------------------------------------------------	
 	
     /**

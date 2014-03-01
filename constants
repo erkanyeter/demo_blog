@@ -31,14 +31,17 @@ define('FPATH', dirname(__FILE__));
 |---------------------------------------------------------------
 | UNDERSTANDING APP CONSTANTS
 |---------------------------------------------------------------
-| ROOT        - The root path of your server
-| ASSETS      - The full server path to the "assets" folder
-| APP     	  - The full server path to the "app" folder
-| DATA        - The full server path to the "data" folder
-| CLASSES     - The full server path to the user "classes" folder
-| PACKAGES    - The full server path to the "packages" folder
-| PUBLIC_DIR  - The full server path to the "public" folder
-| TASK_FILE   - Set your task (CLI) file name you will use it in command line $php task.
+| ROOT        		- The root path of your server
+| ASSETS      		- The full server path to the "assets" folder
+| APP     	  		- The full server path to the "app" folder
+| DATA        		- The full server path to the "data" folder
+| CLASSES     		- The full server path to the user "classes" folder
+| PACKAGES    		- The full server path to the "packages" folder
+| PUBLIC_FOLDER		- The full "static" server path to the "public" folder
+| PRIVATE_FOLDER 	- The full "static" server path to the "private" folder
+| PUBLIC_DIR  		- The full "dynamic" server path to the "public" folder
+| PRIVATE_DIR 		- The full "dynamic" server path to the "private" folder
+| TASK_FILE   		- Set your task (CLI) file name you will use it in command line $php task.
 */
 define('ROOT',  realpath(dirname(__FILE__)) . DS);
 define('ASSETS',  ROOT .'assets'. DS);
@@ -47,7 +50,9 @@ define('DATA',  ROOT .'data'. DS);
 define('CLASSES',  ROOT .'classes'. DS);
 define('PACKAGES',  ROOT .'packages'. DS);
 define('PUBLIC_FOLDER', ROOT .'public'. DS);
+define('PRIVATE_FOLDER', ROOT .'private'. DS);
 define('PUBLIC_DIR', (defined('STDIN')) ? APP : PUBLIC_FOLDER);
+define('PRIVATE_DIR', PRIVATE_FOLDER);
 define('TASK_FILE', 'task');
 
 /*

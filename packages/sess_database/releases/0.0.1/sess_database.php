@@ -12,7 +12,6 @@
 Class Sess_Database {
     
     public $db;
-    public $cookie;
     public $request;
     public $encrypt_cookie       = false;
     public $expiration           = '7200';
@@ -28,7 +27,6 @@ Class Sess_Database {
     public $flashdata_key        = 'flash';
     public $time_reference       = 'time';
     public $gc_probability       = 5;
-    public $sess_id_ttl          = '';
     public $userdata             = array();
     
     // --------------------------------------------------------------------
@@ -39,7 +37,7 @@ Class Sess_Database {
 
         if( ! function_exists('Sess_Database\Src\\'.$method))
         {
-            require (PACKAGES .'sess_database'. DS .'releases'. DS .$packages['dependencies']['sess_database']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
+            require (PACKAGES .'sess_database'. DS .'releases'. DS .$packages['dependencies']['sess_database']['version']. DS .'src'. DS .strtolower($method). EXT);
         }
 
         return call_user_func_array('Sess_Database\Src\\'.$method, $arguments);
@@ -47,18 +45,15 @@ Class Sess_Database {
 
     // --------------------------------------------------------------------
 
-    function init($params = array())
+    function init($params = array(), $sess = array())
     {        
-        global $config;
-
-        $sess = getConfig('sess');
+        global $config, $logger;
 
         foreach (array(
             'cookie_name',
             'expiration',
             'expire_on_close',
             'encrypt_cookie',
-            'cookie',
             'request',
             'db',
             'table_name',
@@ -83,9 +78,7 @@ Class Sess_Database {
         }
 
         $this->cookie_name = $this->cookie_prefix . $this->cookie_name; // Set the cookie name
-        
-        $this->cookie  = &$this->cookie;       // Set Cookie object
-        $this->request = &$this->request;      // Set Request object
+        $this->request     = &$this->request;      // Set Request object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.
@@ -100,8 +93,8 @@ Class Sess_Database {
         $this->_flashdataMark();  // Mark all new flashdata as old (data will be deleted before next request)
         $this->_gC();             // Delete expired sessions if necessary
 
-        logMe('debug', 'Session Database Driver Initialized'); 
-        logMe('debug', 'Session routines successfully run'); 
+        $logger->debug('Session Database Driver Initialized'); 
+        $logger->debug('Session routines successfully run'); 
 
         return true;
     }
@@ -116,11 +109,13 @@ Class Sess_Database {
     */
     function _read()
     {
-        $session = $this->cookie->get($this->cookie_name); // Fetch the cookie
+        global $logger;
+
+        $session = (isset($_COOKIE[$this->cookie_name])) ? $_COOKIE[$this->cookie_name] : false;
 
         if ($session === false)  // No cookie?  Goodbye cruel world!...
         {               
-            logMe('debug', 'A session cookie was not found');
+            $logger->debug('A session cookie was not found');
 
             return false;
         }
@@ -137,7 +132,7 @@ Class Sess_Database {
 
             if ($hash !==  md5($session . $this->encryption_key))  // Does the md5 hash match?  
             {                                                      // This is to prevent manipulation of session data in userspace
-                logMe('error', 'The session cookie data did not match what was expected. This could be a possible hacking attempt');
+                $logger->error('The session cookie data did not match what was expected. This could be a possible hacking attempt');
 
                 $this->destroy();
 
@@ -427,7 +422,7 @@ Class Sess_Database {
         }
 
         $cookie_data = $this->_serialize($cookie_data); // Serialize the userdata for the cookie
-        
+
         if ($this->encrypt_cookie == true) // Obullo Changes "Encrypt Library Header redirect() Bug Fixed !"
         {
             $key         = $this->encryption_key;
@@ -439,7 +434,7 @@ Class Sess_Database {
                                                                                      // we provide an md5 hash to prevent userside tampering
         }
         
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
 
         // Set the cookie
         setcookie(
@@ -536,12 +531,14 @@ Class Sess_Database {
         
         if ((rand() % 100) < $this->gc_probability)
         {
+            global $logger;
+
             $expire = $this->now - $this->expiration;
             
             $this->db->where("last_activity < {$expire}");
             $this->db->delete($this->table_name);
 
-            logMe('debug', 'Session garbage collection performed');
+            $logger->debug('Session garbage collection performed');
         }
     }
 

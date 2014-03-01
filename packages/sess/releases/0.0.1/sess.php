@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Session Class
+* Session Class ( Static )
 *
 * @package       packages
 * @subpackage    sess
@@ -23,24 +23,23 @@ Class Sess {
     */
     public function __construct($params = array())
     {
+        global $logger, $config;
+        static $logged = null;
+
         if( ! isset(getInstance()->sess))
         {
             getInstance()->sess = $this; // Available it in the contoller $this->sess->method();
 
             self::$params = $params;
-            $this->start(self::$params);
+            $this->init(self::$params);
         }
-
-        logMe('debug', 'Sess Class Initialized');
-
-        global $config;
-        static $logged = null;
 
         if($logged == null AND $config['log_threshold'] > 0)
         {
-            logMe('debug', '$_SESSION: '.preg_replace('/\n/', '', print_r(self::$driver->getAllData(), true)));
+            $logger->debug('$_SESSION: '.preg_replace('/\n/', '', print_r(self::$driver->getAllData())));
         }
 
+        $logger->debug('Sess Class Initialized');
         $logged = true;
     }
 
@@ -52,7 +51,7 @@ Class Sess {
      * @param  array  $params package configuration
      * @return void
      */
-    public function start($params = array())
+    public function init($params = array())
     {
         static $sessionStart = null;
 
@@ -63,13 +62,8 @@ Class Sess {
             $driver   = (isset($params['driver'])) ? $params['driver'] : $sess['driver'];
             $database = (isset($params['db'])) ? $params['db'] : $sess['db'];
 
-            self::$driver = $driver;      // Driver object.
-            self::$driver->init($params); // Start the sessions
-
-            if(get_class($driver) != 'Sess_Database' AND is_object($database))
-            {
-                throw new Exception("Please check sess.php config file database item must be set to 'null' if you don't use it.<pre>\n'cookie' => new Cookie,\n'request' => new Request,\n<b>'db' => null</b></pre>");
-            }
+            self::$driver = $driver;              // Driver object.
+            self::$driver->init($params, $sess);  // Start the sessions
 
             $sessionStart = true;
         }
@@ -86,12 +80,6 @@ Class Sess {
      */
     public function __call($method, $arguments)
     {
-        global $packages;
-
-        $packageName = get_class(self::$driver);
-
-        $this->start(self::$params);
-
         return call_user_func_array(array(self::$driver, $method), $arguments);
     }
     

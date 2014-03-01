@@ -17,6 +17,8 @@ namespace Response\Src {
     */    
     function setHeader($header, $replace = true)
     {
+        global $response;
+
         // If zlib.output_compression is enabled it will compress the output,
         // but it will not modify the content-length header to compensate for
         // the reduction, causing the browser to hang waiting for more data.
@@ -27,6 +29,6 @@ namespace Response\Src {
             return;
         }
         
-        \Response::getInstance()->headers[] = array($header, $replace);
+        $response->headers[] = array($header, $replace);
     }
 }

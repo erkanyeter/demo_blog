@@ -8,22 +8,12 @@
     "email": "obulloframework@gmail.com",
     "url": "https://github.com/obullo"
   },
-  "component" : "library",
-  "dependencies": {
-    "log":"*",
-    "sess": "*"
-  },
+  "dependencies": {"log":"*","sess": "*"},
   "shell" : {
     "mkdir": "-p $DATA/temp/captcha",
     "chmod": "-R 777 $DATA/temp/captcha",
   },
-  "keywords": [
-    "captcha",
-    "security",
-    "secure",
-    "cool",
-    "image"
-  ],
+  "keywords": ["captcha","security","secure","cool","image"],
   "homepage": "https://github.com/obullo/captcha",
   "repo": {
     "type": "git",

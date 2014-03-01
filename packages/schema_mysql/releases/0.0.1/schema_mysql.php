@@ -13,7 +13,6 @@ Class Schema_Mysql {
 
 	public $db;		   	     // Database object
 	public $tablename; 		 // Valid tablename
-	public $modelName; 		 // Model not may not be same name some times
 	public $schemaObject;	 // Schema Object
 
 	/**
@@ -27,7 +26,6 @@ Class Schema_Mysql {
 		$this->schemaObject = $schemaObject; // Store schema object
 
 		$this->tablename = $schemaObject->getTableName();
-		$this->modelName = $schemaObject->getModelName();
 		$this->db 		 = $schemaObject->getDbObject();
 	}
 
@@ -115,10 +113,10 @@ Class Schema_Mysql {
         unset($fileSchema['*']);  // Get only fields no settings
 
         $label = (isset($currentFileSchema[$key]['label'])) ? $currentFileSchema[$key]['label'] : $this->schemaObject->_createLabel($key);
-        $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
+        // $rules = (isset($currentFileSchema[$key]['rules'])) ? $currentFileSchema[$key]['rules'] : '';
 
         $ruleString = "\n\t'$key' => array(";
-        $ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
+        // $ruleString.= "\n\t\t'label' => '$label',";  // fetch label from current schema
 
         // --------- RENDER FUNC ----------//
         
@@ -205,7 +203,7 @@ Class Schema_Mysql {
             $ruleString.= "\n\t\t'types' => '".$typeStr."',";
         }
 
-        $ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the validation rules from current schema
+        // $ruleString.= "\n\t\t'rules' => '$rules',"; // fetch the validation rules from current schema
         $ruleString.= "\n\t\t),";
 
         return $ruleString;

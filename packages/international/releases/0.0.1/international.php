@@ -31,6 +31,8 @@ Class International {
      */
     public function __construct()
     {
+        global $config, $logger;
+
         $this->config = getConfig('international');  // get package config file
 
         if ( ! extension_loaded('intl')) 
@@ -62,10 +64,10 @@ Class International {
         }
 
         $this->langArray = $this->config['languages'];
-        $this->langCode  = getInstance()->config->getItem('default_translation'); // default lang code
+        $this->langCode  = $config['default_translation']; // default lang code
         $this->langName  = $this->langArray[$this->langCode];   // default lang name
 
-        logMe('debug', 'International Class Initialized');
+        $logger->debug('International Class Initialized');
 
         $this->_init(); // Initialize 
     }
@@ -107,28 +109,25 @@ Class International {
             }
         }
 
-        //----------- SET FROM COOKIE ------------//
+        //----------- IF WE HAVE THE COOKIE RETURN FALSE ------------//
 
         $cookie_name = $this->cookie_prefix.$this->langKey;
 
-        if( isset($_COOKIE[$cookie_name])) // check cookie
+        if(isset($_COOKIE[$cookie_name]))  // check cookie if we have not lang cookie
         {
-            $this->setLanguage($_COOKIE[$cookie_name], false);  // do not set cookie we had already it in cookie.
+            $this->setLanguage($_COOKIE[$cookie_name], false); // DO NOT WRITE TO COOKIE JUST SET TO VARIABLES
             return;
         }
-        else 
-        {
-            //----------- SET FROM BROWSER DEFAULT VALUE ------------// 
 
-            if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-            {
-                $this->setLanguage(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
-                return;
-            }
-    
-            $this->setLanguage($config['default_translation']); // Set from framework config file
+        //----------- SET FROM BROWSER DEFAULT VALUE ------------// 
+
+        if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+        {
+            $this->setLanguage(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+            return;
         }
 
+        $this->setLanguage($config['default_translation']); // Set from framework config file
     }
 
     // ------------------------------------------------------------------------
@@ -228,12 +227,12 @@ Class International {
 
         $this->cookie_domain = ( ! empty($this->config['cookie_domain'])) ? $this->config['cookie_domain'] : $config['cookie_domain'];
         $this->cookie_path   = ( ! empty($this->config['cookie_path'])) ? $this->config['cookie_path'] : $config['cookie_path'];
-        $this->expiration    = $this->config['cookie_time'];
+        $this->expiration    = $this->config['cookie_expire'];
 
         // Set the cookie
         setcookie($this->cookie_prefix.$this->langKey, 
             $this->getLangName(),
-            $this->expiration, // time() + (60 * 60 * 24 * 30)
+            $this->expiration,
             $this->cookie_path,
             $this->cookie_domain,
             0);

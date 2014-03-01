@@ -50,15 +50,16 @@ Class Captcha {
 		 */
 		public function __construct($config = array())
 		{
-			global $packages;
+			global $packages, $logger;
 
 			$this->config = getConfig('captcha'); // config->captcha.php config
-			$this->sess   = $this->config['sess'];
+			$sess = $this->config['sess']; 		  // get session dependency
+			$this->sess   = $sess();			  // run dependecy class
 
 			$this->init();
  			
-			$this->img_path          = ROOT .str_replace('/', DS, trim($this->config['img_path'], '/')). DS;
-			$this->img_url           = getInstance()->uri->getBaseUrl($this->config['img_path']. DS); //deg sonuna DS Eklendi birde framework silinecek
+			$this->img_path          = ROOT .str_replace('/', DS, trim($this->config['img_path'], '/')). DS;  // replace with DS
+			$this->img_url           = getInstance()->uri->getBaseUrl($this->config['img_path']. DS); // add Directory Seperator ( DS )
 			$this->user_font_path    = ROOT .$this->config['user_font_path']. DS;
 			$this->default_font_path = PACKAGES .'captcha'. DS .'releases'. DS .$packages['dependencies']['captcha']['version']. DS .'src'. DS .'fonts'. DS;
 
@@ -72,7 +73,7 @@ Class Captcha {
 				$this->gc();
 			}
 
-			logMe('debug', 'Captcha Class Initialized');
+			$logger->debug('Captcha Class Initialized');
 		}
 
 		// ------------------------------------------------------------------------
@@ -314,7 +315,7 @@ Class Captcha {
 
 			if($this->debugFlag == 'random')
 			{
-				$possible = $this->char_pool[$this->set_pool];
+				$possible 	= $this->char_pool[$this->set_pool];
 				$this->code = '';
 				$i          = 0;
 
@@ -472,6 +473,7 @@ Class Captcha {
 		public function gc()
 		{
 			global $config;
+
 			$expire = time() - $this->expiration;
 
 			if ( ! $this->img_path OR mb_strlen($this->img_path, $config['charset']) < 2)

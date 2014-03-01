@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Xss Helper
+ * Xss Class ( Security Helper )
  *
  * @package     packages
  * @subpackage  xss
@@ -13,12 +13,14 @@ Class Xss {
     
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->xss))
         {
             getInstance()->xss = $this; // Make available it in the controller $this->xss->method();
         }
 
-        logMe('debug', 'Xss Class Initialized');
+        $logger->debug('Xss Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -33,7 +35,14 @@ Class Xss {
      */
     public function clean($str, $is_image = false)
     {
-        return Security::getInstance()->xssClean($str, $is_image);
+        if(isset(getInstance()->security))
+        {
+            return getInstance()->security->xssClean($str, $is_image);
+        }
+        
+        global $security;
+
+        return $security->xssClean($str, $is_image);
     }
 
     // ------------------------------------------------------------------------
@@ -47,7 +56,14 @@ Class Xss {
      */
     public function sanitizeFilename($filename)
     {
-        return Security::getInstance()->sanitizeFilename($filename);
+        if(isset(getInstance()->security))
+        {
+            return getInstance()->security->sanitizeFilename($filename);
+        }
+
+        global $security;
+
+        return $security->sanitizeFilename($filename);
     }
 
     // ------------------------------------------------------------------------

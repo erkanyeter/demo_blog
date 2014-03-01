@@ -16,9 +16,9 @@ namespace Form\Src {
     {
         if(is_object($value)) // $_POST & Db value schema sync
         {
-            $value = getInstance()->form->_getSchemaPost($value, $data); 
+            $value = getInstance()->form->_getRowValue($value, $data); 
         }
-
+   
         $defaults = array('type' => 'text', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
 
         $form = \Form::getConfig();

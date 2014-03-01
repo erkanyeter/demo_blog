@@ -198,20 +198,15 @@ If the array passed as $options is a multidimensional array, $this->form->dropdo
 <?php 
 
 $users = array(
-  '*' => array('colprefix' => 'user_'),
+  '*' => array(),
   
   'id' => array(
-    'label' => 'User Id',
     'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
-    'rules' => '',
     ),
   'email' => array(
-    'label' => 'User Email',
     'types' => '_varchar(60)|_not_null',
-    'rules' => 'required|validEmail',
     ),
   'business_size' => array(
-        'label' => 'User Business Size',
         '_enum' => array(
             'small',
             'medium',
@@ -220,7 +215,6 @@ $users = array(
             'xxlarge',
         ),
         'types' => '_null|_enum',
-        'rules' => '',
         ),
 );
  
@@ -233,20 +227,15 @@ Let's write a schema function for enum type.
 ```php
 <?php 
 $users = array(
-  '*' => array('colprefix' => 'user_'),
+  '*' => array(),
   
   'id' => array(
-    'label' => 'User Id',
     'types' => '_not_null|_primary_key|_int(11)|_auto_increment',
-    'rules' => '',
     ),
   'email' => array(
-    'label' => 'User Email',
     'types' => '_varchar(60)|_not_null',
-    'rules' => 'required|validEmail',
     ),
   'business_size' => array(
-    'label' => 'User Business Size',
     '_enum' => array(
             'small',
             'medium',
@@ -255,7 +244,6 @@ $users = array(
             'xxlarge',
         ),
     'types' => '_null|_enum',
-    'rules' => '',
     ),
    'func' => function() {
         $options = array(
@@ -295,7 +283,6 @@ Also you can build your array closure functions.
 
 ```php
   'business_size' => array(
-        'label' => 'User Business Size',
         '_enum' => array(
             'small',
             'medium',
@@ -304,7 +291,6 @@ Also you can build your array closure functions.
             'xxlarge',
         ),
         'types' => '_null|_enum',
-        'rules' => '',
         ),
       'func' => array(
         'all' => function() {
@@ -485,12 +471,18 @@ Since the above string contains a set of quotes it will cause the form to break.
 
 **Note:** If you use any of the form helper functions listed in this page the form values will be prepped automatically, so there is no need to call this function. Use it only if you are creating your own form elements.
 
-#### $this->form->setValue()
+#### $this->form->setValue('field', 'default value')
 
 Permits you to set the value of an input form or textarea. You must supply the field name via the first parameter of the function. The second (optional) parameter allows you to set a default value for the form. Example:
 
 ```php
 <input type="text" name="quantity" value="<?php echo $this->form->setValue('quantity', '0'); ?>" size="50" />
+```
+
+Setting database row values
+
+```php
+<input type="text" name="quantity" value="<?php echo $this->form->setValue('user_email', $row->user_email); ?>" size="50" />
 ```
 
 The above form will show "0" when loaded for the first time.
@@ -964,6 +956,25 @@ Sets form validation rules.
 #### $this->form->isValid();
 
 Runs the form validation using validator .
+
+#### $this->form->setError(mixed $field, string $error);
+
+Set error(s) to validator object you can set string or array.
+
+```php
+$this->form->setError('days', 'Day data is empty');
+$this->form->setError('months', 'Month data is empty');
+```
+
+Using array
+
+```php
+
+$errors['days']   = 'Day data is empty';
+$errors['months'] = 'Month data is empty';
+
+$this->form->setError($errors);
+```
 
 #### $this->form->setNotice($message, ERROR);
 

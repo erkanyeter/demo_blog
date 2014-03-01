@@ -26,6 +26,8 @@ Class Ftp {
     */
     public function __construct($config = array())
     {   
+        global $logger;
+
         if( ! isset(getInstance()->ftp))
         {
             getInstance()->ftp = $this; // Make available it in the controller $this->ftp->method();
@@ -36,7 +38,7 @@ Class Ftp {
             $this->init($config);
         }
 
-        logMe('debug', "FTP Class Initialized");
+        $logger->debug('FTP Class Initialized');
     }
     
     // --------------------------------------------------------------------
@@ -58,8 +60,7 @@ Class Ftp {
             }
         }
 
-        // Prep the hostname
-        $this->hostname = preg_replace('|.+?://|', '', $this->hostname);
+        $this->hostname = preg_replace('|.+?://|', '', $this->hostname); // Prep the hostname
         
         return ($this);
     }
@@ -98,8 +99,7 @@ Class Ftp {
             return false;
         }
 
-        // Set passive mode if needed
-        if ($this->passive == true)
+        if ($this->passive == true)  // Set passive mode if needed
         {
             ftp_pasv($this->conn_id, true);
         }

@@ -2,18 +2,17 @@
 
 /*
 | -------------------------------------------------------------------
-| Application Navigation Bar Config
+| Demo Blog Application Navigation Bar Config
 | -------------------------------------------------------------------
 |
 */
-
 $config['navigation'] = array(
-	
-	'home'    => 'Home',
-	'about'   => 'About', 
-	'contact' => 'Contact',
-	'login'   => 'Login',
-	'signup'  => 'Signup',
+    
+    'home'    => 'Home',
+    'about'   => 'About', 
+    'contact' => 'Contact',
+    'membership/login'   => 'Login',
+    'membership/signup'  => 'Signup',
 );
 
 

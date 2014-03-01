@@ -23,6 +23,8 @@ Class Pager
     */
     public function __construct($options = array())
     {
+        global $logger;
+
         $mode = (isset($options['mode']) ? strtolower($options['mode']) : 'jumping');
         $classname = 'Pager\Src\Pager_'. ucfirst($mode); 
             
@@ -40,7 +42,7 @@ Class Pager
             getInstance()->pager = $instance; // Available it in the contoller $this->auth->method();
         }
         
-        logMe('debug', 'Pager Class Initialized');
+        $logger->debug('Pager Class Initialized');
     }
 }
 

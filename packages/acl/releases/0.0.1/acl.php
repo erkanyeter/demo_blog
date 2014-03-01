@@ -28,12 +28,14 @@ Class Acl {
     */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->acl))
         {
             getInstance()->acl = $this; // Available it in the contoller $this->auth->method();
         }
         
-        logMe('debug', "Acl Class Initialized");
+        $logger->debug('Acl Class Initialized');
     }
    
     // ------------------------------------------------------------------------
@@ -52,8 +54,8 @@ Class Acl {
 
     public function clear()
     {
-        $this->groups  = array();
-        $this->members = array();
+        $this->groups      = array();
+        $this->members     = array();
         $this->access_list = array();
     }
     

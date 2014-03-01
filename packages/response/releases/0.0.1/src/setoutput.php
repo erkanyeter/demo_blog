@@ -13,7 +13,9 @@ namespace Response\Src {
     * @return    void
     */    
     function setOutput($output)
-    {
-        \Response::getInstance()->final_output = $output;
+    {   
+        global $response;
+
+        $response->final_output = $output;
     }
 }

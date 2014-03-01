@@ -1,17 +1,17 @@
 <?php
 
 /**
- * User Agent Class
- *
  * Identifies the platform, browser, robot, or mobile devise of the browsing agent
  *
- * @package       packages
- * @subpackage    agent
- * @category      user agent
- * @link
+ * @category  User_Agent
+ * @package   Agent
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/docs/package/agent
  */
-Class Agent {
-
+Class Agent
+{
     public $agent        = null;
     public $is_browser   = false;
     public $is_robot     = false;
@@ -40,25 +40,23 @@ Class Agent {
      */
     public function __construct()
     {   
-        if( ! isset(getInstance()->agent))
-        {
+        global $logger;
+
+        if ( ! isset(getInstance()->agent)) {
             getInstance()->agent = $this; // Make available it in the controller $this->agent->method();
         }
         
-        if (isset($_SERVER['HTTP_USER_AGENT']))
-        {
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $this->agent = trim($_SERVER['HTTP_USER_AGENT']);
         }
 
-        if ( ! is_null($this->agent))
-        {
-            if ($this->_loadAgentFile())
-            {
+        if ( ! is_null($this->agent)) {
+            if ($this->_loadAgentFile()) {
                 $this->_compileData();
             }
         }
 
-        logMe('debug', "Agent Class Initialized");
+        $logger->debug('Agent Class Initialized');
     }
     
     // ------------------------------------------------------------------------

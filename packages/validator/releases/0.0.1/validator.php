@@ -8,9 +8,8 @@
  * @category      validation
  * @link        
  */
-
-Class Validator {
-    
+Class Validator 
+{
     public $_field_data         = array();    
     public $_config_rules       = array();
     public $_error_array        = array();
@@ -24,7 +23,7 @@ Class Validator {
 
     public function __construct($rules = array())
     {    
-        global $config;
+        global $config, $logger;
 
         $this->_config_rules = $rules;  // Validation rules can be stored in a config file.
 
@@ -35,7 +34,7 @@ Class Validator {
             getInstance()->validator = $this;
         }
 
-        logMe('debug', "Validator Class Initialized");
+        $logger->debug('Validator Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -54,11 +53,10 @@ Class Validator {
 
         $file = PACKAGES .'validator'. DS .'releases'. DS .$packages['dependencies']['validator']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
 
-        if(file_exists($file))
-        {
-            if( ! function_exists('Validator\Src\\'.$method))
-            {
-                require ($file);
+        if (file_exists($file)) {
+
+            if ( ! function_exists('Validator\Src\\'.$method)) {
+                include $file;
             }
 
             return call_user_func_array('Validator\Src\\'.$method, $arguments);
@@ -67,6 +65,11 @@ Class Validator {
 
     // --------------------------------------------------------------------
     
+    /**
+     * Clear object variables 
+     * 
+     * @return void
+     */
     public function clear()
     {
         $this->_field_data         = array();
@@ -150,7 +153,8 @@ Class Validator {
                 // If the field label wasn't passed we use the field name
                 $label = ( ! isset($row['label'])) ? $this->_createLabel($row['field']) : $row['label'];
 
-                $this->setRules($row['field'], $label, $row['rules']);  // Here we go!
+                $this->setRules($row['field'], $label, trim($row['rules'], '|'));  // Here we go!
+
             }
 
             return;
@@ -197,7 +201,7 @@ Class Validator {
         $this->_field_data[$field] = array(
                                             'field'                => $field, 
                                             'label'                => $label, 
-                                            'rules'                => $rules,
+                                            'rules'                => trim($rules,'|'),
                                             'is_array'            => $is_array,
                                             'keys'                => $indexes,
                                             'postdata'            => null,
@@ -217,6 +221,8 @@ Class Validator {
      */        
     public function isValid($group = '')
     {
+        global $logger;
+
         if (count($_REQUEST) == 0)  // Do we even have any data to process?  Mm?
         {
             return false;
@@ -228,12 +234,12 @@ Class Validator {
             {
                 $this->_error_messages['message'] = 'No validation rule is defined.';
 
-                logMe('error', $this->_error_messages['message']);
+                $logger->error($this->_error_messages['message']);
 
                 return false;
             }
             
-            $uriClass = Uri::getInstance();
+            $uriClass = getComponentInstance('uri');
             
             $uri = ($group == '') ? trim($uriClass->getRoutedUriString(), '/') : $group; // Is there a validation rule for the particular URI being accessed?
             
@@ -250,7 +256,7 @@ Class Validator {
             {
                 $this->_error_messages['message'] = 'Unable to find validation rules';
 
-                logMe('error', $this->_error_messages['message']);
+                $logger->error($this->_error_messages['message']);
 
                 return false;
             }
@@ -531,25 +537,14 @@ Class Validator {
             
             if ($callback === true)  // Call the function that corresponds to the rule
             {
-                // This is for ODM model class 
-                // we set ODM object as callback
+                $this->_this  = is_object($this->_callback_object) ? $this->_callback_object : getInstance();            
+                $classMethods = get_class_methods($this->_this);
 
-                $this->_this  = is_object($this->_callback_object) ? $this->_callback_object : getInstance();
-            
-                if(key(class_uses($this->_this)) == 'Odm\Src\Model_Trait') // If it instance of Model Trait ?
+                if(isset($this->_this->_callback_functions)) // is the Form _callback functions exists ?
                 {
-                    $classMethods = $this->_this->getAllMethods();
-                } 
-                else 
-                {
-                    $classMethods = get_class_methods($this->_this);
-
-                    if(isset($this->_this->_callback_functions)) // is the Form _callback functions exists ?
-                    {
-                        $classMethods = array_merge($classMethods, array_keys($this->_this->_callback_functions));
-                    }
+                    $classMethods = array_merge($classMethods, array_keys($this->_this->_callback_functions));
                 }
-
+                
                 if ( ! in_array($rule, $classMethods)) // Check method exists in callback object.
                 {  
                     continue;
@@ -596,7 +591,7 @@ Class Validator {
                     {
                         $this->_error_messages['message'] = 'The '.$rule.' is not a valid rule, if you have new validation method do pull request on the github.';
 
-                        logMe('error', $this->_error_messages['message']);
+                        $logger->error($this->_error_messages['message']);
                     } 
                     
                     continue;                   
@@ -608,7 +603,7 @@ Class Validator {
                 {
                     global $packages;
 
-                    require PACKAGES .'validator'. DS .'releases'. DS .$packages['dependencies']['validator']['version']. DS .'src'. DS .strtolower($rule). EXT;
+                    include PACKAGES .'validator'. DS .'releases'. DS .$packages['dependencies']['validator']['version']. DS .'src'. DS .strtolower($rule). EXT;
                 }
 
                 $result = call_user_func_array('Validator\Src\\'.$rule, array($postdata, $param));
@@ -633,7 +628,7 @@ Class Validator {
 
                     if (hasTranslate($rule) == false)
                     {
-                        $line = 'Unable to translation access an error message corresponding to your field name.';
+                        $line = ''; // Dont't show the translate message - Unable to translation access an error message corresponding to your field name.'
                     }                        
                 }
                 else
@@ -675,8 +670,11 @@ Class Validator {
         if (substr($fieldname, 0, 10) == 'translate:') // Do we need to translate the field name? 
         {
             $line = substr($fieldname, 10);   // Grab the variable
-            
-            return translate($line);
+
+            if (hasTranslate($line)) // Were we able to translate the field name? If not we use $line.
+            {
+                return translate($line);
+            }
         }
 
         return $fieldname;

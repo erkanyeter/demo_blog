@@ -20,10 +20,7 @@ Class Router {
     public $method               = 'index';
     public $directory            = '';
     public $uri_protocol         = 'auto';
-    public $controller_directory = 'controller';
     public $default_controller;
-    
-    public static $instance;
 
     /**
     * Constructor
@@ -32,9 +29,11 @@ Class Router {
     * @return void
     */
     public function __construct()
-    {                
+    {   
+        global $uri, $logger;
+
         $routes    = getConfig('routes');
-        $this->uri = Uri::getInstance(); // Warning : Don't load any library in core level.
+        $this->uri = $uri;                  // Warning : Don't load any library in core level.
 
         $this->routes = ( ! isset($routes) OR ! is_array($routes) ) ? array() : $routes;
         unset($routes);
@@ -42,41 +41,7 @@ Class Router {
         $this->method = $this->routes['index_method'];
         $this->_setRouting();
         
-        logMe('debug', 'Router Class Initialized');
-    }
-    
-    // --------------------------------------------------------------------
-    
-    /**
-     * Get Instance of Router
-     * 
-     * @return object
-     */
-    public static function getInstance()
-    {
-       if( ! self::$instance instanceof self)
-       {
-           self::$instance = new self();
-       } 
-       
-       return self::$instance;
-    }
-    
-    // --------------------------------------------------------------------
-    
-    /**
-     * Set Instance of Router for Hmvc
-     * 
-     * @param object
-     */
-    public static function setInstance($object)
-    {
-        if(is_object($object))
-        {
-            self::$instance = $object;
-        }
-        
-        return self::$instance;
+        $logger->debug('Router Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -88,8 +53,10 @@ Class Router {
     */
     public function clear()
     {
-        $this->uri                 = Uri::getInstance();   // reset cloned URI object.
-        $this->response            = array();
+        global $uri;
+
+        $this->uri                  = $uri;   // reset cloned URI object.
+        $this->response             = array();
         
         // route config dont't reset "$this->routes" there cause some isset errors
         
@@ -105,10 +72,10 @@ Class Router {
     // --------------------------------------------------------------------
 
     /**
-    * Clone URI object for HMVC Requests, When we
-    * use HMVC we use $this->uri = clone lib('ob/Uri');
-    * that means we say to Router class when Clone word used in HMVC library
-    * use cloned URI object instead of orginal.
+    * Clone URI object for HVC Requests, When we
+    * use HVC uri should be $this->uri = clone $uri;
+    * that means we tell to Router class when Clone word used in HVC Class
+    * use the cloned URI object instead of orginal.
     */
     public function __clone()
     {
@@ -129,9 +96,9 @@ Class Router {
     */
     public function _setRouting()
     {
-        global $config;
+        global $config, $response, $logger;
 
-        if( ! isset($_SERVER['HMVC_REQUEST']))    // GET request valid for standart router requests not HMVC.
+        if( ! isset($_SERVER['HVC_REQUEST']))    // GET request valid for standart router requests not HMVC.
         {
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
@@ -167,13 +134,12 @@ Class Router {
             {
                 $this->response['404'] = 'Unable to determine what should be displayed. A default route has not been specified in the routing file.';
                 
-                if(isset($_SERVER['HMVC_REQUEST'])) // HMVC Connection
+                if(isset($_SERVER['HVC_REQUEST'])) // HMVC Connection
                 {
                     return false; // Returns to false if we have hmvc connection error.
                 }
 
-                $response = Response::getInstance();
-                $reponse->showError($this->response['404'], 404);
+                $response->showError($this->response['404'], 404);
             }
 
             // Turn the default route into an array.  We explode it in the event that
@@ -181,9 +147,9 @@ Class Router {
             
             $segments = $this->_validateRequest(explode('/', $this->default_controller));
 
-            if(isset($_SERVER['HMVC_REQUEST']))
+            if(isset($_SERVER['HVC_REQUEST']))
             {
-                if($segments === false) // HMVC Connection
+                if($segments === false) // HVC Connection
                 {
                     return false; // Returns to false if we have hmvc connection error.
                 }
@@ -197,7 +163,7 @@ Class Router {
             // re-index the routed segments array so it starts with 1 rather than 0
             // $this->uri->_reindex_segments();
 
-            logMe('debug', 'No URI present. Default controller set.');
+            $logger->debug('No URI present. Default controller set.');
             
             return;
         }
@@ -206,6 +172,7 @@ Class Router {
 
         $this->uri->_removeUrlSuffix();   // Do we need to remove the URL suffix?
         $this->uri->_explodeSegments();   // Compile the segments into an array 
+
         $this->_parseRoutes();        // Parse any custom routing that may exist
 
         // Re-index the segment array so that it starts with 1 rather than 0
@@ -274,6 +241,8 @@ Class Router {
     */
     public function _validateRequest($segments)
     {   
+        global $response, $logger;
+
         if( ! isset($segments[0]) )
         { 
             return $segments;
@@ -282,22 +251,16 @@ Class Router {
         // TASK OPERATIONS
         //----------------------------
         
-        if(defined('STDIN') AND ! isset($_SERVER['HMVC_REQUEST']))  // Command Line Request
+        if(defined('STDIN') AND ! isset($_SERVER['HVC_REQUEST']))  // Command Line Request
         { 
             array_unshift($segments, 'tasks');
         }
 
-        // WEB SERVICE REQUEST
-        //----------------------------
+        $root = PUBLIC_DIR;
 
-        if($this->uri->getExtension() != '' AND ! defined('STDIN'))
+        if(isset($_SERVER['HVC_REQUEST_TYPE']) AND $_SERVER['HVC_REQUEST_TYPE'] == 'private')
         {
-            // $backup_directory = $this->controller_directory;  // Backup for task operations.
-            // $backup_segments  = $segments;
-
-            $this->controller_directory = $segments[1];
-            unset($segments[1]);
-            $segments = array_values($segments);
+            $root = PRIVATE_DIR;
         }
 
         // SET DIRECTORY
@@ -307,24 +270,15 @@ Class Router {
 
         if( ! empty($segments[1]))
         {
-            if (file_exists(PUBLIC_DIR .$this->fetchDirectory(). DS .$this->getControllerDirectory(). DS .$segments[1]. EXT))
+            if (file_exists($root .$this->fetchDirectory(). DS .'controller'. DS .$segments[1]. EXT))
             {   
                 return $segments; 
             }
         }
         
-        // WEB SERVICE REQUEST TASK ( Restore segments & controller dir for Cli mode )
-        //----------------------------
-        /*
-        if(defined('STDIN')) // Web request backup for task operations.
-        {
-            $segments                   = $backup_segments;
-            $this->controller_directory = $backup_directory;
-        }
-        */
         //----------------------------
 
-        if(file_exists(PUBLIC_DIR .$this->fetchDirectory(). DS .$this->getControllerDirectory(). DS .$this->fetchDirectory(). EXT))
+        if(file_exists($root .$this->fetchDirectory(). DS .'controller'. DS .$this->fetchDirectory(). EXT))
         {
             array_unshift($segments, $this->fetchDirectory());
 
@@ -334,18 +288,6 @@ Class Router {
             }
 
             return $segments;
-        }
-
-        // HMVC 404
-        //----------------------------
-        
-        if(isset($_SERVER['HMVC_REQUEST']))
-        {
-            $this->response['404'] = 'Request not found.';
-
-            logMe('debug', 'Hmvc request not found.');
-
-            return false;
         }
 
         // HTTP 404
@@ -367,7 +309,20 @@ Class Router {
 
         $error_page = (isset($segments[1])) ? $segments[0].'/'.$segments[1] : $segments[0];
 
-        $response = Response::getInstance();
+        // HVC 404
+        //----------------------------
+        
+        if(isset($_SERVER['HVC_REQUEST']))
+        {
+            global $logger;
+
+            $this->response['404'] = 'The page "'.$error_page.'" not found.';
+
+            $logger->debug('Hvc request not found ( '.$error_page.' ).');
+
+            return false;
+        }
+
         $response->show404($error_page);
     }
                
@@ -508,18 +463,6 @@ Class Router {
     public function fetchDirectory()
     {
         return $this->directory;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Fetches the current controller directory name
-     * 
-     * @return string
-     */
-    public function getControllerDirectory()
-    {
-        return $this->controller_directory;
     }
 
     // --------------------------------------------------------------------

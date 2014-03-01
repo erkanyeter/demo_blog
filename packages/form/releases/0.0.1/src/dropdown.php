@@ -16,39 +16,39 @@ namespace Form\Src {
     */
     function dropdown($name = '', $options = '', $selected = array(), $extra = '')
     {
-        // --------- PARSE SCHEMA BEGIN ---------- //
-        
         if(is_object($selected))  // $_POST & Db value schema sync
         {
-            $selected = getInstance()->form->_getSchemaPost($selected, $name); 
+            $selected = getInstance()->form->_getRowValue($selected, $name); 
         }
+        
+        // --------- Hvc support begin ---------- //
 
-        if(is_string($options) AND strpos($options, '@') === 0) // fetch options from schema
+        if(is_string($options) AND strpos($options, '@') === 0) // Use hvc or not
         {
-            $options = _parseSchemaOptions($options);
+            if( ! isset(getInstance()->hvc))
+            {
+                new \Hvc; // call hvc class
+            }
+
+            $uri_string = str_replace(array('"',"'"), array('',''), trim($options, '@'));
+            preg_match('#^(?<method>get|post)\((?<uri>.*?)((\))|\,)((?<param>[0-9])?\))?#', $uri_string, $matches);
+
+            if(isset($matches['method']) AND isset($matches['uri'])) 
+            {
+                $method = $matches['method'];
+                $uri    = $matches['uri'];
+                $param  = (isset($matches['param'])) ? $matches['param'] : 0;
+
+                $r = getInstance()->hvc->$method($uri, $param);
+
+                if(isset($r['results']) AND is_array($r['results']))
+                {
+                    $options = $r['results'];
+                }
+            }
         } 
 
-        // if(is_array($options))
-        // {
-        //     if(isset($options[0]) AND is_string($options[0]) AND strpos($options[0], '@getSchema') === 0)
-        //     {
-        //         if(isset($options[1])) // custom options
-        //         { 
-        //             $customOption = $options[1];
-        //             $options      = _parseSchemaOptions($options[0]);
-        //             $options      = array_merge($options, $customOption);
-        //         }
-
-        //     } elseif(isset($options[1]) AND strpos($options[1], '@getSchema') === 0)
-        //     {
-
-        //         $customOption = $options[0];
-        //         $options      = _parseSchemaOptions($options[1]);
-        //         $options      = array_merge($customOption,$options);
-        //     }
-        // }
-
-        // --------- PARSE SCHEMA END ---------- //
+        // --------- Hvc end ---------- //
 
         if($selected === false)   // False == "0" bug fix, false is not an Integer.
         {
@@ -107,65 +107,6 @@ namespace Form\Src {
         $form = \Form::getConfig(); // get template
 
         return sprintf($form['templates'][\Form::$template]['dropdown'], $selectTag);
-    }
-
-    //--------------------------------------------------------------------
-    
-    /**
-     * Parse Schema Options
-     * 
-     * @param  array $options
-     * @return array
-     */
-    function _parseSchemaOptions($options)
-    {
-        // @getSchema.users._enum.func
-
-        $trimmedOptions   = trim($options, '@');
-        $formattedOptions = explode('.', $trimmedOptions);
-
-        // Array
-        // (
-        //     [0] => getSchema
-        //     [1] => posts
-        //     [2] => business_size
-        //     [3] => func
-        //     [4] => low  // high // list
-        // );
-
-        $schemaName = $formattedOptions[1];
-        $fieldName  = $formattedOptions[2];
-        $funcName   = $formattedOptions[3]; // _enum / _set / func
-
-
-        $schema  = getSchema($schemaName);
-
-        if($funcName == 'func')
-        {
-            $function = $schema[$fieldName][$funcName];
-            $closure  = $function;
-
-            if(is_array($function) AND isset($formattedOptions[4]))  // Associative array closure
-            {       
-                $method  = $formattedOptions[4];
-                $closure = $schema[$fieldName][$funcName][$method];
-            }
-            
-            if(is_callable($closure))   // Pure Closure
-            {
-                $options = call_user_func_array(\Closure::bind($closure, getInstance(), 'Controller'), array());
-            }
-        } 
-        else 
-        {
-            $options = array();
-            foreach($schema[$fieldName][$funcName] as $v)
-            {
-                $options[$v] = $v;
-            }
-        }
-
-        return $options;
     }
 
 }

@@ -11,7 +11,7 @@ namespace Date_Format\Src {
     */
     function getNow()
     {
-        global $config;
+        global $config, $logger;
         
         $time_ref = $config['time_reference'];
         
@@ -30,7 +30,7 @@ namespace Date_Format\Src {
             {
                 $system_time = time();
                 
-                logMe('error', 'The Date Format class could not set a proper GMT timestamp so the local time() value was used.');
+                $logger->error('The Date Format class could not set a proper GMT timestamp so the local time() value was used.');
             } 
 
             return $system_time;

@@ -13,7 +13,9 @@ Class Exceptions {
 
     function __construct()
     {
-        logMe('debug', 'Exceptions Class Initialized');
+        global $logger;
+
+        $logger->debug('Exceptions Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -28,7 +30,7 @@ Class Exceptions {
     */
     public function write($e, $type = '')
     {
-        global $packages, $config;
+        global $packages, $config, $logger;
 
         $error  = new Error;
         $type   = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
@@ -38,7 +40,7 @@ Class Exceptions {
         
         if($config['error_reporting'] == '0')
         {
-            logMe('info', 'Error reporting is Off, check the config.php file "error_reporting" item to display errors.');
+            $logger->info('Error reporting is Off, check the config.php file "error_reporting" item to display errors.');
             
             return;
         }
@@ -57,7 +59,11 @@ Class Exceptions {
         if(isset(getInstance()->db))
         {
             $prepare   = (isset(getInstance()->db->prepare)) ? getInstance()->db->prepare : false;
-            $lastQuery = getInstance()->db->getLastQuery($prepare);
+            $lastQuery = '';
+            if(method_exists(getInstance()->db, 'getLastQuery'))
+            {
+                $lastQuery = getInstance()->db->getLastQuery($prepare);
+            }
         }
         
         if( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) // Yes this is a db error.
@@ -76,7 +82,7 @@ Class Exceptions {
             
             $cmd_type = (defined('TASK')) ? 'Task' : 'Cmd';
             
-            logMe('error', '('.$cmd_type.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine(), true); 
+            $logger->error('('.$cmd_type.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine()); 
             
             return;
         }
@@ -93,7 +99,7 @@ Class Exceptions {
         // Log Php Errors
         //-----------------------------------------------------------------------
         
-        logMe('error', $type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine(), true); 
+        $logger->error($type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine());
              
         // Displaying Errors
         //-----------------------------------------------------------------------            

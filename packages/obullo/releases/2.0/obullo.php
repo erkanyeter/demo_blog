@@ -10,12 +10,12 @@
  * @version       2.0
  * 
  */
-   function runFramework()
-   {
-        global $packages, $config;
 
-        $router = Router::getInstance();
-        $uri    = Uri::getInstance();
+Class Obullo {
+
+    public function __construct()
+    {
+        global $config, $uri, $router, $response, $logger;
 
         /*
          * ------------------------------------------------------
@@ -24,7 +24,7 @@
          */
         if($config['enable_hooks'])
         {
-            $hooks = Hooks::getInstance();
+            global $hooks;
 
             /*
              * ------------------------------------------------------
@@ -53,12 +53,15 @@
 
         if ($config['csrf_protection'])    // CSRF Protection check
         {
-            Security::getInstance()->csrfVerify();
+            global $security;
+
+            $security->initCsrf();
+            $security->csrfVerify();
         }
 
         // Clean $_COOKIE Data
         // Also get rid of specially treated cookies that might be set by a server
-        // or silly application, that are of no use to a OB application anyway
+        // or silly application, that are of no use to application anyway
         // but that when present will trip our 'Disallowed Key Characters' alarm
         // http://www.ietf.org/rfc/rfc2109.txt
         // note that the key names below are single quoted strings, and are not PHP variables
@@ -68,22 +71,22 @@
         
         $_COOKIE = cleanInputData($_COOKIE);
 
-        logMe('debug', 'Global POST and COOKIE data sanitized');
+        $logger->debug('Global POST and COOKIE data sanitized');
 
         /*
          * ------------------------------------------------------
-         *  Log inputs
+         *  Log requests
          * ------------------------------------------------------
          */
         if($config['log_threshold'] > 0)
         {
-            logMe('debug', '$_REQUEST_URI: '.$uri->getRequestUri());
-            logMe('debug', '$_COOKIE: '.preg_replace('/\n/', '', print_r($_COOKIE, true)));
+            $logger->debug('$_REQUEST_URI: '.$uri->getRequestUri());
+            $logger->debug('$_COOKIE: '.preg_replace('/\n/', '', print_r($_COOKIE, true)));
 
             if(sizeof($_REQUEST) > 0)
             {
-                logMe('debug', '$_POST: '.preg_replace('/\n/', '', print_r($_POST, true)));
-                logMe('debug', '$_GET: '.preg_replace('/\n/', '', print_r($_GET, true)));
+                $logger->debug('$_POST: '.preg_replace('/\n/', '', print_r($_POST, true)));
+                $logger->debug('$_GET: '.preg_replace('/\n/', '', print_r($_GET, true)));
             }
         }
 
@@ -92,10 +95,8 @@
          *  Load core components
          * ------------------------------------------------------
          */
-        $response = Response::getInstance();
-
         $pageUri    = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
-        $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .$router->getControllerDirectory(). DS .$router->fetchClass(). EXT;
+        $controller = PUBLIC_DIR .$router->fetchDirectory(). DS .'controller'. DS .$router->fetchClass(). EXT;
 
         if( ! file_exists($controller))
         {
@@ -140,8 +141,7 @@
          */
         $_storedMethods = array_keys($c->_controllerAppMethods);
 
-        // Check method exist or not
-        if ( ! in_array(strtolower($router->fetchMethod()), $_storedMethods)) 
+        if ( ! in_array(strtolower($router->fetchMethod()), $_storedMethods))  // Check method exist or not
         {
             $response->show404($pageUri);
         }
@@ -197,7 +197,9 @@
             $hooks->_callHook('post_system');
         }
 
-    } 
+    } // end construct
+}
+
     // end Run.
 
     // Common Functions
@@ -233,7 +235,9 @@
 
         if ($config['global_xss_filtering']) // Should we filter the input data?
         {
-            $str = Security::getInstance()->xssClean($str);
+            global $security;
+
+            $str = $security->xssClean($str);
         }
         
         return $str;
@@ -262,32 +266,6 @@
         return $str;
     }
 
-    // ------------------------------------------------------------------------
-
-    /**
-    * Logging
-    *
-    * We use this as a simple mechanism to access the logging
-    * functions and send messages to be logged.
-    *
-    * @access    public
-    * @param     string $level options : ( debug, error, info, bench )
-    * @param     string $message
-    * @param     string $folder foldername or "nosql" database name
-    * @return    void
-    */
-    function logMe($level = 'error', $message = '', $folder = '')
-    {    
-        global $config;
-
-        if ($config['log_threshold'] == 0)
-        {
-            return;
-        }
-
-        return Log_Writer::dump($level, $message, $folder);
-    }
-
     // --------------------------------------------------------------------
 
     /**
@@ -311,7 +289,10 @@
         {
             require($folder. DS .$filename. $ext);
 
-            if($var == '') { $var = &$filename; }
+            if($var == '')
+            { 
+                $var = &$filename;
+            }
 
             if ( ! isset($$var) OR ! is_array($$var))
             {            
@@ -339,11 +320,6 @@
     {   
         global $config;
 
-        if($filename == 'config' OR empty($filename)) // return to global config file
-        {
-            return $config;
-        }
-
         $folder = ($folder == '') ? APP .'config' : $folder;
 
         if(in_array($filename, $config['environment_config_files']))
@@ -352,14 +328,14 @@
         } 
         else 
         {
-            $sub_path = DS;
+            $sub_path = '';
             if(strpos($filename, '/') > 0)  // sub folder support
             {
                 $exp      = explode('/',$filename);
                 $filename = end($exp);
                 array_pop($exp);    // pop the last element end of the array
              
-                $sub_path = DS .implode(DS, $exp). DS;
+                $sub_path = DS .implode(DS, $exp);
             }
 
             $folder = $folder.$sub_path;
@@ -367,7 +343,6 @@
 
         return getStatic($filename, $var, $folder, EXT);
     }
-
     
     // ------------------------------------------------------------------------
 
@@ -400,50 +375,6 @@
         return Controller::$instance;
     }
 
-    // --------------------------------------------------------------------
-
-    function hasTranslate($item)
-    {        
-        $translator = Translator::getInstance();
-
-        if( isset($translator->language[$item])) 
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Fetch the language item using sprintf().
-     *
-     * @access public
-     * @param string $item
-     * @return string
-     */
-    function translate()
-    {
-        $args  = func_get_args();
-        $item  = $args[0];
-        
-        $translator = Translator::getInstance();
-        
-        if(hasTranslate($item))
-        {
-            $item = $translator->language[$item];
-        }
-
-        if(count($args) > 1)
-        {   
-            $args[0] = $item;
-            return call_user_func_array('sprintf', $args);
-        }
-
-        return $item;
-    }
-
     // ------------------------------------------------------------------------
 
     /**
@@ -461,12 +392,12 @@
         }
 
         global $packages, $config;
-        
+
         $parts           = explode('\\', $packageRealname);
         $packageFilename = mb_strtolower($parts[0], $config['charset']);
 
         //--------------- PACKAGE LOADER ---------------//
-        
+
         $src = '';
         if(isset($parts[1]) AND $parts[1] == 'Src')
         {
@@ -557,7 +488,7 @@
     */
     function exceptionsHandler($e, $type = '')
     { 
-        global $packages, $config;
+        global $packages, $config, $logger;
 
         $shutdownErrors = array(
         'ERROR'            => 'ERROR',            // E_ERROR 
@@ -567,7 +498,6 @@
         );
         
         $shutdownError = false;
-
         if(isset($shutdownErrors[$type]))  // We couldn't use any object for shutdown errors.
         {
             $error  = new Error; // Load error package.
@@ -583,7 +513,7 @@
                 
                 $cmdType = (defined('TASK')) ? 'Task' : 'Cmd';
 
-                logMe('error', '('.$cmdType.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine());
+                $logger->error('('.$cmdType.') '.$type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine());
 
                 return;
             }
@@ -621,7 +551,7 @@
                 include(APP .'errors'. DS .'disabled_error'. EXT);
             }
 
-            logMe('error', $type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine()); 
+            $logger->error($type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine()); 
         } 
         else  // Is It Exception ? Initialize to Exceptions Component.
         {
@@ -683,7 +613,11 @@
     function shutdownHandler()
     {                      
         $error = error_get_last();
-        if( ! $error) { return; }
+        
+        if( ! $error) 
+        { 
+            return;
+        }
 
         ob_get_level() AND ob_clean(); // Clean the output buffer
 

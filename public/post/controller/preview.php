@@ -2,53 +2,44 @@
 
 /**
  * $c preview
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-	new Url;
-	new Html;
-	new Db;
-	new Date_Format;
-	new Tag_Cloud;
-    new Form;
-    new Get;
-    new View;
-    new Sess;
-    new Auth;
-
-    new Trigger('private');
-});
-
-$c->func('index', function($id){
-
-    $this->db->where('post_id', $id);  // get post detail
-    $this->db->join('users', 'user_id = post_user_id');
-    $this->db->get('posts'); // reset query
-    
-    $post = $this->db->getRow();
-
-    if($post == false)
-    {
-        $this->response->show404(); // send 404 response 
+$c = new Controller(
+    function () {
+        new Url;
+        new Html;
+        new Db;
+        new Date_Format;
+        new Tag_Cloud;
+        new Form;
+        new Get;
+        new View;
+        new Sess;
+        new Auth;
+        new Hvc;
+        new Trigger('private');
     }
+);
 
-    // get comments
-    $this->db->where('comment_post_id',$id);
-    $this->db->where('comment_status', 1);
-    $this->db->get('comments'); // reset query
-    
-    $comments = $this->db->getResult();
+$c->func(
+    'index',
+    function ($id) {
 
-    $this->view->get('preview', function() use($post, $comments) {
+        $posts    = $this->hvc->get('private/posts/getone/{'.$id.'}');  // get one post
+        $comments = $this->hvc->get('private/comments/getall/{'.$id.'}/1'); // get active post comments 
 
-        $this->set('post', $post);
-        $this->set('comments', $comments);
-        $this->set('title', 'Welcome to home');
-        $this->getScheme();
-    });
-    
-});
+        $this->view->get(
+            'preview',
+            function () use ($posts, $comments) {
+                $this->set('post', (object)$posts['results']);
+                $this->set('comments', $comments['results']);
+                $this->set('title', 'Preview');
+                $this->getScheme();
+            }
+        );
+    }
+);
 
 /* End of file preview.php */
 /* Location: .public/home/controller/preview.php */

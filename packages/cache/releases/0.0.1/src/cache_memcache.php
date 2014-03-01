@@ -10,8 +10,7 @@ namespace Cache\Src;
 Class Cache_Memcache {
 
 	public $connectionSet;
-
-	private $_memcached;
+	private $memcached;
 
 	// ------------------------------------------------------------------------	
 
@@ -23,7 +22,7 @@ Class Cache_Memcache {
      */
 	public function get($key)
 	{
-		$data = $this->_memcached->get($key);
+		$data = $this->memcached->get($key);
 		return (is_array($data)) ? $data[0] : false;
 	}
 
@@ -37,7 +36,25 @@ Class Cache_Memcache {
      */
 	public function getAllKeys()
 	{
-		return $data = $this->_memcached->getAllKeys();
+		return $data = $this->memcached->getAllKeys();
+	}
+
+	// ------------------------------------------------------------------------	
+
+	/**
+     * Verify if the specified key exists.
+     * 
+     * @param string $key
+     * @return boolean true or false
+     */
+	public function keyExists($key)
+	{
+		if($this->memcached->get($key))
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	// ------------------------------------------------------------------------
@@ -50,13 +67,13 @@ Class Cache_Memcache {
      */
 	public function set($key, $data, $ttl = 60)
 	{
-		if (get_class($this->_memcached) == 'Memcached')
+		if (get_class($this->memcached) == 'Memcached')
 		{
-			return $this->_memcached->set($key, array($data, time(), $ttl), $ttl);
+			return $this->memcached->set($key, array($data, time(), $ttl), $ttl);
 		}
-		elseif (get_class($this->_memcached) == 'Memcache')
+		elseif (get_class($this->memcached) == 'Memcache')
 		{
-			return $this->_memcached->set($key, array($data, time(), $ttl), 0, $ttl);
+			return $this->memcached->set($key, array($data, time(), $ttl), 0, $ttl);
 		}
 		
 		return false;
@@ -72,7 +89,7 @@ Class Cache_Memcache {
      */
 	public function delete($key)
 	{
-		return $this->_memcached->delete($key);
+		return $this->memcached->delete($key);
 	}
 
 	// ------------------------------------------------------------------------
@@ -87,13 +104,13 @@ Class Cache_Memcache {
 	 */
 	public function replace($key, $data, $ttl = 60)
 	{
-		if (get_class($this->_memcached) == 'Memcached')
+		if (get_class($this->memcached) == 'Memcached')
 		{
-			return $this->_memcached->replace($key, array($data, time(), $ttl), $ttl);
+			return $this->memcached->replace($key, array($data, time(), $ttl), $ttl);
 		}
-		elseif (get_class($this->_memcached) == 'Memcache')
+		elseif (get_class($this->memcached) == 'Memcache')
 		{
-			return $this->_memcached->replace($key, array($data, time(), $ttl), 0, $ttl);
+			return $this->memcached->replace($key, array($data, time(), $ttl), 0, $ttl);
 		}
 		
 		return false;
@@ -109,7 +126,7 @@ Class Cache_Memcache {
      */
     public function flushAll()
 	{
-		return $this->_memcached->flush();
+		return $this->memcached->flush();
 	}
 
 	// ------------------------------------------------------------------------
@@ -122,7 +139,7 @@ Class Cache_Memcache {
      */
 	public function cacheInfo()
 	{
-		return $this->_memcached->getStats();
+		return $this->memcached->getStats();
 	}
 
 	// ------------------------------------------------------------------------
@@ -135,7 +152,7 @@ Class Cache_Memcache {
      */
 	public function getMetaData($key)
 	{
-		$stored = $this->_memcached->get($key);
+		$stored = $this->memcached->get($key);
 
 		if (count($stored) !== 3)
 		{
@@ -153,22 +170,33 @@ Class Cache_Memcache {
 
 	// ------------------------------------------------------------------------
 
+	/**
+	 * Connect
+	 * 
+	 * @param  string $driver family
+	 * @return boolean
+	 */
 	public function connectMemcacheFamily($driver = null)
 	{
-		if($driver != null AND (mb_strtolower($driver) === 'memcache' OR mb_strtolower($driver) === 'memcached'))
+		if($driver != null AND (strtolower($driver) === 'memcache' OR strtolower($driver) === 'memcached'))
 		{
 			$className        = ucfirst(strtolower($driver));
-			$this->_memcached = new $className();
+			$this->memcached = new $className();
+
+			if( ! isset($this->connectionSet['servers']['weight']))
+			{
+				$this->connectionSet['servers']['weight'] = 1;
+			}
 
 			foreach ($this->connectionSet['servers'] as $key => $value)
 			{
 				if(is_array($value))
 				{
-					$this->_memcached->addServer($value['hostname'], $value['port'], $value['weight']);
+					$this->memcached->addServer($value['hostname'], $value['port'], $value['weight']);
 				}
 				else
 				{
-					$this->_memcached->addServer($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['weight']);
+					$this->memcached->addServer($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['weight']);
 
 					return true;
 				}
@@ -205,5 +233,6 @@ Class Cache_Memcache {
 }
 
 // END Cache_Memcache Class
+// 
 /* End of file cache_memcache.php */
 /* Location: ./packages/cache/releases/0.0.1/src/cache_memcache.php */

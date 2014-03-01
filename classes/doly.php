@@ -1,20 +1,32 @@
 <?php
 
-Class Doly {
+/**
+ * example class
+ */
+Class Doly
+{
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        global $logger;
 
-	public function __construct()
-	{
-		if( ! isset(getInstance()->doly) )
-		{
-			getInstance()->doly = $this;
-		}
+        if ( ! isset(getInstance()->doly)) {
+            getInstance()->doly = $this;
+        }
 
-		logMe('debug', 'My Doly Class Initialized');
-	}
+        $logger->debug('My Doly Class Initialized');
+    }
 
-	public function hello()
-	{
-		echo 'Hello World !';
-	}
+    /**
+     * Hello world
+     * 
+     * @return string
+     */
+    public function hello()
+    {
+        echo 'Hello World !';
+    }
 
 }

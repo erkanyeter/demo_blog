@@ -17,12 +17,14 @@ Class Get
      */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->get))
         {
             getInstance()->get = $this; // Make available it in the controller $this->get->method();
         }
 
-        logMe('debug', 'Get Class Initialized');
+        $logger->debug('Get Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -33,7 +35,7 @@ Class Get
     * @access   public
     * @param    string
     * @param    bool
-    * @param    bool    Use global post values instead of HMVC scope.
+    * @param    bool    Use global post values instead of HVC scope.
     * @return   string
     */
     public function get($index = NULL, $xss_clean = FALSE, $use_global_var = false)
@@ -78,7 +80,13 @@ Class Get
         
         if ($xss_clean)
         {
-            return Security::getInstance()->xssClean($array[$index]);
+            if(isset(getInstance()->security))
+            {
+                return getInstance()->security->xssClean($array[$index]);
+            }
+
+            $security = new Security;
+            return $security->xssClean($array[$index]);
         }
 
         return $array[$index];

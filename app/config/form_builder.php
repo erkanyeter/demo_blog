@@ -12,13 +12,12 @@
 | -------------------------------------------------------------------
 |
 */
-
 $form_builder = array(
 
     'captcha'   => array(
         'image_template'    => '<img src="%s" />',
         'hidden_input_name' => 'image_id',
-        'func' => function(){  // Captcha Widget Settings
+        'func' => function () {  // Captcha Widget Settings
 
             new Captcha;
 

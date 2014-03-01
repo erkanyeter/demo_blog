@@ -13,6 +13,8 @@ Class Date_Format {
 
     function __construct()
     {
+        global $logger;
+
         getInstance()->translator->load('date_format');
 
         if( ! isset(getInstance()->date_format))
@@ -20,7 +22,7 @@ Class Date_Format {
             getInstance()->date_format = $this; // Make available it in the controller $this->date_format->method();
         }
 
-        logMe('debug', 'Date_Format Class Initialized');
+        $logger->debug('Date_Format Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -41,7 +43,7 @@ Class Date_Format {
 
         if( ! function_exists('Date_Format\Src\\'.$method))
         {
-            require PACKAGES .'date_format'. DS .'releases'. DS .$packages['dependencies']['date_format']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
+            require PACKAGES .'date_format'. DS .'releases'. DS .$packages['dependencies']['date_format']['version']. DS .'src'. DS .strtolower($method). EXT;
         }
 
         return call_user_func_array('Date_Format\Src\\'.$method, $arguments);

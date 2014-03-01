@@ -40,9 +40,11 @@ Class Db {
      */
     public function __construct($dbVar = 'db')
     {
+        global $logger;
+
         $this->db = $this->connect(strtolower($dbVar));
         
-        logMe('debug', 'Db Class Initialized');
+        $logger->debug('Db Class Initialized');
     }
        
     // --------------------------------------------------------------------

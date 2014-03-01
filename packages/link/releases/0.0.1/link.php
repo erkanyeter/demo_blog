@@ -12,7 +12,9 @@ Class Link {
 
     function __construct()
     {
-        logMe('debug', 'Link Helper Initialized');
+        global $logger;
+
+        $logger->debug('Link Helper Initialized');
     }
 
     // ------------------------------------------------------------------------

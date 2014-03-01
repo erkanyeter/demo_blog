@@ -22,7 +22,7 @@ namespace Form\Src {
 
         if(is_object($value)) // $_POST & Db value schema sync
         {
-            $value = getInstance()->form->_getSchemaPost($value, $name); 
+            $value = getInstance()->form->_getRowValue($value, $name); 
         }
 
         if ($recursing === false)

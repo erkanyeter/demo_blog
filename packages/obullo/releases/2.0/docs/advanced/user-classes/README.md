@@ -18,7 +18,7 @@ Class Doly {
             getInstance()->doly = $this;
         }
 
-        logMe('debug', 'My Doly Class Initialized');
+        $this->logger->debug('My Doly Class Initialized');
     }
 
     public function hello()
@@ -48,7 +48,7 @@ Class Test
             getInstance()->test = $this;
         }
         
-        logMe('debug', 'Test Class Initialized');
+        $this->logger->debug('Test Class Initialized');
     }
 
     function me()

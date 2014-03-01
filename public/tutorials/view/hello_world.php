@@ -58,9 +58,7 @@ header{padding: 30px 0;text-align:center;}
             <p>This is my first page.</p>
         </section>
 
-        <section>
-            <?php echo $footer ?>
-        </section>
+        <section><?php echo $footer ?></section>
     </body>
 </html>
 

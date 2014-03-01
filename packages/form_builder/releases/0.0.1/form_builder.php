@@ -36,6 +36,7 @@ Class Form_Builder
     private static $forms = array();     // multiforms
 
     // --------------------------------------------------------------------
+
     /**
      * Constructor
      *
@@ -44,11 +45,13 @@ Class Form_Builder
      */
     public function __construct()
     {
+        global $logger;
+
         // set the new instance each time to the controller
         // otherwise must change the params to static
         getInstance()->form_builder = $this;  // Make available it in the controller.
 
-        if(! isset(getInstance()->form) )
+        if( ! isset(getInstance()->form) )
         {
             getInstance()->form = new Form;
         }
@@ -62,7 +65,7 @@ Class Form_Builder
 
         $this->output = "\t".call_user_func_array(array(getInstance()->form, 'open'), $args); // open form tag
 
-        logMe('debug', 'Form Builder Class Initialized');
+        $logger->debug('Form Builder Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -124,8 +127,8 @@ Class Form_Builder
                 $identifier = $this->_identifier;
 
                 // creating validation callback function for captcha.
-                getInstance()->form->func('callback_captcha_'.$identifier, function() use ($arguments,$identifier) {
-                
+                getInstance()->form->func('callback_captcha_'.$identifier, function() use ($arguments,$identifier) 
+                {
                     $config = getConfig('form_builder');
 
                     $code = $this->sess->get($this->post->get($config['captcha']['hidden_input_name']));
@@ -133,10 +136,11 @@ Class Form_Builder
                     if( $this->post->get($arguments[0]) != $code )
                     {
                         $this->setMessage('callback_captcha_'.$identifier, translate('Security code doesn\'t match security image. '));
+
                         return false;
                     }
-                    return true;
 
+                    return true;
                 });
 
                 $colname = $arguments[0];
@@ -154,33 +158,6 @@ Class Form_Builder
                 break;
             }
         }
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Check the model instance
-     */
-    public function __get($name)
-    {
-        if( isset(getInstance()->$name) )
-        {
-            $appModelName = 'AppModel_'.$name;
-
-            if(getInstance()->{$name} instanceof $appModelName)
-            {
-                foreach(getInstance()->$name->_odmSchema as $column_name => $values)
-                {
-                    if( ! empty($values['rules']) )
-                    {
-                        $this->schemaRules[$column_name] = $values['rules'];
-                    }
-                    
-                }
-            }
-        }
-
-        return $this;
     }
 
     // --------------------------------------------------------------------
@@ -275,7 +252,9 @@ Class Form_Builder
         if(preg_match('/class\s*=\s*[\"\'](?<mymatch>.*?)[\"\']/i', $attr,$match))
         {
             $attr = preg_replace("/class\s*=\s*[\"\'](?<mymatch>.*?)[\"\']/i", "class='$match[mymatch] $defaultClass' ", $attr);
-        }else{
+        }
+        else
+        {
             $attr = (empty($attr)) ? " class='$defaultClass' " : $attr . " class='$defaultClass' ";
         }
 
@@ -387,7 +366,8 @@ Class Form_Builder
     protected function setClass()
     {
         $args = func_get_args();
-        if( !empty($args) )
+
+        if( ! empty($args) )
         {
             foreach($args as $arg)
             {
@@ -457,7 +437,9 @@ Class Form_Builder
                                 $inputWrapper .= "<div class='clear' ></div>";
                                 $inputWrapper .= $columnContent;
                             }
-                        }else{
+                        }
+                        else
+                        {
                             $inputWrapper .= $columnContent;
                             $inputWrapper .= "<div class='clear' ></div>";
                             $inputWrapper .= $error;
@@ -681,7 +663,7 @@ Class Form_Builder
                                 $sch_rule = $this->schemaRules[$col['field_name']];
                                 $sch_rule = explode('|', $sch_rule);
 
-                                if(! empty ($sch_rule) )
+                                if( ! empty ($sch_rule) )
                                 {
                                     foreach($sch_rule as $rule)
                                     {
@@ -694,7 +676,7 @@ Class Form_Builder
                             }
                         }
 
-                        if(! empty($rules))
+                        if( ! empty($rules))
                         {
                             getInstance()->form->setRules($col['field_name'], $col['label'], $rules);
                         }

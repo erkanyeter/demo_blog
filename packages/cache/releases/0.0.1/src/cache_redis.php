@@ -10,8 +10,7 @@ namespace Cache\Src;
 Class Cache_Redis {
 
 	public $connectionSet;
-
-	private $_redis;
+	private $redis;
 
 	// ------------------------------------------------------------------------	
 
@@ -22,7 +21,7 @@ Class Cache_Redis {
      */
 	public function IsConnected()
 	{
-		return $this->_redis->IsConnected();
+		return $this->redis->IsConnected();
 	}
 
 	// ------------------------------------------------------------------------	
@@ -34,7 +33,7 @@ Class Cache_Redis {
 	 */
 	public function getLastError()
 	{
-		return $this->_redis->getLastError();
+		return $this->redis->getLastError();
 	}
 
 	// ------------------------------------------------------------------------	
@@ -46,7 +45,7 @@ Class Cache_Redis {
 	 */
 	public function getLastSave()
 	{
-		return $this->_redis->lastSave();
+		return $this->redis->lastSave();
 	}
 
 	// ------------------------------------------------------------------------	
@@ -59,7 +58,7 @@ Class Cache_Redis {
 	 */
 	public function setType($typeKey)
 	{
-		return $this->_redis->type($typeKey);
+		return $this->redis->type($typeKey);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -73,7 +72,7 @@ Class Cache_Redis {
      */
 	public function setTimeout($key, $ttl)
 	{
-		return $this->_redis->setTimeout($key, $ttl);
+		return $this->redis->setTimeout($key, $ttl);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -86,7 +85,7 @@ Class Cache_Redis {
      */
 	public function get($key)
 	{
-		return $this->_redis->get($key);
+		return $this->redis->get($key);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -98,7 +97,7 @@ Class Cache_Redis {
      */
 	public function flushAll()
 	{
-		return $this->_redis->flushAll();
+		return $this->redis->flushAll();
 	}
 
 
@@ -111,7 +110,7 @@ Class Cache_Redis {
      */
 	public function flushDB()
 	{
-		return $this->_redis->flushDB();
+		return $this->redis->flushDB();
 	}
 
 	// ------------------------------------------------------------------------	
@@ -125,7 +124,7 @@ Class Cache_Redis {
      */
 	public function append($key, $data)
 	{
-		return $this->_redis->append($key, $data);
+		return $this->redis->append($key, $data);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -138,7 +137,7 @@ Class Cache_Redis {
      */
 	public function keyExists($key)
 	{
-		return $this->_redis->exists($key);
+		return $this->redis->exists($key);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -156,7 +155,7 @@ Class Cache_Redis {
 			return false;
 		}
 
-		return $this->_redis->mGet($key);
+		return $this->redis->mGet($key);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -170,7 +169,7 @@ Class Cache_Redis {
      */
 	public function getSet($key, $data)
 	{
-		return $this->_redis->getSet($key, $data);
+		return $this->redis->getSet($key, $data);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -184,7 +183,7 @@ Class Cache_Redis {
      */
 	public function renameKey($key, $newKey)
 	{
-		return $this->_redis->rename($key, $newKey);
+		return $this->redis->rename($key, $newKey);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -197,7 +196,7 @@ Class Cache_Redis {
      */
 	public function getAllKeys($pattern = '*')
 	{
-		return $this->_redis->keys($pattern);
+		return $this->redis->keys($pattern);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -209,18 +208,19 @@ Class Cache_Redis {
      */
 	public function getAllData()
 	{
-		$keys = $this->_redis->keys('*');
+		$keys = $this->redis->keys('*');
 
 		foreach($keys as $k => $v)
 		{
-			$getData = $this->_redis->get($v);
+			$getData = $this->redis->get($v);
 
 			if(empty($getData))
 			{
 				$getData = $this->sGetMembers($v);
 			}
 
-			$data[][$v] = $getData;
+			$data[$v] = $getData;
+
 		}
 
 		return $data;
@@ -239,10 +239,10 @@ Class Cache_Redis {
 	{
 		if(count($sort) > 0)
 		{
-			return $this->_redis->sort($key, $sort);
+			return $this->redis->sort($key, $sort);
 		}
 
-		return $this->_redis->sort($sort);
+		return $this->redis->sort($sort);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -261,7 +261,7 @@ Class Cache_Redis {
 			$data = "'" . implode("','", $data) . "'";
 		}
 
-		return $this->_redis->sAdd($key, $data);
+		return $this->redis->sAdd($key, $data);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -274,7 +274,7 @@ Class Cache_Redis {
      */
 	public function sSize($key)
 	{
-		return $this->_redis->sCard($key);
+		return $this->redis->sCard($key);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -291,7 +291,7 @@ Class Cache_Redis {
 		{
 			$keys = "'" . implode("','", $key) . "'";
 
-			return $this->_redis->sInter($keys);
+			return $this->redis->sInter($keys);
 		}
 
 		return false;
@@ -307,7 +307,7 @@ Class Cache_Redis {
      */
 	public function sGetMembers($key)
 	{
-		return $this->_redis->sMembers($key);
+		return $this->redis->sMembers($key);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -320,7 +320,7 @@ Class Cache_Redis {
      */
 	public function auth($password)
 	{
-		return $this->_redis->auth($password);
+		return $this->redis->auth($password);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -336,14 +336,14 @@ Class Cache_Redis {
 		switch ($option)
 		{
 			case 'SERIALIZER_NONE': // don't serialize data
-				return $this->_redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE);
+				return $this->redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_NONE);
 				break;
 			case 'SERIALIZER_PHP': // use built-in serialize/unserialize
-				$this->_redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+				$this->redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 				return true;
 				break;
 			case 'SERIALIZER_IGBINARY': // use igBinary serialize/unserialize
-				return $this->_redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
+				return $this->redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
 				break;
 
 			default:
@@ -361,7 +361,7 @@ Class Cache_Redis {
      */
 	public function getOption()
 	{
-		return $this->_redis->getOption(\Redis::OPT_SERIALIZER);
+		return $this->redis->getOption(\Redis::OPT_SERIALIZER);
 	}
 
 	// ------------------------------------------------------------------------
@@ -373,9 +373,21 @@ Class Cache_Redis {
      * @param string or array $data
      * @param int $ttl
      */
-	public function set($key, $data, $ttl = null) // If empty $ttl default timeout unlimited
+	public function set($key = '', $data = '', $ttl = '') // If empty $ttl default timeout unlimited
 	{
-		return $this->_redis->set($key, $data, $ttl);
+		if(is_array($key))
+		{
+			$ttl = $data;
+
+			foreach ($key as $k => $v)
+			{
+				$this->redis->set($k, $v, $ttl);
+			}
+
+			return $this;
+		}
+
+		return $this->redis->set($key, $data, $ttl);
 	}
 
 	// ------------------------------------------------------------------------
@@ -388,11 +400,10 @@ Class Cache_Redis {
      */
 	public function delete($key)
 	{
-		return $this->_redis->delete($key);
+		return $this->redis->delete($key);
 	}
 
 	// ------------------------------------------------------------------------
-
 
 	/**
 	 * Replace key value
@@ -404,7 +415,7 @@ Class Cache_Redis {
 	 */
 	public function replace($key, $data, $ttl = null)
 	{
-		return $this->_redis->set($key, $data, $ttl);
+		return $this->set($key, $data, $ttl);
 	}
 
 	// ------------------------------------------------------------------------
@@ -417,7 +428,7 @@ Class Cache_Redis {
      */
 	public function cacheInfo()
 	{
-		return $this->_redis->info();
+		return $this->redis->info();
 	}
 
 	// ------------------------------------------------------------------------
@@ -435,20 +446,25 @@ Class Cache_Redis {
 
 	// ------------------------------------------------------------------------
 
-	public function connectRedis($driver = null)
+	public function connect($driver = null)
 	{
-		if($driver != null AND (mb_strtolower($driver) === 'redis'))
+		if($driver != null AND (strtolower($driver) === 'redis'))
 		{
 			$className    = ucfirst(strtolower($driver));
-			$this->_redis = new $className();
+			$this->redis = new $className();
 
 			if(isset($this->connectionSet['servers']['timeout']))
 			{
-				$this->_redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['timeout']);
+				$this->redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['timeout']);
 			}
 			else
 			{
-				$this->_redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port']);
+				$this->redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port']);
+			}
+
+			if(isset($this->connectionSet['auth']))
+			{
+				$this->auth($this->connectionSet['auth']);
 			}
 			
 			return true;
@@ -477,10 +493,10 @@ Class Cache_Redis {
 		return true;
 	}
 
-	// ------------------------------------------------------------------------
 
 }
 
 // END Cache_Redis Class
-/* End of file cache_redis.php */
-/* Location: ./packages/cache/releases/0.0.1/src/cache_redis.php */
+
+/* End of file cacheredis.php */
+/* Location: ./packages/cache/releases/0.0.1/src/cacheredis.php */

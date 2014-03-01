@@ -12,7 +12,8 @@ namespace Validator\Src {
      */
     function validIp($ip)
     {
-        $get = new Get;
+        $get = new \Get;
+        
         return $get->validIp($ip);
     }
     

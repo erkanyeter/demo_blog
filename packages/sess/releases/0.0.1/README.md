@@ -1,16 +1,19 @@
 ## Sess Class
 
-The Session Helper permits you to maintain a user's "state" and track their activity while they browse your site. The Session Helper stores session information for each user as serialized (and optionally encrypted) data in a cookie. It can also store the session data in a database table **(RDBMS or mongodb)** for added security, as this permits the session ID in the user's cookie to be matched against the stored session ID. By default only the cookie is saved. If you choose to use the database option you'll need to create the session table as indicated below.
+The Session (Sess) Class permits you to maintain a user's "state" and track their activity while they browse your site. The Sess Class stores session information for each user as serialized (using encrypted cookie) data in your database container. It can also store the session data containers like **(RDBMS, Redis, Memcache, Mongodb)** for added security, as this permits the session ID in the user's cookie to be matched against the stored session ID. By default it use Php Native Handler. 
 
-**Note:** The Session **Database** drivers does **not** utilize native PHP sessions. It generates its own session data, offering more flexibility for developers.
+If you choose to use the (RDBMS) database option you'll need to create the session table as indicated below.
+
+**Note:** The Session **Database** driver generates its own session data, offering more flexibility for developers. However you can use the Php native handler for Redis or Memcached drivers.
 
 ### Initializing a Session Class
 
 ------
 
-Sessions will typically run globally with each page load, so the session helper must either be initialized in your  controller constructors, or it can be auto-loaded by the system. See the <kbd>(/docs/advanced/auto-loading)</kbd> for more details.
+Sessions will typically run each page load, **so you need to call Sess class** for each page load if you need.
 
-For the most part the session helper will run unattended in the background, so simply initializing the helper file will cause it to read, create, and update sessions.
+For the most part the session class will run unattended in the background, so simply initializing the sess class will cause it to read & update sessions.
+If cookie not exists it will do the write operation just one time.
 
 ------
 
@@ -23,81 +26,130 @@ Once loaded, the Sess object will be available using: <dfn>$this->sess->method()
 You can pass the paramaters by manually like this.
 
 ```php
-$params['db_var'] = 'db2';
-$params['db_driver'] = 'database';
-
 new Sess($params);
 ```
 
-### Changing The Driver
-
-------
-
-Editing the <kbd>app/config/sess.php</kbd>  you can change the session driver which has the options : **Native, Database, Mongodb**.
-
-```php
-$sess['driver']           = 'mongodb';  // database | native
-```
-
-
-
 If you don't provide parameters then framework will load the configurations from sess.php file.
 
-### How do Sessions work?
+**Note:** Don't worry about it when you call the Sess object multiple times it do initialization just one time.
+
+```php
+new Sess;   // true driver loaded and session started. Session cookie writed to headers.
+new Sess;   // false driver already loaded just do update for activity time.
+new Sess;   // false driver already loaded just do update for activity time.
+```
+
+### Using Cache Driver ( Redis or Memcache )
 
 ------
 
-When a page is loaded, the session helper will check to see if valid session data exists in the user's session cookie. If sessions data does **not** exist (or if it has expired) a new session will be created and saved in the cookie. If a session does exist, its information will be updated and the cookie will be updated. With each update, the session_id will be regenerated.
-
-It's important for you to understand that once initialize, the Session helper runs automatically. There is nothing you need to do to cause the above behavior to happen. You can, as you'll see below, work with session data or even add your own data to a user's session, but the process of reading, writing, and updating a session is automatic.
-
-*Critical:* If you intend to use session helper file in the all application you can load and declare **$this->sess->start()** function using **autorun** files look at below the example.
-
-Auto running sessions
+Editing the <kbd>app/config/sess.php</kbd>  you can change the session driver which have the options : **Sess_Native, Sess_Database, Sess_Cache**.
 
 ```php
-$autorun[] = "$this->sess->start()";
+<?php
+$sess = array(
+    
+    'cookie_name'     => 'frm_session',  // The name you want for the cookie
+    'expiration'      => '7200',  // The number of SECONDS you want the session to last. "0" is no expiration.
+    'expire_on_close' => false,   
+    'encrypt_cookie'  => false,   // Whether to encrypt the cookie
+    'driver'          => new Sess_Cache,      // Sess_Database  // Sess_Native
+    'db'              => new Cache(array(    // null, // new Db // new Mongo_Db; Set any database object
+                                           'driver'  => 'redis',
+                                           'servers' => array(
+                                                              'hostname' => '10.0.0.154',
+                                                              'port'     => '6379',
+                                                               // 'timeout'     => '2.5' // 2.5 sec timeout,
+                                                               // just for redis cache
+                                                              ),
+                                           'auth' =>  'aZX0bjL',  // redis connection password
+                                           'cache_path' =>  '/data/temp/cache/',
+                                   )),
+    
+    'request'         => new Request,    // Set Request Object
+    'table_name'      => 'frm_sessions', // The name of the session database table
+    'match_ip'        => false,          // Whether to match the user's IP address
+    'match_useragent' => true,        // Whether to match the User Agent 
+    'time_to_update'  => 300        // How many seconds refreshing "Session" Information"
+);
+
+/* End of file sess.php */
+/* Location: .app/config/debug/sess.php */
 ```
 
-Look at this section for more details about auto-loading and auto-running <kbd>(/docs/advanced/auto-loading)</kbd>.
-
-If you don't want declare sess_func by globally you can use manually where do you need it. Sometimes if you are **not careful** you may declare **$this->sess->start();** function more than one time in the application. So don't worry about it when you declare this function multiple times it will simply return to **false**.
+### Using Php Native Handler
 
 ```php
-$this->sess->start();  // true driver loaded and session started.
-$this->sess->start();  // false driver already loaded and session started before.
-$this->sess->start();  // false driver already loaded and session started before. 
+<?php
 
+$sess = array(
+    
+    'cookie_name'     => 'frm_session', // The name you want for the cookie
+    'expiration'      => 7200,          
+    'expire_on_close' => false,
+    'encrypt_cookie'  => false,         // Whether to encrypt the cookie
+
+    'driver'          => new Sess_Native(array(
+            
+        'session.gc_divisor'      => 100,      // Configure garbage collection
+        'session.gc_maxlifetime'  => 7200,
+        'session.cookie_lifetime' => 0,
+        'session.save_handler'    => 'redis',
+        'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL'
+
+    )), 
+    'request'         => new Request,        // Set Request Object
+    'db'              => null,                  // null, // new Db, new Cache; // new Mongo_Db; 
+    'table_name'      => 'frm_sessions',    // The name of the session database table
+    'match_ip'        => false,         // Whether to match the user's IP address
+    'match_useragent' => true,      // Whether to match the User Agent
+    'time_to_update'  => 300        // How many seconds refreshing "Session" Information"
+);
 ```
 
-**Tip:** You should declare this function at the top such as in your controller's **__construct()** function.
+### Using ( RBDMS ) Databases
 
-### What is Session Data?
-
-------
-
-A *session*, as far as framework is concerned, is simply an array containing the following information:
-
-* The user's unique Session ID (this is a statistically random string with very strong entropy, hashed with MD5 for portability, and regenerated (by default) every five minutes)
-* The user's IP Address
-* The user's User Agent data (the first 50 characters of the browser data string)
-* The "last activity" time stamp.
-
-The above data is stored in a cookie as a serialized array with this prototype:
 
 ```php
-[array]
-(
-     'session_id'    => random hash,
-     'ip_address'    => 'string - user IP address',
-     'user_agent'    => 'string - user agent data',
-     'last_activity' => timestamp
-)
+<?php
+
+$sess = array(
+    
+    'cookie_name'     => 'frm_session', // The name you want for the cookie
+    'expiration'      => 7200,          
+    'expire_on_close' => false,
+    'encrypt_cookie'  => false,         // Whether to encrypt the cookie
+    'driver'          => new Sess_Database, 
+    'db'              => new Db,            // null, // new Db, new Cache; // new Mongo_Db; 
+    'request'         => new Request,        // Set Request Object
+    'table_name'      => 'frm_sessions',    // The name of the session database table
+    'match_ip'        => false,         // Whether to match the user's IP address
+    'match_useragent' => true,      // Whether to match the User Agent
+    'time_to_update'  => 300        // How many seconds refreshing "Session" Information"
+);
 ```
 
-If you have the encryption option enabled, the serialized array will be encrypted before being stored in the cookie, making the data highly secure and impervious to being read or altered by someone. More info regarding encryption can be found here <kbd>( packages/encrypt/releases/0.0.1/ )</kbd>, although the Session helper will take care of initializing and encrypting the data automatically.
+### Using Mongodb ( NoSql ) Database
 
-Note: Session cookies are only updated every five minutes by default to reduce processor load. If you repeatedly reload a page you'll notice that the "last activity" time only updates if five minutes or more has passed since the last time the cookie was written. This time is configurable by changing the <kbd>$sess['time_to_update']</kbd> line in your <kbd>app/config/sess.php</kbd> file.
+```php
+<?php
+
+$sess = array(
+    
+    'cookie_name'     => 'frm_session', // The name you want for the cookie
+    'expiration'      => 7200,          
+    'expire_on_close' => false,
+    'encrypt_cookie'  => false,         // Whether to encrypt the cookie
+    'driver'          => new Sess_Database, 
+    'db'              => new Mongo_Db,       // null, // new Db, new Cache; // new Mongo_Db; 
+    'request'         => new Request,        // Set Request Object
+    'table_name'      => 'frm_sessions',    // The name of the session database table
+    'match_ip'        => false,         // Whether to match the user's IP address
+    'match_useragent' => true,      // Whether to match the User Agent
+    'time_to_update'  => 300        // How many seconds refreshing "Session" Information"
+);
+```
+
 
 ### Retrieving Session Data
 
@@ -143,14 +195,9 @@ $newdata = array(
 $this->sess->set($newdata);
 ```
 
-**Important:** Once you use at the top **$this->sess->start()** function you don't need to use again.
-If you want to add userdata one value at a time, set() also supports this syntax.
-
 ```php
 $this->sess->set('some_name', 'some_value');
 ```
-
-**Critical:** Cookies can only hold **4KB** of data, so be careful not to exceed the capacity. The encryption process, in particular, produces a longer data string than the original so keep careful track of how much data you are storing.
 
 ### Removing Session Data
 
@@ -252,6 +299,34 @@ $this->sess->destroy();
 ```
 
 **Note:** This function should be the last one called, and even flash variables will no longer be available. If you want only some items to be destroyed and instead of all, use <kbd>$this->sess->remove()</kbd>.
+
+### What is Session Data?
+
+------
+
+A *session*, as far as framework is concerned, is simply an array containing the following information:
+
+* The user's unique Session ID (this is a statistically random string with very strong entropy, hashed with MD5 for portability, and regenerated (by default) every five minutes)
+* The user's IP Address
+* The user's User Agent data (the first 50 characters of the browser data string)
+* The "last activity" time stamp.
+
+The above data is stored in a cookie as a serialized array with this prototype:
+
+```php
+[array]
+(
+     'session_id'    => random hash,
+     'ip_address'    => 'string - user IP address',
+     'user_agent'    => 'string - user agent data',
+     'last_activity' => timestamp
+)
+```
+
+If you have the encryption option enabled, the serialized array will be encrypted before being stored in the cookie, making the data highly secure and impervious to being read or altered by someone. More info regarding encryption can be found here <kbd>( packages/encrypt/releases/0.0.1/ )</kbd>, although the Session helper will take care of initializing and encrypting the data automatically.
+
+Note: Session cookies are only updated every five minutes by default to reduce processor load. If you repeatedly reload a page you'll notice that the "last activity" time only updates if five minutes or more has passed since the last time the cookie was written. This time is configurable by changing the <kbd>$sess['time_to_update']</kbd> line in your <kbd>app/config/sess.php</kbd> file.
+
 
 ### Session Preferences
 

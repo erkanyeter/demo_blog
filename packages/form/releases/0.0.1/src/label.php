@@ -15,13 +15,8 @@ namespace Form\Src {
     function label($label_text = '', $id = '', $attributes = "")
     {
         $label = '<label';
-
-        if (substr($label_text, 0, 10) == 'translate:') // Do we need to translate the field name? 
-        {
-            $line       = substr($label_text, 10);   // Grab the variable
-            $label_text = translate($line);
-        }
-
+        $label_text = translate($label_text);
+        
         if(empty($id))
         {
             $id = mb_strtolower($label_text);

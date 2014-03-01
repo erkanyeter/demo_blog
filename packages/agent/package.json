@@ -8,14 +8,8 @@
     "email": "obulloframework@gmail.com",
     "url": "https://github.com/obullo"
   },
-  "component" : "library",
-  "dependencies": {
-    "log":"*"
-  },
-  "keywords": [
-    "agent",
-    "user agent"
-  ],
+  "dependencies": { "log":"*" },
+  "keywords": ["agent","user agent"],
   "homepage": "https://github.com/obullo/agent",
   "repo": {
     "type": "git",
@@ -23,7 +17,7 @@
     "archive" : "zip",
     "archive_url": "https://github.com/obullo/agent/archive/master.zip"
   },
-  "requires": {
+  "require": {
     "php": ">= 5.4.0",
     "extensions": ["none"]
   },

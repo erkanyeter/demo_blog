@@ -13,12 +13,14 @@ Class Cookie {
     
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->cookie))
         {
             getInstance()->cookie = $this; // Make available it in the controller $this->cookie->method();
         }
 
-        logMe('debug', 'Cookie Class Initialized');
+        $logger->debug('Cookie Class Initialized');
     }
     
     // --------------------------------------------------------------------
@@ -53,9 +55,9 @@ Class Cookie {
             }
         }
 
-        if ($prefix == '' AND $$config['cookie_prefix'] != '')
+        if ($prefix == '' AND $config['cookie_prefix'] != '')
         {
-            $prefix = $config['cookie_prefix'];
+            $prefix = $config['cookie_prefix');
         }
         
         if ($domain == '' AND $config['cookie_domain'] != '')
@@ -71,6 +73,11 @@ Class Cookie {
         if ($secure == false AND $config['cookie_secure'] != false)
         {
             $secure = $config['cookie_secure'];
+        }
+
+        if ($expire == '' AND $config['cookie_expire'] != '')
+        {
+            $expire = $config['cookie_expire'];
         }
         
         if ( ! is_numeric($expire))
@@ -109,7 +116,7 @@ Class Cookie {
         $prefix = '';
         if ( ! isset($_COOKIE[$index]) AND $config['cookie_prefix'] != '')
         {
-            $prefix = $config['cookie_prefix'];
+            $prefix = $config['cookie_prefix');
         }
 
         return Get::fetchFromArray($_COOKIE, $prefix.$index, $xss_clean);

@@ -12,9 +12,11 @@ namespace Response\Src {
     */
     function show404($page = '')
     {
-        logMe('error', '404 Page Not Found --> '.$page, false);
+        global $logger, $response;
 
-        echo \Response::getInstance()->showHttpError('404 Page Not Found', $page, '404', 404);
+        $logger->error('404 Page Not Found --> '.$page);
+
+        echo $response->showHttpError('404 Page Not Found', $page, '404', 404);
         exit();
     }
 

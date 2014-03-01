@@ -68,7 +68,7 @@ The second optional parameter lets you run the data through the XSS filter. It's
 $this->get->post('some_data', true);
 ```
 
-If the third optional parameter is true, function grabs the original global $_POST variable instead of HMVC's (if hmvc used).
+If the third optional parameter is true, function grabs the original global $_POST variable instead of HVC's (if hvc used).
 
 ```php
 $this->get->post('some_data', true, $use_global_var = false);
@@ -82,7 +82,7 @@ This function is identical to the post function, only it fetches the get data:
 $this->get->get('some_data', true);
 ```
 
-If the third optional parameter is true, function grabs the original global $_GET variable instead of HMVC's (if hmvc used).
+If the third optional parameter is true, function grabs the original global $_GET variable instead of HVC's (if hvc used).
 
 ```php
 $this->get->get('some_data', true, $use_global_var = false);
@@ -104,7 +104,7 @@ This function will search through the request stream for the data.
 $this->get->request('some_data', true);
 ```
 
-If the third optional parameter is true, function grabs the original global $_REQUEST variable instead of HMVC's (if hmvc used).
+If the third optional parameter is true, function grabs the original global $_REQUEST variable instead of HVC's (if hvc used).
 
 ```php
 $this->get->request('some_data', true, $use_global_var = false);

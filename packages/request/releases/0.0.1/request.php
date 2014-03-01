@@ -20,12 +20,14 @@ Class Request {
      */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->request))
         {
             getInstance()->request = $this; // Make available it in the controller $this->get->method();
         }
 
-        logMe('debug', 'Request Class Initialized');
+        $logger->debug('Request Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -270,13 +272,13 @@ Class Request {
     // ------------------------------------------------------------------------
 
     /**
-     * Check the request is Hmvc
+     * Check the request is Hvc
      * 
      * @return boolean
      */
-    public function isHmvc()
+    public function isHvc()
     {
-        if(isset($_SERVER['HMVC_REQUEST']))
+        if(isset($_SERVER['HVC_REQUEST']))
         {
             return true;
         }

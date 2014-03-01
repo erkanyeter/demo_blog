@@ -26,14 +26,16 @@ namespace Form\Src {
             }
 
             return $form->prep($_REQUEST[$field], $field);
-        } 
+        }
 
-        if($OBJ->setValue($field, $default) == '' AND isset($_REQUEST[$field]))
+        if (isset($_REQUEST[$field])) 
         {
             return $form->prep($_REQUEST[$field], $field);
         }
-
-        return $form->prep($OBJ->setValue($field, $default), $field);
+        elseif($OBJ->setValue($field, $default) != '') 
+        {
+            return $form->prep($OBJ->setValue($field, $default), $field);
+        }
     }
 
 }

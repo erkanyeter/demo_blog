@@ -29,6 +29,7 @@ define('ENV', 'DEBUG');
 |
 */
 error_reporting(0);
+// ini_set('display_errors','On');
 
 /*
 |--------------------------------------------------------------------------
@@ -128,12 +129,55 @@ if(defined('STDIN'))
  */
 require (APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT);
 require (DATA .'cache'. DS .'packages.cache');
-
 /*
 |--------------------------------------------------------------------------
-| Framework Component
+| Load Logger Package
+|--------------------------------------------------------------------------
+*/
+require (PACKAGES .'logger'. DS .'releases'. DS .$packages['dependencies']['logger']['version']. DS .'logger'. EXT);
+$logger = new Logger;
+/*
+|--------------------------------------------------------------------------
+| Load Hooks
+|--------------------------------------------------------------------------
+*/
+if($config['enable_hooks'])
+{
+    require (PACKAGES .'hooks'. DS .'releases'. DS .$packages['dependencies']['hooks']['version']. DS .'hooks'. EXT);
+    $hooks = new Hooks;
+}
+/*
+|--------------------------------------------------------------------------
+| Load Obullo Package
 |--------------------------------------------------------------------------
 */
 require (PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'obullo'. EXT);
+/*
+|--------------------------------------------------------------------------
+| Default Packages
+|--------------------------------------------------------------------------
+*/
+$cfg           = new Config;
+$translator    = new Translator;
+$response      = new Response;
+$uri           = new Uri;
+$router        = new Router;
+/*
+|--------------------------------------------------------------------------
+| Security Package
+|--------------------------------------------------------------------------
+*/
+if ($config['csrf_protection'] OR $config['global_xss_filtering'])  // CSRF Protection check
+{
+    $security = new Security;
+}
+/*
+|--------------------------------------------------------------------------
+| Run Your Application
+|--------------------------------------------------------------------------
+*/
+$app = new Obullo;
 
-runFramework();
+// $app->registry('package.view', 'View');
+// $app->registry('package.logger', 'Logger');
+// $app->registry('package.logger', 'Mailer');

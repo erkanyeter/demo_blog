@@ -1,38 +1,26 @@
 <?php 
 
 $users = array(
-	'*' => array(),
-	
-	'user_id' => array(
-		'label' => 'User Id',
-		'types' => '_primary_key|_int(11)|_auto_increment|_not_null',
-		'rules' => '',
-		),
-	'user_email' => array(
-		'label' => 'User Email',
-		'types' => '_varchar(60)|_not_null',
-		'rules' => 'required|validEmail',
-		),
-	'user_password' => array(
-		'label' => 'User Password',
-		'types' => '_not_null|_varchar(75)',
-		'rules' => 'required|minLen(6)',
-		),
-	'user_creation_date' => array(
-		'label' => 'User Creation Date',
-		'types' => '_datetime|_null',
-		'rules' => '',
-		),
-	'user_modification_date' => array(
-		'label' => 'User Modification Date',
-		'types' => '_null|_datetime',
-		'rules' => '',
-		),
-	'user_username' => array(
-		'label' => 'User Username',
-		'types' => '_not_null|_varchar(50)',
-		'rules' => 'required',
-		),
+    '*' => array(),
+    
+    'user_id' => array(
+        'types' => '_primary_key|_int(11)|_auto_increment|_not_null',
+        ),
+    'user_email' => array(
+        'types' => '_varchar(60)|_not_null',
+        ),
+    'user_password' => array(
+        'types' => '_not_null|_varchar(75)',
+        ),
+    'user_creation_date' => array(
+        'types' => '_datetime|_null',
+        ),
+    'user_modification_date' => array(
+        'types' => '_null|_datetime',
+        ),
+    'user_username' => array(
+        'types' => '_not_null|_varchar(50)',
+        ),
 );
  
 /* End of file users.php */

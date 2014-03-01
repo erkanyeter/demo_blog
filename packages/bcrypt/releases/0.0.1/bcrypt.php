@@ -29,12 +29,14 @@ Class Bcrypt {
     */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->bcrypt))
         {
             getInstance()->bcrypt = $this;  // Make available it in the controller.
         }
 
-        logMe('debug', "Bcrypt Class Initialized");
+        $logger->debug('Bcrypt Class Initialized');
     }
     
     // --------------------------------------------------------------------

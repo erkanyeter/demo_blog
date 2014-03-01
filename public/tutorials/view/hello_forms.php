@@ -15,10 +15,12 @@
 
         <section><?php echo $this->form->getNotice() ?></section>
 
-        <?php if($this->post->get('form1_dopost')) { ?>
+<?php if ($this->post->get('form1_dopost')) : ?>
             <section><?php echo $this->form->getMessage() ?></section>
             <section><?php echo $this->form->getErrorString() ?></section>
-        <?php } ?>
+    <?php 
+endif;
+?>
 
         <h2>Form1</h2>
 
@@ -66,7 +68,7 @@
                 
             <?php echo $this->form->close() ?>
 
-            <?php if($this->post->get('form1_dopost')) { ?>
+<?php if($this->post->get('form1_dopost')) : ?>
 
             <h2>Test Results of Form1</h2>
             <section>
@@ -80,17 +82,19 @@
                 <pre><?php print_r($this->form->getValue('form1_email')) ?></pre>
             </section>
 
-            <?php } ?>
+    <?php 
+endif; 
+?>
 
-            <?php if($this->post->get('form2_dopost')) { ?>
-                <section><?php echo $this->form->getMessage() ?></section>
-                <section><?php echo $this->form->getErrorString() ?></section>
-            <?php } ?>
+<?php if($this->post->get('form2_dopost')) : ?>
+            <section><?php echo $this->form->getMessage() ?></section>
+            <section><?php echo $this->form->getErrorString() ?></section>
+    <?php 
+endif; 
+?>
 
             <h2>Form2</h2>
-
             <?php echo $this->form->open('tutorials/hello_forms/index', array('method' => 'POST')) ?>
-
                 <table width="100%">
                     <tr>
                         <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
@@ -114,13 +118,10 @@
                         <td colspan="2">&nbsp;</td>
                     </tr>
                     </table>
-                
                 <?php echo $this->form->close() ?>
 
-            <?php if($this->post->get('form2_dopost')) { ?>
-
+<?php if ($this->post->get('form2_dopost')) : ?>
             <h2>Test Results of Form2</h2>
-
             <section>
                 <h3>$this->form->getOutput()</h3>
                 <pre><?php print_r($this->form->getOutput()) ?></pre>
@@ -131,8 +132,7 @@
                 <h3>print_r($this->form->getValue('form2_email'))</h3>
                 <pre><?php print_r($this->form->getValue('form2_email')) ?></pre>
             </section>
-
-            <?php } ?>
+<?php endif; ?>
 
         </section> 
         

@@ -875,12 +875,6 @@ The following is a list of all the native rules that are available to use:
 <td></td>
 </tr>
 <tr>
-<td>isUnique</td>
-<td>Yes</td>
-<td>Returns FALSE if the form element is not unique to the table and field name in the parameter.</td>
-<td>isUnique[table.field]</td>
-</tr>
-<tr>
 <td>isInteger</td>
 <td>No</td>
 <td>Returns false if the form element contains anything other than an integer.</td>

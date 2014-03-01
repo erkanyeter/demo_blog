@@ -13,12 +13,14 @@ Class Task {
 
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->task))
         {
             getInstance()->task = $this; // Make available it in the controller $this->task->method();
         }
 
-        logMe('debug', 'Task Class Initialized');
+        $logger->debug('Task Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -31,7 +33,8 @@ Class Task {
     */
     public function run($uri, $debug = false)
     {
-        $uriString = $uri;
+        global $logger;
+
         $uri    = explode('/', trim($uri));
         $module = array_shift($uri);
 
@@ -48,28 +51,23 @@ Class Task {
         if($debug) // Enable debug output to log folder.
         {
             // @todo escapeshellcmd();
+
             // clear console colors
             // $output = trim(preg_replace('/\n/', '#', $output), "\n");
             $output = preg_replace(array('/\033\[36m/','/\033\[31m/','/\033\[0m/'), array('','',''), shell_exec($shell));
 
-            if(strpos(trim($uriString,'/'), 'sync') !== 0) // Don't show sync tasks in the logs.
-            {
-                logMe('debug', 'Task function uri -> '. $uriString);   
-
-                if( ! empty($output))
-                {
-                    logMe('debug', 'Task function output -> '. $output);
-                }
-            }
+            $logger->debug('Task function output -> '. $output);
 
             return $output;
         }
-        else   // continious task  @todo escapeshellcmd();
+        else   // continious task
         {
+            // @todo escapeshellcmd();
+
             shell_exec($shell.' > /dev/null &');
         }
 
-        logMe('debug', 'Task function command -> '. $shell);
+        $logger->debug('Task function command -> '. $shell);
     }
 
 }

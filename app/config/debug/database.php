@@ -4,8 +4,8 @@
 | Database Configuration
 |--------------------------------------------------------------------------
 |
-| Database Variables
-|
+| Database Variableslaravel orm
+
 */
 $database = array(
 
@@ -13,7 +13,7 @@ $database = array(
         'variable' => 'db',
         'hostname' => 'localhost',
         'username' => 'root',
-        'password' => '12345',
+        'password' => '123456',
         'database' => 'demo_blog',
         'driver'   => '',   // optional
         'prefix'   => '',

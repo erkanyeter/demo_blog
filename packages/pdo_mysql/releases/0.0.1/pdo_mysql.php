@@ -9,7 +9,7 @@
  * @link
  */
 
-Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
+Class Pdo_Mysql extends Pdo_Adapter
 {
     /**
     * The character used for escaping
@@ -239,7 +239,7 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
      * @param	array	the insert values
      * @return	string
      */
-    function _replace($table, $keys, $values)
+    public function _replace($table, $keys, $values)
     {
         return "REPLACE INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
     }

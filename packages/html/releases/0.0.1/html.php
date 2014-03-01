@@ -13,16 +13,25 @@ Class Html {
     
     function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->html))
         {
             getInstance()->html = $this; // Make available it in the controller $this->html->method();
         }
 
-        logMe('debug', 'Html Helper Initialized');
+        $logger->debug('Html Helper Initialized');
     }
     
     // --------------------------------------------------------------------
 
+    /**
+     * Call Html functions
+     * 
+     * @param  string $method
+     * @param  array $arguments
+     * @return string
+     */
     public function __call($method, $arguments)
     {
         global $packages;

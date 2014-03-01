@@ -20,12 +20,11 @@ $c = new Controller(function(){
  * task
  * 
  * @param string $tablename   tablename of the database table
- * @param string $modelName   modelname
  * @param string $dbVar       database variable name
  * @param string $requestUri  urlencoded string ( current page url )
  * @param string $postData base64 encoded serialized string $_POST data
  */
-$c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postData = 'false')
+$c->func('index', function($tablename, $dbVar, $requestUri, $postData = 'false')
 {
     if( ! isset(getInstance()->{$dbVar}))
     {
@@ -36,7 +35,7 @@ $c->func('index', function($tablename, $modelName, $dbVar, $requestUri, $postDat
         $dbObject = getInstance()->{$dbVar};
     }
 
-    $schema     = new Schema($tablename, $modelName, $dbObject, base64_decode($requestUri));
+    $schema     = new Schema($tablename, $dbObject, base64_decode($requestUri));
     $schemaPath = $schema->getPath();
 
     if($postData != 'false')

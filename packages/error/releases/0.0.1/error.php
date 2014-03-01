@@ -14,7 +14,9 @@ Class Error {
 
     public function __construct()
     {
-        logMe('debug', 'Error Helper Initialized');
+        global $logger;
+
+        $logger->debug('Error Helper Initialized');
     }
     
     // --------------------------------------------------------------------

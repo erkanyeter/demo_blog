@@ -37,6 +37,8 @@ Class Setup_Wizard {
      */
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->setup_wizard))
         {
             getInstance()->setup_wizard = $this; // Available it in the contoller $this->setup_wizard->method();
@@ -44,7 +46,7 @@ Class Setup_Wizard {
 
         $this->form = new Form;
         
-        logMe('debug', 'Setup Wizard Class Initialized');
+        $logger->debug('Setup Wizard Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -165,6 +167,7 @@ Class Setup_Wizard {
     public function createForm()
     {
         $form = '';
+        
         foreach($this->_input as $input)
         {
             if($input['name'] == 'password')

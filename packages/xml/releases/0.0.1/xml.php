@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Xml Helper
+* Xml Class
 *
 * @package     packages
 * @subpackage  xml 
@@ -18,7 +18,7 @@ Class Xml {
             getInstance()->xml = $this; // Make available it in the controller $this->xml->method();
         }
 
-        logMe('debug', 'Xml Class Initialized');
+        $logger->debug('Xml Class Initialized');
     }
 
     // ------------------------------------------------------------------------

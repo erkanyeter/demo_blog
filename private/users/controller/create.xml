@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function>
+   <name>create.one</name>
+   <description>This function create new user into users table.</description>
+   <insert>
+      <data key="user_username" type="string" desc="Unique username of user" required='yes'>
+  		 	username
+      </data>
+      <data key="user_email" type="string" desc="Unique email of user" required='yes'>
+      		example@example.com
+      </data>
+   </insert>
+   <version>1.0</version>
+   <author>Your Name</author>
+   <publish_date>2000-10-01</publish_date>
+</function>
