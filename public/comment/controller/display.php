@@ -22,6 +22,7 @@ $c = new Controller(
 $c->func(
     'index',
     function () {
+        
         $r = $this->hvc->get('private/comments/getall');
 
         $this->view->get(

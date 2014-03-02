@@ -37,14 +37,12 @@ Class Auth {
     {   
         global $logger;
 
-        $auth = getConfig('auth');
+        if ( ! isset(getInstance()->auth)) {
 
-        if( ! isset(getInstance()->auth))
-        {
+            $auth   = getConfig('auth');
             $params = array_merge($auth, $config);
 
             getInstance()->auth = $this; // Make available it in the controller.
-
             $this->init($params);
         }
 
@@ -142,8 +140,8 @@ Class Auth {
      */
     public function hashPassword($password)
     {
-        $method_hashPassword = $this->method_hashPassword; //  run the closure function
-        return $method_hashPassword($password);
+        $hashPassword = $this->extend['hashPassword']; //  run the closure function
+        return $hashPassword($password);
     }
 
     // ------------------------------------------------------------------------
@@ -159,10 +157,9 @@ Class Auth {
         $algorithm_closure = $this->algorithm;
         $algorithm         = $algorithm_closure();
 
-        if(is_object($algorithm))
-        {
-            $method_verifyPassword = $this->method_verifyPassword;      //  run the closure function
-            return $method_verifyPassword($password, $this->database_password);
+        if (is_object($algorithm)) {
+            $verifyPassword = $this->extend['verifyPassword'];      //  run the closure function
+            return $verifyPassword($password, $this->database_password);
         } 
         else  // if it is a native hash() function
         {

@@ -18,6 +18,7 @@ Class View {
      */
     public $_string       = array(); // String type view variables
     public $_array        = array(); // Array type view variables
+    public $_bool         = array(); // Array type view variables
     public $_object       = array(); // Object type view variables
     
     /**
@@ -27,8 +28,7 @@ Class View {
     {
         global $logger;
 
-        if( ! isset(getInstance()->view))
-        {
+        if ( ! isset(getInstance()->view)) {
             getInstance()->view = $this; // Make available it in the controller $this->view->method();
         }
 
@@ -79,6 +79,11 @@ Class View {
             extract($this->_object, EXTR_SKIP); 
         }
 
+        if(count($this->_bool) > 0)
+        {
+            extract($this->_bool, EXTR_SKIP); 
+        }
+
         $logger->debug('View file loaded: '.$__vPath. $__vFilename . $ext);
 
         ob_start();   // Please open short tags in your php.ini file. ( short_tag = On ).
@@ -113,8 +118,7 @@ Class View {
         {
             $this->_string[$key] = $val;
         }
-
-        if(is_array($val))
+        elseif(is_array($val))
         {
             if(count($val) == 0)
             {
@@ -128,10 +132,17 @@ Class View {
                 }
             }
         }
-
-        if(is_object($val))
+        elseif(is_object($val))
         {
             $this->_object[$key] = $val;
+        }
+        elseif(is_bool($val))
+        {
+            $this->_bool[$key] = $val;
+        } 
+        else
+        {
+            $this->_string[$key] = (string)$val;
         }
 
         return $this;
@@ -147,11 +158,9 @@ Class View {
      */
     public function getScheme($schemeName = 'default')
     {
-        $args     = func_get_args();
         $schemes  = getConfig('scheme');
         
-        if(isset($schemes[$schemeName]) AND is_callable($schemes[$schemeName]))
-        {
+        if (isset($schemes[$schemeName]) AND is_callable($schemes[$schemeName])) {
             call_user_func_array(Closure::bind($schemes[$schemeName], $this, get_class()), array());
         }
 
@@ -169,7 +178,7 @@ Class View {
      */
     private function _isCallable($val)
     {
-        if(is_callable($val)) // Is callable function ?
+        if (is_callable($val)) // Is callable function ?
         {
             $func = Closure::bind($val, $this, get_class());
             return $func();
@@ -190,7 +199,13 @@ Class View {
      */
     public function get($filename, $data_or_no_include = null, $include = true)
     {
-        return $this->fetch(PUBLIC_DIR .getInstance()->router->fetchDirectory(). DS .'view'. DS, $filename, $data_or_no_include, $include);    
+        $folder = PUBLIC_DIR;
+
+        if (isset($_SERVER['HVC_REQUEST']) AND $_SERVER['HVC_REQUEST'] == true) {
+            $folder = PRIVATE_DIR;
+        }
+
+        return $this->fetch($folder .getInstance()->router->fetchDirectory(). DS .'view'. DS, $filename, $data_or_no_include, $include);    
     }
 
     // ------------------------------------------------------------------------

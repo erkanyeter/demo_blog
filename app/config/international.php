@@ -8,7 +8,6 @@
 | Configure set international package options.
 |
 */
-
 $international = array(
 
     // Http Settings

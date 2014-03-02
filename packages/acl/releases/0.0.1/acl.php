@@ -23,15 +23,13 @@ Class Acl {
     *
     * Sets the variables and runs the compilation routine
     * 
-    * @param mixed $no_instance
     * @return    void
     */
     public function __construct()
     {
         global $logger;
 
-        if( ! isset(getInstance()->acl))
-        {
+        if ( ! isset(getInstance()->acl)) {
             getInstance()->acl = $this; // Available it in the contoller $this->auth->method();
         }
         
@@ -52,6 +50,11 @@ Class Acl {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Clear variables
+     * 
+     * @return void
+     */
     public function clear()
     {
         $this->groups      = array();
@@ -71,8 +74,7 @@ Class Acl {
     {
         $group_name = mb_strtolower($group_name);
         
-        if(strpos($group_name, '@') !== 0)
-        {
+        if (strpos($group_name, '@') !== 0) {
             throw new Exception('The group name must have @ prefix e.g. @admin.');
         }
         
@@ -90,8 +92,7 @@ Class Acl {
     */
     public function addMember($member, $group_name)
     {
-        if(strpos($group_name, '@') !== 0)
-        {
+        if (strpos($group_name, '@') !== 0) {
             throw new Exception('The group name must have @ prefix e.g. @admin.');
         }
         
@@ -110,8 +111,7 @@ Class Acl {
     */
     public function delMember($member, $group_name)
     {
-        if(strpos($group_name, '@') !== 0)
-        {
+        if (strpos($group_name, '@') !== 0) {
             throw new Exception('The group name must have @ prefix e.g. @admin.');
         }
         
@@ -132,24 +132,17 @@ Class Acl {
     */
     public function allow($name, $operation, $deny = false)
     {
-        if(strpos($name, '@') === 0) // group process .. 
-        {
-            if(isset($this->groups[$name])) // check really is it group ?
-            {
-                if(is_array($operation) AND count($operation) > 0)
-                {
-                    foreach($operation as $o_name)
-                    {
+        if (strpos($name, '@') === 0) { // group process .. 
+            
+            if (isset($this->groups[$name])) { // check really is it group ?
+                if (is_array($operation) AND count($operation) > 0) {
+                    foreach ($operation as $o_name) {
                         $this->access_list[$name][$o_name] = ($deny) ? false : true;
                     }
-                } 
-                else 
-                {
+                } else {
                     $this->access_list[$name][$operation] = ($deny) ? false : true;
                 }
-            }
-            else
-            {
+            } else {
                 throw new Exception('Undefined group name '.$name.', please add a group using $acl->addGroup() method.');
             }
             

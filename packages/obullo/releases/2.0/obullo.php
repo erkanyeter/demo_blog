@@ -409,15 +409,14 @@ Class Obullo {
             $version = $packages['dependencies'][$packageFilename]['version'];
             $fileUrl = PACKAGES .$packageFilename. DS .'releases'. DS .$version. DS .$src. mb_strtolower(end($parts), $config['charset']). EXT;
 
-            require_once($fileUrl);
-
+            include_once $fileUrl;
             return;
         }
         else 
         {
             if(file_exists(CLASSES .$packageFilename. EXT))   // If its not a package, 
             {                                                 // load User Classes from Classes Directory.
-                require_once(CLASSES .$packageFilename. EXT);   
+                include_once CLASSES .$packageFilename. EXT;
             }
         }
     }
@@ -526,7 +525,7 @@ Class Obullo {
                     {              
                         case  0: return; break; 
                         case  1: 
-                            include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
+                            include PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'error'. EXT;
                             return; 
                         break;
                     }   
@@ -543,12 +542,12 @@ Class Obullo {
 
                 if(isset($allowedErrors[$code]))
                 {
-                    include (PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'view'. EXT);
+                    include PACKAGES .'exceptions'. DS .'releases'. DS .$packages['dependencies']['exceptions']['version']. DS .'src'. DS .'error'. EXT;
                 }
             }
             else  // If error_reporting = 0, we show a blank page template.
             {
-                include(APP .'errors'. DS .'disabled_error'. EXT);
+                include APP .'errors'. DS .'disabled_error'. EXT;
             }
 
             $logger->error($type.': '.$e->getMessage(). ' '.$error->getSecurePath($e->getFile()).' '.$e->getLine()); 

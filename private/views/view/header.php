@@ -4,7 +4,7 @@
 
 	<div id="menu">
 		<ul>
-			<?php echo $this->hvc->get('private/views/navbar') // get navbar view with HVC  ?>
+			<?php echo $li ?>
 		</ul>
 	</div>
 	

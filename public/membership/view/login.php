@@ -6,7 +6,7 @@
     </head>
 
 <body>
-        <?php echo $header ?>
+        <?php echo $header; ?>
 
         <div id="clear"></div>
         <div id="containerbox">

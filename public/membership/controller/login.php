@@ -23,7 +23,7 @@ $c = new Controller(
 $c->func(
     'index',
     function () {
-    
+
         if ($this->post->get('dopost')) {  // login button is submit ?
             
             $this->form->setRules('email', 'Email', 'required|validEmail');

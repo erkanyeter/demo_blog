@@ -34,7 +34,7 @@ $c->func(
 
                 if ($r['success']) {
                     $this->form->setNotice($r['message'], SUCCESS);  // set flash notice using sess
-                    $this->url->redirect('/home');
+                    $this->url->redirect('/post/manage');
                 } else {
                     $this->form->setMessage($r['message']);  // set your message to form to object
                 }

@@ -11,9 +11,8 @@
  * @category      hvc
  * 
  */
-
-Class Hvc {
-
+Class Hvc
+{
     // Controller Object
     public $global = null;     // Global instance of the controller object we need to clone it.
     public $config = array();  // hvc configuration
@@ -64,7 +63,6 @@ Class Hvc {
         // Clone objects
         $this->uri             = null;
         $this->router          = null;
-        $this->cfg             = null;
 
         // Cache and Connection
         $this->connection      = true;
@@ -75,9 +73,9 @@ Class Hvc {
         $GLOBALS['_SERVER_BACKUP']  = array();
         $GLOBALS['_REQUEST_BACKUP'] = array();
 
-        unset($_SERVER['HVC_REQUEST']);
-        unset($_SERVER['HVC_REQUEST_URI']);
-        unset($_SERVER['HVC_REQUEST_TYPE']);
+        // unset($_SERVER['HVC_REQUEST']);          // Don't touch global hvc headers
+        // unset($_SERVER['HVC_REQUEST_URI']);      // otherwise we can't use (hvc in hvc) loop.
+        // unset($_SERVER['HVC_REQUEST_TYPE']);
     }
 
     // --------------------------------------------------------------------
@@ -89,10 +87,9 @@ Class Hvc {
     {        
         global $logger;
 
-        if( ! isset(getInstance()->hvc))  // Like Singleton
-        {
-            $this->config = getConfig('hvc');   // Get hvc configuration
+        if ( ! isset(getInstance()->hvc)) {          // Like Singleton
 
+            $this->config = getConfig('hvc');       // Get hvc configuration
             getInstance()->translator->load('hvc'); // Load translate file
             getInstance()->hvc = $this;             // Make available it in the controller $this->hvc->method();
         }
@@ -117,14 +114,12 @@ Class Hvc {
         $type      = 'public';
         $uriString = trim($uriString, '/');
 
-        if(strpos($uriString, 'private/') === 0)  // Set the visibility of hvc request
-        {
+        if (strpos($uriString, 'private/') === 0) { // Set the visibility of hvc request
             $type      = 'private';
             $uriString = substr($uriString, 8);
         }
 
-        if(strpos($uriString, 'public/') === 0)  // Set the visibility of hvc request
-        {
+        if (strpos($uriString, 'public/') === 0) { // Set the visibility of hvc request
             $type      = 'public';
             $uriString = substr($uriString, 6);
         }
@@ -161,15 +156,13 @@ Class Hvc {
 
         if( ! empty($uriString)) // empty control
         {
-            global $uri, $router, $translator, $cfg;
+            global $uri, $router;
 
             // Clone Objects
             // -----------------------------------------
             
             $this->uri        = clone $uri;         // Create copy of original Uri class.
             $this->router     = clone $router;      // Create copy of original Router class.
-            $this->cfg        = clone $cfg;         // Create copy of original Config class.
-            $this->translator = clone $translator;  // Create copy of original Config class.
 
             // Clear
             // -----------------------------------------
@@ -220,8 +213,7 @@ Class Hvc {
     */
     public function setMethod($method = 'GET' , $data = '')
     {
-        if(empty($data))
-        {
+        if (empty($data)) {
             $data = array();
         }
 
@@ -230,78 +222,61 @@ Class Hvc {
         $this->_setConnString($method);        // Set Unique connection string foreach HVC requests
         $this->_setConnString(serialize($data));
 
-        if($this->query_string != '')
-        {
+        if ($this->query_string != '') {
             $querStringParams = $this->parseQuery($this->query_string);
 
-            if(is_array($data) AND sizeof($data) > 0)
-            {
+            if (is_array($data) AND sizeof($data) > 0) {
                 $data = array_merge($querStringParams, $data);
             }
         }
 
-        switch ($method)
-        {
-           case 'POST':
-            
-            if( ! is_array($data))
-            {
+        // SET METHOD
+
+        switch ($method) {
+        case 'POST':
+            if ( ! is_array($data)) {
                 throw new Exception('Data must be array when using Hvc POST method.');
             }
 
-            foreach($data as $key => $val)
-            {
+            foreach ($data as $key => $val) {
                 $_POST[$key]    = is_string($val) ? urldecode($val) : $val;  // url support
                 $this->request_keys[$key] = '';
             }
 
-            if($this->getVisibility() == 'private')   // use global post variables for model requests.
-            {
+            if ($this->getVisibility() == 'private') {  // use global post variables for model requests.
                 $_POST = array_merge($_POST, $GLOBALS['_POST_BACKUP']);
             }
+            break;
 
-             break;
-
-           case ($method == 'GET' OR $method == 'DELETE'):
-            
-            if( ! is_array($data))
-            {
+        case ($method == 'GET' OR $method == 'DELETE'):
+            if ( ! is_array($data)) {
                 throw new Exception('Data must be array when using Hvc GET or DELETE methods.');
             }
                
-            foreach($data as $key => $val)
-            {
+            foreach ($data as $key => $val) {
                 $_GET[$key]     = is_string($val) ? urldecode($val) : $val;
                 $this->request_keys[$key] = '';
             }
 
-            if($this->getVisibility() == 'private')   // use global variables for private requests.
-            {
+            if ($this->getVisibility() == 'private') {  // use global variables for private requests.
                 $_GET = array_merge($_GET, $GLOBALS['_GET_BACKUP']);
             }
+            break;
 
-             break;
-
-           case 'PUT':
-
-            if(is_array($data) AND sizeof($data) > 0)
-            {
-                foreach($data as $key => $val)
-                {
+        case 'PUT':
+            if (is_array($data) AND sizeof($data) > 0) {
+                foreach ($data as $key => $val) {
                     $_REQUEST[$key] = is_string($val) ? urldecode($val) : $val;
                     $this->request_keys[$key] = '';
                 }
-            }
-            else
-            {
+            } else {
                 $GLOBALS['PUT'] = $_REQUEST['PUT'] = $data;
             }
 
-            if($this->getVisibility() == 'private')   // use global variables for private requests.
-            {
+            if ($this->getVisibility() == 'private') { // use global variables for private requests.
                 $_REQUEST = array_merge($_REQUEST, $GLOBALS['_REQUEST_BACKUP']);
             }
-             break;
+            break;
         }
 
         $_SERVER['REQUEST_METHOD'] = $method;  // Set request method ..
@@ -319,11 +294,9 @@ Class Hvc {
     */
     public function parseQuery($query_string = '')
     {
-        if($query_string == '')
-        {
+        if ($query_string == '') {
             return array();
         }
-
         parse_str(html_entity_decode($query_string), $segments);
 
         return $segments;
@@ -411,8 +384,7 @@ Class Hvc {
      */
     public function request($method, $uri, $data = '', $expiration = 0)
     {
-        if(is_numeric($data)) // set expiration as second param if data not provided
-        {
+        if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
             $data       = array();
         }
@@ -421,40 +393,13 @@ Class Hvc {
         $this->setRequestUrl($uri, $expiration);
         $this->setMethod($method, $data);
         
-        $v = $this->getVisibility();
-        $r = $this->exec($expiration); // execute the process
+        $vsb = $this->getVisibility();
+        $rsp = $this->exec($expiration); // execute the process
 
         $errorHeader = '<div style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;
-  background:#fff;border:1px solid #ddd;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:5px 10px;color:#666;font-size:12px;">';
+  background:#fff;border:1px solid #ddd;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:5px 10px;color:#069586;font-size:12px;"><span style="font-weight:bold;">';
         $errorFooter = '</div>';
-
-        $isXmlHttp = (! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false;
-
-        if (is_string($r) AND strpos($r, '404') === 0) {
-
-            if ($isXmlHttp) {
-                 return array(
-                    'success' => 0,
-                    'message' => translate('404'),
-                    'errors'  => array()
-                );
-            }
-            echo ($errorHeader.$r.$errorFooter);
-            return;
-        }
-
-        //------------ Private Request Header -------------//
-
-            if ($v == 'private') // Private Request
-            {
-                if(strpos(trim($uri, '/'), 'private/views') === 0)  // if request goes to view folder don't check the format
-                {
-                    return $r;
-                }
-
-                $r = json_decode($r, true); // Convert to array
-
-                $hvc_error = $errorHeader.'<span style="font-weight:bold;">Private hvc response must contain at least one of the following keys. ( "private/views" route is excluded ).</span><pre style="border:none;">
+        $hvc_error   = $errorHeader.'</span><span style="font-weight:bold;">Private hvc response must contain at least one of the following keys. ( "private/views" route is excluded ).</span><pre style="border:none;">
 $r = array(
     \'success\' => integer     // optional
     \'message\' => string,     // optional
@@ -464,45 +409,84 @@ $r = array(
 )
 
 echo json_encode($r); // required</pre>'.$errorFooter;
+        $hvc_view_error   = $errorHeader.'</span><span style="font-weight:bold;">View Controller ( '.$this->getUri().' ) method must echo a string, should not be empty.</span><pre style="border:none;">
+echo $this->view->get(
+    \'header\',
+    function () {
+    },
+    false  // required
+);</pre>'.$errorFooter;
 
-                if( ! is_array($r)) // If success not exists !
-                {            
-                    if ($isXmlHttp) {
-                         return array(
-                            'success' => 0,
-                            'message' => $hvc_error,
-                            'errors'  => array()
-                        );
-                    }
-                    echo ($hvc_error);
-                    return;
-                }
+        $isXmlHttp = (! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? true : false;
 
-                //--------- Check the Private Response Format -----------//
-            
-                $key_errors = array_map(function($v){  
-                    return in_array($v, array('success','message','errors','results','e')); // Get the keys of hvc result array
-                }, array_keys($r));
+        if (is_string($rsp) AND strpos($rsp, '404') === 0) {  // 404 support
 
-                if(in_array(false, $key_errors, true))  // throws an exception
-                {
-                    if ($isXmlHttp) {
-                         return array(
-                            'success' => 0,
-                            'message' => $hvc_error,
-                            'errors'  => array()
-                        );
-                    }
-                    echo ($hvc_error);
-                    return;
-                }
-
-                return $r;
+            if ($isXmlHttp) {  // ajax support
+                 return array(
+                    'success' => 0,
+                    'message' => translate('e_404'),
+                    'errors'  => array()
+                );
             }
+            echo ($errorHeader.$rsp.$errorFooter);
+            return;
+        }
+
+        //------------ Private Request Header -------------//
+
+        if ($vsb == 'private') {  // Private Request
+
+            if (strpos(trim($uri, '/'), 'private/views') === 0) { // if request goes to view folder don't check the format
+
+                if ( ! is_string($rsp) OR empty($rsp)) {
+                    echo $hvc_view_error;
+                    return;                    
+                }
+                return $rsp;
+            }
+
+            $rsp = json_decode($rsp, true); // Decode json to array
+
+            if ( ! is_array($rsp)) { // If success not exists !
+
+                if ($isXmlHttp) {
+                     return array(
+                        'success' => 0,
+                        'message' => $hvc_error,
+                        'errors'  => array()
+                    );
+                }
+                echo ($hvc_error);
+                return;
+            }
+
+            //--------- Check the Private Response Format -----------//
+        
+            $key_errors = array_map(
+                function ($val) {  
+                return in_array($val, array('success','message','errors','results','e')); // Get the keys of hvc result array
+                },
+                array_keys($rsp)
+            );
+
+            if (in_array(false, $key_errors, true)) {   // throws an exception
+                if ($isXmlHttp) {
+                     return array(
+                        'success' => 0,
+                        'message' => $hvc_error,
+                        'errors'  => array()
+                    );
+                }
+                echo ($hvc_error);
+                return;
+            }
+
+            return $rsp;
+        }
 
         //------------ Private Request Header End -------------//
 
-        return $r;
+        return $rsp;
     }
 
     // ------------------------------------------------------------------------
@@ -519,8 +503,8 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         // ------------------------------------------------------------------------
 
-        list($sm, $ss)    = explode(' ', microtime());  // Start the Query Timer 
-        self::$start_time = ($sm + $ss);
+        list($smt, $sst)    = explode(' ', microtime());  // Start the Query Timer 
+        self::$start_time = ($smt + $sst);
 
         // ------------------------------------------------------------------------
 
@@ -528,21 +512,18 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         // ----------------- Memory Cache Key Exists -------------------//
 
-        if($expiration > 0 AND $this->cache->keyExists($KEY)) // If cache exists return to cached string.
-        {
+        if ($expiration > 0 AND $this->cache->keyExists($KEY)) { // If cache exists return to cached string.
             $cache       = $this->config['cache'];
             $this->cache = $cache();
-            
             $data = $this->cache->get($KEY);
             return base64_decode($data);        // encoding for specialchars
         }
 
         // ----------------- Static Php Cache -------------------//
 
-        if( isset(self::$cid[$KEY]) )   // Cache the multiple HVC requests in the same controller.
-        {                               // This cache type not related with Cache package.
+        if ( isset(self::$cid[$KEY]) ) {  // Cache the multiple HVC requests in the same controller. 
+                                           // This cache type not related with Cache package.
             $this->_clear(true);
-
             return $this->getResponse();
         }
 
@@ -552,12 +533,10 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         $response = $router->getResponse();
 
-        if($this->connection === false OR $response != false)  // If router dispatch is fail ?
-        {
-            $k = key($response);
+        if ($this->connection === false OR $response != false) {  // If router dispatch is fail ?
+            $rsp_k = key($response);
             $this->_clear();
-
-            $this->setResponse($k.' '.$response[$k]);
+            $this->setResponse($rsp_k.' '.$response[$rsp_k]);
             return $this->getResponse();
         }
         
@@ -571,24 +550,21 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         //  --------------------------------------------------------------------------
 
-        $root = PUBLIC_DIR;
+        $folder = PUBLIC_DIR;
 
         if($this->getVisibility() == 'private') // Send "private" requests to private folder
         {
-            $root = PRIVATE_DIR;
+            $folder = PRIVATE_DIR;
         }
 
-        $hvc_uri    = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
-        $controller = $root. $router->fetchDirectory(). DS .'controller'. DS .$router->fetchClass(). EXT;
+        $this->hvc_uri = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
+        $controller    = $folder. $router->fetchDirectory(). DS .'controller'. DS .$router->fetchClass(). EXT;
 
         // --------- Check class is exists in the storage ----------- //
 
-        if(isset($storage[$router->fetchClass()])) // Check is multiple call to same class.
-        {
-            $c = $storage[$router->fetchClass()];  // Get stored class.
-        } 
-        else
-        {
+        if (isset($storage[$router->fetchClass()])) {    // Check is multiple call to same class.
+            $c = $storage[$router->fetchClass()];       // Get stored class.
+        } else {
             require($controller);        // Call the controller.
         }
 
@@ -596,21 +572,18 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         // $c variable available here !
 
-        if( ! isset($c->request->global))  // ** Let's create new request object for globals
-        {
-            $c->request = new Request;     // create new request object;
-                                           // create a global variable
-                                           // keep all original objects in it.
-                                           // e.g. $this->request->global->uri->getUriString();
+        if ( ! isset($c->request->global)) { // ** Let's create new request object for globals
+            $c->request = new Request;       // create new request object;
+                                             // create a global variable
+                                             // keep all original objects in it.
+                                             // e.g. $this->request->global->uri->getUriString();
             
-            // ** Store global "Uri" and "Router" objects into sub layer
+            // ** Store global "Uri" and "Router" objects to make available them in sub layers
             //---------------------------------------------------------------------------
 
             $c->request->global             = new stdClass;      // Create an empty class called "global"
             $c->request->global->uri        = $this->uri;        // Let's assign the global uri object
             $c->request->global->router     = $this->router;     // Let's assign the global uri object
-            $c->request->global->config     = $this->cfg;        // Let's assign the global config object
-            $c->request->global->translator = $this->translator; // Let's assign the global config object
         }
 
         // End store global variables
@@ -619,9 +592,8 @@ echo json_encode($r); // required</pre>'.$errorFooter;
                 OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
             )
         {
-            $this->setResponse('404 - Hvc request not found: '.$hvc_uri);
+            $this->setResponse('404 - Hvc request not found: '.$this->hvc_uri);
             $this->_clear();
-            
             return $this->getResponse();
         }
          
@@ -636,9 +608,8 @@ echo json_encode($r); // required</pre>'.$errorFooter;
         
         if ( ! in_array(strtolower($router->fetchMethod()), $_storedMethods))
         {
-            $this->setResponse('404 - Hvc request not found: '.$hvc_uri);
+            $this->setResponse('404 - Hvc request not found: '.$this->hvc_uri);
             $this->_clear();
-
             return $this->getResponse();
         }
 
@@ -682,11 +653,9 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         //------------- Set to Memory Cache -------------//
 
-        if($expiration > 0)
-        {
+        if ($expiration > 0) {
             $cache       = $this->config['cache'];
             $this->cache = $cache();                // load cache library
-            
             $data = base64_encode($response);
             $this->cache->set($KEY, $data, (int)$expiration);
         }
@@ -708,8 +677,7 @@ echo json_encode($r); // required</pre>'.$errorFooter;
     */
     protected function _clear($no_loop = false)
     {              
-        if( ! isset($_SERVER['HVC_REQUEST_URI']))  // if no hvc header return to null;
-        {
+        if ( ! isset($_SERVER['HVC_REQUEST_URI'])) { // if no hvc header return to null;
             return;
         }
 
@@ -727,26 +695,22 @@ echo json_encode($r); // required</pre>'.$errorFooter;
 
         // Set original $this to controller instance that we backup before.
         // --------------------------------------------------
-        
+
         getInstance($this->global);
-        
         getInstance()->uri        = $this->uri;     // restore back original objects
         getInstance()->router     = $this->router;
-        getInstance()->config     = $this->cfg;
-        getInstance()->translator = $this->translator;
 
         $this->clear();  // reset all HVC variables.
 
         //---------------------------------------------------
 
-        if($no_loop == false)
-        {
-            global $logger;
+        if ($no_loop == false) {
 
+            global $logger;
             ++self::$request_count; // store total requests
 
-            list($em, $es) = explode(' ', microtime());
-            $end_time = ($em + $es); 
+            list($emt, $est) = explode(' ', microtime());
+            $end_time = ($emt + $est); 
 
             $logger->info('Hvc request: '.$currentUri.' time: '.number_format($end_time - self::$start_time, 4));
         }
@@ -770,7 +734,6 @@ echo json_encode($r); // required</pre>'.$errorFooter;
         $_SERVER[$key] = $val;
 
         $this->_setConnString($key.$val);
-        
         return $this;
     }
 
@@ -828,6 +791,18 @@ echo json_encode($r); // required</pre>'.$errorFooter;
     // --------------------------------------------------------------------
     
     /**
+     * Get last hvc uri
+     * 
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->hvc_uri;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
     * Close Hvc Connection
     * 
     * If we have any possible hvc exceptions
@@ -838,13 +813,11 @@ echo json_encode($r); // required</pre>'.$errorFooter;
     */
     public function __destruct()
     {               
-        if($this->process_done == false)
-        {                                   
+        if ($this->process_done == false) {
             $this->_clear($this->no_loop);
 
             return;
         }
-
         $this->process_done = false;
     }
 

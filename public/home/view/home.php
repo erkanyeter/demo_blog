@@ -6,7 +6,7 @@
     </head>
 
 <body>
-        <?php echo $header ?>
+        <?php echo $header; ?>
 
         <div id="clear"></div>
         <div id="containerbox">
@@ -33,6 +33,7 @@ if(count($posts) > 0) :
     endforeach;
 endif;?>
             </div>
+            
             <?php echo $sidebar ?>
             <?php echo $footer ?>
         </div>

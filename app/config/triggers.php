@@ -29,7 +29,7 @@ $triggers['func'] = array(
 
         if ( ! $this->auth->hasIdentity()) {  // if user has not identity ?
             new Url;
-            $this->url->redirect('/login');  // redirect user to login page
+            $this->url->redirect('membership/login');  // redirect user to login page
         }
 
     },

@@ -40,7 +40,7 @@ Class Cookie {
     * @param    string    the cookie prefix
     * @return   void
     */
-    public function set($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $secure = false)
+    public function set($name = '', $value = '', $expire = 0, $domain = '', $path = '/', $prefix = '', $secure = false)
     {
         global $config;
 

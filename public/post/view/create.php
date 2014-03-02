@@ -17,6 +17,9 @@
                     <?php echo $this->url->anchor('/home', 'Home') ?> » <b> Create Post </b>
                 </div>
 
+                <section><?php echo $this->form->getMessage() ?></section>
+                <section><?php echo $this->form->getNotice() ?></section>
+
                 <h1 class="h1">Create Post </h1>
 
                 <div id="createpost">

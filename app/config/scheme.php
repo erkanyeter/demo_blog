@@ -23,12 +23,11 @@
 | );
 |
 */
-
 $scheme = array(
 
     'default' => function () {
-        $this->set('header', $this->getTpl('header', false));
-        $this->set('sidebar', $this->getTpl('sidebar', false));
+        $this->set('header', $this->hvc->get('private/views/header'));
+        $this->set('sidebar', $this->hvc->get('private/views/sidebar'));
         $this->set('footer', $this->getTpl('footer', false));
     },
     'welcome' => function () {

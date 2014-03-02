@@ -27,13 +27,13 @@ $c->func(
             );
 
             $this->db->transaction();
-            $this->db->insert('postsss', $data);
+            $this->db->insert('posts', $data);
             $this->db->commit();
 
             $r = array(
                 'success' => 1,
                 'results' => array(),
-                'message' => 'Post saved successfully',
+                'message' => 'Post added successfully',
             );
         } 
         catch(Exception $e)

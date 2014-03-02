@@ -17,6 +17,6 @@ $c->func(
     'index',
     function () {
         $this->auth->clearIdentity();  // remove auth data
-        $this->url->redirect('/login');
+        $this->url->redirect('membership/login');
     }
 );
