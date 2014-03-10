@@ -19,7 +19,7 @@ $c = new Controller(
 
 $c->func(
     'index',
-    function () use ($c) {  
+    function () {  
 
         if ($this->post->get('dopost')) {
 
@@ -29,8 +29,14 @@ $c->func(
             $this->form->setRules('agreement', 'User Agreement', '_int|required');
             
             if ($this->form->isValid()) {     
-                $this->form->setNotice('Form Validation Success', SUCCESS);  // Set flash notice using Session Class.
-                $this->url->redirect('tutorials/hello_form/index');          // Redirect to user same page.
+
+                // $this->form->setError('email', 'Example Error !');
+                // 
+                
+                $this->form->setMessage('Example Error !');
+
+                // $this->form->setNotice('Form Validation Success', SUCCESS);  // Set flash notice using Session Class.
+                // $this->url->redirect('tutorials/hello_form/index');          // Redirect to user same page.
             }
         }
 

@@ -22,7 +22,6 @@ namespace Form\Src {
 
             $formObject->_formMessages['success'] = 0;            
             $formObject->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
-            $formObject->_formMessages['e']       = $key;
         
         } else { 
             getInstance()->validator->setMessage($key, $val); // use validator object set message

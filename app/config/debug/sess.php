@@ -19,17 +19,6 @@ $sess = array(
     'expiration'      => 7200,          // The number of SECONDS you want the session to last. By default two hours. "0" is no expiration.
     'expire_on_close' => false,         // Whether to cause the session to expire automatically when the browser window is closed
     'encrypt_cookie'  => false,         // Whether to encrypt the cookie
-    'driver'          => function () { 
-        return new Sess_Native(
-            array(
-                'session.gc_divisor'      => 100,      // Configure garbage collection
-                'session.gc_maxlifetime'  => 7200,
-                'session.cookie_lifetime' => 0,
-                // 'session.save_handler'    => 'redis',
-                // 'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
-            )
-        );
-    },
     'request' => function () { // Set Request Object
         return new Request;
     },
@@ -41,6 +30,18 @@ $sess = array(
     'match_useragent' => true,            // Whether to match the User Agent when reading the session data
     'time_to_update'  => 300        // How many seconds between Framework refreshing "Session" Information"
 );
+
+$sess['driver'] =  function () { 
+    return new Sess_Native(
+        array(
+            'session.gc_divisor'      => 100,      // Configure garbage collection
+            'session.gc_maxlifetime'  => 7200,
+            'session.cookie_lifetime' => 0,
+            // 'session.save_handler'    => 'redis',
+            // 'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
+        )
+    );
+};
 
 /* End of file sess.php */
 /* Location: .app/config/debug/sess.php */

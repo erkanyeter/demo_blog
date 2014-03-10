@@ -18,20 +18,23 @@ $c->func(
     function () {
         if ($this->request->isXmlHttp()) { // Is request Ajax ?
             
-            $this->form->setRules('user_email', 'Email', 'required|validEmail');
-            $this->form->setRules('user_password', 'Password', 'required|minLen(6)');
-            $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(user_password)');
+            $this->form->setRules('email', 'Email', 'required|validEmail');
+            $this->form->setRules('password', 'Password', 'required|minLen(6)');
+            $this->form->setRules('confirm_password', 'Confirm Password', 'required|matches(password)');
             $this->form->setRules('agreement', 'User Agreement', 'required|exactLen(1)');
 
-            if ( ! $this->form->isValid()) {
-                $this->form->setMessage('User saved successfully !');
+            if ($this->form->isValid()) {
+                $this->form->setError('email', 'Custom Error Example: There is an error in email field !');
+                $this->form->setMessage('There are some errors.');
+
+                // $this->form->setMessage('Succesfull !');
             }
 
             header('Cache-Control: no-cache, must-revalidate');
             header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
             header('Content-type: application/json;charset=UTF-8');
 
-            echo json_encode($this->form->getOutput());
+            echo json_encode($this->form->getAllOutput());
 
         } else {
             new Url;

@@ -225,7 +225,6 @@ Class Form {
         {
             return false;
         }
-        
         return getInstance()->validator;
     }
 
@@ -325,7 +324,6 @@ Class Form {
     public function getOutput()
     {
         unset($this->_formMessages['values']);
-
         return $this->_formMessages;
     }
 
@@ -358,13 +356,40 @@ Class Form {
         {
             foreach ($key as $k => $v) 
             {
-                $validator->_field_data[$k]['error'] = $v; 
+                $validator->_field_data[$k]['error'] = $v;
+                $validator->_error_array[$key] = $val;
             }
         } 
         else
         {
             $validator->_field_data[$key]['error'] = $val;
+            $validator->_error_array[$key] = $val;
+
+            $form  = Form::getConfig();  // get form template
+            $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['error'];
+
+            $this->_formMessages['success'] = 0;
+            $this->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
+            $this->_formMessages['errors']  = $validator->_error_array;
+
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Set error key 
+     * 
+     * success,
+     * message,
+     * errors,
+     * 
+     * @param string $key error key
+     * @param string $val error value
+     */
+    public function setKey($key, $val)
+    {
+        $this->_formMessages[$key] = $val;
     }
 
     // ------------------------------------------------------------------------

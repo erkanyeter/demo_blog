@@ -90,6 +90,7 @@ function submitAjax(formId){
                     alert(obj['message']);
                     return false;
                 }
+                document.getElementById("response").innerHTML = '<pre>' + json.toString() + '</pre>';
             }
             else  // Assign Test Results
             {
@@ -131,11 +132,11 @@ function submitAjax(formId){
                 <table width="100%">
                     <tr>
                         <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
-                        <td><?php echo $this->form->input('user_email', '', " id='user_email' ") ?></td>
+                        <td><?php echo $this->form->input('email', '', " id='email' ") ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Password') ?></td>
-                        <td><?php echo $this->form->password('user_password', '', " id='user_password' ") ?></td>
+                        <td><?php echo $this->form->password('password', '', " id='password' ") ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Confirm') ?></td>
