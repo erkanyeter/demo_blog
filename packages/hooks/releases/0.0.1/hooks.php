@@ -9,12 +9,11 @@
  * @category      hooks
  * @link        
  */
-
-Class Hooks {
-    
-    public $enabled        = false;    // Determines wether hooks are enabled
-    public $hooks          = array();  // List of all hooks set in config/hooks.php
-    public $in_progress    = false;    // Determines wether hook is in progress, used to prevent infinte loops
+Class Hooks
+{
+    public $enabled     = false;    // Determines wether hooks are enabled
+    public $hooks       = array();  // List of all hooks set in config/hooks.php
+    public $in_progress = false;    // Determines wether hook is in progress, used to prevent infinte loops
 
     // --------------------------------------------------------------------
 
@@ -24,22 +23,16 @@ Class Hooks {
     public function __construct()
     {
         global $config, $logger;
-
-        if ($config['enable_hooks'] == FALSE)  // If hooks are not enabled in the config
-        {                                            // file there is nothing else to do
+        if ($config['enable_hooks'] == false) {  // If hooks are not enabled in the config file there is nothing else to do
             return;
         }
-
         $hooks = getConfig('hooks');
-        
-        if ( ! isset($hooks) OR ! is_array($hooks) OR count($hooks) == 0)
-        {
+
+        if ( ! isset($hooks) OR !is_array($hooks) OR count($hooks) == 0) {
             return;
         }
-
-        $this->hooks   =& $hooks;
+        $this->hooks   = & $hooks;
         $this->enabled = true;
-
         $logger->debug('Hooks Class Initialized');
     }
 
@@ -54,15 +47,12 @@ Class Hooks {
      * @param   string  the hook name
      * @return  mixed
      */
-    public function _callHook($which = '')
+    public function call($which = '')
     {
-        if ( ! $this->enabled OR ! isset($this->hooks[$which]))
-        {
+        if ( ! $this->enabled OR ! isset($this->hooks[$which])) {
             return false;
         }
-
         $this->_runHook($this->hooks[$which]);
-
         return true;
     }
 
@@ -77,12 +67,10 @@ Class Hooks {
      * @param   Closure the hook function
      * @return  bool
      */
-    public function _runHook($closure)
+    private function _runHook($closure)
     {
-        if( ! is_callable($closure))
-        {
+        if ( ! is_callable($closure)) {
             $logger->debug('Hooks closure isn\'t callable');
-
             return false;
         }
 
@@ -92,11 +80,10 @@ Class Hooks {
         // If the script being called happens to have the same
         // hook call within it a loop can happen
 
-        if ($this->in_progress == true)
-        {
+        if ($this->in_progress == true) {
             return;
         }
-        
+
         // -----------------------------------
         // Set the in_progress flag
         // -----------------------------------
@@ -108,15 +95,14 @@ Class Hooks {
         // -----------------------------------
 
         $closure();
-
         $logger->debug('Hooks closure called succesfully');
-        
-        $this->in_progress = false;
 
+        $this->in_progress = false;
         return true;
     }
 
 }
+
 // END Hooks Class
 
 /* End of file Hooks.php */

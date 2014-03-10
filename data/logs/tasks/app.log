@@ -1,0 +1,31 @@
+[2014-03-10 07:57:51] system.debug: --> Config Class Initialized  
+[2014-03-10 07:57:51] system.debug: --> Translator Class Initialized  
+[2014-03-10 07:57:51] system.debug: --> Response Class Initialized  
+[2014-03-10 07:57:51] system.debug: --> Uri Class Initialized  
+[2014-03-10 07:57:51] system.debug: --> Router Class Initialized  
+[2014-03-10 07:57:51] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 07:57:51] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 07:57:51] system.debug: --> $_COOKIE:   
+[2014-03-10 07:57:51] system.debug: --> $_POST:   
+[2014-03-10 07:57:51] system.debug: --> $_GET:   
+[2014-03-10 07:57:51] system.debug: --> Exceptions Class Initialized  
+[2014-03-10 07:57:51] system.debug: --> Error Class Initialized  
+[2014-03-10 07:57:51] system.error: --> (Cmd) Exception Error: Controller error: There is no method "_displaylogo()" to call. ROOT/packages/controller/releases/0.0.1/controller.php 132  
+[2014-03-10 07:58:33] system.debug: --> Config Class Initialized  
+[2014-03-10 07:58:33] system.debug: --> Translator Class Initialized  
+[2014-03-10 07:58:33] system.debug: --> Response Class Initialized  
+[2014-03-10 07:58:33] system.debug: --> Uri Class Initialized  
+[2014-03-10 07:58:33] system.error: --> 404 Page Not Found --> tasks/logh  
+[2014-03-10 07:59:58] system.debug: --> Config Class Initialized  
+[2014-03-10 07:59:58] system.debug: --> Translator Class Initialized  
+[2014-03-10 07:59:58] system.debug: --> Response Class Initialized  
+[2014-03-10 07:59:58] system.debug: --> Uri Class Initialized  
+[2014-03-10 07:59:58] system.debug: --> Router Class Initialized  
+[2014-03-10 07:59:58] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 07:59:58] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 07:59:58] system.debug: --> $_COOKIE:   
+[2014-03-10 07:59:58] system.debug: --> $_POST:   
+[2014-03-10 07:59:58] system.debug: --> $_GET:   
+[2014-03-10 07:59:58] system.debug: --> Exceptions Class Initialized  
+[2014-03-10 07:59:58] system.debug: --> Error Class Initialized  
+[2014-03-10 07:59:58] system.error: --> (Cmd) Exception Error: Controller error: There is no method "_displaylogo()" to call. ROOT/packages/controller/releases/0.0.1/controller.php 132  

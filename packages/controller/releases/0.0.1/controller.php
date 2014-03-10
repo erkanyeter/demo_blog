@@ -121,10 +121,8 @@ Class Controller
      * @param  array $args  closure function arguments
      * @return void
      */
-    public function __call($methodName, $args)
+    public function __call($method, $args)
     {
-        $method = strtolower($methodName);
-
         if (isset($this->_controllerAppMethods[$method])) {
             return call_user_func_array($this->_controllerAppMethods[$method], $args);
         }

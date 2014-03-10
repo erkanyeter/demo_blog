@@ -27,7 +27,7 @@ Class Obullo
              *  Is there a "pre_system" hook?
              * ------------------------------------------------------
              */
-            $hooks->_callHook('pre_system');
+            $hooks->call('pre_system');
         }
         /*
          * ------------------------------------------------------
@@ -87,7 +87,7 @@ Class Obullo
          * ------------------------------------------------------
          */
         if ($config['enable_hooks']) {
-            $hooks->_callHook('pre_controller');
+            $hooks->call('pre_controller');
         }
 
         include $controller;  // call the controller.  $c variable now Available in HERE !!
@@ -105,7 +105,7 @@ Class Obullo
          * ------------------------------------------------------
          */
         if ($config['enable_hooks']) {
-            $hooks->_callHook('post_controller_constructor');
+            $hooks->call('post_controller_constructor');
         }
         $storedMethods = array_keys($c->_controllerAppMethods);
 
@@ -129,7 +129,7 @@ Class Obullo
          * ------------------------------------------------------
          */
         if ($config['enable_hooks']) {
-            $hooks->_callHook('post_controller');
+            $hooks->call('post_controller');
         }
         /*
          * ------------------------------------------------------
@@ -137,7 +137,7 @@ Class Obullo
          * ------------------------------------------------------
          */
         if ($config['enable_hooks']) {
-            if ($hooks->_callHook('display_override') === false) {
+            if ($hooks->call('display_override') === false) {
                 $response->_sendOutput();  // Send the final rendered output to the browser
             }
         } else {
@@ -149,7 +149,7 @@ Class Obullo
          * ------------------------------------------------------
          */
         if ($config['enable_hooks']) {
-            $hooks->_callHook('post_system');
+            $hooks->call('post_system');
         }
     }
 // end construct
@@ -201,7 +201,7 @@ function cleanInputData($str)
  */
 function cleanInputKeys($str)
 {
-    if (!preg_match("/^[a-z0-9:_\/-]+$/i", $str)) {
+    if ( ! preg_match("/^[a-z0-9:_\/-]+$/i", $str)) {
         die('Disallowed Key Characters.');
     }
     return $str;
@@ -231,13 +231,12 @@ function getStatic($filename = 'config', $var = '', $folder = '', $ext = '')
         if ($var == '') {
             $var = &$filename;
         }
-        if (!isset($$var) OR !is_array($$var)) {
+        if ( ! isset($$var) OR ! is_array($$var)) {
             die('The configuration file ' . $folder . DS . $filename . $ext . ' variable name must be same with filename.');
         }
         $variables[$key] = & $$var;
         $loaded[$key] = $key;
     }
-
     return $variables[$key];
 }
 
@@ -254,7 +253,6 @@ function getStatic($filename = 'config', $var = '', $folder = '', $ext = '')
 function getConfig($filename = 'config', $var = '', $folder = '')
 {
     global $config;
-
     $folder = ($folder == '') ? APP . 'config' : $folder;
 
     if (in_array($filename, $config['environment_config_files'])) {
@@ -338,7 +336,6 @@ function autoloader($packageRealname)
         }
     }
 }
-
 spl_autoload_register('autoloader', true);
 
 // --------------------------------------------------------------------
@@ -379,7 +376,6 @@ function removeInvisibleCharacters($str, $url_encoded = true)
         $non_displayables[] = '/%1[0-9a-f]/';   // url encoded 16-31
     }
     $non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S';   // 00-08, 11, 12, 14-31, 127
-
     do {
         $str = preg_replace($non_displayables, '', $str, -1, $count);
     } while ($count);
@@ -407,7 +403,6 @@ function exceptionsHandler($e, $type = '')
         'COMPILE ERROR' => 'COMPILE ERROR', // E_COMPILE_ERROR   
         'USER FATAL ERROR' => 'USER FATAL ERROR', // E_USER_ERROR
     );
-
     $shutdownError = false;
     if (isset($shutdownErrors[$type])) {  // We couldn't use any object for shutdown errors.
         $error = new Error; // Load error package.
@@ -438,13 +433,10 @@ function exceptionsHandler($e, $type = '')
                     break;
                 }
             }
-
             $rules = $error->parseRegex($level);
-
             if ($rules == false) {
                 return;
             }
-
             $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
 
             if (isset($allowedErrors[$code])) {
@@ -459,7 +451,6 @@ function exceptionsHandler($e, $type = '')
         $exception = new Exceptions;
         $exception->write($e, $type);
     }
-
     return;
 }
 
