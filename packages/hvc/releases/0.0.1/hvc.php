@@ -459,7 +459,7 @@ echo $this->view->get(
         if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
             $this->_clear();                // This cache type not related with Cache package.
             $response = $this->getResponse();
-            $logger->debug('Hvc request: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => $response));
+            $logger->debug('$_HVC: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => $response));
             return $response;    // This is native system cache !
         }
 
@@ -590,7 +590,7 @@ echo $this->view->get(
             $cache->set($KEY, base64_encode($response), (int)$expiration);
         }
 
-        $logger->debug('Hvc request: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+        $logger->debug('$_HVC: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
         return $response;
     }

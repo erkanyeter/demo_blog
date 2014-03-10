@@ -18,8 +18,8 @@ $c->func(
     'index',
     function () {
 
-        $ra = $this->hvc->get('tutorials/hello_dummy/test/1/2/3');
-        $rb = $this->hvc->get('tutorials/hello_dummy/test/4/5/6');
+        $ra = $this->hvc->get('tutorials/hello_dummy/1/2/3');
+        $rb = $this->hvc->get('tutorials/hello_dummy/4/5/6');
 
         $this->view->get(
             'hello_hvc', 

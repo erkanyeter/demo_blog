@@ -31,3 +31,14 @@
 [2014-03-07 22:14:14] system.debug: --> $_POST:   
 [2014-03-07 22:14:14] system.debug: --> $_GET:   
 [2014-03-07 22:14:14] system.debug: --> Final output sent to browser array (\n  'memory_usage' => '741,880 bytes',\n) 
+[2014-03-10 09:05:22] system.debug: --> Config Class Initialized  
+[2014-03-10 09:05:22] system.debug: --> Translator Class Initialized  
+[2014-03-10 09:05:22] system.debug: --> Response Class Initialized  
+[2014-03-10 09:05:22] system.debug: --> Uri Class Initialized  
+[2014-03-10 09:05:22] system.debug: --> Router Class Initialized  
+[2014-03-10 09:05:22] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 09:05:22] system.debug: --> $_REQUEST_URI: /start/index/OB_TASK_REQUEST/  
+[2014-03-10 09:05:22] system.debug: --> $_COOKIE:   
+[2014-03-10 09:05:22] system.debug: --> $_POST:   
+[2014-03-10 09:05:22] system.debug: --> $_GET:   
+[2014-03-10 09:05:22] system.debug: --> Final output sent to browser array (  'memory_usage' => '740,872 bytes',) 

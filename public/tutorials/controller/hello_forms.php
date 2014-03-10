@@ -12,6 +12,7 @@ $c = new Controller(
         new View;
         new Form;
         new Post;
+        new Sess;
         $this->translator->load('hello_form');
     }
 );

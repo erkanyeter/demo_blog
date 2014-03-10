@@ -29,3 +29,184 @@
 [2014-03-10 07:59:58] system.debug: --> Exceptions Class Initialized  
 [2014-03-10 07:59:58] system.debug: --> Error Class Initialized  
 [2014-03-10 07:59:58] system.error: --> (Cmd) Exception Error: Controller error: There is no method "_displaylogo()" to call. ROOT/packages/controller/releases/0.0.1/controller.php 132  
+[2014-03-10 08:15:35] system.debug: --> Config Class Initialized  
+[2014-03-10 08:15:35] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:15:35] system.debug: --> Response Class Initialized  
+[2014-03-10 08:15:35] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:15:35] system.error: --> 404 Page Not Found --> tasks/welcome  
+[2014-03-10 08:15:43] system.debug: --> Config Class Initialized  
+[2014-03-10 08:15:43] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:15:43] system.debug: --> Response Class Initialized  
+[2014-03-10 08:15:43] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:15:43] system.debug: --> Router Class Initialized  
+[2014-03-10 08:15:43] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:15:43] system.debug: --> $_REQUEST_URI: /start/  
+[2014-03-10 08:15:43] system.debug: --> $_COOKIE:   
+[2014-03-10 08:15:43] system.debug: --> $_POST:   
+[2014-03-10 08:15:43] system.debug: --> $_GET:   
+[2014-03-10 08:15:43] system.debug: --> Final output sent to browser array (  'memory_usage' => '748,032 bytes',) 
+[2014-03-10 08:15:49] system.debug: --> Config Class Initialized  
+[2014-03-10 08:15:49] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:15:49] system.debug: --> Response Class Initialized  
+[2014-03-10 08:15:49] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:15:49] system.error: --> 404 Page Not Found --> tasks/welcome  
+[2014-03-10 08:16:03] system.debug: --> Config Class Initialized  
+[2014-03-10 08:16:03] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:16:03] system.debug: --> Response Class Initialized  
+[2014-03-10 08:16:03] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:16:03] system.error: --> 404 Page Not Found --> tasks/home  
+[2014-03-10 08:23:54] system.debug: --> Config Class Initialized  
+[2014-03-10 08:23:54] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:23:54] system.debug: --> Response Class Initialized  
+[2014-03-10 08:23:54] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:23:54] system.debug: --> Router Class Initialized  
+[2014-03-10 08:23:54] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:23:54] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:23:54] system.debug: --> $_COOKIE:   
+[2014-03-10 08:23:54] system.debug: --> $_POST:   
+[2014-03-10 08:23:54] system.debug: --> $_GET:   
+[2014-03-10 08:24:05] system.debug: --> Config Class Initialized  
+[2014-03-10 08:24:05] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:24:05] system.debug: --> Response Class Initialized  
+[2014-03-10 08:24:05] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:24:05] system.debug: --> Router Class Initialized  
+[2014-03-10 08:24:05] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:24:05] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:24:05] system.debug: --> $_COOKIE:   
+[2014-03-10 08:24:05] system.debug: --> $_POST:   
+[2014-03-10 08:24:05] system.debug: --> $_GET:   
+[2014-03-10 08:24:07] system.debug: --> Config Class Initialized  
+[2014-03-10 08:24:07] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:24:07] system.debug: --> Response Class Initialized  
+[2014-03-10 08:24:07] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:24:07] system.debug: --> Router Class Initialized  
+[2014-03-10 08:24:07] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:24:07] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:24:07] system.debug: --> $_COOKIE:   
+[2014-03-10 08:24:07] system.debug: --> $_POST:   
+[2014-03-10 08:24:07] system.debug: --> $_GET:   
+[2014-03-10 08:24:20] system.debug: --> Config Class Initialized  
+[2014-03-10 08:24:20] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:24:20] system.debug: --> Response Class Initialized  
+[2014-03-10 08:24:20] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:24:20] system.debug: --> Router Class Initialized  
+[2014-03-10 08:24:20] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:24:20] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:24:20] system.debug: --> $_COOKIE:   
+[2014-03-10 08:24:20] system.debug: --> $_POST:   
+[2014-03-10 08:24:20] system.debug: --> $_GET:   
+[2014-03-10 08:24:21] system.debug: --> Config Class Initialized  
+[2014-03-10 08:24:21] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:24:21] system.debug: --> Response Class Initialized  
+[2014-03-10 08:24:21] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:24:21] system.debug: --> Router Class Initialized  
+[2014-03-10 08:24:21] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:24:21] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:24:21] system.debug: --> $_COOKIE:   
+[2014-03-10 08:24:21] system.debug: --> $_POST:   
+[2014-03-10 08:24:21] system.debug: --> $_GET:   
+[2014-03-10 08:24:53] system.debug: --> Config Class Initialized  
+[2014-03-10 08:24:53] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:24:53] system.debug: --> Response Class Initialized  
+[2014-03-10 08:24:53] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:24:53] system.debug: --> Router Class Initialized  
+[2014-03-10 08:24:53] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:24:53] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:24:53] system.debug: --> $_COOKIE:   
+[2014-03-10 08:24:53] system.debug: --> $_POST:   
+[2014-03-10 08:24:53] system.debug: --> $_GET:   
+[2014-03-10 08:24:54] system.debug: --> Config Class Initialized  
+[2014-03-10 08:24:54] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:24:54] system.debug: --> Response Class Initialized  
+[2014-03-10 08:24:54] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:24:54] system.debug: --> Router Class Initialized  
+[2014-03-10 08:24:54] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:24:54] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:24:54] system.debug: --> $_COOKIE:   
+[2014-03-10 08:24:54] system.debug: --> $_POST:   
+[2014-03-10 08:24:54] system.debug: --> $_GET:   
+[2014-03-10 08:25:19] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:19] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:19] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:19] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:19] system.debug: --> Router Class Initialized  
+[2014-03-10 08:25:19] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:25:19] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:25:19] system.debug: --> $_COOKIE:   
+[2014-03-10 08:25:19] system.debug: --> $_POST:   
+[2014-03-10 08:25:19] system.debug: --> $_GET:   
+[2014-03-10 08:25:21] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Router Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:25:21] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:25:21] system.debug: --> $_COOKIE:   
+[2014-03-10 08:25:21] system.debug: --> $_POST:   
+[2014-03-10 08:25:21] system.debug: --> $_GET:   
+[2014-03-10 08:25:21] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Router Class Initialized  
+[2014-03-10 08:25:21] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:25:21] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:25:21] system.debug: --> $_COOKIE:   
+[2014-03-10 08:25:21] system.debug: --> $_POST:   
+[2014-03-10 08:25:21] system.debug: --> $_GET:   
+[2014-03-10 08:25:30] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:30] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:30] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:30] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:30] system.error: --> 404 Page Not Found --> tasks/lo  
+[2014-03-10 08:25:33] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:33] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:33] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:33] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:33] system.debug: --> Router Class Initialized  
+[2014-03-10 08:25:33] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:25:33] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:25:33] system.debug: --> $_COOKIE:   
+[2014-03-10 08:25:33] system.debug: --> $_POST:   
+[2014-03-10 08:25:33] system.debug: --> $_GET:   
+[2014-03-10 08:25:55] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:55] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:55] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:55] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:55] system.debug: --> Router Class Initialized  
+[2014-03-10 08:25:55] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:25:55] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:25:55] system.debug: --> $_COOKIE:   
+[2014-03-10 08:25:55] system.debug: --> $_POST:   
+[2014-03-10 08:25:55] system.debug: --> $_GET:   
+[2014-03-10 08:25:56] system.debug: --> Config Class Initialized  
+[2014-03-10 08:25:56] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:25:56] system.debug: --> Response Class Initialized  
+[2014-03-10 08:25:56] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:25:56] system.debug: --> Router Class Initialized  
+[2014-03-10 08:25:56] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:25:56] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:25:56] system.debug: --> $_COOKIE:   
+[2014-03-10 08:25:56] system.debug: --> $_POST:   
+[2014-03-10 08:25:56] system.debug: --> $_GET:   
+[2014-03-10 08:26:04] system.debug: --> Config Class Initialized  
+[2014-03-10 08:26:04] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:26:04] system.debug: --> Response Class Initialized  
+[2014-03-10 08:26:04] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:26:04] system.debug: --> Router Class Initialized  
+[2014-03-10 08:26:04] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:26:04] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:26:04] system.debug: --> $_COOKIE:   
+[2014-03-10 08:26:04] system.debug: --> $_POST:   
+[2014-03-10 08:26:04] system.debug: --> $_GET:   
+[2014-03-10 08:26:05] system.debug: --> Config Class Initialized  
+[2014-03-10 08:26:05] system.debug: --> Translator Class Initialized  
+[2014-03-10 08:26:05] system.debug: --> Response Class Initialized  
+[2014-03-10 08:26:05] system.debug: --> Uri Class Initialized  
+[2014-03-10 08:26:05] system.debug: --> Router Class Initialized  
+[2014-03-10 08:26:05] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-10 08:26:05] system.debug: --> $_REQUEST_URI: /log/  
+[2014-03-10 08:26:05] system.debug: --> $_COOKIE:   
+[2014-03-10 08:26:05] system.debug: --> $_POST:   
+[2014-03-10 08:26:05] system.debug: --> $_GET:   

@@ -36,9 +36,9 @@ $c->func(
     function ($level = '') {
         if ($level == '') {
             $this->_displayLogo();
-            $this->_follow(DATA .'logs'. DS .'log-'.date('Y-m-d').'.php'); // Display the debugging.
+            $this->_follow(DATA .'logs'. DS .'app.log'); // Display the debugging.
         } else {
-            $this->_follow(DATA .'logs'. DS .'log-'.date('Y-m-d').'.php', $level);
+            $this->_follow(DATA .'logs'. DS .'app.log', $level);
         }
     }
 );
@@ -70,7 +70,7 @@ Display logs [$php task log], to filter logs [$php task log index $level]'."\n\0
 $c->func(
     '_follow',
     function ($file, $level = '') {
- 
+
         static $lines = array();
 
         $size = 0;
@@ -80,17 +80,14 @@ $c->func(
             if ( ! file_exists($file)) { // start process when file exists.
                 continue;
             }
-
             $currentSize = filesize($file); // continue the process when file size change.
             if ($size == $currentSize) {
                 usleep(50);
                 continue;
             }
-
             if ( ! $fh = fopen($file, 'rb')) {
                 echo("\n\n\033[1;31mPermission Error: You need to have root access or log folder has not got write permission.\033[0m\n"); exit;
             }
-
             fseek($fh, $size);
 
             $i = 0;
@@ -98,62 +95,71 @@ $c->func(
                 if ($i == 0) {
                     $line = str_replace("\n", '', $line);
                 }
-
-                $line = str_replace('<?php defined(\'ROOT\') or die(\'Access Denied\') ?>', '', $line);
-                
                 // remove all newlines
                 // $line = trim(preg_replace('/[\r\n]/', ' ', $line), "\n");
+                
                 $line = trim(preg_replace('/[\r\n]/', "\n", $line), "\n");
                 $line = str_replace('[@]', "\n", $line); // new line
-                $out  = explode(" ", $line);  // echo print_r($out, true)."\n\n";
+                $out  = explode('.', $line);  // echo print_r($out, true)."\n\n";
                 
+                // print_r($out);
+
                 if ($level == '' OR $level == 'debug') {
                     
-                    if (isset($out[4])) {
+                    if (isset($out[1])) {
 
-                        if (strpos($out[4], '[') !== false) {   // colorful logs.
+                        if (strpos($out[1], '[') !== false) {   // colorful logs.
                             $line = "\033[0;33m".$line."\033[0m";
                         }
 
-                        if (strpos($out[4], 'SQL') !== false) {   // remove unnecessary spaces from sql output
+                        if (strpos($out[1], 'SQL') !== false) {   // remove unnecessary spaces from sql output
                             $line = str_replace('SQL: ', '', "\033[1;32m".preg_replace('/\s+/', ' ', $line)."\033[0m");
                         }
 
-                        if (strpos($out[4], '$_') !== false) {
-
+                        if (strpos($out[1], '$_') !== false) {
                             $line = preg_replace('/\s+/', ' ', $line);
-                            $line = preg_replace('/\[/', "\n[", $line);
+                            $line = preg_replace('/\[/', "[", $line);  // do 
 
-                            if (strpos($out[4], '$_REQUEST_URI') !== false) {
+                            if (strpos($out[1], '$_REQUEST_URI') !== false) {
                                 $break = "\n------------------------------------------------------------------------------------------";
                                 $line = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
                             } else {
                                 $line = "\033[1;35m".$line."\033[0m";
                             }
-                        }                  
 
-                        if (strpos($out[4], 'Task') !== false) {
+                            if (strpos($out[1], '$_HVC') !== false) {
+                                $line = "\033[1;36m".strip_tags($line)."\033[0m";
+                            }
+                        }
+
+                        if (strpos($out[1], 'Task') !== false) {
                             $line = "\033[1;34m".$line."\033[0m";
                         }
-                        if (isset($out[6]) AND strpos($out[6], 'loaded:') !== false) {
+                        $debug_output = explode(' ', $out[1]);
+                        
+                        if (isset($debug_output[4]) AND strpos($debug_output[4], 'loaded:') !== false) {
                             $line = "\033[0;35m".$line."\033[0m";
                         }
                     }
                 }
-     
-                if (strpos($line, 'DEBUG') !== false) {   // Do not write two times
 
+                if (strpos($out[1], 'debug') !== false) {   // Do not write two times
                     if ($level == '' OR $level == 'debug') {
                         $line = "\033[0;35m".$line."\033[0m";
-                        
                         if ( ! isset($lines[$line])) {
                             echo $line."\n";
                         }
+                        $debug_output = explode(' ', $out[1]);
+                        // print_r($debug_output);
+                        if (isset($debug_output[2]) AND trim($debug_output[2]) == 'Final' AND trim($debug_output[3]) == 'output') {
+                            $line = "\033[1;36m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
                     }
                 }
-
-                if (strpos($line, 'ERROR') !== false) {
-
+                if (strpos($out[1], 'error') !== false) {
                     if ($level == '' OR $level == 'error') {
                         $line = "\033[1;31m".$line."\033[0m";
                         if ( ! isset($lines[$line])) {
@@ -161,24 +167,9 @@ $c->func(
                         }
                     }
                 }
-
-                if (strpos($line, 'INFO') !== false) {
-
+                if (strpos($out[1], 'info') !== false) {
                     if ($level == '' OR $level == 'info') {
-                        
                         $line = "\033[1;35m".$line."\033[0m";
-                        
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-
-                if (strpos($line, 'BENCH') !== false) {
-
-                    if ($level == '' OR $level == 'bench') {
-                        $line = "\033[1;36m".$line."\033[0m";
-                        
                         if ( ! isset($lines[$line])) {
                             echo $line."\n";
                         }
@@ -187,7 +178,7 @@ $c->func(
                 $i++;
                 $lines[$line] = $line;
             }
-            
+
             fclose($fh);
             clearstatcache();
             $size = $currentSize;

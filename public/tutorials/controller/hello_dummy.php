@@ -13,7 +13,7 @@ $c = new Controller(
 );
 
 $c->func(
-    'test', 
+    'index', 
     function ($arg1, $arg2, $arg3) { 
 
         echo '<pre>Request: <span class="string">'.$this->uri->getUriString().'</span></pre>';

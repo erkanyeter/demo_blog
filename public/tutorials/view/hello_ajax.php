@@ -131,7 +131,7 @@ function submitAjax(formId){
                 <table width="100%">
                     <tr>
                         <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
-                        <td><?php echo $this->form->input('user_email', $this->form->setValue('user_email'), " id='user_email' ") ?></td>
+                        <td><?php echo $this->form->input('user_email', '', " id='user_email' ") ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Password') ?></td>
@@ -144,7 +144,7 @@ function submitAjax(formId){
                     <tr>
                         <td></td>
                         <td>
-                        <?php echo $this->form->checkbox('agreement', 1, $this->form->setValue('agreement'), " id='agreement' ") ?>
+                        <?php echo $this->form->checkbox('agreement', 1, '', " id='agreement' ") ?>
                         <label for="agreement">I agree terms and conditions.</label>
                         </td>
                     </tr>
