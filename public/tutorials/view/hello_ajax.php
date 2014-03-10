@@ -77,13 +77,6 @@ function submitAjax(formId){
             var obj = JSON.parse(json);
 
             //-------------------------------------------------------
-            // No Response
-            if(typeof obj['success'] == 'undefined'){
-                alert('Data connection lost, no response data.');
-                return false;
-            }
-
-            //-------------------------------------------------------
             // Success
             if(typeof obj['success'] !== 'undefined' && obj['success'] == '1'){
                 if(typeof obj['message'] !== 'undefined'){

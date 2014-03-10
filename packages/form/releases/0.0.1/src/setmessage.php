@@ -13,15 +13,15 @@ namespace Form\Src {
      */
     function setMessage($key = '', $val = '')
     {
-        
-        if (empty($val)) {  //  set form validation message
+        if (empty($val) OR is_numeric($val)) {  //  set form validation message
 
             $form       = \Form::getConfig();
             $formObject = getInstance()->form;
             $message    = ( ! empty($key)) ? $key : $form['response']['error'];
+            $template = $val == 1 ? $form['notifications']['successMessage'] : $form['notifications']['errorMessage']; 
 
-            $formObject->_formMessages['success'] = 0;            
-            $formObject->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
+            $formObject->_formMessages['success'] = (empty($val)) ? 0 : $val;            
+            $formObject->_formMessages['message'] = sprintf($template, translate($message));
         
         } else { 
             getInstance()->validator->setMessage($key, $val); // use validator object set message

@@ -568,7 +568,7 @@ Class Validator
             }
             else
             {
-                global $packages;
+                global $packages, $logger;
 
                 $file = PACKAGES .'validator'. DS .'releases'. DS .$packages['dependencies']['validator']['version']. DS .'src'. DS .strtolower($rule). EXT;
 

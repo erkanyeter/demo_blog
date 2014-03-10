@@ -11,6 +11,8 @@ $c = new Controller(
 
         $this->logger->output = true;
 
+        new Sess;
+
         // $var   = '$_POST';
         // $myvar = $$var;
         
