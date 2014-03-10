@@ -30,7 +30,7 @@ $c->func(
             
             if ($this->form->isValid()) {     
 
-                $this->form->setError('email', 'sadsad');
+                $this->form->setError('email', 'Example Error !');
                 // $this->form->setNotice('Form Validation Success', SUCCESS);  // Set flash notice using Session Class.
                 // $this->url->redirect('tutorials/hello_form/index');          // Redirect to user same page.
             }

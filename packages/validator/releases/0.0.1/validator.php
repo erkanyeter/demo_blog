@@ -701,12 +701,12 @@ Class Validator
     {
         $validator = getInstance()->validator;
         
-        if ( ! is_array($key))
-        {
-            $key = array($key => $val);
-        }
+        // if ( ! is_array($key))
+        // {
+        //     $key = array($key => $val);
+        // }
     
-        $validator->_error_messages = array_merge($validator->_error_messages, $key);
+        // $validator->_error_messages = array_merge($validator->_error_messages, $key);
     }
 
 }

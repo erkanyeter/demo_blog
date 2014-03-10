@@ -90,6 +90,7 @@ function submitAjax(formId){
                     alert(obj['message']);
                     return false;
                 }
+                document.getElementById("response").innerHTML = '<pre>' + json.toString() + '</pre>';
             }
             else  // Assign Test Results
             {

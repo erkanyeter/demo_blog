@@ -369,10 +369,27 @@ Class Form {
             $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['error'];
 
             $this->_formMessages['success'] = 0;
-            $this->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
+            $this->_formMessages['message'] = $message;
             $this->_formMessages['errors']  = $validator->_error_array;
 
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Set error key 
+     * 
+     * success,
+     * message,
+     * errors,
+     * 
+     * @param string $key error key
+     * @param string $val error value
+     */
+    public function setKey($key, $val)
+    {
+        $this->_formMessages[$key] = $val;
     }
 
     // ------------------------------------------------------------------------
