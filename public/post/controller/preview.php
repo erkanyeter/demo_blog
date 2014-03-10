@@ -15,8 +15,6 @@ $c = new Controller(
         new Form;
         new Get;
         new View;
-        new Sess;
-        new Auth;
         new Hvc;
     }
 );
