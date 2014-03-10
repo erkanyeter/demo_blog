@@ -369,7 +369,7 @@ Class Form {
             $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['error'];
 
             $this->_formMessages['success'] = 0;
-            $this->_formMessages['message'] = $message;
+            $this->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
             $this->_formMessages['errors']  = $validator->_error_array;
 
         }

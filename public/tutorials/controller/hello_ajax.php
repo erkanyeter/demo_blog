@@ -24,8 +24,10 @@ $c->func(
             $this->form->setRules('agreement', 'User Agreement', 'required|exactLen(1)');
 
             if ($this->form->isValid()) {
-                // $this->form->setMessage('There are some errors.');
                 $this->form->setError('email', 'Custom Error Example: There is an error in email field !');
+                $this->form->setMessage('There are some errors.');
+
+                // $this->form->setMessage('Succesfull !');
             }
 
             header('Cache-Control: no-cache, must-revalidate');
