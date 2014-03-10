@@ -18,7 +18,7 @@ $cache = array(
                                   'weight'   => '1'         // The weight parameter effects the consistent hashing 
                                                             // used to determine which server to read/write keys from.
                                   ),
-               
+                'auth' =>  '',                         // Just redis cache for connection password
                 'cache_path' =>  '/data/temp/cache/',  // Just cache file .data/temp/cache
                );
 

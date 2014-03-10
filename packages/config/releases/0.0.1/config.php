@@ -26,9 +26,10 @@ Class Config {
     */
     public function __construct()
     {   
-        global $config;
+        global $config, $logger;
 
         $this->config = $config;
+        $logger->debug('Config Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -83,7 +84,6 @@ Class Config {
         unset($config);
 
         $logger->debug('Config file loaded: '.$file);
-        
         return true;
     }
     

@@ -55,21 +55,20 @@ $c = new Controller(
 
         new Url;
         new Html;
-        new Db;
         new Date_Format;
         new Tag_Cloud;
         new View;
-        new Sess;
-        new Auth;
+        new Form;
         new Hvc;
-
-        new Trigger('public'); // run triggers
     }
 );
 
 $c->func(
-    'index',
+    'index.public_user',
     function () {
+
+        new Db;
+
         $r = $this->hvc->get('private/posts/getallhome'); // get all post data
 
         $this->view->get(

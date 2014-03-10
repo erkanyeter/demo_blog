@@ -57,7 +57,7 @@ Class Cookie {
 
         if ($prefix == '' AND $config['cookie_prefix'] != '')
         {
-            $prefix = $config['cookie_prefix');
+            $prefix = $config['cookie_prefix'];
         }
         
         if ($domain == '' AND $config['cookie_domain'] != '')
@@ -116,7 +116,7 @@ Class Cookie {
         $prefix = '';
         if ( ! isset($_COOKIE[$index]) AND $config['cookie_prefix'] != '')
         {
-            $prefix = $config['cookie_prefix');
+            $prefix = $config['cookie_prefix'];
         }
 
         return Get::fetchFromArray($_COOKIE, $prefix.$index, $xss_clean);

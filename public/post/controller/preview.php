@@ -18,16 +18,15 @@ $c = new Controller(
         new Sess;
         new Auth;
         new Hvc;
-        new Trigger('private');
     }
 );
 
 $c->func(
-    'index',
+    'index.private_user',
     function ($id) {
 
-        $posts    = $this->hvc->get('private/posts/getone/{'.$id.'}');  // get one post
-        $comments = $this->hvc->get('private/comments/getall/{'.$id.'}/1'); // get active post comments 
+        $posts    = $this->hvc->get('private/posts/getone/'.$id);  // get one post
+        $comments = $this->hvc->get('private/comments/getall/'.$id.'/1'); // get active post comments 
 
         $this->view->get(
             'preview',

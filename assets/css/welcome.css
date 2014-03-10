@@ -10,7 +10,6 @@ table,caption,tbody,tfoot,thead,tr,th,td,
 article,aside,canvas,details,figcaption,figure,
 footer,header,hgroup,menu,nav,section,summary,
 time,mark,audio,video{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;}
-body{line-height:1;}
 article,aside,details,figcaption,figure,
 footer,header,hgroup,menu,nav,section{display:block;}
 nav ul{list-style:none;}
@@ -25,8 +24,13 @@ abbr[title],dfn[title]{border-bottom:1px dotted;cursor:help;}
 table{border-collapse:collapse;border-spacing:0;}
 hr{display:block;height:1px;border:0;border-top:1px solid #cccccc;margin:1em 0;padding:0;}
 input,select{vertical-align:middle;}
-html{ background: #EDEDED; height: 100%; }
-body{background:#FFF;margin:0 auto;min-height:100%;padding:0 30px;width:520px;color:#666;font:14px/23px Arial,Verdana,sans-serif;}
+html{ background: #EDEDED; }
+body{ 
+background:#FFF;
+margin:0px;
+min-height:100%;
+height:100%;
+margin:0 auto;padding:0 30px;width:520px;color:#666;font:14px/23px Arial,Verdana,sans-serif;}
 h1,h2,h3,p,ul,ol,form,section{margin:0 0 20px 0;}
 h1{color:#333;font-size:20px;}
 h2,h3{color:#333;font-size:14px;}

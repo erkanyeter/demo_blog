@@ -1,114 +1,158 @@
 <?php
 
 /**
- * Log Writer File Class
- *
- * @package       packages
- * @subpackage    log_write_file
- * @category      logging
- * @link          
+ * Logger File Class
+ * 
+ * @category  Logger_File
+ * @package   Logger
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/logger
  */
+Class Logger_File 
+{
+    public $path;       // current log path for file driver
+    public $config;     // logger file configuration
+    public $logger;     // logger object
 
-Class Logger_File  extends Logger/Src/Adapter {
+    /**
+     * Constructor
+     * 
+     * @param object $logger object of logger
+     */
+    public function __construct($logger)
+    {
+        if ( ! isset($logger_file)) {  // Load config file
+            include APP .'config'. DS . strtolower(ENV) . DS .'logger_file'. EXT;
+        }
+        $this->logger = $logger;
+        $this->config = $logger_file;
+
+        $this->logger->setProperty('batch', $this->config['batch']);  // set batch switch
+
+        // Replace data path
+        //--------------------------------------
+        $this->path = $this->replacePath($this->config['path']);
+
+        // Seperate Cli & TASK requests
+        //--------------------------------------
+        if (defined('STDIN') AND defined('TASK')) {     // Task Requests
+            $this->path = $this->replacePath($this->config['path_cli']);
+        } elseif (defined('STDIN')) {                   // Cli Request
+            if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
+                $this->logger->setProperty('enabled', false);
+            }
+            $this->path = $this->replacePath($this->config['path_task']);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Convert friendly path to
+     * Obullo format if you keep log data
+     * in framework /data/logs folder.
+     * 
+     * @param string $path log path
+     * 
+     * @return string       current path
+     */
+    public function replacePath($path)
+    {
+        if (strpos($path, 'data') === 0) {
+            $path = str_replace('/', DS, trim($path, '/'));
+            $path = DATA .substr($path, 5);
+        }
+        return $path;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+    * Format log records and build lines
+    *
+    * This function will be called using the global $logger class methods
+    *
+    * @param array $unformatted log data
+    * 
+    * @return array formatted record
+    */
+    public function format($unformatted)
+    {
+        $record = array(          // Build record data !
+            'datetime' => '',
+            'channel'  => $this->logger->getProperty('channel'),
+            'level'    => $unformatted['level'],
+            'message'  => $unformatted['message'],
+            'context'  => $unformatted['context'],
+            'extra'    => (isset($unformatted['context']['extra'])) ? $unformatted['context']['extra'] : '',
+        );
+
+        $format    = $this->config['extend']['format']; //load format function
+        $formatted = $format($record);
+
+        return $this->lineFormat($formatted); // formatted record
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Format the line which is defined in app/config/$env/config.php
+     * This feature just for line based loggers.
+     * 
+     * 'log_line' => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',
+     * 
+     * @param array $record array of log data
+     * 
+     * @return string returns to formated string
+     */
+    public function lineFormat($record)
+    {
+        return str_replace(
+            array(
+            '%datetime%',
+            '%channel%',
+            '%level%',
+            '%message%',
+            '%context%',
+            '%extra%',
+            ), array(
+            $record['datetime'],
+            $record['channel'],
+            $record['level'],
+            $record['message'],
+            $record['context'],
+            $record['extra'],
+            ),
+            str_replace('\n', "\n", $this->logger->getProperty('line'))
+        );
+    }
 
     // --------------------------------------------------------------------
-    
+
     /**
-    * Write Log to File
-    *
-    * This function will be called using the global $logger->level() function.
-    *
-    * @access   public
-    * @param    string    the error level
-    * @param    string    the error message
-    * @param    string    the log folder
-    * @return   bool
-    */
-    public function dump($level = 'error', $message, $folder = '')
-    {   
-        global $config;
+     * Write logs to file
+     * 
+     * @return boolean
+     */
+    public function write()
+    {
+        $write = $this->config['extend']['write'];  // Get write function
 
-        $this->init($level, $message, $folder);
-
-        $path        = $this->getItem('path');
-        $enabled     = $this->getItem('enabled');
-        $levels      = $this->getItem('levels');
-        $level       = $this->getItem('level');
-        $threshold   = $this->getItem('threshold');
-        $date_format = $this->getItem('date_format');
-        $message     = $this->getItem('message');    // get the filtered log message
-
-        // Is directory ?
-        //-------------------------------------------------------------
-    
-        if ( ! is_dir(rtrim($path, DS)))
-        {
-            $enabled = false;
+        if ($this->logger->getProperty('batch')) {  // If batch process enabled
+            $lines = '';
+            foreach ($this->logger->getRecordArray() as $record) {
+                 $lines.= $record;
+            }
+            return $write($this->path, $lines);  // run it
         }
+        return $write($this->path, $this->logger->getRecord());  // run it
+    }
 
-        // Is enabled logging from config file ?
-        //-------------------------------------------------------------
-
-        if ($enabled === false)
-        {
-            return false;
-        }
-
-        // Is it allowed level ?
-        //-------------------------------------------------------------
-
-        if ( ! isset($levels[$level]) OR ($levels[$level] > $threshold))
-        {
-            return false;
-        }
-
-        // Ok ! Build the file format
-        //-------------------------------------------------------------
-
-        $file = $path .'log-'. date('Y-m-d').EXT; 
-
-        $log_message = '';
-
-        // --------------------------------------------------------------------
-        // Convert new lines to a temp symbol, 
-        // than we replace it and read for console debugs.
-
-        // $message = trim(preg_replace('/\n/', '[@]', $message), "\n"); // clear new lines 
-
-        if ( ! is_file($file)) //  Builf head tag of the log file
-        {
-            $log_message.= "<"."?php defined('ROOT') or die('Access Denied') ?".">\n\n";
-        }
-
-        $log_message.= $level.' '.date($date_format). ' --> '.$message."\n";  
-
-        if( ! is_writable($path))
-        {
-            throw new Exception("The log path is not writable. Please give write permission to this folder.
-                        <pre>+ app\n+ data\n - <b>logs</b>\n+public</pre>");
-        }
-
-        if ( ! $fp = fopen($file, 'ab'))
-        {
-            return false;
-        }
-
-        flock($fp, LOCK_EX);    
-        fwrite($fp, $log_message);
-        flock($fp, LOCK_UN);
-        fclose($fp);
-
-        if( ! defined('STDIN')) // Do not do (chmod) in CLI mode, it causes write error
-        {
-            chmod($file, 0666);
-        }
-
-        return true;
-    }    
-    
 }
 
-// END log_writer_file class
+// END logger_file class
 
-/* End of file Log_Writer_File.php */
-/* Location: ./packages/log_writer_file/releases/0.0.1/log_writer_file.php */
+/* End of file Logger_File.php */
+/* Location: ./packages/logger_file/releases/0.0.1/logger_file.php */

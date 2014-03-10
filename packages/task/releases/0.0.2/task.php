@@ -38,10 +38,8 @@ Class Task {
         $uri    = explode('/', trim($uri));
         $module = array_shift($uri);
 
-        foreach($uri as $i => $section)
-        {
-            if( ! $section)
-            {
+        foreach ($uri as $i => $section) {
+            if ( ! $section) {
                 $uri[$i] = 'false';
             }
         }
@@ -55,9 +53,7 @@ Class Task {
             // clear console colors
             // $output = trim(preg_replace('/\n/', '#', $output), "\n");
             $output = preg_replace(array('/\033\[36m/','/\033\[31m/','/\033\[0m/'), array('','',''), shell_exec($shell));
-
-            $logger->debug('Task function output -> '. $output);
-
+            $logger->debug('Task request : '.$shell, array('output' => $output));
             return $output;
         }
         else   // continious task
@@ -66,8 +62,7 @@ Class Task {
 
             shell_exec($shell.' > /dev/null &');
         }
-
-        $logger->debug('Task function command -> '. $shell);
+        $logger->debug('Task command : '. $shell);
     }
 
 }

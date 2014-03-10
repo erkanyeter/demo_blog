@@ -12,15 +12,12 @@ $c = new Controller(
         new Form;
         new Date_Format;
         new View;
-        new Sess;
-        new Auth;
         new Hvc;
-        new Trigger('private');
     }
 );
 
 $c->func(
-    'index',
+    'index.private_user',
     function () {
         
         $r = $this->hvc->get('private/comments/getall');

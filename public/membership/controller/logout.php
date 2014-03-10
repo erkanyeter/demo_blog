@@ -14,7 +14,7 @@ $c = new Controller(
 );
 
 $c->func(
-    'index',
+    'index.private_user',
     function () {
         $this->auth->clearIdentity();  // remove auth data
         $this->url->redirect('membership/login');

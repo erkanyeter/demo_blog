@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
             <?php echo $this->html->css('welcome.css') ?>
-        <title>Odm Tutorial</title>
+        <title>Scheme Tutorial</title>
     </head>
 
     <body>
@@ -39,6 +39,5 @@
 </section>
 
 <?php echo $footer ?>
-
 </body>
 </html>

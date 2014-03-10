@@ -9,6 +9,7 @@ $c = new Controller(
     function () {  
         new Db;
         new Post;
+        new Pdo_Crud;
     }
 );
 
@@ -18,13 +19,10 @@ $c->func(
         try
         {
             $this->db->transaction();
-
             $this->db->where('post_id', $id);
             $this->db->where('post_user_id', $this->post->get('user_id'));  // just delete from this user data
             $this->db->delete('posts');
-
             $this->db->commit();
-
             $r = array(
                 'success' => 1,
                 'results' => array(),
@@ -38,10 +36,8 @@ $c->func(
                 'message' => 'failure',
                 'e' => $e->getMessage(),
             );
-
             $this->db->rollBack();
         }
-
         echo json_encode($r);
     }
 );

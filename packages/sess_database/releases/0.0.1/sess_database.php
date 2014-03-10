@@ -45,7 +45,7 @@ Class Sess_Database {
 
     // --------------------------------------------------------------------
 
-    function init($params = array(), $sess = array())
+    function init($sess = array())
     {        
         global $config, $logger;
 
@@ -61,12 +61,15 @@ Class Sess_Database {
             'match_useragent',
             'time_to_update') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
+            $this->$key = $sess[$key];
         }
         
-        $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
-        $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
-        $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
+        $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
+        $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
+        $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
+        
+        $db = $this->db;    // set database;
+        $this->db = $db();
         
         $this->now            = $this->_getTime();
         $this->encryption_key = $config['encryption_key'];
@@ -78,7 +81,9 @@ Class Sess_Database {
         }
 
         $this->cookie_name = $this->cookie_prefix . $this->cookie_name; // Set the cookie name
-        $this->request     = &$this->request;      // Set Request object
+
+        $request = $this->request;
+        $this->request = $request();  // Set Request object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.

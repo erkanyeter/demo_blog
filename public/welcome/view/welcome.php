@@ -66,9 +66,6 @@
         </section>
 
         <?php echo $footer ?>
-        <section>
-            <p>&nbsp;</p>
-        </section>
         
     </body>
 </html>

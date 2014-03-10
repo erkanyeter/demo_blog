@@ -24,7 +24,7 @@ $posts = array(
             'Published',
             'Archived',
         ),
-        'types' => '_not_null|_enum|_default(Published)',
+        'types' => '_enum|_default(Published)|_not_null',
         ),
     'post_creation_date' => array(
         'types' => '_null|_datetime',

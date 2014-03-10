@@ -6,23 +6,19 @@
  * @var Controller
  */
 $c = new Controller(
-    function(){
+    function () {
         new Url;
         new Html;
         new Form;
-        new Sess;
-        new Auth;
         new Hvc;
         new Post;
         new View;
-
-        new Trigger('public');
     }
 );
 
 $c->func(
-    'index',
-    function(){
+    'index.public_user',
+    function () {
 
         if ($this->post->get('dopost')) {
 
@@ -45,7 +41,7 @@ $c->func(
 
         $this->view->get(
             'contact',
-            function(){
+            function () {
                 $this->set('title', 'Contact');
                 $this->getScheme();
             }

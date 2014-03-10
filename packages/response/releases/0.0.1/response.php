@@ -22,7 +22,6 @@ Class Response {
     public function __construct()
     {   
         global $logger;
-     
         $logger->debug('Response Class Initialized');
     }
 
@@ -39,12 +38,9 @@ Class Response {
     */    
     public function appendOutput($output)
     {
-        if ($this->final_output == '')
-        {
+        if ($this->final_output == '') {
             $this->final_output = $output;
-        }
-        else
-        {
+        } else {
             $this->final_output.= $output;
         }
     }
@@ -122,7 +118,7 @@ Class Response {
             echo $output;  // Send it to the browser!
         }
         
-        $logger->debug('Final output sent to browser');
+        $info = array();
 
         if ($config['log_benchmark']) // Do we need to generate benchmark data ? If so, enable and run it.
         {
@@ -132,9 +128,9 @@ Class Response {
             {
                 $memory_usage = number_format($usage).' bytes';
             }
-            
-            $logger->bench('Memory Usage: '. $memory_usage);
-        }           
+            $info = array('memory_usage' => $memory_usage);
+        }
+        $logger->debug('Final output sent to browser', $info);
     }
 
     // --------------------------------------------------------------------
@@ -150,14 +146,11 @@ Class Response {
     {
         global $packages;
 
-        if( ! function_exists('Response\Src\\'.$method))
-        {
-            require PACKAGES .'response'. DS .'releases'. DS .$packages['dependencies']['response']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
+        if ( ! function_exists('Response\Src\\'.$method)) {
+            include PACKAGES .'response'. DS .'releases'. DS .$packages['dependencies']['response']['version']. DS .'src'. DS .strtolower($method). EXT;
         }
-
         return call_user_func_array('Response\Src\\'.$method, $arguments);
     }
-
 }
 
 // END Response Class

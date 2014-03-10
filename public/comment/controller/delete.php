@@ -9,18 +9,15 @@ $c = new Controller(
     function () {
         new Url;
         new Form;
-        new Sess;
-        new Auth;
         new Hvc;
-        new Trigger('private');
     }
 );
 
 $c->func(
-    'index',
+    'index.private_user',
     function ($id) {
         
-        $r = $this->hvc->delete('private/comments/delete/{'.$id.'}');
+        $r = $this->hvc->delete('private/comments/delete/'.$id);
 
         $this->form->setNotice($r['message'], $r['message']);       // set flash notice
         $this->url->redirect('/comment/display');

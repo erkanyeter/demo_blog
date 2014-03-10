@@ -1,6 +1,6 @@
 <?php
 
- /**
+/**
  * Uri Class
  * Parses URIs and determines routing
  *
@@ -9,29 +9,27 @@
  * @category      url
  * @link
  */
-
-Class Uri {
-    
-    public $keyval        = array();
+Class Uri
+{
+    public $keyval = array();
     public $uri_string;
-    public $segments      = array();
-    public $rsegments     = array();
+    public $segments = array();
+    public $rsegments = array();
     public $uri_extension = '';
-    public $uri_protocol  = 'REQUEST_URI';
+    public $uri_protocol = 'REQUEST_URI';
 
     /**
-    * Constructor
-    *
-    * Simply globalizes the $RTR object.  The front
-    * loads the Router class early on so it's not available
-    * normally as other classes are.
-    *
-    * @access    public
-    */
+     * Constructor
+     *
+     * Simply globalizes the $RTR object.  The front
+     * loads the Router class early on so it's not available
+     * normally as other classes are.
+     *
+     * @access    public
+     */
     public function __construct()
     {
         global $logger;
-
         $logger->debug('Uri Class Initialized'); // Warning : Don't load any library in __construct level you may get a Fatal Error.
     }
 
@@ -48,17 +46,14 @@ Class Uri {
     {
         global $config;
 
-        if($this->uri_string != '') 
-        {
+        if ($this->uri_string != '') {
             return;
         }
 
         $protocol = $config['uri_protocol'];
 
-        if (strtoupper($protocol) == 'AUTO')
-        {
-            if ($uri = $this->_detectUri()) // Let's try the REQUEST_URI first, this will work in most situations
-            {
+        if (strtoupper($protocol) == 'AUTO') {
+            if ($uri = $this->_detectUri()) { // Let's try the REQUEST_URI first, this will work in most situations
                 $this->uri_protocol = 'REQUEST_URI';
                 $this->setUriString($uri);
                 return;
@@ -68,8 +63,7 @@ Class Uri {
             // Note: some servers seem to have trouble with getenv() so we'll test it two ways
             $path = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : @getenv('PATH_INFO');
 
-            if (trim($path, '/') != '' AND $path != "/".SELF)
-            {
+            if (trim($path, '/') != '' AND $path != "/" . SELF) {
                 $this->uri_protocol = 'PATH_INFO';
                 $this->setUriString($path);
                 return;
@@ -77,16 +71,14 @@ Class Uri {
 
             // No PATH_INFO?... What about QUERY_STRING?
             $path = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
-            if (trim($path, '/') != '')
-            {
+            if (trim($path, '/') != '') {
                 $this->uri_protocol = 'QUERY_STRING';
                 $this->setUriString($path);
                 return;
             }
 
             // As a last ditch effort lets try using the $_GET array
-            if (is_array($_GET) AND count($_GET) == 1 AND trim(key($_GET), '/') != '') 
-            {
+            if (is_array($_GET) AND count($_GET) == 1 AND trim(key($_GET), '/') != '') {
                 $this->setUriString(key($_GET));
                 return;
             }
@@ -97,8 +89,7 @@ Class Uri {
 
         $uri = strtoupper($protocol);
 
-        if ($uri == 'REQUEST_URI')
-        {
+        if ($uri == 'REQUEST_URI') {
             $this->setUriString($this->_detectUri());
             return;
         }
@@ -121,46 +112,37 @@ Class Uri {
      */
     public function _detectUri()
     {
-        if ( ! isset($_SERVER['REQUEST_URI']) OR ! isset($_SERVER['SCRIPT_NAME']))
-        {
+        if (!isset($_SERVER['REQUEST_URI']) OR !isset($_SERVER['SCRIPT_NAME'])) {
             return '';
         }
 
         $uri = $_SERVER['REQUEST_URI'];
 
-        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
-        {
+        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
             $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-        }
-        elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0)
-        {
+        } elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0) {
             $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
         }
 
         // This section ensures that even on servers that require the URI to be in the query string (Nginx) a correct
         // URI is found, and also fixes the QUERY_STRING server var and $_GET array.
-        
-        if (strncmp($uri, '?/', 2) === 0)
-        {
+
+        if (strncmp($uri, '?/', 2) === 0) {
             $uri = substr($uri, 2);
         }
 
         $parts = preg_split('#\?#i', $uri, 2);
-        $uri   = $parts[0];
+        $uri = $parts[0];
 
-        if (isset($parts[1]))
-        {
+        if (isset($parts[1])) {
             $_SERVER['QUERY_STRING'] = $parts[1];
             parse_str($_SERVER['QUERY_STRING'], $_GET);
-        }
-        else
-        {
+        } else {
             $_SERVER['QUERY_STRING'] = '';
             $_GET = array();
         }
 
-        if ($uri == '/' || empty($uri))
-        {
+        if ($uri == '/' || empty($uri)) {
             return '/';
         }
 
@@ -173,28 +155,27 @@ Class Uri {
     // --------------------------------------------------------------------
 
     /**
-    * Parse uri string for any possible file
-    * extensions
-    *
-    * @param  string $segment
-    * @return string
-    */
+     * Parse uri string for any possible file
+     * extensions
+     *
+     * @param  string $segment
+     * @return string
+     */
     public function _parseSegmentExtension($segment)
     {
         global $config;
 
-        if(strpos($segment, '.') !== false)
-        {
-            //----------- Web Service Response Format -------------//
+        if (strpos($segment, '.') !== false) {
 
-            $extension     = explode('.', $segment);
+            //----------- Response Format -------------//
+
+            $extension = explode('.', $segment);
             $uri_extension = end($extension);
-            
-            if(in_array('.'.$uri_extension, $config['web_service_extensions']))
-            {
+
+            if (in_array('.' . $uri_extension, $config['uri_extensions'])) {
                 $this->uri_extension = $uri_extension;  // set extension 
 
-                return preg_replace('#\.'.$uri_extension.'$#','', $segment); // remove extension from end of the uri segment
+                return preg_replace('#\.' . $uri_extension . '$#', '', $segment); // remove extension from end of the uri segment
             }
 
             //-----------
@@ -220,20 +201,18 @@ Class Uri {
         // we should not prevent "base64encode" characters in CLI mode
         // the "sync" task controller and schema libraries use "base64encode" function
 
-    	if ($str != '' AND $config['permitted_uri_chars'] != '' AND $config['enable_query_strings'] == false  AND  ! defined('STDIN')) 
-        {
+        if ($str != '' AND $config['permitted_uri_chars'] != '' AND $config['enable_query_strings'] == false AND !defined('STDIN')) {
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
-            if ( ! preg_match('|^['.str_replace(array('\\-', '\-'), '-', preg_quote($config['permitted_uri_chars'], '-')).']+$|i', $str))
-            {
+            if (!preg_match('|^[' . str_replace(array('\\-', '\-'), '-', preg_quote($config['permitted_uri_chars'], '-')) . ']+$|i', $str)) {
                 $response->showError('The URI you submitted has disallowed characters.', 400);
             }
         }
 
         // Convert programatic characters to entities and return
-        return str_replace(array('$',     '(',     ')',     '%28',   '%29'), // Bad
-                           array('&#36;', '&#40;', '&#41;', '&#40;', '&#41;'), // Good
-                           $str);
+        return str_replace(array('$', '(', ')', '%28', '%29'), // Bad
+                array('&#36;', '&#40;', '&#41;', '&#40;', '&#41;'), // Good
+                $str);
     }
 
     // --------------------------------------------------------------------
@@ -248,9 +227,8 @@ Class Uri {
     {
         global $config;
 
-        if($config['url_suffix'] != '')
-        {
-            $this->uri_string = preg_replace("|".preg_quote($config['url_suffix'])."$|", '', $this->uri_string);
+        if ($config['url_suffix'] != '') {
+            $this->uri_string = preg_replace("|" . preg_quote($config['url_suffix']) . "$|", '', $this->uri_string);
         }
     }
 
@@ -265,12 +243,10 @@ Class Uri {
      */
     public function _explodeSegments()
     {
-        foreach(explode('/', preg_replace("|/*(.+?)/*$|", "\\1", $this->uri_string)) as $val)
-        {
+        foreach (explode('/', preg_replace("|/*(.+?)/*$|", "\\1", $this->uri_string)) as $val) {
             $val = trim($this->_filterUri($val)); // Filter segments for security
 
-            if ($val != '')
-            {
+            if ($val != '') {
                 $this->segments[] = $this->_parseSegmentExtension($val);
             }
         }
@@ -279,52 +255,36 @@ Class Uri {
     // --------------------------------------------------------------------
 
     /**
-    * We use this function in HVC library.
-    *
-    * @param mixed $uri
-    */
+     * We use this function in HVC library.
+     *
+     * @param mixed $uri
+     */
     public function setUriString($str = '', $filter = true)
     {
-        if($filter) // Filter out control characters
-        {
+        if ($filter) { // Filter out control characters
             $str = removeInvisibleCharacters($str, false);
         }
-        
+
         $this->uri_string = ($str == '/') ? '' : $str;  // If the URI contains only a slash we'll kill it
-
-        // Search "/index" method and {id} data
-        // if index not found and we had an {id} then set default method as a index
-        
-        if(strpos($this->uri_string, '/index') === false AND strpos($this->uri_string, '{') > 0)
-        {
-            preg_match('#{(.*?)}#', $this->uri_string, $matches);
-
-            // add index method
-            
-            if(isset($matches[0])) // if we had a {id} route set default method as a index
-            {
-                $this->uri_string = str_replace($matches[0], 'index/'.$matches[1], $this->uri_string);
-            }
-        }
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
-    * Get Assets URL
-    * 
-    * @access public
-    * @param string $uri
-    * @return string
-    */
+     * Get Assets URL
+     * 
+     * @access public
+     * @param string $uri
+     * @return string
+     */
     public function getAssetsUrl($uri = '')
     {
         global $cfg;
-        return $cfg->getSlashItem('assets_url').ltrim($uri,'/');
+        return $cfg->getSlashItem('assets_url') . ltrim($uri, '/');
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Get the current server uri
      * protocol.
@@ -338,7 +298,7 @@ Class Uri {
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Get the complete request uri like native php
      * $_SERVER['REQUEST_URI'].
@@ -349,9 +309,8 @@ Class Uri {
      */
     public function getRequestUri($urlencode = false)
     {
-        if(isset($_SERVER[$this->getProtocol()]))
-        {
-           return ($urlencode) ? urlencode($_SERVER[$this->getProtocol()]) : $_SERVER[$this->getProtocol()];
+        if (isset($_SERVER[$this->getProtocol()])) {
+            return ($urlencode) ? urlencode($_SERVER[$this->getProtocol()]) : $_SERVER[$this->getProtocol()];
         }
 
         return false;
@@ -360,47 +319,43 @@ Class Uri {
     // --------------------------------------------------------------------
 
     /**
-    * Get Base URL
-    * Returns base_url
-    * 
-    * @access public
-    * @param string $uri
-    * @return string
-    */
+     * Get Base URL
+     * Returns base_url
+     * 
+     * @access public
+     * @param string $uri
+     * @return string
+     */
     public function getBaseUrl($uri = '')
     {
         global $cfg;
-        return $cfg->getSlashItem('base_url').ltrim($uri,'/');
+        return $cfg->getSlashItem('base_url') . ltrim($uri, '/');
     }
 
     // --------------------------------------------------------------------
 
     /**
-    * Site URL
-    *
-    * @access   public
-    * @param    string    the URI string
-    * @param    boolean   switch off suffix by manually
-    * @return   string
-    */
+     * Site URL
+     *
+     * @access   public
+     * @param    string    the URI string
+     * @param    boolean   switch off suffix by manually
+     * @return   string
+     */
     public function getSiteUrl($uri_str = '', $suffix = true)
     {
         global $config;
 
-        if (is_array($uri_str))
-        {
+        if (is_array($uri_str)) {
             $uri_str = implode('/', $uri_str);
         }
-        
-        if ($uri_str == '')
-        {
+
+        if ($uri_str == '') {
             return $this->getBaseUrl() . $config['index_page'];
-        }
-        else
-        {
+        } else {
             $suffix = ($config['url_suffix'] == false OR $suffix == false) ? '' : $config['url_suffix'];
 
-            return $this->getBaseUrl() . $config['index_page']. trim($uri_str, '/') . $suffix;
+            return $this->getBaseUrl() . $config['index_page'] . trim($uri_str, '/') . $suffix;
         }
     }
 
@@ -418,7 +373,7 @@ Class Uri {
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Fetch the entire Re-routed URI string
      *
@@ -427,17 +382,17 @@ Class Uri {
      */
     public function getRoutedUriString()
     {
-        return '/'.implode('/', $this->uri->getRoutedSegmentArray()).'/';
+        return '/' . implode('/', $this->uri->getRoutedSegmentArray()) . '/';
     }
 
     // --------------------------------------------------------------------
 
     /**
-    * Get current url
-    *
-    * @access   public
-    * @return   string
-    */
+     * Get current url
+     *
+     * @access   public
+     * @return   string
+     */
     public function getCurrentUrl()
     {
         return $this->getSiteUrl($this->getUriString());
@@ -457,7 +412,7 @@ Class Uri {
      */
     public function getSegment($n, $no_result = false)
     {
-        return ( ! isset($this->segments[$n])) ? $no_result : $this->segments[$n];
+        return (!isset($this->segments[$n])) ? $no_result : $this->segments[$n];
     }
 
     // --------------------------------------------------------------------
@@ -502,7 +457,7 @@ Class Uri {
      */
     public function getRoutedSegment($n, $no_result = false)
     {
-        return ( ! isset($this->rsegments[$n])) ? $no_result : $this->rsegments[$n];
+        return (!isset($this->rsegments[$n])) ? $no_result : $this->rsegments[$n];
     }
 
     // --------------------------------------------------------------------
@@ -519,28 +474,28 @@ Class Uri {
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
-    * Generate a key value pair from the URI string
-    *
-    * This function generates and associative array of URI data starting
-    * at the supplied segment. For example, if this is your URI:
-    *
-    *    example.com/user/search/name/joe/location/UK/gender/male
-    *
-    * You can use this function to generate an array with this prototype:
-    *
-    * array (
-    *            name => joe
-    *            location => UK
-    *            gender => male
-    *         )
-    *
-    * @access   public
-    * @param    integer    the starting segment number
-    * @param    array    an array of default values
-    * @return   array
-    */
+     * Generate a key value pair from the URI string
+     *
+     * This function generates and associative array of URI data starting
+     * at the supplied segment. For example, if this is your URI:
+     *
+     *    example.com/user/search/name/joe/location/UK/gender/male
+     *
+     * You can use this function to generate an array with this prototype:
+     *
+     * array (
+     *            name => joe
+     *            location => UK
+     *            gender => male
+     *         )
+     *
+     * @access   public
+     * @param    integer    the starting segment number
+     * @param    array    an array of default values
+     * @return   array
+     */
     public function getUriToAssoc($n = 3, $default = array())
     {
         return $this->_uriToAssoc($n, $default, 'segment');
@@ -558,8 +513,7 @@ Class Uri {
     public function getAssocToUri($array)
     {
         $temp = array();
-        foreach ((array)$array as $key => $val)
-        {
+        foreach ((array) $array as $key => $val) {
             $temp[] = $key;
             $temp[] = $val;
         }
@@ -624,10 +578,10 @@ Class Uri {
     // --------------------------------------------------------------------
 
     /**
-    * Get extension of uri
-    *
-    * @return  string
-    */
+     * Get extension of uri
+     *
+     * @return  string
+     */
     public function getExtension()
     {
         return $this->uri->uri_extension;
@@ -645,26 +599,21 @@ Class Uri {
      * @return   string
      */
     public function _slashSegment($n, $where = 'trailing', $which = 'getSegment')
-    {        
-        if ($where == 'trailing')
-        {
-            $trailing    = '/';
-            $leading    = '';
+    {
+        if ($where == 'trailing') {
+            $trailing = '/';
+            $leading = '';
+        } elseif ($where == 'leading') {
+            $leading = '/';
+            $trailing = '';
+        } else {
+            $leading = '/';
+            $trailing = '/';
         }
-        elseif ($where == 'leading')
-        {
-            $leading    = '/';
-            $trailing    = '';
-        }
-        else
-        {
-            $leading    = '/';
-            $trailing    = '/';
-        }
-        
-        return $leading.$this->$which($n).$trailing;
+
+        return $leading . $this->$which($n) . $trailing;
     }
-    
+
     // --------------------------------------------------------------------
 
     /**
@@ -678,37 +627,29 @@ Class Uri {
      */
     public function _uriToAssoc($n = 3, $default = array(), $which = 'getSegment')
     {
-        if ($which == 'getSegment')
-        {
+        if ($which == 'getSegment') {
             $totalSegments = 'getTotalSegments';
-            $segmentArray  = 'getSegmentArray';
-        }
-        else
-        {
+            $segmentArray = 'getSegmentArray';
+        } else {
             $totalSegments = 'getTotalRoutedSegments';
-            $segmentArray  = 'getRoutedSegmentArray';
+            $segmentArray = 'getRoutedSegmentArray';
         }
 
-        if ( ! is_numeric($n))
-        {
+        if (!is_numeric($n)) {
             return $default;
         }
 
-        if (isset($this->keyval[$n]))
-        {
+        if (isset($this->keyval[$n])) {
             return $this->keyval[$n];
         }
 
-        if ($this->$totalSegments() < $n)
-        {
-            if (count($default) == 0)
-            {
+        if ($this->$totalSegments() < $n) {
+            if (count($default) == 0) {
                 return array();
             }
 
             $retval = array();
-            foreach ($default as $val)
-            {
+            foreach ($default as $val) {
                 $retval[$val] = false;
             }
 
@@ -719,15 +660,11 @@ Class Uri {
 
         $i = 0;
         $lastval = '';
-        $retval  = array();
-        foreach ($segments as $seg)
-        {
-            if ($i % 2)
-            {
+        $retval = array();
+        foreach ($segments as $seg) {
+            if ($i % 2) {
                 $retval[$lastval] = $seg;
-            }
-            else
-            {
+            } else {
                 $retval[$seg] = false;
                 $lastval = $seg;
             }
@@ -735,36 +672,33 @@ Class Uri {
             $i++;
         }
 
-        if (count($default) > 0)
-        {
-            foreach ($default as $val)
-            {
-                if ( ! array_key_exists($val, $retval))
-                {
+        if (count($default) > 0) {
+            foreach ($default as $val) {
+                if (!array_key_exists($val, $retval)) {
                     $retval[$val] = false;
                 }
             }
         }
 
         $this->keyval[$n] = $retval;  // Cache the array for reuse
-        
+
         return $retval;
     }
 
     // --------------------------------------------------------------------
 
     /**
-    * When we use HMVC we need to Clean
-    * all data.
-    *
-    * @return  void
-    */
+     * When we use HMVC we need to Clean
+     * all data.
+     *
+     * @return  void
+     */
     public function clear()
     {
-        $this->keyval        = array();
-        $this->uri_string    = '';
-        $this->segments      = array();
-        $this->rsegments     = array();
+        $this->keyval = array();
+        $this->uri_string = '';
+        $this->segments = array();
+        $this->rsegments = array();
         $this->uri_extension = '';
     }
 

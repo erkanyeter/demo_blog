@@ -7,7 +7,6 @@
  */
 $c = new Controller(
     function () {
-
     }
 );
 

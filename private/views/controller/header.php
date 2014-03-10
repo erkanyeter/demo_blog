@@ -19,7 +19,7 @@ $c->func(
     function () {
         $firstSegment   = $this->request->global->uri->getSegment(0);     // Get first segnment
         $currentSegment = (empty($firstSegment)) ? 'home' : $firstSegment;  // Set current segment as "home" if its empty
-        
+
         $li = '';
         $auth = $this->auth->hasIdentity();
 

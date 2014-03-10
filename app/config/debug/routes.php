@@ -23,23 +23,23 @@
 */
 $routes = array(
 
-	'tag/(:any)'                   => 'tag/index/$1',
-	'post/detail/(:num)'           => 'post/detail/index/$1',
-	'post/preview/(:num)'          => 'post/preview/index/$1',
-	'post/update/(:num)'           => 'post/update/index/$1',
-	'post/delete/(:num)'           => 'post/delete/index/$1',
-	'comment/delete/(:num)'        => 'comment/delete/index/$1',
-	'comment/update/(:num)/(:any)' => 'comment/update/index/$1/$2',
-	
-	// Default Controller 
-	'default_controller' => 'welcome/index', // This is the default controller, application call it as default
-	
-	// 404 Override
-	'404_override' => '',  					 // You can redirect 404 errors to specify controller
+    'tag/(:any)'                   => 'tag/$1',
+    'post/detail/(:num)'           => 'post/detail/$1',
+    'post/preview/(:num)'          => 'post/preview/$1',
+    'post/update/(:num)'           => 'post/update/$1',
+    'post/delete/(:num)'           => 'post/delete/$1',
+    'comment/delete/(:num)'        => 'comment/delete/$1',
+    'comment/update/(:num)/(:any)' => 'comment/update/$1/$2',
+    
+    // Default Controller 
+    'default_controller' => 'welcome/index', // This is the default controller, application call it as default
+    
+    // 404 Override
+    '404_override' => '',                    // You can redirect 404 errors to specify controller
 
-	 // Controller Default Index Method
-	'index_method' => 'index'  			     // This is controller default index method for all controllers.
-											 // You should configure it before the first run of your application.
+     // Controller Default Index Method
+    'index_method' => 'index'                // This is controller default index method for all controllers.
+                                             // You should configure it before the first run of your application.
 );
 
 /* End of file routes.php */

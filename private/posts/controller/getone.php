@@ -16,14 +16,12 @@ $c->func(
     'index', 
     function ($id, $status = '') {
 
-        $this->db->where('post_id', $id); 
+        $sql = "SELECT * FROM posts JOIN users ON user_id = post_user_id";
 
         if ( ! empty($status)) {
-            $this->db->where('post_status', $status);
+            $sql.= " WHERE post_id = ".$this->db->escape($id);
         }
-
-        $this->db->join('users', 'user_id = post_user_id');
-        $this->db->get('posts');
+        $this->db->query($sql);
 
         $r = array(
             'results' => $this->db->getRowArray(),

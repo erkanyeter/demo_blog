@@ -8,7 +8,6 @@ The <kbd>app/classes</kbd> folder is reserved for user classes. Below the exampl
 
 ```php
 <?php
-
 Class Doly {
 
     public function __construct()
@@ -29,7 +28,8 @@ Class Doly {
 }
 
 new Doly;
-$this->doly->hello();   // output Hello World !
+// $this->doly->hello();   // output Hello World !
+?>
 ```
 
 ### Including Sources

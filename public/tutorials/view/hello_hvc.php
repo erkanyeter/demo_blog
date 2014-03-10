@@ -24,9 +24,6 @@ $this->hvc->get('tutorials/hello_dummy/test/4/5/6');</pre>
         </section>
 
         <?php echo $footer ?>
-
-        <section><p>&nbsp;</p></section>
-        
     </body>
     
 </html>

@@ -103,36 +103,22 @@ Class Mongo_Db {
      * @param array $excludes
      * @return type 
      */
-    public function select($includes = '', $excludes = array())
+    public function select($includes = '')
     {
-        if(is_string($includes) AND strpos($includes, ',') > 0)
-        {
-            $includes = explode(',', $includes);
-            $includes = array_map('trim', $includes);
-        }
-        
+        $includes = explode(',', $includes);
+
         if ( ! is_array($includes))
         {
-            $includes = array();
+            $includes = array($includes);
         }
 
-        if ( ! is_array($excludes))
-        {
-            $excludes = array();
-        }
+        $includes = array_map('trim', $includes);  // trim spaces
 
         if ( ! empty($includes))
         {
             foreach ($includes as $col)
             {
                 $this->selects[$col] = 1;
-            }
-        }
-        else
-        {
-            foreach ($excludes as $col)
-            {
-                $this->selects[$col] = 0;
             }
         }
 
@@ -149,9 +135,7 @@ Class Mongo_Db {
      */
     public function from($collection = '')
     {
-
         $this->collection = $collection;
-        
         return ($this);
     }
     
@@ -1102,7 +1086,7 @@ Class Mongo_Db {
      */
     private function setConnectionString() 
     {
-        $config = getConfig('mongo');
+        $config = getConfig('mongo_db');
         
         if($config['dsn'] != '')
         {

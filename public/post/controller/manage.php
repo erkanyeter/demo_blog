@@ -16,22 +16,21 @@ $c = new Controller(
         new Post;
         new Db;
         new Hvc;
-        new Trigger('private');
     }
 );
 
 $c->func(
-    'index',
+    'index.private_user',
     function () {
 
         $r = $this->hvc->get('private/posts/getallmanage'); // get all post data
-        
+
         $this->view->get(
             'manage',
             function () use ($r) {
                 $this->set('title', 'Manage Posts');
                 $this->set('posts', $r['results']);
-                $this->getScheme();
+                $this->getScheme();  // hmvc yapınca request resetleniyor
             }
         );
     }

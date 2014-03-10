@@ -9,6 +9,7 @@ $c = new Controller(
     function () {
         new Post;
         new Db;
+        new Pdo_Crud;
     }
 );
 
@@ -24,11 +25,10 @@ $c->func(
                 'contact_body'          => $this->post->get('contact_body'),
                 'contact_creation_date' => date('Y-m-d H:i:s'),
             );
-
             $this->db->transaction();
             $this->db->insert('contacts', $data);
             $this->db->commit();
-
+            
             $r = array('success' => 1,
                 'results' => array(),
                 'message' => 'Contact saved successfully',
@@ -41,10 +41,8 @@ $c->func(
                 'message' => 'failure',
                 'e' => $e->getMessage(),
             );
-
             $this->db->rollBack();
         }
-
         echo json_encode($r);
     }
 );

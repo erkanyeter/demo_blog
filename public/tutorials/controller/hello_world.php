@@ -8,20 +8,26 @@
 $c = new Controller(
     function () {
         new View;
+
+        $this->logger->output = true;
+
+        // $var   = '$_POST';
+        // $myvar = $$var;
+        
+        // $myvar['test'];
     }
 );
 
 $c->func(
     'index',
     function () {
-
         $this->view->get(
             'hello_world', 
             function () {
                 $this->set('name', 'Obullo');
                 $this->set('footer', $this->getTpl('footer', false));
             }
-        );
+        );      
     }
 );
 

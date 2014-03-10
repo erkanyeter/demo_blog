@@ -13,7 +13,6 @@
 Class Request {
     
     protected $headers;       // Request Headers
-    private static $instance;
 
     /**
      * Constructor
@@ -21,12 +20,9 @@ Class Request {
     public function __construct()
     {
         global $logger;
-
-        if( ! isset(getInstance()->request))
-        {
+        if ( ! isset(getInstance()->request)) {
             getInstance()->request = $this; // Make available it in the controller $this->get->method();
         }
-
         $logger->debug('Request Class Initialized');
     }
 
@@ -41,23 +37,18 @@ Class Request {
     * @param    bool    Use global post values instead of HMVC scope.
     * @return   string
     */
-    public function get($index = NULL, $xss_clean = FALSE, $use_global_var = false)
+    public function get($index = NULL, $xss_clean = FALSE)
     {
-        $VAR = ($use_global_var) ? $GLOBALS['_REQUEST_BACKUP'] : $_REQUEST;  // People may want to use hmvc or app superglobals.
-
         if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
         {
             $request = array();
-            
             foreach (array_keys($VAR) as $key)  // loop through the full _REQUEST array
             {
-                $request[$key] = Get::fetchFromArray($VAR, $key, $xss_clean);
+                $request[$key] = Get::fetchFromArray($_REQUEST, $key, $xss_clean);
             }
-
             return $request;
         }
-
-        return Get::fetchFromArray($VAR, $index, $xss_clean);
+        return Get::fetchFromArray($_REQUEST, $index, $xss_clean);
     }
 
     // --------------------------------------------------------------------
@@ -67,22 +58,17 @@ Class Request {
      * 
      * @return string | bool
      */
-    public function getServer($index = NULL, $xss_clean = FALSE, $use_global_var = false)
+    public function getServer($index = null, $xss_clean = false, $use_global_var = false)
     {
         $VAR = ($use_global_var) ? $GLOBALS['_SERVER_BACKUP'] : $_SERVER;  // People may want to use hmvc or app superglobals.
 
-        if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
-        {
+        if ($index === null AND ! empty($VAR)) {  // Check if a field has been provided
             $server = array();
-            
-            foreach (array_keys($VAR) as $key)  // loop through the full _REQUEST array
-            {
+            foreach (array_keys($VAR) as $key) {  // loop through the full _REQUEST array
                 $server[$key] = Get::fetchFromArray($VAR, $key, $xss_clean);
             }
-
-            return $request;
+            return $server;
         }
-
         return Get::fetchFromArray($VAR, $index, $xss_clean);
     }
 
@@ -95,11 +81,9 @@ Class Request {
      */
     public function getMethod()
     {
-        if(isset($_SERVER['REQUEST_METHOD']))
-        {
+        if (isset($_SERVER['REQUEST_METHOD'])) {
             return $_SERVER['REQUEST_METHOD'];
         }
-
         return false;
     }
 
@@ -248,7 +232,6 @@ Class Request {
                 $flag = '';
                 break;
         }
-
         return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flag);
     }
 
@@ -261,11 +244,9 @@ Class Request {
      */
     public function isXmlHttp()
     {
-        if( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
-        {
+        if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             return true;
         }
-
         return false;
     }
 
@@ -278,11 +259,9 @@ Class Request {
      */
     public function isHvc()
     {
-        if(isset($_SERVER['HVC_REQUEST']))
-        {
+        if (isset($_SERVER['HVC_REQUEST'])) {
             return true;
         }
-
         return false;
     }
 
@@ -295,11 +274,9 @@ Class Request {
      */
     public function isSecure()
     {
-        if( ! isset($_SERVER['https']) OR $_SERVER['https'] != 'on')
-        {
+        if ( ! isset($_SERVER['https']) OR $_SERVER['https'] != 'on') {
             return false;
         }
-
         return true;
     }
 

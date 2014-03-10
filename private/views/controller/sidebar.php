@@ -18,16 +18,19 @@ $c->func(
     'index',
     function () {
 
-        $comments = $this->hvc->get('private/comments/getcount')['results']['count'];
-
-        // ** Hvc View Controller output must be string;
+        // Note: Hvc View Controller output must be string !
 
         echo $this->view->get(
             'sidebar',
-            function () use ($comments) {
-                $this->set('auth', $this->auth->hasIdentity());
-                $this->set('username', $this->auth->getIdentity('user_username'));
-                $this->set('total_comments', $comments);
+            function () {
+                if ($this->auth->hasIdentity()) {
+
+                    $comments = $this->hvc->get('private/comments/getcount')['results']['count'];
+                    
+                    $this->set('auth', $this->auth->hasIdentity());
+                    $this->set('username', $this->auth->getIdentity('user_username'));
+                    $this->set('total_comments', $comments);
+                }
             },
             false
         );

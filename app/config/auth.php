@@ -20,7 +20,6 @@ $auth = array(
 | Configure dependecies
 |
 */
-$auth['database']  = 'db';           // Your database variable which is strored in the controller name e.g. getInstance()->{db}
 $auth['session']   = function () {   // Session Dependency
     return new Sess;                 // Start the sessions
 };

@@ -1,7 +1,7 @@
 
 <div id="sidebar">
 <?php 
-if($auth) : ?>
+if(isset($auth)) : ?>
 
          <div id="sidepaneluser">
             <div class="sidebarheader">

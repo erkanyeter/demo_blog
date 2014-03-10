@@ -1,5 +1,5 @@
 
-## Hmvc Class
+## Hvc Class
 
 Using hvc package, you can execute hvc requests between your controllers. 
 
@@ -8,12 +8,14 @@ Using hvc package, you can execute hvc requests between your controllers.
 Hvc requests compatible with Ajax Requests and also has a caching functionality. The "Hvc Design Pattern" thoroughly used in the Framework.
 Each Hvc uri creates a random connection string. And each random Uri able to do Memory Cache if you provide expiration time as third paramater.
 
-##### Hvc request creates the random connection string (hvc Key) as the following steps.
+Some information about Hierarchical Controllers [Hierarchical Controllers in Java World](http://www.javaworld.com/article/2076128/design-patterns/hmvc--the-layered-pattern-for-developing-strong-client-tiers.html)
+
+##### A Hvc request creates the random connection string (hvc Key) as the following steps.
 
 *  The request method gets the uri and serialized string of your data parameters
 *  then it builds <b>md5 hash</b>
 *  finally add it to the end of your hvc uri.
-*  in this technique the hvc id can be used as a <b>key</b> for <b>caching</b> systems.
+*  in this technique hvc <b>key</b> used for <b>caching</b> mechanism.
 
 Example Cache Usage
 
@@ -21,7 +23,7 @@ Example Cache Usage
 $this->hvc->get('private/comments/getuser', array('user_id' => 5), $expiration = 7200);
 ```
 
-Example Read Output ( Private Controller )
+Example Output ( Private Controller )
 
 ```php
 <?php
@@ -31,27 +33,26 @@ Example Read Output ( Private Controller )
  * 
  * @var Private Controller
  */
-$c = new Controller(function(){  
+$c = new Controller(
+    function () {
+	   new Get;
+	   new Db;
+    }
+);
 
-	new Get;
-	new Db;
-});
-
-$c->func('index', function(){
-
-	$this->db->where('id', $this->get->get('user_id'));
-	$this->db->get('users');
-
-    $r = array(
-        'results' => $this->db->getResultArray(),
-        'message' => $this->uri->getUriString(),   
-
-        //output // private/comments/getuser/hvc_key_6eff3bbc8c8c7ba883be5da437c43f56
-    );
-
-    echo json_encode($r);
-
-});
+$c->func(
+    'index',
+    function () {
+    	$this->db->where('id', $this->get->get('user_id'));
+    	$this->db->get('users');
+        $r = array(
+            'results' => $this->db->getResultArray(),
+            'message' => $this->uri->getUriString(),
+            //output // private/comments/getuser/hvc_key_6eff3bbc8c8c7ba883be5da437c43f56
+        );
+        echo json_encode($r);
+    }
+);
 
 /* End of file getuser.php */
 /* Location: ./private/comments/controller/getuser.php */
@@ -84,27 +85,26 @@ Example Delete
  * 
  * @var Public Controller
  */
-$c = new Controller(function(){
-    // __construct
-    new Url;
-    new Form;
-    new Sess; 
-    new Auth;
-    new Hvc;
+$c = new Controller(
+    function () {
+        new Url;
+        new Form;
+        new Sess;
+        new Auth;
+        new Hvc;
+    }
+);
 
-    new Trigger('private');
-});
-
-$c->func('index', function($id){
-
-    $r = $this->hvc->post('private/posts/delete/{'.$id.'}', 
-        array('user_id' => $this->auth->getIdentity('user_id'))
-    );
-
-    $this->form->setNotice($r['message'], $r['success']); // set flash notice
-    $this->url->redirect('/post/manage');
-
-});
+$c->func(
+    'index',
+    function($id){
+        $r = $this->hvc->post('private/posts/delete/'.$id, 
+            array('user_id' => $this->auth->getIdentity('user_id'))
+        );
+        $this->form->setNotice($r['message'], $r['success']); // set flash notice
+        $this->url->redirect('/post/manage');
+    }
+);
 ```
 
 **Note:**  Use <b>"{ }"</b> braces to remove the <b>"/index"</b> method. Otherwise you have to write full uri e.g. <b>private/posts/delete/index/$id</b>.

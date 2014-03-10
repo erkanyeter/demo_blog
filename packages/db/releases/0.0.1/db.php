@@ -1,16 +1,17 @@
 <?php
 
 /**
- * Database Connection Class.
- *
- * @package       packages 
- * @subpackage    db 
- * @category      database connection
- * @link            
+ * Db Class
+ * 
+ * @category  Database
+ * @package   Db
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/db
  */
-
-Class Db {
-    
+Class Db
+{
     /**
      * Database connection variable
      * We can grab it globally. ( Db::$var )
@@ -31,34 +32,20 @@ Class Db {
      * 
      * @var object
      */
-    public $db;
+    public $dbo;
 
     /**
      * Constructor
      * 
-     * @param string $dbVar database configuration key
+     * @param string $var database configuration key
      */
-    public function __construct($dbVar = 'db')
+    public function __construct($var = 'db')
     {
         global $logger;
 
-        $this->db = $this->connect(strtolower($dbVar));
-        
+        $this->dbo = $this->connect($var);
+
         $logger->debug('Db Class Initialized');
-    }
-       
-    // --------------------------------------------------------------------
-    
-    /**
-     * Call methods from CRUD object
-     * 
-     * @param  string $method
-     * @param  array $arguments
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        return call_user_func_array(array($this->db, $method), $arguments);
     }
 
     // --------------------------------------------------------------------
@@ -66,35 +53,35 @@ Class Db {
     /**
      * Connect to Database
      * 
-     * @param  string $dbVar
+     * @param string $var database variable name
+     * 
      * @return object
      */
-    public function connect($dbVar = 'db')
-    {        
-        if(isset(getInstance()->{$dbVar}) AND is_object(getInstance()->{$dbVar}))
-        {
-            return getInstance()->{$dbVar};   // Lazy Loading.  
+    public function connect($var = 'db')
+    {
+        if (isset(getInstance()->{$var}) AND is_object(getInstance()->{$var})) {
+            return getInstance()->{$var};   // Lazy Loading.  
         }
 
         self::$config = getConfig('database'); // Get configuration
 
-        if( ! isset(self::$config[$dbVar]))
-        {
-            throw new Exception('Undefined database configuration please set configuration for '.$dbVar);
+        if ( ! isset(self::$config[$var])) {
+            throw new Exception('Undefined database configuration please set configuration for '.$var);
         }
 
-        self::$var = $dbVar;  // Store current database key.
+        self::$var = $var;    // Store current database key.
                               // We use it in active record class.
 
+        $closure = self::$config[$var]; // Get database Pdo_Driver(); Object
 
-        $db = self::$config[$dbVar];  // Get database object Pdo_Driver(); Class
-        $db->connect();
+        $dbo = $closure();  
+        $dbo->connect(); // run it
 
-        getInstance()->{$dbVar} = &$db;
+        getInstance()->{$var} = &$dbo;
 
-        return $db; // database
+        return $dbo; // database
+
     }
-    
 }
 
 /* End of file db.php */

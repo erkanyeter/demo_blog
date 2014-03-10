@@ -17,43 +17,59 @@ $config = array(
     // Uri Protocol
     'uri_protocol' => 'AUTO',     // Auto detects the URI protocol * Default option is 'AUTO', 
                                   // other options: REQUEST_URI, QUERY_STRING, PATH_INFO.
-                                              
+
                                   // Note : If your links do not seem to work and try to change your uri_protocol 
                                   // with one of these options: REQUEST_URI, QUERY_STRING, PATH_INFO
                                   // Example Usage of Query Strings- http://example.com/login?param=1&param2=yes
-
     // Errors & Debugging
-    'error_reporting' => 1,                                             // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
-    'debug_backtrace' => array('enabled' => 'E_ALL', 'padding' => 3),   // Debug backtrace help you to fast development.
+    'error_reporting' => 1,                                           // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
+    'debug_backtrace' => array('enabled' => 'E_ALL', 'padding' => 3), // Debug backtrace help you to fast development.
     
     // Environments
-    'environment_config_files' => array(                // Defined config files for each environments.
+    'environment_config_files' => array(             // Defined config files for each environments.
                                         'config',
                                         'database',
                                         'routes',
                                         'sess',
-                                        'logger',
+                                        'logger_file',
                                         'logger_mongo',
                                         'mongo'
                                 ),
+    // Log Severities:
+    // ---------------------------------------------------
+    // emergency (0) : Emergency: system is unusable.
+    // alert (1)     : Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
+    // critical (2)  : Critical conditions. Example: Application component unavailable, unexpected exception.
+    // error (3)     : Runtime errors that do not require immediate action but should typically be logged and monitored.
+    // warning (4)   : Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
+    // notice (5)    : Normal but significant events.
+    // info (6)      : Interesting events. Examples: User logs in, SQL logs, Application Benchmarks.
+    // debug (7)     : Detailed debug information.
+    // ---------------------------------------------------
+    // @see Syslog Protocol http://tools.ietf.org/html/rfc5424
+    // ---------------------------------------------------
+
     // Logging
-    'log_threshold' => 0,         // 0 = Disables logging, 1 = Errors & PHP errors, 2 = Debug 3 = Info 4 = Benchmark 5 = All Messages
-    'log_queries'   => true,      // If true "all" SQL Queries gets logged.
-    'log_benchmark' => true,      // If true "all" framework benchmarks gets logged.
-
-
-    // https://github.com/php-fig/log
-    // 'log_threshold' => array(100, 200, 250) // allowed logs
-
-    // DEBUG (100): Detailed debug information.
-    // INFO (200): Interesting events. Examples: User logs in, SQL logs.
-    // NOTICE (250): Normal but significant events.
-    // WARNING (300): Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
-    // ERROR (400): Runtime errors that do not require immediate action but should typically be logged and monitored.
-    // CRITICAL (500): Critical conditions. Example: Application component unavailable, unexpected exception.
-    // ALERT (550): Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
-    // EMERGENCY (600): Emergency: system is unusable.
-    // BENCHMARK (700): Application benchmark information data.
+    'log_enabled'         => true,           // On / Off logging
+    'log_output'          => true,           // On / Off logger html output
+    'log_threshold'       => array(0,1,2,3,4,5,6,7),          // array(0,1,2) = emergency,alert,critical
+    'log_handler'         => array('file' => 'Logger_File'),  // Handler name & Package name of your driver: Logger_File, Logger_Mongo ...
+    'log_queries'         => true,           // If true "all" SQL Queries gets logged.
+    'log_benchmark'       => true,           // If true "all" application benchmarks gets logged.
+    'log_default_channel' => 'system',       // Default channel name should be general.
+    'log_line'            => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
+    'log_push_handlers'   => array(                                 // Define your available push handlers.
+                                    'email' => 'Logger_Email',  
+                                    'mongo' => 'Logger_Mongo'
+                                    ),
+    // Push Example
+    // ---------------------------------------------------
+    // $this->logger->channel('security');
+    // $this->logger->alert('Possible hacking attempt !', array('username' => $username));
+    // $this->logger->push('email');  // send log data using email handler
+    // $this->logger->push('mongo');  // send log data to mongo db handler
+    // $this->logger->clear();  // reset to default logger configuration, default channel etc ..
+    // ---------------------------------------------------
 
     // VERY IMPORTANT: * For a live site you'll usually only enable "Errors (1)" to be logged
     // otherwise your log files will fill up very fast.
@@ -70,8 +86,8 @@ $config = array(
     'index_page' => '',            // Typically this will be your index.php file, If mod_rewrite enabled is should be blank.
     'url_suffix' => '',            // Allows you to add a suffix to all URLs generated by Framework.
 
-    // "Web Service" uri extensions
-    'web_service_extensions' => array('.json','.xml'),   // e.g. : http://example.com/web_service/example.json
+    // Uri extensions
+    'uri_extensions' => array('.json','.xml'),   // e.g. : http://example.com/web_service/example.json
 
     // Hooks
     'enable_hooks' => false, // If you would like to use the 'hooks' feature you must enable it by etting this variable to "true".
@@ -114,7 +130,7 @@ $config = array(
     // Models & Schemas
     'model_auto_sync' => false,         // Auto sync should be enabled in development mode.
                                         // Sync tool automatically show a sync edit screen for the schema & database synchronization.
-                                        // In LIVE mode you need set it to "false" because of the performance & security.
+                                        // In LIVE mode you need set it to "false" because of the "database query" performance & security.
     // Reverse Proxy IPs
     'proxy_ips'       => '',
 

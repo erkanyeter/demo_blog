@@ -9,6 +9,7 @@ $c = new Controller(
     function () {  
         new Post;
         new Db;
+        new Pdo_Crud;
     }
 );
 
@@ -25,11 +26,9 @@ $c->func(
                 'post_status'        => $this->post->get('post_status'),
                 'post_creation_date' => date('Y-m-d H:i:s'),
             );
-
             $this->db->transaction();
             $this->db->insert('posts', $data);
             $this->db->commit();
-
             $r = array(
                 'success' => 1,
                 'results' => array(),
@@ -43,10 +42,8 @@ $c->func(
                 'message' => 'failure',
                 'e' => $e->getMessage(),
             );
-
             $this->db->rollBack();
         }
-
         echo json_encode($r);
     }
 );

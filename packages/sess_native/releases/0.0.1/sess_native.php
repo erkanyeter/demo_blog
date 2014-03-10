@@ -37,11 +37,9 @@ Class Sess_Native {
      */
     public function __construct($config = array())
     {
-        if(count($config) == 0)
-        {
+        if (count($config) == 0) {
             return;
         }
-        
         foreach ($config as $key => $value)  // set php.ini values
         {
             ini_set($key, $value);
@@ -53,11 +51,11 @@ Class Sess_Native {
     /**
      * Initialize to Sess class configuration
      * 
-     * @param  array $params config parameters
      * @param  array $sess session configuration array comes from sess config file
+     * 
      * @return [type]         [description]
      */
-    public function init($params = array(), $sess = array())
+    public function init($sess = array())
     {    
         global $config, $logger;
 
@@ -72,14 +70,15 @@ Class Sess_Native {
             'match_useragent',
             'time_to_update') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
+            $this->$key = $sess[$key];
         }
 
-        $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
-        $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
-        $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
+        $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
+        $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
+        $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
 
-        $this->request = &$this->request;  // Set Request object
+        $request = $this->request;
+        $this->request = $request();  // Set Request object
 
         if($this->expire_on_close)  // Expire on close 
         {
@@ -287,8 +286,7 @@ Class Sess_Native {
         // set cookie explicitly to only have our session data
         
         $cookie_data = array();
-        foreach (array('session_id','ip_address','user_agent','last_activity') as $val)
-        {
+        foreach (array('session_id','ip_address','user_agent','last_activity') as $val) {
             $cookie_data[$val] = $this->userdata[$val];
         }
 
@@ -345,12 +343,12 @@ Class Sess_Native {
     * @return    void
     */
     public function destroy()
-    {        
-        unset($_SESSION);
-        
-        if ( isset( $_COOKIE[$this->cookie_name] ) )
-        {
-            session_destroy();
+    {
+        if (isset( $_COOKIE[$this->cookie_name])) {
+
+            if(session_status() == PHP_SESSION_ACTIVE) { // http://stackoverflow.com/questions/13114185/how-can-you-check-if-a-php-session-exists
+                session_destroy();
+            }
 
             // setcookie($this->cookie_name,
             //     '', 

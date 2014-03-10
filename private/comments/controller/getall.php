@@ -15,15 +15,14 @@ $c->func(
     'index',
     function ($id = '', $status = 1) {
 
-        $this->db->join('posts', 'post_id = comment_post_id');  // Get all comments
+        $sql = "SELECT * FROM comments JOIN posts ON post_id = comment_post_id";
 
         if ( ! empty($id)) {
-            $this->db->where('comment_post_id', $id);
-            $this->db->where('comment_status', $status);
+            $sql.= " WHERE comment_post_id = ".$this->db->escape($id);
+            $sql.= " AND comment_status = ".$this->db->escape($status);
         }
-        
-        $this->db->orderBy('comment_status', 'ASC');
-        $this->db->get('comments');
+        $sql.= " ORDER BY comment_status ASC";
+        $this->db->query($sql);
 
         $r = array(
             'results' => $this->db->getResultArray(),

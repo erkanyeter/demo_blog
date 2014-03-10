@@ -8,6 +8,7 @@
 $c = new Controller(
     function () {  
         new Db;
+        new Pdo_Crud;
     }
 );
 
@@ -20,7 +21,6 @@ $c->func(
             $this->db->where('comment_id', $id);
             $this->db->delete('comments');
             $this->db->commit();
-
             $r = array(
                 'success' => 1,
                 'results' => array(),
@@ -34,10 +34,8 @@ $c->func(
                 'message' => 'failure',
                 'e' => $e->getMessage(),
             );
-
             $this->db->rollBack();
         }
-
         echo json_encode($r);
     }
 );

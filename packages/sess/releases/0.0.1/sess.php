@@ -1,88 +1,45 @@
 <?php
 
 /**
-* Session Class ( Static )
-*
-* @package       packages
-* @subpackage    sess
-* @category      sessions
-*/
-
-Class Sess {
-        
-    public static $driver;  // driver instance
-    public static $params;  // session parameters
+ * Session Class
+ * 
+ * @category  Session
+ * @package   Sess
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/sess
+ */
+Class Sess
+{
+    public static $driver;
 
     /**
     * Constructor
     *
     * Sets the variables and runs the compilation routine
     * 
-    * @access    public
-    * @return    void
+    * @return void
     */
-    public function __construct($params = array())
+    public function __construct()
     {
-        global $logger, $config;
-        static $logged = null;
-
-        if( ! isset(getInstance()->sess))
-        {
-            getInstance()->sess = $this; // Available it in the contoller $this->sess->method();
-
-            self::$params = $params;
-            $this->init(self::$params);
-        }
-
-        if($logged == null AND $config['log_threshold'] > 0)
-        {
-            $logger->debug('$_SESSION: '.preg_replace('/\n/', '', print_r(self::$driver->getAllData())));
-        }
-
-        $logger->debug('Sess Class Initialized');
-        $logged = true;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Start the sessions
-     * 
-     * @param  array  $params package configuration
-     * @return void
-     */
-    public function init($params = array())
-    {
+        global $logger;
         static $sessionStart = null;
 
-        $sess = getConfig('sess');
+        if ($sessionStart == null) {
+            $sess = getConfig('sess');
+            
+            self::$driver = $sess['driver']();
+            self::$driver->init($sess);  // Start the sessions            
 
-        if ($sessionStart == null)
-        {
-            $driver   = (isset($params['driver'])) ? $params['driver'] : $sess['driver'];
-            $database = (isset($params['db'])) ? $params['db'] : $sess['db'];
+            getInstance()->sess = self::$driver;  // Available it in the contoller $this->sess->method();
 
-            self::$driver = $driver;              // Driver object.
-            self::$driver->init($params, $sess);  // Start the sessions
+            $logger->debug('Sess Class Initialized');
+            $logger->debug('$_SESSION: ', self::$driver->getAllData());
 
             $sessionStart = true;
         }
     }
-    
-    // ------------------------------------------------------------------------
-
-    /**
-     * Call the driver
-     * 
-     * @param  string $method 
-     * @param  array $arguments
-     * @return void
-     */
-    public function __call($method, $arguments)
-    {
-        return call_user_func_array(array(self::$driver, $method), $arguments);
-    }
-    
 }
 
 /* End of file sess.php */

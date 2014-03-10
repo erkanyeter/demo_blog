@@ -11,16 +11,13 @@ $c = new Controller(
         new Html;
         new Form;
         new View;
-        new Sess;
-        new Auth;
         new Post;
         new Hvc;
-        new Trigger('private');
     }
 );
 
 $c->func(
-    'index', 
+    'index.private_user',
     function () {
         if ($this->post->get('dopost')) {
 

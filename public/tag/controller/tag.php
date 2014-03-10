@@ -15,12 +15,11 @@ $c = new Controller(
         new Sess;
         new Auth;
         new Hvc;
-        new Trigger('public');
     }
 );
 
 $c->func(
-    'index',
+    'index.public_user',
     function ($tag) {
 
         $r = $this->hvc->get('private/posts/getallbytag/{'.$tag.'}');

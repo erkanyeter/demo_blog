@@ -26,7 +26,7 @@
                 <div id="createpost">
                     <i>Fields with * are required.</i>
                     <p></p>
-                    <?php echo $this->form->open('/post/update/index/'.$post_id, array('method' => 'POST', " id='createform' ")) ?>
+                    <?php echo $this->form->open('/post/update/'.$post_id, array('method' => 'POST', " id='createform' ")) ?>
                             <table>
                                 <tr>
                                     <td style="width:15%;"><?php echo $this->form->label('Title') ?></td>

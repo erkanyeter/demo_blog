@@ -20,6 +20,7 @@
                     
                     <div id="container">
                     <section><?php echo $this->form->getNotice();?></section>
+                    <section><?php echo $this->form->getMessage();?></section>
 
                         <p>Please fill out the following form with your login credentials: </p>
 

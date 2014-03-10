@@ -15,8 +15,7 @@ Class Error {
     public function __construct()
     {
         global $logger;
-
-        $logger->debug('Error Helper Initialized');
+        $logger->debug('Error Class Initialized');
     }
     
     // --------------------------------------------------------------------
@@ -30,14 +29,12 @@ Class Error {
     */
     public function getSecurePath($file, $searchPaths = false)
     {
-        if($searchPaths)
-        {
+        if ($searchPaths) {
             $replace = array('APP'. DS, 'CLASSES'. DS, 'ROOT'. DS, 'PACKAGES'. DS, 'PUBLIC_DIR'. DS);
             return str_replace(array(APP, CLASSES, ROOT, PACKAGES, PUBLIC_DIR), $replace, $file);
         }
         
-        if(is_string($file))
-        {
+        if (is_string($file)) {
             if (strpos($file, ROOT) === 0)
             {
                 $file = 'ROOT'. DS .substr($file, strlen(ROOT));

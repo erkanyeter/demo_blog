@@ -10,15 +10,11 @@ $c = new Controller(
         new Url;
         new Html;
         new View;
-        new Sess;
-        new Auth;
         new Hvc;
-        new Trigger('public'); // run triggers
     }
 );
-
 $c->func(
-    'index',
+    'index.public_user',
     function () {
         
         $this->view->get(

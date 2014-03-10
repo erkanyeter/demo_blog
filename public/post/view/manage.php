@@ -3,7 +3,6 @@
         <title><?php echo $title ?></title>
 
         <?php echo $this->html->css('style.css') ?>
-        
         <meta charset="utf-8">
     </head>
 

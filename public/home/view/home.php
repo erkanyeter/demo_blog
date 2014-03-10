@@ -11,6 +11,8 @@
         <div id="clear"></div>
         <div id="containerbox">
              
+            <section><?php echo $this->form->getNotice();?></section>
+
             <div id="content">
 <?php
 if(count($posts) > 0) :

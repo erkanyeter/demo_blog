@@ -26,14 +26,12 @@ Class Form {
     {
         global $logger;
 
-        if( ! isset(getInstance()->form))
-        {
+        if( ! isset(getInstance()->form)) {
             new Validator;          // Create Validator Object
 
             getInstance()->translator->load('form');
             getInstance()->form = $this; // Make available it in the controller $this->form->method();
         }
-
         $logger->debug('Form Class Initialized');
     }
 
@@ -53,7 +51,7 @@ Class Form {
 
         if($method != 'setMessage' AND method_exists(getInstance()->validator, $method))  // Call the Validator object methods
         {
-            $logger->debug('Form Class '.ucfirst($method).' Executed');
+            $logger->debug('Form Class '.$method.'() Executed');
 
             return call_user_func_array(array(getInstance()->validator, $method), $arguments);
         }
@@ -69,7 +67,7 @@ Class Form {
         {
             require (PACKAGES .'form'. DS .'releases'. DS .$packages['dependencies']['form']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
 
-            $logger->debug('Form Class '.ucfirst($method).' Executed');
+            $logger->debug('Form Class '.$method.'() Executed');
         }
 
         return call_user_func_array('Form\Src\\'.$method, $arguments);

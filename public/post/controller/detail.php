@@ -17,12 +17,11 @@ $c = new Controller(
         new Auth;
         new Post;
         new Hvc;
-        new Trigger('public');
     }
 );
 
 $c->func(
-    'index',
+    'index.private_user',
     function ($id) {
         if ($this->post->get('dopost')) {  // if we have submit
 
@@ -44,14 +43,14 @@ $c->func(
             }
         }
 
-        $r  = $this->hvc->get('private/posts/getone/{'.$id.'}/Published');
-        $rc = $this->hvc->get('private/comments/getall/{'.$id.'}/1');
+        $post  = $this->hvc->get('private/posts/getone/'.$id.'/Published');
+        $comments = $this->hvc->get('private/comments/getall/'.$id.'/1');
 
         $this->view->get(
             'detail',
-            function () use ($r, $rc) {
-                $this->set('post', (object)$r['results']);
-                $this->set('comments', (object)$rc['results']);
+            function () use ($post, $comments) {
+                $this->set('post', (object)$post['results']);
+                $this->set('comments', (object)$comments['results']);
                 $this->set('title', 'Details');
                 $this->getScheme();
             }

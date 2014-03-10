@@ -9,6 +9,7 @@ $c = new Controller(
     function () {  
         new Db;
         new Get;
+        new Pdo_Crud;
     }
 );
 
@@ -29,7 +30,6 @@ $c->func(
         $r = array(
             'results' => $this->db->getResultArray(),
         );
-
         echo json_encode($r);
     }
 );

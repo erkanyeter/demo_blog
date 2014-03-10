@@ -15,12 +15,11 @@ $c = new Controller(
         new Auth;
         new Post;
         new Hvc;
-        new Trigger('public');
     }
 );
 
 $c->func(
-    'index',
+    'index.public_user',
     function () {
         if ($this->post->get('dopost')) {  // if isset post submit
             
@@ -42,7 +41,6 @@ $c->func(
                     return true;
                 }
             );
-            
             if ($this->form->isValid()) {  // run validation
 
                 $r = $this->hvc->post(

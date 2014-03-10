@@ -10,7 +10,7 @@
  * @link                              
  */
 
-Class Pdo_Ibm extends Database_Pdo\Src\Database_Adapter
+Class Pdo_Ibm extends Pdo_Adapter
 {
     /**
     * The character used for escaping
@@ -141,10 +141,6 @@ Class Pdo_Ibm extends Database_Pdo\Src\Database_Adapter
                default:
                  $str = "%{$str}%";
             }
-            
-            // not need to quote for who use prepare and :like bind.
-            if($this->prepare == true AND $this->is_like_bind)   
-            return $str;
         } 
         
         // make sure is it bind value, if not ...
@@ -188,7 +184,7 @@ Class Pdo_Ibm extends Database_Pdo\Src\Database_Adapter
      * @param    string    the table name
      * @return   string
      */
-    public function _escape_table($table)
+    public function _escapeTable($table)
     {
         if (stristr($table, '.'))
         {
@@ -233,7 +229,7 @@ Class Pdo_Ibm extends Database_Pdo\Src\Database_Adapter
      */
     public function _insert($table, $keys, $values)
     {
-        return "INSERT INTO " . $this->_escape_table($table) . " (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
+        return "INSERT INTO " . $this->_escapeTable($table) . " (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
     }
     
     // --------------------------------------------------------------------
@@ -251,7 +247,7 @@ Class Pdo_Ibm extends Database_Pdo\Src\Database_Adapter
      */
     public function _delete($table, $where = array(), $like = array(), $limit = false)
     {
-        return "DELETE FROM ".$this->_escape_table($table)." WHERE ".implode(" ", $where);
+        return "DELETE FROM ".$this->_escapeTable($table)." WHERE ".implode(" ", $where);
     }
     
     // --------------------------------------------------------------------
@@ -274,7 +270,7 @@ Class Pdo_Ibm extends Database_Pdo\Src\Database_Adapter
             $valstr[] = $key." = ".$val;
         }
 
-        return "UPDATE ".$this->_escape_table($table)." SET ".implode(', ', $valstr)." WHERE ".implode(" ", $where);
+        return "UPDATE ".$this->_escapeTable($table)." SET ".implode(', ', $valstr)." WHERE ".implode(" ", $where);
     }
 
     // --------------------------------------------------------------------

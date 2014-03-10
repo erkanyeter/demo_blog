@@ -16,10 +16,9 @@ $c->func(
     'index',
     function ($status = 0) {
 
-        $this->db->where('comment_status', $status);
-        $this->db->get('comments');
-
-        $r = array(  
+        $this->db->query('SELECT * FROM comments WHERE comment_status = '.$status);
+        
+        $r = array(
             'results' => array('count' => $this->db->getCount()),
         );
 

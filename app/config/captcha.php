@@ -9,7 +9,7 @@
 |
 */
 $captcha = array(
-    'sess'           => function () {               // Sess Dependency injection
+    'sess'           => function () {           // Sess Dependecy
         return new Sess;
     },
     'driver'         => 'cool',                 // Set default driver ( "secure" or "cool" ).

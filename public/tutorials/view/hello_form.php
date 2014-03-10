@@ -78,10 +78,8 @@
                 </section>    
 
         </section> 
-        
-        <section>
-            <p>Total memory usage <?php echo round(memory_get_usage()/1024/1024, 2).' MB' ?></p>
-        </section>
+
+        <?php echo $footer ?>
     </body>
     
 </html>
