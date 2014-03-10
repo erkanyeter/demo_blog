@@ -1,0 +1,33 @@
+[2014-03-07 22:13:11] system.debug: --> Config Class Initialized  
+[2014-03-07 22:13:11] system.debug: --> Translator Class Initialized  
+[2014-03-07 22:13:11] system.debug: --> Response Class Initialized  
+[2014-03-07 22:13:11] system.debug: --> Uri Class Initialized  
+[2014-03-07 22:13:11] system.debug: --> Router Class Initialized  
+[2014-03-07 22:13:11] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-07 22:13:11] system.debug: --> $_REQUEST_URI: /start/index/OB_TASK_REQUEST/  
+[2014-03-07 22:13:11] system.debug: --> $_COOKIE:   
+[2014-03-07 22:13:11] system.debug: --> $_POST:   
+[2014-03-07 22:13:11] system.debug: --> $_GET:   
+[2014-03-07 22:13:11] system.debug: --> Final output sent to browser array (\n  'memory_usage' => '743,336 bytes',\n) 
+[2014-03-07 22:14:12] system.debug: --> Config Class Initialized  
+[2014-03-07 22:14:12] system.debug: --> Translator Class Initialized  
+[2014-03-07 22:14:12] system.debug: --> Response Class Initialized  
+[2014-03-07 22:14:12] system.debug: --> Uri Class Initialized  
+[2014-03-07 22:14:12] system.debug: --> Router Class Initialized  
+[2014-03-07 22:14:12] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-07 22:14:12] system.debug: --> $_REQUEST_URI: /help/index/OB_TASK_REQUEST/  
+[2014-03-07 22:14:12] system.debug: --> $_COOKIE:   
+[2014-03-07 22:14:12] system.debug: --> $_POST:   
+[2014-03-07 22:14:12] system.debug: --> $_GET:   
+[2014-03-07 22:14:12] system.debug: --> Final output sent to browser array (\n  'memory_usage' => '741,864 bytes',\n) 
+[2014-03-07 22:14:14] system.debug: --> Config Class Initialized  
+[2014-03-07 22:14:14] system.debug: --> Translator Class Initialized  
+[2014-03-07 22:14:14] system.debug: --> Response Class Initialized  
+[2014-03-07 22:14:14] system.debug: --> Uri Class Initialized  
+[2014-03-07 22:14:14] system.debug: --> Router Class Initialized  
+[2014-03-07 22:14:14] system.debug: --> Global POST and COOKIE data sanitized  
+[2014-03-07 22:14:14] system.debug: --> $_REQUEST_URI: /start/index/OB_TASK_REQUEST/  
+[2014-03-07 22:14:14] system.debug: --> $_COOKIE:   
+[2014-03-07 22:14:14] system.debug: --> $_POST:   
+[2014-03-07 22:14:14] system.debug: --> $_GET:   
+[2014-03-07 22:14:14] system.debug: --> Final output sent to browser array (\n  'memory_usage' => '741,880 bytes',\n) 
