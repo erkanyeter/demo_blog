@@ -15,11 +15,11 @@ namespace Form\Src {
     */
     function checkbox($data = '', $value = '', $checked = false, $extra = '')
     {
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         if(is_object($value))  // $_POST & Db value schema sync
         {
-            $value = getInstance()->form->_getSchemaPost($selected, $data); 
+            $value = getInstance()->form->_getRowValue($selected, $data); 
         }
 
         $defaults = array('type' => 'checkbox', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);

@@ -1,5 +1,4 @@
-app/config/debug/
-app/schemas/
+nbproject/
 nbproject/private/
 build/
 nbbuild/

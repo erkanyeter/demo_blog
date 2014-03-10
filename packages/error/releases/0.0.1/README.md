@@ -91,21 +91,21 @@ You can <b>customize</b> this template which is located at <dfn>app/errors/</dfn
 
 The function expects the string passed to it to be the file path to the page that isn't found. Note that framework automatically shows 404 messages if controllers are not found.
 
-#### logMe('level', 'message')
+#### $this->logger->level($message);
 
 This function lets you write messages to your log files. You must supply one of three "levels" in the first parameter, indicating what type of message it is (debug, error, info), with the message itself in the second parameter. Example:
 
 ```php
-if ($some_var == "")
+if ($some_var == '')
 {
-    logMe('error', 'Some variable did not contain a value.');
+    $this->logger->error('Some variable did not contain a value.');
 }
 else
 {
-    logMe('debug', 'Some variable was correctly set');
+    $this->logger->debug('Some variable was correctly set');
 }
 
-logMe('info', 'The purpose of some variable is to provide some value.');
+$this->logger->info('The purpose of some variable is to provide some value.');
 ```
 
 There are three message types:
@@ -215,12 +215,4 @@ $php task log level info
 
 ```php
 $php task log level debug
-```
-
-#### logMe('level', '[ welcome ]: message')
-
-If you want to keep some logs in different colors, use "[ ? ]" symbols.
-
-```php
-logMe('debug', '[ welcome ]: Example message in different colors in your console.');
 ```

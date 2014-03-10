@@ -8,17 +8,14 @@
  * @category      database
  * @link
  */
-
-Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
+Class Pdo_Mysql extends Pdo_Adapter
 {
     /**
-    * The character used for escaping
-    *
-    * @var string
-    */
+     * The character used for escaping
+     *
+     * @var string
+     */
     public $_escape_char = '`';
-
-
     // clause and character used for LIKE escape sequences - not used in MySQL
     public $_like_escape_str = '';
     public $_like_escape_chr = '';
@@ -27,43 +24,43 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
     {
         parent::__construct($param);
     }
-    
+
     // --------------------------------------------------------------------
 
     /**
-    * Connect to PDO
-    *
-    * @author   Ersin Guvenc
-    * @param    string $dsn  Dsn
-    * @param    string $user Db username
-    * @param    mixed  $pass Db password
-    * @param    array  $options Db Driver options
-    * @return   void
-    */
+     * Connect to PDO
+     *
+     * @author   Ersin Guvenc
+     * @param    string $dsn  Dsn
+     * @param    string $user Db username
+     * @param    mixed  $pass Db password
+     * @param    array  $options Db Driver options
+     * @return   void
+     */
     public function connect()
-    {        
+    {
         // If connection is ok .. not need to again connect..
-        if ($this->_conn) { return; }
+        if ($this->_conn) {
+            return;
+        }
 
-        $port = empty($this->dbh_port) ? '' : ';port='.$this->dbh_port;
-        $dsn  = empty($this->dsn) ? 'mysql:host='.$this->hostname.$port.';dbname='.$this->database : $this->dsn;
-   
-        if(defined('PDO::MYSQL_ATTR_USE_BUFFERED_QUERY')) // Automatically use buffered queries.
-        {
+        $port = empty($this->dbh_port) ? '' : ';port=' . $this->dbh_port;
+        $dsn = empty($this->dsn) ? 'mysql:host=' . $this->hostname . $port . ';dbname=' . $this->database : $this->dsn;
+
+        if (defined('PDO::MYSQL_ATTR_USE_BUFFERED_QUERY')) { // Automatically use buffered queries.
             $this->options[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY] = true;
         }
-        
+
         // array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES $this->char_set") it occurs an error !
         $this->_pdo = $this->pdoConnect($dsn, $this->username, $this->password, $this->options);
 
-        if( ! empty($this->char_set) )
-        {
+        if (!empty($this->char_set)) {
             $this->_conn->exec("SET NAMES '" . $this->char_set . "'");
         }
 
         // We set exception attribute for always showing the pdo exceptions errors. (ersin)
-        $this->_conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
+        $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
         // PDO::ERRMODE_SILENT
     }
 
@@ -80,92 +77,72 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
      */
     public function _escapeIdentifiers($item)
     {
-        if ($this->_escape_char == '')
-        {
+        if ($this->_escape_char == '') {
             return $item;
         }
 
-        foreach ($this->_reserved_identifiers as $id)
-        {
-            if (strpos($item, '.'.$id) !== false)
-            {
-                $str = $this->_escape_char. str_replace('.', $this->_escape_char.'.', $item);
-
+        foreach ($this->_reserved_identifiers as $id) {
+            if (strpos($item, '.' . $id) !== false) {
+                $str = $this->_escape_char . str_replace('.', $this->_escape_char . '.', $item);
                 // remove duplicates if the user already included the escape
-                return preg_replace('/['.$this->_escape_char.']+/', $this->_escape_char, $str);
+                return preg_replace('/[' . $this->_escape_char . ']+/', $this->_escape_char, $str);
             }
         }
 
-        if (strpos($item, '.') !== false)
-        {
-            $str = $this->_escape_char.str_replace('.', $this->_escape_char.'.'.$this->_escape_char, $item).$this->_escape_char;
-        }
-        else
-        {
-            $str = $this->_escape_char.$item.$this->_escape_char;
+        if (strpos($item, '.') !== false) {
+            $str = $this->_escape_char . str_replace('.', $this->_escape_char . '.' . $this->_escape_char, $item) . $this->_escape_char;
+        } else {
+            $str = $this->_escape_char . $item . $this->_escape_char;
         }
 
         // remove duplicates if the user already included the escape
-        return preg_replace('/['.$this->_escape_char.']+/', $this->_escape_char, $str);
+        return preg_replace('/[' . $this->_escape_char . ']+/', $this->_escape_char, $str);
     }
 
     // --------------------------------------------------------------------
 
     /**
-    * Escape String
-    *
-    * @access   public
-    * @param    string
-    * @param    bool    whether or not the string will be used in a LIKE condition
-    * @return   string
-    */
+     * Escape String
+     *
+     * @access   public
+     * @param    string
+     * @param    bool    whether or not the string will be used in a LIKE condition
+     * @return   string
+     */
     public function escapeStr($str, $like = false, $side = 'both')
     {
-        if (is_array($str))
-        {
-            foreach($str as $key => $val)
-            {
+        if (is_array($str)) {
+            foreach ($str as $key => $val) {
                 $str[$key] = $this->escapeStr($val, $like);
             }
-
             return $str;
         }
 
         // escape LIKE condition wildcards
-        if ($like === true)
-        {
+        if ($like === true) {
             $str = str_replace(array('%', '_'), array('\\%', '\\_'), $str);
 
-            switch ($side)
-            {
-               case 'before':
-                 $str = "%{$str}";
-                 break;
+            switch ($side) {
+                case 'before':
+                    $str = "%{$str}";
+                    break;
 
-               case 'after':
-                 $str = "{$str}%";
-                 break;
+                case 'after':
+                    $str = "{$str}%";
+                    break;
 
-               default:
-                 $str = "%{$str}%";
+                default:
+                    $str = "%{$str}%";
             }
-
-            // not need to quote for who use prepare and :like bind.
-            if($this->prepare == true AND $this->is_like_bind)
-            return $str;
         }
 
         // make sure is it bind value, if not ...
-        if($this->prepare === true)
-        {
-            if(strpos($str, ':') === false)
-            {
+        if ($this->prepare === true) {
+            if (strpos($str, ':') === false) {
                 $str = $this->quote($str, PDO::PARAM_STR);
             }
-        }
-        else
-        {
-           $str = $this->quote($str, PDO::PARAM_STR);
+        } else {
+            $str = $this->quote($str, PDO::PARAM_STR);
         }
 
         return $str;
@@ -174,38 +151,36 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
     // --------------------------------------------------------------------
 
     /**
-    * Platform specific pdo quote
-    * function.
-    *
-    * @param   string $str
-    * @param   int    $type
-    * @return
-    */
+     * Platform specific pdo quote
+     * function.
+     *
+     * @param   string $str
+     * @param   int    $type
+     * @return
+     */
     public function quote($str, $type = null)
     {
-         return $this->_conn->quote($str, $type);
+        return $this->_conn->quote($str, $type);
     }
 
     // --------------------------------------------------------------------
 
     /**
-    * From Tables
-    *
-    * This function implicitly groups FROM tables so there is no confusion
-    * about operator precedence in harmony with SQL standards
-    *
-    * @access   public
-    * @param    type
-    * @return   type
-    */
+     * From Tables
+     *
+     * This function implicitly groups FROM tables so there is no confusion
+     * about operator precedence in harmony with SQL standards
+     *
+     * @access   public
+     * @param    type
+     * @return   type
+     */
     public function _fromTables($tables)
     {
-        if ( ! is_array($tables))
-        {
+        if ( ! is_array($tables)) {
             $tables = array($tables);
         }
-
-        return '('.implode(', ', $tables).')';
+        return '(' . implode(', ', $tables) . ')';
     }
 
     // --------------------------------------------------------------------
@@ -223,7 +198,7 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
      */
     public function _insert($table, $keys, $values)
     {
-        return "INSERT INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
+        return "INSERT INTO " . $table . " (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ")";
     }
 
     // --------------------------------------------------------------------
@@ -239,13 +214,13 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
      * @param	array	the insert values
      * @return	string
      */
-    function _replace($table, $keys, $values)
+    public function _replace($table, $keys, $values)
     {
-        return "REPLACE INTO ".$table." (".implode(', ', $keys).") VALUES (".implode(', ', $values).")";
+        return "REPLACE INTO " . $table . " (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ")";
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Update statement
      *
@@ -261,20 +236,16 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
      */
     public function _update($table, $values, $where, $orderby = array(), $limit = false)
     {
-        foreach($values as $key => $val)
-        {
-            $valstr[] = $key." = ".$val;
+        foreach ($values as $key => $val) {
+            $valstr[] = $key . " = " . $val;
         }
+        $limit = ( ! $limit) ? '' : ' LIMIT ' . $limit;
 
-        $limit = ( ! $limit) ? '' : ' LIMIT '.$limit;
+        $orderby = (count($orderby) >= 1) ? ' ORDER BY ' . implode(", ", $orderby) : '';
 
-        $orderby = (count($orderby) >= 1)?' ORDER BY '.implode(", ", $orderby):'';
-
-        $sql = "UPDATE ".$table." SET ".implode(', ', $valstr);
-
-        $sql .= ($where != '' AND count($where) >=1) ? " WHERE ".implode(" ", $where) : '';
-
-        $sql .= $orderby.$limit;
+        $sql = "UPDATE " . $table . " SET " . implode(', ', $valstr);
+        $sql .= ($where != '' AND count($where) >= 1) ? " WHERE " . implode(" ", $where) : '';
+        $sql .= $orderby . $limit;
 
         return $sql;
     }
@@ -296,21 +267,18 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
     {
         $conditions = '';
 
-        if (count($where) > 0 OR count($like) > 0)
-        {
+        if (count($where) > 0 OR count($like) > 0) {
             $conditions = "\nWHERE ";
-            $conditions .= implode("\n", $this->ar_where);
+            $conditions .= implode("\n", $where);
 
-            if (count($where) > 0 && count($like) > 0)
-            {
+            if (count($where) > 0 && count($like) > 0) {
                 $conditions .= " AND ";
             }
             $conditions .= implode("\n", $like);
         }
+        $limit = ( ! $limit) ? '' : ' LIMIT ' . $limit;
 
-        $limit = ( ! $limit) ? '' : ' LIMIT '.$limit;
-
-        return "DELETE FROM ".$table.$conditions.$limit;
+        return "DELETE FROM " . $table . $conditions . $limit;
     }
 
     // --------------------------------------------------------------------
@@ -328,19 +296,17 @@ Class Pdo_Mysql extends Database_Pdo\Src\Database_Adapter
      */
     public function _limit($sql, $limit, $offset)
     {
-        if ($offset == 0)
-        {
+        if ($offset == 0) {
             $offset = '';
-        }
-        else
-        {
+        } else {
             $offset .= ", ";
         }
-
-        return $sql."LIMIT ".$offset.$limit;
+        return $sql . "LIMIT " . $offset . $limit;
     }
 
-} // end class.
+}
+
+// end class.
 
 
 /* End of file Pdo_Mysql.php */

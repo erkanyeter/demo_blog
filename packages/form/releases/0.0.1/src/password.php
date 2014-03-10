@@ -18,7 +18,7 @@ namespace Form\Src {
     {
         if(is_object($value)) // $_POST & Db value schema sync
         {
-            $value = getInstance()->form->_getSchemaPost($value, $data); 
+            $value = getInstance()->form->_getRowValue($value, $data); 
         }
         
         if ( ! is_array($data))
@@ -28,7 +28,7 @@ namespace Form\Src {
 
         $data['type'] = 'password';
         
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['password'], getInstance()->form->input($data, $value, $extra));
     }

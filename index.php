@@ -28,7 +28,8 @@ define('ENV', 'DEBUG');
 | file.
 |
 */
-error_reporting(0);
+error_reporting(1);
+ini_set('display_errors', 'On');
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,7 @@ error_reporting(0);
 | @see  http://www.php.net/manual/en/timezones.php
 | 
 */
-date_default_timezone_set('America/Chicago');
+date_default_timezone_set('Europe/London');
 
 /*
 |--------------------------------------------------------------------------
@@ -48,9 +49,8 @@ date_default_timezone_set('America/Chicago');
 | This file specifies which APP constants should be loaded by default.
 |
  */
-if( ! defined('ROOT'))
-{
-    require ('constants');
+if ( ! defined('ROOT')) {
+    include 'constants';
 }
 
 /*
@@ -75,8 +75,7 @@ ini_set('zend.ze1_compatibility_mode', 0);
 |  @see User Guide: Chapters / General Topics / Tasks
 |
 */ 
-if(defined('STDIN')) 
-{
+if (defined('STDIN')) {
     /*
     |--------------------------------------------------------------------------
     | Set Command Line Server Headers
@@ -109,33 +108,92 @@ if(defined('STDIN'))
     */
     ini_set('memory_limit', '100000M');
 }
-
 /*
 |--------------------------------------------------------------------------
-| Upgrading to new version.
-|--------------------------------------------------------------------------
-| If a new version available, package manager upgrage it using your package.json.
-| If you need a stable a version remove asteriks ( * ), and set version to specific
-| number. ( e.g. version: "2.0" )
-|
-| {
-|  "dependencies": {
-|     "obullo": "*",
-|     "auth" : "3.0"
-|  }
-| }
-|
- */
-require (APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT);
-require (DATA .'cache'. DS .'packages.cache');
-
-/*
-|--------------------------------------------------------------------------
-| Framework Component
+| Global Config Files
 |--------------------------------------------------------------------------
 */
-$core = mb_strtolower($packages['components']['core']);  // * ( All Components are Replaceable )
+require APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT;
+require DATA .'cache'. DS .'packages.cache';
+/*
+|--------------------------------------------------------------------------
+| Load Logger Package
+|--------------------------------------------------------------------------
+*/
+if ($config['log_enabled']) {
+    include PACKAGES .'logger'. DS .'releases'. DS .$packages['dependencies']['logger']['version']. DS .'logger'. EXT;
+    $logger = new Logger;
+} else {
+    /**
+     * If logging feature closed don't load the real class.
+     * Create a fake logger and load it.
+     * 
+     * @category  Fake_Logger
+     * @package   Logger
+     * @author    Obullo Framework <obulloframework@gmail.com>
+     * @copyright 2009-2014 Obullo
+     * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+     * @link      http://obullo.com/docs/package/logger
+     */
+    Class Logger
+    {
+        /**
+         * Call fake methods
+         * 
+         * @param string $method    method
+         * @param array  $arguments arguments
+         * 
+         * @return void
+         */
+        public function __call($method, $arguments)
+        { 
+            $method    = null;
+            $arguments = null;
+            return; 
+        } 
+    }
+    $logger = new Logger; 
+}
+/*
+|--------------------------------------------------------------------------
+| Load Hooks
+|--------------------------------------------------------------------------
+*/
+if ($config['enable_hooks']) {
+    include PACKAGES .'hooks'. DS .'releases'. DS .$packages['dependencies']['hooks']['version']. DS .'hooks'. EXT;
+    $hooks = new Hooks;
+}
+/*
+|--------------------------------------------------------------------------
+| Load Framework
+|--------------------------------------------------------------------------
+*/
+require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'obullo'. EXT;
+/*
+|--------------------------------------------------------------------------
+| Default Packages
+|--------------------------------------------------------------------------
+*/
+$cfg        = new Config;
+$translator = new Translator;
+$response   = new Response;
+$uri        = new Uri;
+$router     = new Router;
+/*
+|--------------------------------------------------------------------------
+| Security Package
+|--------------------------------------------------------------------------
+*/
+if ($config['csrf_protection'] OR $config['global_xss_filtering']) { // CSRF Protection check
+    $security = new Security;
+}
+/*
+|--------------------------------------------------------------------------
+| Run Your Application
+|--------------------------------------------------------------------------
+*/
+new Obullo;
 
-require (PACKAGES .$core. DS .'releases'. DS .$packages['dependencies'][$core]['version']. DS .$core. EXT);
-
-runFramework();
+// $app->registry('package.view', 'View');
+// $app->registry('package.logger', 'Logger');
+// $app->registry('package.logger', 'Mailer');

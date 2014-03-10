@@ -9,7 +9,7 @@
  * @link                              
  */
 
-Class Pdo_Oci extends Database_Pdo\Src\Database_Adapter
+Class Pdo_Oci extends Pdo_Adapter
 {
     /**
     * The character used for escaping
@@ -95,10 +95,6 @@ Class Pdo_Oci extends Database_Pdo\Src\Database_Adapter
                default:
                  $str = "%{$str}%";
             }
-            
-            // not need to quote for who use prepare and :like bind.
-            if($this->prepare == true AND $this->is_like_bind)   
-            return $str;
         } 
         
         // make sure is it bind value, if not ...
@@ -245,11 +241,8 @@ Class Pdo_Oci extends Database_Pdo\Src\Database_Adapter
         $orderby = (count($orderby) >= 1)?' ORDER BY '.implode(", ", $orderby):'';
     
         $sql = "UPDATE ".$table." SET ".implode(', ', $valstr);
-
         $sql .= ($where != '' AND count($where) >=1) ? " WHERE ".implode(" ", $where) : '';
-
         $sql .= $orderby.$limit;
-        
         return $sql;
     }
     
@@ -273,7 +266,7 @@ Class Pdo_Oci extends Database_Pdo\Src\Database_Adapter
         if (count($where) > 0 OR count($like) > 0)
         {
             $conditions = "\nWHERE ";
-            $conditions .= implode("\n", $this->ar_where);
+            $conditions .= implode("\n", $where);
 
             if (count($where) > 0 && count($like) > 0)
             {

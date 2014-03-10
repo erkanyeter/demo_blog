@@ -2,52 +2,50 @@
 
 /**
  * $c contact
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-	new Url;
-	new Html;
-	new Form;
-    new View;
-    new Sess;
-    new Auth;
-    new Post;
-    
-    new Trigger('public','header');
-	new Model('contact', 'contacts');
-});
+$c = new Controller(
+    function () {
+        new Url;
+        new Html;
+        new Form;
+        new Hvc;
+        new Post;
+        new View;
+    }
+);
 
-$c->func('index', function(){
+$c->func(
+    'index.public_user',
+    function () {
 
-    if($this->post->get('dopost')) // if do post click
-    {
-        $this->contact->data = array(
-            'contact_name'          => $this->post->get('contact_name'),
-            'contact_email'         => $this->post->get('contact_email'),
-            'contact_subject'       => $this->post->get('contact_subject'),
-            'contact_body'          => $this->post->get('contact_body'),
-            'contact_creation_date' => date('Y-m-d H:i:s'),
+        if ($this->post->get('dopost')) {
+
+            $this->form->setRules('contact_name', 'Name', 'required');
+            $this->form->setRules('contact_email', 'Email', 'required|validEmail');
+            $this->form->setRules('contact_subject', 'Subject', 'required');
+            $this->form->setRules('contact_body', 'Body', 'required|xssClean');
+
+            if ($this->form->isValid()) {
+                $r = $this->hvc->post('private/contacts/create');
+
+                if ($r['success']) {
+                    $this->form->setNotice($r['message'], SUCCESS);
+                    $this->url->redirect('/contact');
+                } else {
+                    $this->form->setMessage($r['message']);
+                }
+            }
+        }
+
+        $this->view->get(
+            'contact',
+            function () {
+                $this->set('title', 'Contact');
+                $this->getScheme();
+            }
         );
 
-        $this->contact->func('save', function() {
-            if ($this->isValid()){
-                return $this->db->insert('contacts', $this);
-            }
-            return false;
-        });
-
-        if($this->contact->save())  // save post
-        {        
-            $this->form->setNotice('Post saved successfully.', SUCCESS);
-            $this->url->redirect('/contact');
-        }
     }
-
-	$this->view->get('contact', function(){
-
-		$this->set('title', 'Contact');
-		$this->getScheme();
-	});
-
-});
+);

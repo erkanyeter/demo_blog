@@ -12,7 +12,7 @@ namespace Form\Src {
     */
     function fieldsetClose($extra = '')
     {
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return "</fieldset>".$form['templates'][\Form::$template]['fieldsetClose'].$extra;
     }

@@ -14,12 +14,14 @@ Class Url {
 
     public function __construct()
     {   
+        global $logger;
+
         if( ! isset(getInstance()->url))
         {
             getInstance()->url = $this; // Make available it in the controller $this->url->method();
         }
 
-        logMe('debug', 'Url Class Initialized');
+        $logger->debug('Url Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -30,7 +32,7 @@ Class Url {
 
         if( ! function_exists('Url\Src\\'.$method))
         {
-            require PACKAGES .'url'. DS .'releases'. DS .$packages['dependencies']['url']['version']. DS .'src'. DS .mb_strtolower($method). EXT;
+            require PACKAGES .'url'. DS .'releases'. DS .$packages['dependencies']['url']['version']. DS .'src'. DS .strtolower($method). EXT;
         }
 
         return call_user_func_array('Url\Src\\'.$method, $arguments);

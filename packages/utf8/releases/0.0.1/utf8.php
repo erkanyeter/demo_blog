@@ -31,6 +31,8 @@ Class Utf8 {
     */
     public function __construct()
     {
+        global $logger;
+
         if( ! extension_loaded('mbstring'))
         {
             throw new Exception('Mbstring extension not loaded.');
@@ -41,7 +43,7 @@ Class Utf8 {
             getInstance()->utf8 = $this; // Available it in the contoller $this->utf8->method();
         }
 
-        logMe('debug', "Utf8 Class Initialized");
+        $logger->debug('Utf8 Class Initialized');
     }
     
     // --------------------------------------------------------------------

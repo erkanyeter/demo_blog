@@ -327,11 +327,11 @@ Class Schema_Sql_Reader {
 		for ($i=0; $i < sizeof($matches); $i++) 
 		{ 
 			$keys = array_map('trim', explode(',', str_replace(array('`','"'), '', $matches[$i][1])));
-
 			$fks  = array_map('trim', explode(',', str_replace(array('`','"'), '', $matches[$i][3])));
+			
 			for ($k=0; $k <sizeof($keys) ; $k++) 
 			{ 
-				$foreignKeys[$keys[$k]][] = array($constraitNames[$i][$k+1],$keys[$k],str_replace(array('`','"'), '', $matches[$k][2]), $fks[$k]);
+				$foreignKeys[$keys[$k]][] = array($constraitNames[$i][$k+1],$keys[$k],str_replace(array('`','"'), '', $matches[$i][2]), $fks[$k]);
 			}
 			
 		}

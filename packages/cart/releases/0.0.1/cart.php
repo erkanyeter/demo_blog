@@ -23,6 +23,8 @@ Class Cart {
     */        
     public function __construct($params = array())
     {   
+        global $logger;
+
         if( ! isset(getInstance()->cart))
         {
             getInstance()->cart = $this; // Make available it in the controller $this->cart->method();
@@ -30,8 +32,10 @@ Class Cart {
    
         $this->init($params);
             
-        logMe('debug', "Cart Class Initialized");
+        $logger->debug('Cart Class Initialized');
     }
+
+    // --------------------------------------------------------------------
 
     /**
      * Initialize params and grab the cart object
@@ -42,6 +46,7 @@ Class Cart {
     function init($params = array())
     {
         $config = array();         // Are any config settings being passed manually?  If so, set them
+
         if (count($params) > 0)
         {
             foreach ($params as $key => $val)
@@ -50,17 +55,15 @@ Class Cart {
             }
         }
         
-        Sess::start($params);
+        new Sess($params);
          
-        // Grab the shopping cart array from the session table, if it exists
-        if (Sess::get('cart_contents') !== false)
+        if (getInstance()->sess->get('cart_contents') !== false)  // Grab the shopping cart array from the session table, if it exists
         {
-            $this->_cart_contents = Sess::get('cart_contents');
+            $this->_cart_contents = getInstance()->sess->get('cart_contents');
         }
         else
         {
-            // No cart exists so we'll set some base values
-            $this->_cart_contents['cart_total']  = 0;        
+            $this->_cart_contents['cart_total']  = 0;    // No cart exists so we'll set some base values
             $this->_cart_contents['total_items'] = 0;        
         }
     }
@@ -76,10 +79,11 @@ Class Cart {
      */
     public function insert($items = array())
     {
-        // Was any cart data passed? No? Bah...
-        if ( ! is_array($items) OR count($items) == 0)
+        global $logger;
+
+        if ( ! is_array($items) OR count($items) == 0) // Was any cart data passed? No? Bah...
         {
-            logMe('error', 'The insert method must be passed an array containing data.');
+            $logger->error('The insert method must be passed an array containing data.');
 
             return false;
         }
@@ -89,7 +93,8 @@ Class Cart {
         // determine the array type is by looking for a required array key named "id"
         // at the top level. If it's not found, we will assume it's a multi-dimensional array.
     
-        $save_cart = false;        
+        $save_cart = false;
+
         if (isset($items['id']))
         {            
             if ($this->_insert($items) == true)
@@ -111,8 +116,7 @@ Class Cart {
             }
         }
 
-        // Save the cart data if the insert was successful
-        if ($save_cart == true)
+        if ($save_cart)   // Save the cart data if the insert was successful
         {
             $this->_saveCart();
 
@@ -133,10 +137,11 @@ Class Cart {
      */
     private function _insert($items = array())
     {
-        // Was any cart data passed? No? Bah...
-        if ( ! is_array($items) OR count($items) == 0)
+        global $logger;
+
+        if ( ! is_array($items) OR count($items) == 0)  // Was any cart data passed? No? Bah...
         {
-            logMe('error', 'The insert method must be passed an array containing data.');
+            $logger->error('The insert method must be passed an array containing data.');
 
             return false;
         }
@@ -146,20 +151,17 @@ Class Cart {
         // Does the $items array contain an id, quantity, price, and name?  These are required
         if ( ! isset($items['id']) OR ! isset($items['qty']) OR ! isset($items['price']) OR ! isset($items['name']))
         {
-            logMe('error', 'The cart array must contain a product ID, quantity, price, and name.');
+            $logger->error('The cart array must contain a product ID, quantity, price, and name.');
 
             return false;
         }
 
         // --------------------------------------------------------------------
     
-        // Prep the quantity. It can only be a number.  Duh...
-        $items['qty'] = trim(preg_replace('/([^0-9])/i', '', $items['qty']));
-        // Trim any leading zeros
-        $items['qty'] = trim(preg_replace('/(^[0]+)/i', '', $items['qty']));
+        $items['qty'] = trim(preg_replace('/([^0-9])/i', '', $items['qty']));  // Prep the quantity. It can only be a number.  Duh...
+        $items['qty'] = trim(preg_replace('/(^[0]+)/i', '', $items['qty']));   // Trim any leading zeros
 
-        // If the quantity is zero or blank there's nothing for us to do
-        if ( ! is_numeric($items['qty']) OR $items['qty'] == 0)
+        if ( ! is_numeric($items['qty']) OR $items['qty'] == 0)         // If the quantity is zero or blank there's nothing for us to do
         {
             return false;
         }
@@ -171,7 +173,7 @@ Class Cart {
         // Note: These can be user-specified by setting the $this->product_id_rules variable.
         if ( ! preg_match("/^[".$this->product_id_rules."]+$/i", $items['id']))
         {
-            logMe('error', 'Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores');
+            $logger->error('Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores');
 
             return false;
         }
@@ -182,7 +184,7 @@ Class Cart {
         // Note: These can be user-specified by setting the $this->product_name_rules variable.
         if ( ! preg_match("/^[".$this->product_name_rules."]+$/i", $items['name']))
         {
-            logMe('error', 'An invalid name was submitted as the product name: '.$items['name'].' The name can only contain alpha-numeric characters, dashes, underscores, colons, and spaces');
+            $logger->error('An invalid name was submitted as the product name: '.$items['name'].' The name can only contain alpha-numeric characters, dashes, underscores, colons, and spaces');
 
             return false;
         }
@@ -191,13 +193,11 @@ Class Cart {
 
         // Prep the price.  Remove anything that isn't a number or decimal point.
         $items['price'] = trim(preg_replace('/([^0-9\.])/i', '', $items['price']));
-        // Trim any leading zeros
-        $items['price'] = trim(preg_replace('/(^[0]+)/i', '', $items['price']));
+        $items['price'] = trim(preg_replace('/(^[0]+)/i', '', $items['price']));           // Trim any leading zeros
         
-        // Is the price a valid number?
-        if ( ! is_numeric($items['price']))
+        if ( ! is_numeric($items['price']))          // Is the price a valid number?
         {
-            logMe('error', 'An invalid price was submitted for product ID: '.$items['id']);
+            $logger->error('An invalid price was submitted for product ID: '.$items['id']);
 
             return false;
         }
@@ -214,6 +214,7 @@ Class Cart {
         // Internally, we need to treat identical submissions, but with different options, as a unique product.
         // Our solution is to convert the options array to a string and MD5 it along with the product ID.
         // This becomes the unique "row ID"
+    
         if (isset($items['options']) AND count($items['options']) > 0)
         {
             $rowid = md5($items['id'].implode('', $items['options']));
@@ -229,21 +230,18 @@ Class Cart {
         // --------------------------------------------------------------------
 
         // Now that we have our unique "row ID", we'll add our cart items to the master array
-        
         // let's unset this first, just to make sure our index contains only the data from this submission
+        
         unset($this->_cart_contents[$rowid]);        
         
-        // Create a new index with our new row ID
-        $this->_cart_contents[$rowid]['rowid'] = $rowid;
-    
-        // And add the new items to the cart array            
-        foreach ($items as $key => $val)
+        $this->_cart_contents[$rowid]['rowid'] = $rowid;          // Create a new index with our new row ID
+          
+        foreach ($items as $key => $val)          // And add the new items to the cart array      
         {
             $this->_cart_contents[$rowid][$key] = $val;
         }
 
-        // Woot!
-        return true;
+        return true;  // Woot!
     }
 
     // --------------------------------------------------------------------
@@ -263,8 +261,7 @@ Class Cart {
      */
     public function update($items = array())
     {
-        // Was any cart data passed?
-        if ( ! is_array($items) OR count($items) == 0)
+        if ( ! is_array($items) OR count($items) == 0)    // Was any cart data passed?
         {
             return false;
         }
@@ -273,7 +270,9 @@ Class Cart {
         // or multiple products using a multi-dimensional one.  The way we
         // determine the array type is by looking for a required array key named "id".
         // If it's not found we assume it's a multi-dimensional array
+        
         $save_cart = false;
+
         if (isset($items['rowid']) AND isset($items['qty']))
         {
             if ($this->_update($items) == true)
@@ -295,8 +294,7 @@ Class Cart {
             }
         }
 
-        // Save the cart data if the insert was successful
-        if ($save_cart == true)
+        if ($save_cart)      // Save the cart data if the insert was successful
         {
             $this->_saveCart();
             
@@ -328,17 +326,16 @@ Class Cart {
             return false;
         }
         
-        // Prep the quantity
-        $items['qty'] = preg_replace('/([^0-9])/i', '', $items['qty']);
+        $items['qty'] = preg_replace('/([^0-9])/i', '', $items['qty']);         // Prep the quantity
 
-        // Is the quantity a number?
-        if ( ! is_numeric($items['qty']))
+        if ( ! is_numeric($items['qty']))          // Is the quantity a number?
         {
             return false;
         }
         
         // Is the new quantity different than what is already saved in the cart?
         // If it's the same there's nothing to do
+        
         if ($this->_cart_contents[$items['rowid']]['qty'] == $items['qty'])
         {
             return false;
@@ -346,6 +343,7 @@ Class Cart {
 
         // Is the quantity zero?  If so we will remove the item from the cart.
         // If the quantity is greater than zero we are updating
+        
         if ($items['qty'] == 0)
         {
             unset($this->_cart_contents[$items['rowid']]);        
@@ -373,11 +371,11 @@ Class Cart {
         unset($this->_cart_contents['cart_total']);
 
         // Lets add up the individual prices and set the cart sub-total
+        
         $total = 0;
         foreach ($this->_cart_contents as $key => $val)
         {
-            // We make sure the array contains the proper indexes
-            if ( ! is_array($val) OR ! isset($val['price']) OR ! isset($val['qty']))
+            if ( ! is_array($val) OR ! isset($val['price']) OR ! isset($val['qty']))  // We make sure the array contains the proper indexes
             {
                 continue;
             }
@@ -388,23 +386,21 @@ Class Cart {
             $this->_cart_contents[$key]['subtotal'] = ($this->_cart_contents[$key]['price'] * $this->_cart_contents[$key]['qty']);
         }
 
-        // Set the cart total and total items.
-        $this->_cart_contents['total_items'] = count($this->_cart_contents);            
+        $this->_cart_contents['total_items'] = count($this->_cart_contents);           // Set the cart total and total items.
         $this->_cart_contents['cart_total']  = $total;
     
-        // Is our cart empty?  If so we delete it from the session
-        if (count($this->_cart_contents) <= 2)
+        if (count($this->_cart_contents) <= 2)         // Is our cart empty?  If so we delete it from the session
         {
-            Sess::remove('cart_contents'); // Nothing more to do... coffee time!
+            getInstance()->sess->remove('cart_contents'); // Nothing more to do... coffee time!
+
             return false;
         }
 
         // If we made it this far it means that our cart has data.
         // Let's pass it to the Session class so it can be stored
-        Sess::set(array('cart_contents' => $this->_cart_contents));
+        getInstance()->sess->set(array('cart_contents' => $this->_cart_contents));
 
-        // Woot!
-        return true;    
+        return true;   // Woot!
     }
 
     // --------------------------------------------------------------------
@@ -514,8 +510,7 @@ Class Cart {
             return '';
         }
     
-        // Remove anything that isn't a number or decimal point.
-        $n = trim(preg_replace('/([^0-9\.])/i', '', $n));
+        $n = trim(preg_replace('/([^0-9\.])/i', '', $n));        // Remove anything that isn't a number or decimal point.
 
         return number_format($n, 2, '.', ',');
     }
@@ -537,7 +532,7 @@ Class Cart {
         $this->_cart_contents['cart_total'] = 0;        
         $this->_cart_contents['total_items'] = 0;        
 
-        Sess::remove('cart_contents');
+        getInstance()->sess->remove('cart_contents');
     }
 
 

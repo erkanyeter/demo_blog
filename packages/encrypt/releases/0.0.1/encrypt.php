@@ -27,6 +27,8 @@ Class Encrypt {
     */
     public function __construct()
     {   
+        global $logger;
+
         if( ! isset(getInstance()->encrypt))
         {
             getInstance()->encrypt = $this; // Make available it in the controller $this->encrypt->method();
@@ -34,7 +36,7 @@ Class Encrypt {
         
         $this->_mcrypt_exists = ( ! function_exists('mcrypt_encrypt')) ? false : true;
         
-        logMe('debug', "Encrypt Class Initialized");
+        $logger->debug('Encrypt Class Initialized');
     }
     
     // ------------------------------------------------------------------------
@@ -65,12 +67,13 @@ Class Encrypt {
     {
         if ($key == '')
         {
+            global $config;
+            
             if ($this->encryption_key != '')
             {
                 return $this->encryption_key;
             }
             
-            global $config;
             $key = $config['encryption_key'];
 
             if ($key === false)

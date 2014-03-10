@@ -15,7 +15,7 @@ namespace Validator\Src {
      */    
     function getErrorString($prefix = '', $suffix = '')
     {
-        $form      = \Form::getFormConfig();
+        $form      = \Form::getConfig();
         $validator = getInstance()->validator;
         
         if (sizeof($validator->_error_array) === 0)         // No errrors, validation passes !

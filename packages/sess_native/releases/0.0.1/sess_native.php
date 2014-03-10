@@ -11,67 +11,82 @@
 
 Class Sess_Native {
     
-    public $cookie;
     public $request;
     public $now;
-    public $encrypt_cookie       = false;
-    public $expiration           = '7200'; // two hours
-    public $match_ip             = false;
-    public $match_useragent      = true;
-    public $cookie_name          = 'ob_session';
-    public $cookie_prefix        = '';
-    public $cookie_path          = '';
-    public $cookie_domain        = '';
-    public $time_to_update       = 300;
-    public $encryption_key       = '';
-    public $flashdata_key        = 'flash';
-    public $time_reference       = 'time';
-    public $gc_probability       = 5;
+    public $encrypt_cookie  = false;
+    public $expiration      = '7200'; // two hours
+    public $match_ip        = false;
+    public $match_useragent = true;
+    public $cookie_name     = 'frm_session';
+    public $cookie_prefix   = '';
+    public $cookie_path     = '';
+    public $cookie_domain   = '';
+    public $time_to_update  = 300;
+    public $encryption_key  = '';
+    public $flashdata_key   = 'flash';
+    public $time_reference  = 'time';
+    public $config          = array();  // php ini key => values
 
     // --------------------------------------------------------------------
 
-    function init($params = array())
-    {    
-        global $config;
+    /**
+     * Set php.ini settings and configuration variables
+     *
+     * @uses ini_set()
+     * @param array $config
+     */
+    public function __construct($config = array())
+    {
+        if (count($config) == 0) {
+            return;
+        }
+        foreach ($config as $key => $value)  // set php.ini values
+        {
+            ini_set($key, $value);
+        }
+    }
+    
+    // --------------------------------------------------------------------
 
-        $sess = getConfig('sess');
+    /**
+     * Initialize to Sess class configuration
+     * 
+     * @param  array $sess session configuration array comes from sess config file
+     * 
+     * @return [type]         [description]
+     */
+    public function init($sess = array())
+    {    
+        global $config, $logger;
 
         foreach (array(
             'cookie_name',
             'expiration',
             'expire_on_close',
             'encrypt_cookie',
-            'cookie',
             'request',
-            // 'db',
             'table_name',
             'match_ip',
             'match_useragent',
             'time_to_update') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
+            $this->$key = $sess[$key];
         }
 
-        $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
-        $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
-        $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
+        $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
+        $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
+        $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
 
-        $this->cookie  = &$this->cookie;   // Set Get object
-        $this->request = &$this->request;  // Set Request object
+        $request = $this->request;
+        $this->request = $request();  // Set Request object
 
         if($this->expire_on_close)  // Expire on close 
         {
             session_set_cookie_params(0);
-            
-            ini_set('session.gc_maxlifetime', '0');
-            ini_set('session.cookie_lifetime', '0');  // 0
         } 
         else 
         {
             session_set_cookie_params($this->expiration, $this->cookie_path, $this->cookie_domain);
-            
-            ini_set('session.gc_divisor', 100);   // Configure garbage collection
-            ini_set('session.gc_maxlifetime', ($this->expiration == 0) ? 7200 : $this->expiration);
         }
         
         $this->now            = $this->_getTime();
@@ -80,7 +95,9 @@ Class Sess_Native {
 
         session_name($this->cookie_prefix . $this->cookie_name);
         
-        if( ! isset($_SESSION) ) // If another session_start() func is started before ?
+        // http://stackoverflow.com/questions/6249707/check-if-php-session-has-already-started
+        
+        if (session_status() == PHP_SESSION_NONE) // If another session_start() func is started before ?
         {
             session_start();
         }
@@ -104,8 +121,8 @@ Class Sess_Native {
         $this->_flashdataSweep();  // delete old flashdata (from last request)
         $this->_flashdataMark();   // mark all new flashdata as old (data will be deleted before next request)
 
-        logMe('debug', 'Session Native Driver Initialized'); 
-        logMe('debug', 'Session routines successfully run'); 
+        $logger->debug('Session Native Driver Initialized'); 
+        $logger->debug('Session routines successfully run'); 
 
         return true;
     }
@@ -120,11 +137,13 @@ Class Sess_Native {
     */
     function _read()
     {
-        $session = $this->cookie->get($this->cookie_name.'_userdata'); // Fetch the cookie
+        global $logger;
+
+        $session = (isset($_COOKIE[$this->cookie_name.'_userdata'])) ? $_COOKIE[$this->cookie_name.'_userdata'] : false; // Fetch the cookie
 
         if ($session === false)  // No cookie?  Goodbye cruel world!...
         {
-            logMe('debug', 'A session cookie was not found');
+            $logger->debug('A session cookie was not found');
 
             return false;
         }
@@ -141,7 +160,7 @@ Class Sess_Native {
 
             if ($hash !==  md5($session . $this->encryption_key))  // Does the md5 hash match?  
             {                                                      // This is to prevent manipulation of session data in userspace
-                logMe('error', 'The session cookie data did not match what was expected. This could be a possible hacking attempt');
+                $logger->error('The session cookie data did not match what was expected. This could be a possible hacking attempt');
 
                 $this->destroy();
 
@@ -267,8 +286,7 @@ Class Sess_Native {
         // set cookie explicitly to only have our session data
         
         $cookie_data = array();
-        foreach (array('session_id','ip_address','user_agent','last_activity') as $val)
-        {
+        foreach (array('session_id','ip_address','user_agent','last_activity') as $val) {
             $cookie_data[$val] = $this->userdata[$val];
         }
 
@@ -303,7 +321,7 @@ Class Sess_Native {
                                                                                      // we provide an md5 hash to prevent userside tampering
         }
         
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
 
         // Set the cookie
         setcookie(
@@ -324,18 +342,54 @@ Class Sess_Native {
     * @access    public
     * @return    void
     */
-    function destroy()
-    {        
-        unset($_SESSION);
-        
-        if ( isset( $_COOKIE[session_name()] ) )
-        {
-            setcookie(session_name(), '', ($this->now - 42000), $this->cookie_path, $this->cookie_domain);
+    public function destroy()
+    {
+        if (isset( $_COOKIE[$this->cookie_name])) {
+
+            if(session_status() == PHP_SESSION_ACTIVE) { // http://stackoverflow.com/questions/13114185/how-can-you-check-if-a-php-session-exists
+                session_destroy();
+            }
+
+            // setcookie($this->cookie_name,
+            //     '', 
+            //     ($this->now - 42000), 
+            //     $this->cookie_path, 
+            //     $this->cookie_domain
+            // );
+
+            setcookie($this->cookie_name.'_userdata',
+                '', 
+                ($this->now - 42000), 
+                $this->cookie_path, 
+                $this->cookie_domain
+            );
         }
-        
-        session_destroy();
     }
     
+    // ------------------------------------------------------------------------
+    
+    /**
+     * Check session id is expired
+     * 
+     * @return boolean 
+     */
+    public function isExpired()
+    {
+        if ( ! isset( $_SESSION['last_activity'] ) )
+        {
+            return false;
+        }
+
+        $expire = $this->now - $this->expiration;
+        
+        if ( $_SESSION['last_activity'] <=  $expire )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     // --------------------------------------------------------------------
 
     /**
@@ -345,7 +399,7 @@ Class Sess_Native {
     * @param    string
     * @return   string
     */        
-    function get($item, $prefix = '')
+    public function get($item, $prefix = '')
     {
         return ( ! isset($_SESSION[$prefix.$item])) ? false : $_SESSION[$prefix.$item];
     }
@@ -358,7 +412,7 @@ Class Sess_Native {
     * @access    public
     * @return    mixed
     */
-    function getAllData()
+    public function getAllData()
     {
         return (isset($_SESSION)) ? $_SESSION : false;
     }
@@ -373,7 +427,7 @@ Class Sess_Native {
     * @param    string
     * @return   void
     */ 
-    function set($newdata = array(), $newval = '', $prefix = '')
+    public function set($newdata = array(), $newval = '', $prefix = '')
     {
         if (is_string($newdata))
         {
@@ -397,7 +451,7 @@ Class Sess_Native {
     * @access    public
     * @return    void
     */       
-    function remove($newdata = array(), $prefix = '')
+    public function remove($newdata = array(), $prefix = '')
     {
         if (is_string($newdata))
         {
@@ -412,30 +466,6 @@ Class Sess_Native {
             }
         }
     }
-
-    // ------------------------------------------------------------------------
-    
-    /**
-     * Check session id is expired
-     * 
-     * @return boolean 
-     */
-    function _isSessionIdExpired()
-    {
-        if ( ! isset( $_SESSION['last_activity'] ) )
-        {
-            return false;
-        }
-
-        $expire = $this->now - $this->expiration;
-        
-        if ( $_SESSION['last_activity'] <=  $expire )
-        {
-            return true;
-        }
-
-        return false;
-    }
     
     // ------------------------------------------------------------------------
 
@@ -448,7 +478,7 @@ Class Sess_Native {
     * @param    string
     * @return   void
     */
-    function setFlash($newdata = array(), $newval = '') 
+    public function setFlash($newdata = array(), $newval = '') 
     {
         if (is_string($newdata))
         {
@@ -474,7 +504,7 @@ Class Sess_Native {
     * @param    string
     * @return   void
     */
-    function keepFlash($key)
+    public function keepFlash($key)
     {
         // 'old' flashdata gets removed.  Here we mark all 
         // flashdata as 'new' to preserve it from _flashdataSweep()
@@ -501,7 +531,7 @@ Class Sess_Native {
     * @version  0.2     added prefix and suffix parameters.
     * @return   string
     */
-    function getFlash($key, $prefix = '', $suffix = '')
+    public function getFlash($key, $prefix = '', $suffix = '')
     {
         $flashdata_key = $this->flashdata_key.':old:'.$key;
         
@@ -525,7 +555,7 @@ Class Sess_Native {
     * @access    private
     * @return    void
     */
-    function _flashdataMark()
+    public function _flashdataMark()
     {
         $userdata = $this->getAllData();
         
@@ -549,7 +579,7 @@ Class Sess_Native {
     * @access    private
     * @return    void
     */  
-    function _flashdataSweep()
+    public function _flashdataSweep()
     {              
         $userdata = $this->getAllData();
         foreach ($userdata as $key => $value)
@@ -569,7 +599,7 @@ Class Sess_Native {
     * @access    private
     * @return    string
     */
-    function _getTime()
+    public function _getTime()
     {
         $time = time();
         if (strtolower($this->time_reference) == 'gmt')
@@ -598,7 +628,7 @@ Class Sess_Native {
     * @param    array
     * @return   string
     */    
-    function _serialize($data)
+    public function _serialize($data)
     {
         if (is_array($data))
         {
@@ -633,7 +663,7 @@ Class Sess_Native {
     * @param    array
     * @return   string
     */
-    function _unserialize($data)
+    public function _unserialize($data)
     {
         $data = unserialize(stripslashes($data));
 

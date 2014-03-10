@@ -1,7 +1,5 @@
 ## Cache Class
 
-------
-
 Framework features wrappers around some of the most popular forms of fast and dynamic caching. All but file-based caching require specific server requirements, and a Fatal Exception will be thrown if server requirements are not met.
 
 ### Initializing the Class
@@ -139,25 +137,241 @@ $connection = array(
 				  						),
 					 );
 new Cache($connection);
-
-
-```php
+```
 Under the array servers, you can create multi connection creating nested arrays. 
 
 ```php
 $connection = array(
-					  'driver' => 'memcached',
-					  'servers' => array(array(
-                                        	   'hostname' => 'localhost',
-                                        	   'port'     => 11211,
-                                        	   'weight'   => 10
-                                        	  ),
-                                       	 array(
-                                       	 	   'hostname' => '127.0.0.1',
-                                       	 	   'port'     => 11211,
-                                       	 	   'weight'   => 20
-                                       	 	   )),
+					'driver' => 'memcached',
+					'servers' => array(
+									array(
+										'hostname' => 'localhost',
+										'port'     => 11211,
+										'weight'   => 10
+										),
+									array(
+										'hostname' => '127.0.0.1',
+										'port'     => 11211,
+										'weight'   => 20
+										)),
 					 );
+```
+
+#### Redis
+
+If you want to establish a connection without the default settings in the config
+
+```php
+$connection = array(
+					  'driver'  => 'redis',
+					  'servers'	=> array(
+				  						 'hostname' => '127.0.0.1',
+				  						 'port'     => '6379',
+				  						 'timeout'  => '2.5' // 2.5 sec timeout connection
+				  						),
+					 );
+new Cache($connection);
+```
+#####$this->cache->auth(string $password)
+
+Authenticate the connection using a password. Warning: The password is sent in plain-text over the network.
+```php
+$this->cache->auth('foobared');
+```
+#####$this->cache->setOption(string $option)
+Option types
+```php
+'SERIALIZER_NONE' 	  // don't serialize data
+'SERIALIZER_PHP'	  // use built-in serialize/unserialize
+'SERIALIZER_IGBINARY' // use igBinary serialize/unserialize
+```
+Set client option.
+```php
+$this->cache->setOption('SERIALIZER_NONE');
+```
+
+#####$this->cache->getOption(string $option)
+
+Get client option.
+
+```php
+$this->cache->getOption();
+```
+#####$this->cache->IsConnected()
+
+Connected control, return true or false
+```php
+$this->cache->IsConnected();
+```
+#####$this->cache->set(string $key, string or array $data, int optional $expiration)
+
+Set the string or array value
+```php
+// Simple key -> string value
+$this->cache->set('key', 'value');
+
+// Simple set add ttl
+$this->cache->set('key','value', 10); // 10 sec expiration time
+
+// Simple set -> array value
+$this->cache->set('key', array('testKey' => 'test value', 'testKey2' => 'test value 2'));
+```
+#####$this->cache->getLastError()
+
+The last error message (if any)
+```php
+$this->cache->getLastError();
+// "ERR Error compiling script (new function): user_script:1: '=' expected near '-'"
+```
+Sets an expiration date (a timeout) on an item. pexpire requires a TTL in milliseconds.
+
+#####$this->cache->setTimeout(string $key, int $ttl)
+
+```php
+$this->cache->setTimeout('key','60'); // 60 sec
+```
+#####$this->cache->setType(string $type)
+
+Set Type - Returns the type of data pointed by a given type key.
+
+string: Redis::REDIS_STRING
+
+set: Redis::REDIS_SET
+
+```php
+$this->cache->setType('set');
+```
+#####$this->cache->flushDB()
+
+Remove all keys from the current database. Return boolean always true
+```php
+$this->cache->flushDB();
+```
+#####$this->cache->append(string $key, string or array $data)
+
+Append specified string to the string stored in specified key.
+```php
+$this->cache->set('key', 'value1');
+$this->cache->append('key', 'value2'); /* 12 */
+$this->cache->get('key'); /* 'value1value2' */
+```
+#####$this->cache->keyExists(string $key)
+
+Verify if the specified key exists.
+```php
+$this->cache->set('key', 'value');
+$this->cache->keyExists('key'); /*  true */
+$this->cache->keyExists('NonExistingKey'); /* false */
+```
+#####$this->cache->getMultiple(array $key)
+
+Get the values of all the specified keys. If one or more keys dont exist, the array will contain 
+```php
+$this->cache->set('key1', 'value1');
+$this->cache->set('key2', 'value2');
+$this->cache->set('key3', 'value3');
+$this->cache->getMultiple(array('key1', 'key2', 'key3')); /* array('value1', 'value2', 'value3');
+$this->cache->getMultiple(array('key0', 'key1', 'key5')); /* array(`false`, 'value2', `false`);
+```
+#####$this->cache->getSet(string $key, string or array $data)
+
+Sets a value and returns the previous entry at that key.
+```php
+$this->cache->set('foo', '42');
+$this->cache->getSet('foo', 'bar'); // return '42', replaces foo by 'bar'
+$this->cache->get('foo')'       	// return 'bar'
+```
+#####$this->cache->renameKey(string $key, string $newKey)
+
+Renames a key.
+```php
+$this->cache->set('foo', 'bar');
+$this->cache->rename('foo', 'newFoo');
+$this->cache->get('newFoo'); // → 42
+$this->cache->get('foo');    // → `FALSE`
+```
+#####$this->cache->getAllData()
+
+Return all key and data
+```php
+$this->cache->set('test1','test 1 value');
+$this->cache->set('test2','test 2 value');
+$allData = $this->cache->getAllData();
+var_dump($allData); // test1 => test 1 value, test2 => test 2 value
+```
+#####$this->cache->sAdd(string $key, array $sort)
+
+Adds a value to the set value stored at key. If this value is already in the set, FALSE is returned.
+```php
+$this->cache->sAdd('key1', 'value1'); /* 1, 'key1' => {'value1'} */
+$this->cache->sAdd('key1', array('value2', 'value3')); /* 2, 'key1' => {'value1', 'value2', 'value3'}*/
+$this->cache->sAdd('key1', 'value2'); /* 0, 'key1' => {'value1', 'value2', 'value3'}*/
+```
+#####$this->cache->sort(string $key, array $sort)
+
+Sort the elements in a list, set or sorted set.
+```php
+$this->cache->delete('test');
+$this->cache->sAdd('test', 5);
+$this->cache->sAdd('test', 4);
+$this->cache->sAdd('test', 2);
+$this->cache->sAdd('test', 1);
+$this->cache->sAdd('test', 3);
+
+var_dump($this->cache->sort('test')); // 1,2,3,4,5
+var_dump($this->cache->sort('test', array('sort' => 'desc'))); // 5,4,3,2,1
+var_dump($this->cache->sort('test', array('sort' => 'desc', 'store' => 'out'))); // (int)5
+```
+#####$this->cache->sSize(string $key)
+
+Returns the cardinality of the set identified by key.
+```php
+$this->cache->sAdd('key1' , 'test1');
+$this->cache->sAdd('key1' , 'test2');
+$this->cache->sAdd('key1' , 'test3'); /* 'key1' => {'test1', 'test2', 'test3'}*/
+$this->cache->sSize('key1'); /* 3 */
+$this->cache->sSize('keyX'); /* 0 */
+```
+#####$this->cache->sInter(array $key)
+
+Returns the members of a set resulting from the intersection of all the sets held at the specified keys.
+```php
+$this->cache->sAdd('key1', 'val1');
+$this->cache->sAdd('key1', 'val2');
+$this->cache->sAdd('key1', 'val3');
+$this->cache->sAdd('key1', 'val4');
+
+$this->cache->sAdd('key2', 'val3');
+$this->cache->sAdd('key2', 'val4');
+
+$this->cache->sAdd('key3', 'val3');
+$this->cache->sAdd('key3', 'val4');
+
+var_dump($redis->sInter('key1', 'key2', 'key3'));
+/*
+ * Output
+	array (size=2)
+	  0 => string 'val4' (length=4)
+	  1 => string 'val3' (length=4)
+ */
+```
+#####$this->cache->sGetMembers(string $key)
+
+Returns the contents of a set.
+```php
+$this->cache->delete('key');
+$this->cache->sAdd('key', 'val1');
+$this->cache->sAdd('key', 'val2');
+$this->cache->sAdd('key', 'val1');
+$this->cache->sAdd('key', 'val3');
+var_dump($this->cache->sGetMembers('key'));
+/*
+ * Output
+	array (size=3)
+	  0 => string 'val3' (length=4)
+	  1 => string 'val2' (length=4)
+	  2 => string 'val1' (length=4)
+ */
 ```
 
 #### The methods below ara available for all drivers.
@@ -193,12 +407,12 @@ Deletes the data of the specified key.
 $this->cache->delete($key);
 ```
 
-### $this->cache->clean();
+### $this->cache->flushAll();
 
 Cleans the memory completely.
 
 ```php
-$this->cache->clean();
+$this->cache->flushAll();
 ```
 
 ### Complete Example Config
@@ -241,6 +455,10 @@ $this->cache->clean(); // destroy all keys
 
 ---
 
+#### $this->cache->keyExists($key);
+
+Check the is key exists providing by your key.
+
 #### $this->cache->get($key);
 
 Get cache data providing by your key.
@@ -249,22 +467,26 @@ Get cache data providing by your key.
 
 Saves a cache data usign your key.
 
+#### $this->cache->getAllKeys();
+
+Gets the all keys, however, only suitable with memcached and redis.
+
 #### $this->cache->delete($key);
 
 Deletes the selected key.
-
-#### $this->cache->replace($key, $value, $expiration_time);
-
-Replaces the values and expiration time of the given key.
 
 #### $this->cache->clean();
 
 Clears all of the data.
 
+#### $this->cache->cacheInfo();
+
 #### $this->cache->getMetaData($key);
 
 Gets the meta information of data of the chosen key.
 
-#### $this->cache->getAllKeys();
+#### $this->cache->flushAll($key);
 
-Gets the all keys, however, only suitable with memcached.
+Remove all keys from all databases.
+
+#### $this->cache->flushAll($key);

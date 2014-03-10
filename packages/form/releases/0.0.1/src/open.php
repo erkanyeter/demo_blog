@@ -29,7 +29,7 @@ namespace Form\Src {
 
         if ($config['csrf_protection'] === true) // CSRF Support
         {
-            $security = getComponentInstance('security');
+            $security = Security::getInstance();
             $hidden[$security->getCsrfTokenName()] = $security->getCsrfHash();
         }
 

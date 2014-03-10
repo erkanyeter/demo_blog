@@ -449,7 +449,7 @@ $this->form->setRules('first_name', 'translate:first_name', 'required');
 Then, store the name in one of your language file arrays (without the prefix):
 
 ```php
-$lang['first_name'] = 'First Name';
+$translate['first_name'] = 'First Name';
 ```
 
 **Note:** If you store your array item in a language file that is not loaded automatically by Framework, you'll need to remember to load it in your controller using:
@@ -873,12 +873,6 @@ The following is a list of all the native rules that are available to use:
 <td>No</td>
 <td>Returns false if the form element contains anything other than numeric characters.</td>
 <td></td>
-</tr>
-<tr>
-<td>isUnique</td>
-<td>Yes</td>
-<td>Returns FALSE if the form element is not unique to the table and field name in the parameter.</td>
-<td>isUnique[table.field]</td>
 </tr>
 <tr>
 <td>isInteger</td>

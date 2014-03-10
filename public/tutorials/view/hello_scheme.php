@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
             <?php echo $this->html->css('welcome.css') ?>
-        <title>Odm Tutorial</title>
+        <title>Scheme Tutorial</title>
     </head>
 
     <body>
@@ -23,7 +23,7 @@
 <pre>$scheme = array(
     'welcome' => function()
     {
-        $this->set('footer', $this->tpl('footer',false));
+        $this->set('footer', $this->getTpl('footer',false));
     },
 );
 </pre>
@@ -39,6 +39,5 @@
 </section>
 
 <?php echo $footer ?>
-
 </body>
 </html>

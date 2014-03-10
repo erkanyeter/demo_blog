@@ -43,8 +43,9 @@ function parseNode(obj, element, i){
     var name = element.name;
     var inputError = document.getElementById(i + '_inputError');
     //-------------------------------------------------------
-    // Errors
-    if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '0'){
+    
+    // Parse Errors
+    if(typeof obj['success'] !== 'undefined' && obj['success'] == '0'){
         if(typeof obj.errors[name] !== 'undefined'){
             if(inputError){
                 document.getElementById(i + '_inputError').innerHTML = obj.errors[name];
@@ -59,6 +60,7 @@ function parseNode(obj, element, i){
         }
     }
 }
+
 function submitAjax(formId){
     var myform = document.getElementById(formId);
     myform.onsubmit = function(){
@@ -76,20 +78,19 @@ function submitAjax(formId){
 
             //-------------------------------------------------------
             // No Response
-            if(typeof obj.messages == 'undefined'){
-                console.log('Data connection lost, no response data.');
+            if(typeof obj['success'] == 'undefined'){
+                alert('Data connection lost, no response data.');
                 return false;
             }
+
             //-------------------------------------------------------
             // Success
-            if(typeof obj.messages['success'] !== 'undefined' && obj.messages['success'] == '1'){
-                if(typeof obj.messages['redirect'] !== 'undefined'){
-                    window.location.replace(obj.messages['redirect']);
-                }
-                if(typeof obj.messages['alert'] !== 'undefined'){
-                    alert(obj.messages['alert']);
+            if(typeof obj['success'] !== 'undefined' && obj['success'] == '1'){
+                if(typeof obj['message'] !== 'undefined'){
+                    alert(obj['message']);
                     return false;
                 }
+                document.getElementById("response").innerHTML = '<pre>' + json.toString() + '</pre>';
             }
             else  // Assign Test Results
             {
@@ -131,11 +132,11 @@ function submitAjax(formId){
                 <table width="100%">
                     <tr>
                         <td style="width:20%;"><?php echo $this->form->label('Email') ?></td>
-                        <td><?php echo $this->form->input('user_email', $this->form->setValue('user_email'), " id='user_email' ") ?></td>
+                        <td><?php echo $this->form->input('email', '', " id='email' ") ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Password') ?></td>
-                        <td><?php echo $this->form->password('user_password', '', " id='user_password' ") ?></td>
+                        <td><?php echo $this->form->password('password', '', " id='password' ") ?></td>
                     </tr>
                     <tr>
                         <td><?php echo $this->form->label('Confirm') ?></td>
@@ -144,7 +145,7 @@ function submitAjax(formId){
                     <tr>
                         <td></td>
                         <td>
-                        <?php echo $this->form->checkbox('agreement', 1, $this->form->setValue('agreement'), " id='agreement' ") ?>
+                        <?php echo $this->form->checkbox('agreement', 1, '', " id='agreement' ") ?>
                         <label for="agreement">I agree terms and conditions.</label>
                         </td>
                     </tr>

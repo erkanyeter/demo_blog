@@ -14,7 +14,6 @@ Class Schema_Sync {
     public $queryWarning;               // Javascript query alert for dangerous mysql operations.
     public $db;                         // database object
     public $tablename;                  // tablename
-    public $modelName;                  // modelname
     public $schemaObject;               // schema class object
     public $schemaName = null;          // lowercase schema name
     public $dbSchema   = array();       // database schema array
@@ -33,7 +32,6 @@ Class Schema_Sync {
     public function __construct($schemaObject)
     {
         $this->tablename    = $schemaObject->getTableName(); // Set tablename
-        $this->modelName    = $schemaObject->getModelName(); // Set modelname
         $this->schemaName   = strtolower($this->tablename);  // set schema name
     }
 

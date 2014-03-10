@@ -14,6 +14,8 @@ Class Tag_Cloud {
 	 */
 	public function __construct()
 	{
+		global $logger;
+
 		$this->_config = getConfig('tag_cloud'); // .app/config/tag_cloud.php get config
 		$this->url     = $this->_config['url'];
 
@@ -22,7 +24,7 @@ Class Tag_Cloud {
             getInstance()->tag_cloud = $this; // Make available it in the controller $this->tag_cloud->method();
         }
 
-        logMe('debug', "Tag Cloud Class Initialized");
+        $logger->debug('Tag Cloud Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -60,8 +62,8 @@ Class Tag_Cloud {
 		 * $clearString link oluşturulmak için tagda a-Z ve 0-9 hariç herşey siliniyor ve url_separator birden fazla eklenmemesi için önlem alınıyor.
 		 * return preg_replace Birden fazla white spacelar silinip url oluşturuluyor.
 		 */
+		
 		$clearString = preg_replace('/[^\w ]|'.$this->_config['formatting']['url_separator'].'/', '', strip_tags($string)); 
-
 		return preg_replace('/('.$this->_config['formatting']['url_separator'].'+)|(\s+)/', $this->_config['formatting']['url_separator'], $clearString);
 	}
 
@@ -96,7 +98,7 @@ Class Tag_Cloud {
 		$values = array();
 
 		foreach($this->_Arr as $key => $val)
-		{
+		{			
 			$tag        = $this->_formatTag($val['tag']);
 			$val['tag'] = $tag;
 
@@ -130,9 +132,9 @@ Class Tag_Cloud {
 	/**
 	 * getArray
 	 * 
-	 * @param  array   $tags    [description]
-	 * @param  boolean $shuffle [description]
-	 * @return [type]           [description]
+	 * @param  array   $tags
+	 * @param  boolean $shuffle
+	 * @return string | array
 	 */
 	public function getArray($tags = array(), $shuffle = true)
 	{
@@ -144,10 +146,10 @@ Class Tag_Cloud {
 	/**
 	 * render
 	 * 
-	 * @param  string  $type    [description]
-	 * @param  [type]  $color   [description]
-	 * @param  boolean $shuffle [description]
-	 * @return [type]           [description]
+	 * @param  string  $type
+	 * @param  array   $tags
+	 * @param  boolean $shuffle
+	 * @return string | array
 	 */
 	public function _render($type = 'array', $tags = array(), $shuffle = true)
 	{
@@ -225,7 +227,7 @@ Class Tag_Cloud {
 	/**
 	 * _getColor
 	 * 
-	 * @return [type] [description]
+	 * @return array
 	 */
 	private function _getColor()
 	{
@@ -271,7 +273,7 @@ Class Tag_Cloud {
 	/**
 	 * setColor
 	 * 
-	 * @param [type] $string [description]
+	 * @param string $string
 	 */
 	public function setColor($string)
 	{
@@ -283,7 +285,7 @@ Class Tag_Cloud {
 	/**
 	 * _shuffle
 	 * 
-	 * @return [type] [description]
+	 * @return array
 	 */
 	private function _shuffle()
 	{
@@ -305,22 +307,6 @@ Class Tag_Cloud {
 		return $this->_tagsArr;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * _convertCharacters
-	 * 
-	 * @param  [type] $string [description]
-	 * @return [type]         [description]
-	 */
-	private function _convertCharacters($string)
-	{
-		return str_replace(
-						array_keys($this->_config['transliteration_table']),
-						array_values($this->_config['transliteration_table']),
-						$string
-						);
-	}
 }
 
 /* End of file tag_cloud.php */

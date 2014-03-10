@@ -22,6 +22,8 @@ namespace Utf8\Src {
     */
     function fromUnicode($arr = array())
     {
+        global $logger;
+
         ob_start();
         $keys = array_keys($arr);
 
@@ -42,7 +44,7 @@ namespace Utf8\Src {
             }
             elseif ($arr[$k] >= 0xD800 AND $arr[$k] <= 0xDFFF)  // Test for illegal surrogates
             {
-                logMe('debug', 'Utf8->fromUnicode: Illegal surrogate at index: '.$k.', value: '.$arr[$k]); // Found a surrogate
+                $logger->debug('Utf8->fromUnicode: Illegal surrogate at index: '.$k.', value: '.$arr[$k]); // Found a surrogate
 
                 return false;
             }
@@ -61,7 +63,7 @@ namespace Utf8\Src {
             }
             else                // Out of range
             {
-                logMe('debug', 'Utf8->fromUnicode: Codepoint out of Unicode range at index: '.$k.', value: '.$arr[$k]);
+                $logger->debug('Utf8->fromUnicode: Codepoint out of Unicode range at index: '.$k.', value: '.$arr[$k]);
 
                 return false;
             }

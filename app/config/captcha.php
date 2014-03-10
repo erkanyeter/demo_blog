@@ -10,8 +10,9 @@
         new Auth;captcha_id
 */
 $captcha = array(
-    
-    'sess'           => new Sess,
+    'sess'           => function () {
+                        return new Sess;
+                    },
     'captcha_id'     => 'captcha_id',           // captcha_id set
     'driver'         => 'cool',                 // Set default driver ( "secure" or "cool" ).
     'set_pool'       => 'random',               // Pools: numbers - alpha - random

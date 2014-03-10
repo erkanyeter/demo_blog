@@ -12,9 +12,12 @@ namespace Validator\Src {
      */    
     function xssClean($str)
     {   
-        $security = getComponentInstance('security');
-        
-        return $security->xssClean($str);
+        if( ! isset(getInstance()->security))
+        {
+            new \Security;
+        }
+
+        return getInstance()->security->xssClean($str);
     }
     
 }

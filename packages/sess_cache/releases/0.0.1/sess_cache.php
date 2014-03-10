@@ -1,10 +1,10 @@
 <?php
 
  /**
- * Session Database Driver
+ * Session Cache Driver
  *
  * @package       packages
- * @subpackage    sess_database
+ * @subpackage    sess_cache
  * @category      sessions
  * @link
  */
@@ -12,15 +12,12 @@
 Class Sess_Cache {
     
     public $db;
-    public $database;
-    public $cookie;
     public $request;
     public $encrypt_cookie       = false;
     public $expiration           = '7200';
     public $match_ip             = false;
     public $match_useragent      = true;
     public $cookie_name          = 'frm_session';
-    public $db_var               = 'db';
     public $cookie_prefix        = '';
     public $cookie_path          = '';
     public $cookie_domain        = '';
@@ -28,19 +25,24 @@ Class Sess_Cache {
     public $encryption_key       = '';
     public $flashdata_key        = 'flash';
     public $time_reference       = 'time';
-    public $gc_probability       = 5;
-    public $sess_id_ttl          = '';
     public $userdata             = array();
     
     // --------------------------------------------------------------------
 
+    /**
+     * Call sess cache functions 
+     * 
+     * @param  string $method
+     * @param  array $arguments
+     * @return string 
+     */
     public function __call($method, $arguments)
     {
         global $packages;
 
         if( ! function_exists('Sess_Cache\Src\\'.$method))
         {
-            require (PACKAGES .'sess_cache'. DS .'releases'. DS .$packages['dependencies']['sess_cache']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
+            require (PACKAGES .'sess_cache'. DS .'releases'. DS .$packages['dependencies']['sess_cache']['version']. DS .'src'. DS .strtolower($method). EXT);
         }
 
         return call_user_func_array('Sess_Cache\Src\\'.$method, $arguments);
@@ -48,18 +50,15 @@ Class Sess_Cache {
 
     // --------------------------------------------------------------------
 
-    function init($params = array())
+    public function init($sess = array())
     {        
-        global $config;
-
-        $sess = getConfig('sess');
+        global $config, $logger;
 
         foreach (array(
             'cookie_name',
             'expiration',
             'expire_on_close',
             'encrypt_cookie',
-            'cookie',
             'request',
             'db',
             'table_name',
@@ -67,12 +66,15 @@ Class Sess_Cache {
             'match_useragent',
             'time_to_update') as $key)
         {
-            $this->$key = (isset($params[$key])) ? $params[$key] : $sess[$key];
+            $this->$key = $sess[$key];
         }
 
-        $this->cookie_path   = (isset($params['cookie_path'])) ? $params['cookie_path'] : $config['cookie_path'];
-        $this->cookie_domain = (isset($params['cookie_domain'])) ? $params['cookie_domain'] : $config['cookie_domain'];
-        $this->cookie_prefix = (isset($params['cookie_prefix'])) ? $params['cookie_prefix'] : $config['cookie_prefix'];
+        $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
+        $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
+        $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
+        
+        $db = $this->db;    // set database;
+        $this->db = $db();
         
         $this->now            = $this->_getTime();
         $this->encryption_key = $config['encryption_key'];
@@ -84,25 +86,25 @@ Class Sess_Cache {
         }
 
         $this->cookie_name = $this->cookie_prefix . $this->cookie_name; // Set the cookie name
-        
-        $this->cookie  = &$this->cookie;      // Set Cookie object
-        $this->request = &$this->request;     // Set Request object
+
+        $request = $this->request;
+        $this->request = $request();  // Set Request object
 
         if ( ! $this->_read())    // Run the Session routine. If a session doesn't exist we'll 
         {                         // create a new one.  If it does, we'll update it.
-            $this->_create();
+            $this->_create(); 
         }
         else
         {    
-            $this->_update();
+            $this->_update(); 
         }
         
         $this->_flashdataSweep(); // Delete 'old' flashdata (from last request)
         $this->_flashdataMark();  // Mark all new flashdata as old (data will be deleted before next request)
         $this->_gC();             // Delete expired sessions if necessary
 
-        logMe('debug', "Session Database Driver Initialized"); 
-        logMe('debug', "Session routines successfully run"); 
+        $logger->debug('Session Database Driver Initialized'); 
+        $logger->debug('Session routines successfully run'); 
 
         return true;
     }
@@ -117,11 +119,13 @@ Class Sess_Cache {
     */
     function _read()
     {
-        $session = $this->cookie->get($this->cookie_name); // Fetch the cookie
+        global $logger;
+
+        $session = (isset($_COOKIE[$this->cookie_name])) ? $_COOKIE[$this->cookie_name] : false;
 
         if ($session === false)  // No cookie?  Goodbye cruel world!...
         {               
-            logMe('debug', 'A session cookie was not found');
+            $logger->debug('A session cookie was not found');
 
             return false;
         }
@@ -138,7 +142,7 @@ Class Sess_Cache {
 
             if ($hash !==  md5($session . $this->encryption_key))  // Does the md5 hash match?  
             {                                                      // This is to prevent manipulation of session data in userspace
-                logMe('error', 'The session cookie data did not match what was expected. This could be a possible hacking attempt');
+                $logger->error('The session cookie data did not match what was expected. This could be a possible hacking attempt');
 
                 $this->destroy();
 
@@ -147,6 +151,7 @@ Class Sess_Cache {
         }
 
         $session = $this->_unserialize($session); // Unserialize the session array
+
         if ( ! is_array($session) OR ! isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
         OR ! isset($session['ip_address']) OR ! isset($session['user_agent']) 
         OR ! isset($session['last_activity'])) 
@@ -154,7 +159,7 @@ Class Sess_Cache {
             $this->destroy();
             return false;
         }
-    
+
         if (($session['last_activity'] + $this->expiration) < $this->now)  // Is the session current?
         {
             $this->destroy();
@@ -177,6 +182,7 @@ Class Sess_Cache {
         }
 
         $query = $this->db->get($session['session_id']);
+        $query = $this->_unserialize($query); 
 
         if ($this->match_ip == true AND $session['ip_address'] != $query['ip_address'])
         {
@@ -184,20 +190,22 @@ Class Sess_Cache {
         
             return false;
         }
-        
+
         if ($this->match_useragent == true AND $session['user_agent'] != $query['user_agent'])
         {
             $this->destroy();
         
             return false;
         }
-                               // Is there custom data?  If so, add it to the main session array
-        if (empty($query) OR $query == '')     // No result?  Kill it! // Obullo changes ..
+
+                                             // Is there custom data?  If so, add it to the main session array
+        if (empty($query) OR $query == '')   // No result?  Kill it! // Obullo changes ..
         {
             $this->destroy();
 
             return false;
         }
+
         if (isset($query['user_data']) AND $query['user_data'] != '')
         {
             $custom_data = $this->_unserialize($query['user_data']);
@@ -209,7 +217,7 @@ Class Sess_Cache {
                     $session[$key] = $val;
                 }
             }
-        }    
+        }
 
         $this->userdata = $session;   // Session is valid!
         unset($session);
@@ -243,16 +251,26 @@ Class Sess_Cache {
         // Did we find any custom data?  If not, we turn the empty array into a string
         // since there's no reason to serialize and store an empty array in the DB
         
-        if (count($custom_userdata) === 0)
-        {
+        if (count($custom_userdata) === 0) {
             $custom_userdata = '';
-        }
-        else
-        {    
+        } else {    
             $custom_userdata = $this->_serialize($custom_userdata); // Serialize the custom data array so we can store it
         }
-        // $this->db->where('session_id', $this->userdata['session_id']);         // Run the update query
-        $this->db->set($this->userdata['session_id'], array('last_activity' => $this->userdata['last_activity'], 'user_data' => $custom_userdata), $this->expiration);
+
+        //-------- memory container update support --------// 
+
+        $cached_userdata       = $this->db->get($this->userdata['session_id']);
+        $unserialized_old_data = $this->_unserialize($cached_userdata);
+
+        $unserialized_old_data['last_activity'] = $this->userdata['last_activity'];
+        $unserialized_old_data['user_data']     = $custom_userdata;
+
+        //-------------------------------------------------// 
+
+        $new_data = $this->_serialize($unserialized_old_data);
+
+        // Write to memory
+        $this->db->set($this->userdata['session_id'], $new_data, time() + $this->expiration);
 
         // Write the cookie.  Notice that we manually pass the cookie data array to the
         // _setCookie() function. Normally that function will store $this->userdata, but 
@@ -286,8 +304,12 @@ Class Sess_Cache {
                                 'last_activity'  => $this->now
                                 );
 
-        $this->db->set($this->userdata['session_id'], $this->userdata, $this->expiration);
-        
+
+
+        $result = $this->db->set($this->userdata['session_id'], $this->_serialize($this->userdata), time() + $this->expiration);
+
+        $r = $this->db->get($this->userdata['session_id']);
+
         $this->_setCookie(); // Write the cookie 
     }
     
@@ -301,14 +323,11 @@ Class Sess_Cache {
     */
     function _update()
     {
-        $cookie  = $this->cookie->get($this->cookie_name);
-        $session = $this->_unserialize($cookie);
-
         if (($this->userdata['last_activity'] + $this->time_to_update) >= $this->now) // We only update the session every five minutes by default
         {
             return;
         }
-       
+
         $old_sessid = $this->userdata['session_id']; // Save the old session id so we know which record to  
         $new_sessid = '';                            // update in the database if we need it
         while (strlen($new_sessid) < 32)
@@ -334,7 +353,21 @@ Class Sess_Cache {
             $cookie_data[$val] = $this->userdata[$val];
         }
 
-        $this->db->replace($session['session_id'], array('last_activity' => $this->now, 'session_id' => $new_sessid), $this->expiration); 
+        //-------- memory container update support --------// 
+
+        $cached_userdata       = $this->db->get($old_sessid);
+        $unserialized_old_data = $this->_unserialize($cached_userdata);
+
+        $unserialized_old_data['last_activity'] = $this->now;
+        $unserialized_old_data['session_id']    = $new_sessid;  // regenerate a new session id for strong security
+
+        $this->db->delete($old_sessid);  // delete old data
+
+        //-------------------------------------------------// 
+        
+        $new_data = $this->_serialize($unserialized_old_data);
+
+        $this->db->set($new_sessid, $new_data, time() + $this->expiration); 
 
         $this->_setCookie($cookie_data); // Write the cookie
     }
@@ -439,7 +472,7 @@ Class Sess_Cache {
                                                                                      // we provide an md5 hash to prevent userside tampering
         }
         
-        $expiration = ($this->expire_on_close) ? 0 : $this->expiration;
+        $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
 
         // Set the cookie
         setcookie(
@@ -532,19 +565,10 @@ Class Sess_Cache {
     */
     function _gC()
     {
-        srand(time());
-        
-        if ((rand() % 100) < $this->gc_probability)
-        {
-            $expire = $this->now - $this->expiration;
-
-            $this->db->delete($this->userdata['session_id']); // delete expired key
-
-            logMe('debug', 'Session garbage collection performed');
-        }
+        // no need we use expiration
     }
 
 }
 
-/* End of file sess_database.php */
-/* Location: ./packages/sess_database/releases/0.0.1/sess_database.php */
+/* End of file sess_cache.php */
+/* Location: ./packages/sess_cache/releases/0.0.1/sess_cache.php */

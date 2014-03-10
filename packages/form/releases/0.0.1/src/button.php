@@ -14,7 +14,7 @@ namespace Form\Src {
     */
     function button($data = '', $content = '', $extra = '')
     {
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         $defaults = array('name' => (( ! is_array($data)) ? $data : ''), 'type' => 'button');
 
@@ -24,7 +24,7 @@ namespace Form\Src {
             unset($data['content']); // content is not an attribute
         }
 
-        return sprintf($form['templates'][\Form::$template]['button'], "<button ".\Form::_parseFormAttributes($data, $defaults).$extra.">".$content."</button>");
+        return sprintf($form['templates'][\Form::$template]['button'], "<button ".\Form::_parseFormAttributes($data, $defaults).$extra.">".translate($content)."</button>");
     }
     
 }

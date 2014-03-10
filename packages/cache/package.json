@@ -1,6 +1,6 @@
 {
-  "name": "sess_database",
-  "description": "Session database driver",
+  "name": "sess_cache",
+  "description": "Session cache driver",
   "version": "0.0.1",
   "author": {
     "name": "Obullo Team",

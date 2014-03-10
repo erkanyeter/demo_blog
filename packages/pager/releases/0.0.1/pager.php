@@ -1,6 +1,6 @@
 <?php
 
-/**                 
+/**
  * Pager Class
  *
  * @package       packages
@@ -9,39 +9,37 @@
  * @author        Derived from PEAR pager package.
  * @see           Original package http://pear.php.net/package/Pager         
  */
-
 Class Pager
-{     
+{
     /**
-    * Constructor
-    *
-    * Sets the variables for options.
-    * 
-    * @param array $options
-    * @access    public
-    * @return    void
-    */
+     * Constructor
+     *
+     * Sets the variables for options.
+     * 
+     * @param array $options
+     * @access    public
+     * @return    void
+     */
     public function __construct($options = array())
     {
+        global $logger;
+
         $mode = (isset($options['mode']) ? strtolower($options['mode']) : 'jumping');
-        $classname = 'Pager\Src\Pager_'. ucfirst($mode); 
-            
-        if(count($options) > 0)
-        {
+        $classname = 'Pager\Src\Pager_' . ucfirst($mode);
+
+        if (count($options) > 0) {
             $instance = new $classname($options);
-        } 
-        else 
-        {
-            $instance = new $classname(); 
+        } else {
+            $instance = new $classname();
         }
 
-        if( ! isset(getInstance()->pager))
-        {
+        if ( ! isset(getInstance()->pager)) {
             getInstance()->pager = $instance; // Available it in the contoller $this->auth->method();
         }
-        
-        logMe('debug', "Pager Class Initialized");
+
+        $logger->debug('Pager Class Initialized');
     }
+
 }
 
 // END Pager Class

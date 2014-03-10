@@ -21,6 +21,7 @@ Class Captcha {
 
     public $driver;                  // Driver type
     public $captcha_id;              // captcha_id 
+
     public $colors;                  // Defined system colors
     public $default_text_color;      // Captcha text color
     public $default_noise_color;     // Background noise property 
@@ -51,28 +52,28 @@ Class Captcha {
      */
     public function __construct($config = array())
     {
-        global $packages;
+
+        global $packages, $logger;
 
         $this->config = getConfig('captcha'); // config->captcha.php config
-        $this->sess   = $this->config['sess'];
-
+        $sess = $this->config['sess']();     // get session dependency
+        $this->sess = $sess::$driver;     // run dependecy class
         $this->init();
         
-        $this->img_path          = ROOT .str_replace('/', DS, trim($this->config['img_path'], '/')). DS;
-        $this->img_url           = getInstance()->uri->getBaseUrl($this->config['img_path']. DS); //deg sonuna DS Eklendi birde framework silinecek
-        $this->user_font_path    = ROOT .$this->config['user_font_path']. DS;
-        $this->default_font_path = PACKAGES .'captcha'. DS .'releases'. DS .$packages['dependencies']['captcha']['version']. DS .'src'. DS .'fonts'. DS;
+        $this->img_path = ROOT . str_replace('/', DS, trim($this->config['img_path'], '/')) . DS;  // replace with DS
+        $this->img_url = getInstance()->uri->getBaseUrl($this->config['img_path'] . DS); // add Directory Seperator ( DS )
+        $this->user_font_path = ROOT . $this->config['user_font_path'] . DS;
+        $this->default_font_path = PACKAGES . 'captcha' . DS . 'releases' . DS . $packages['dependencies']['captcha']['version'] . DS . 'src' . DS . 'fonts' . DS;
 
-        if( ! isset(getInstance()->captcha))
-        {
+        if (!isset(getInstance()->captcha)) {
             getInstance()->captcha = $this; // Make available it in the controller $this->captcha->method();
         }
 
-        if (mt_rand(1, $this->del_rand) == 1)
-        {
+        if (mt_rand(1, $this->del_rand) == 1) {
             $this->gc();
         }
-        logMe('debug', 'Captcha Class Initialized');
+
+        $logger->debug('Captcha Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -101,8 +102,9 @@ Class Captcha {
         $this->image_type          = $this->config['image_type'];
     }
 
+
     // ------------------------------------------------------------------------
-    
+
     /**
      * Set driver type
      * 
@@ -169,6 +171,7 @@ Class Captcha {
 
     // ------------------------------------------------------------------------
     
+
     /**
      * Set background noise color
      * 
@@ -183,7 +186,6 @@ Class Captcha {
         }
 
         $this->_setDefaults('colors','default_noise_color', $values);
-
         return $this;
     }
 
@@ -207,6 +209,7 @@ Class Captcha {
         return $this;
 
     }
+
     // ------------------------------------------------------------------------
 
     /**
@@ -223,7 +226,7 @@ Class Captcha {
         }
      
         $this->_setDefaults('fonts', 'default_fonts', $values);
-        
+
         return $this;
     }
 
@@ -238,7 +241,6 @@ Class Captcha {
     public function setFontSize($font_size)
     {
         $this->font_size = $font_size;
-
         return $this;
     }
 
@@ -253,7 +255,6 @@ Class Captcha {
     public function setHeight($height)
     {
         $this->height = $height;
-
         return $this;
     }
 
@@ -297,7 +298,6 @@ Class Captcha {
     public function setWave($wave)
     {
         $this->wave_image = $wave;
-
         return $this;
     }
 
@@ -311,12 +311,11 @@ Class Captcha {
     public function clear()
     {
         $this->init();
-
         return $this;
     }
 
     // ------------------------------------------------------------------------
-    
+
     /**
      * Generate image code
      * 
@@ -340,6 +339,7 @@ Class Captcha {
         }
         elseif($this->debugFlag == 'all')
         {
+
             $this->code = $this->char_pool['random'];
         }
     }
@@ -355,7 +355,7 @@ Class Captcha {
     public function create()
     {
        $this->generateCode();  // generate captcha code
-        
+
         $key_rand = array_rand($this->default_fonts);
 
         $font_path = $this->default_font_path . $this->fonts[$this->default_fonts[$key_rand]];
@@ -421,6 +421,7 @@ Class Captcha {
         imagedestroy($this->image);
 
         $this->sess->set($this->captcha_id, array('image_name' =>$this->sessionKey, 'code'=> $this->code));
+
     }
 
     // ------------------------------------------------------------------------

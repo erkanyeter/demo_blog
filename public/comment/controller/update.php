@@ -2,23 +2,24 @@
 
 /**
  * $c update
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-	new Url;
-	new Sess;
-	new Auth;
+$c = new Controller(
+    function () {
+        new Url;
+        new Form;
+        new Hvc;
+    }
+);
 
-	new Trigger('private','header');
-});
+$c->func(
+    'index.private_user',
+    function ($id, $status = 'approve') {
 
-$c->func('index', function($comment_id, $status = 'approve'){
+        $r = $this->hvc->put('private/comments/update/'.$id.'/'.$status);
 
-    $update = ($status == 'approve') ? 1 : 0;
-
-    $this->db->where('comment_id', $comment_id);
-    $this->db->update('comments', array('comment_status' => $update));
-
-    $this->url->redirect('/comment/display');
-});
+        $this->form->setNotice($r['message'], $r['success']);  // set flash notice
+        $this->url->redirect('/comment/display');
+    }
+);

@@ -2,42 +2,36 @@
 
 /**
  * $c manage
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-	new Url;
-	new Html;
-	new Form;
-    new View;
-    new Sess;
-    new Auth;
-    new Post;
-
-    new Trigger('private','header');
-});
-
-$c->func('index', function(){
-
-    if($this->post->get('post_title'))
-    {
-        $this->db->like('post_title', $this->post->get('post_title'));
+$c = new Controller(
+    function () {
+        new Url;
+        new Html;
+        new Form;
+        new View;
+        new Sess;
+        new Auth;
+        new Post;
+        new Db;
+        new Hvc;
     }
+);
 
-    if($this->post->get('post_status'))
-    {
-        $this->db->like('post_status', $this->post->get('post_status'));
+$c->func(
+    'index.private_user',
+    function () {
+
+        $r = $this->hvc->get('private/posts/getallmanage'); // get all post data
+
+        $this->view->get(
+            'manage',
+            function () use ($r) {
+                $this->set('title', 'Manage Posts');
+                $this->set('posts', $r['results']);
+                $this->getScheme();  // hmvc yapınca request resetleniyor
+            }
+        );
     }
-
-    $this->db->get('posts');
-    
-    $posts = $this->db->getResult();
-
-	$this->view->get('manage', function() use($posts) {
-        
-        $this->set('title', 'Manage Posts');
-		$this->set('posts', $posts);
-		$this->getScheme();
-	});
-
-});
+);

@@ -16,7 +16,7 @@ namespace Form\Src {
     {
         if(is_object($value))  // $_REQUEST & Db value sync with schema
         {
-            $value = getInstance()->form->_getSchemaPost($value, $data); 
+            $value = getInstance()->form->_getRowValue($value, $data); 
         }
         
         $defaults = array('name' => (( ! is_array($data)) ? $data : ''), 'cols' => '90', 'rows' => '12');
@@ -38,7 +38,7 @@ namespace Form\Src {
 
         $name = (is_array($data)) ? $data['name'] : $data;
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         $textarea = '<textarea '.\Form::_parseFormAttributes($data, $defaults).$extra.">".getInstance()->form->prep($val, $name).'</textarea>';
 

@@ -59,3 +59,7 @@ Returns "true" if xmlHttpRequest ( Ajax ) available in server header.
 #### $this->request->isSecure();
 
 Returns "true" if the secure connection ( Https ) available in server header.
+
+#### $this->request->isHvc();
+
+Returns "true" if request is Hvc ( Hierarchical View Controller ).

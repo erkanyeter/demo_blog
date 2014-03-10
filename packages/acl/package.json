@@ -8,16 +8,8 @@
     "email": "obulloframework@gmail.com",
     "url": "https://github.com/obullo"
   },
-  "component" : "library",
-  "dependencies": {
-    "log":"*"
-  },
-  "keywords": [
-    "acl",
-    "access control list",
-    "role",
-    "role management"
-  ],
+  "dependencies": {"log":"*"},
+  "keywords": ["acl","access control list","role","role management"],
   "homepage": "https://github.com/obullo/auth",
   "repo": {
     "type": "git",
@@ -25,7 +17,7 @@
     "archive" : "zip",
     "archive_url": "https://github.com/obullo/acl/archive/master.zip"
   },
-  "requires": {
+  "require": {
     "php": ">= 5.4.0",
     "extensions": ["none"]
   },

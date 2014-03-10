@@ -23,16 +23,6 @@ Framework is fairly restrictive regarding which characters are allowed in your U
 
 GET data is simply disallowed by framework since the system utilizes URI segments rather than traditional URL query strings (unless you have the query string option enabled in your config file). The global GET array is <b>unset</b> by the Input class during system initialization.
 
-### Register_globals
-
-------
-
-During system initialization all global variables are unset, except those found in the $_POST and $_COOKIE arrays. The unsetting routine is effectively the same as register_globals = off.
-
-#### magic_quotes_runtime
-
-The magic_quotes_runtime directive is turned off during system initialization so that you don't have to remove slashes when retrieving data from your database.
-
 ### Best Practices
 
 ------

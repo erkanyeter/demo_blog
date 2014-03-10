@@ -1,21 +1,20 @@
 <?php
 
- /**
- * Cace Class
+/**
+ * Cache Class ( Static )
  *
  * @package       packages
- * @subpackage    sess_database
- * @category      sessions
+ * @subpackage    cache
+ * @category      cache
  * @link
  */
-Class Cache {
-
-    private $_config;
-    private $_driver;
-    private $_adapter;
+Class Cache
+{
+    public static $config;
+    public static $driver;       // driver instance
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Constructor
      * 
@@ -23,208 +22,64 @@ Class Cache {
      */
     public function __construct($config = array())
     {
-        if(count($config) <= 0)
-        {
-            $this->_config = getConfig('cache'); // app/config/cache.php config
-        }
-        else
-        {
-            $this->_config = $config;
-        }
-        if( ! isset(getInstance()->cache))
-        {
-            getInstance()->cache = $this; // Make available it in the controller $this->catpcha->method();
-        }
+        global $logger;
+        
+        if ( ! isset(getInstance()->cache)) {
 
-        $this->_setDriver($this->_config['driver']);
-        $this->_isSupported($this->_config['driver']);        // Checking for supporting driver.
-        $this->_setConnection($this->_config);
+            self::$config = getConfig('cache');         // app/config/cache.php config
+            
+            $this->init($config); // Make available it in the controller $this->cache->method()
 
-        logMe('debug', "Cache Class Initialized");
+            getInstance()->cache = self::$driver;
+        }
+        
+        $logger->debug('Cache Class Initialized');
     }
 
     // --------------------------------------------------------------------
-    
-    /*
-     * Set connection ( Optional Method )
-     * 
-     * @param string $driver
-     * @return true or false
-     */
-    private function _setConnection($params = array())
-    {
-        if($this->_adapter == 'memcache' OR $this->_adapter == 'memcached')
-        {
-            $paramsKey    = array('hostname' => 1, 'port' => 2);
-            $servers      = array_intersect_key($params['servers'], $paramsKey);
-            $countServers = count($servers);
 
-            if($countServers < 2)
-            {
-                return false;
+    /**
+     * Initalize and grab instance of the auth.
+     * 
+     * @param array $params
+     * @return object
+     */
+    public function init($params = array())
+    {
+        if (count($params) > 0) {
+            self::$config = array_merge($params, self::$config);
+        }
+
+        $driver_name = strtolower(self::$config['driver']);
+        $className   = 'Cache_'.ucfirst($driver_name);
+
+        self::$driver = new $className; // call driver
+
+        //----------- Check Driver ----------//
+
+        self::$driver->isSupported(self::$config['driver']); // Checking for supporting driver.
+
+        //----------- Check Driver ----------//
+
+        if (self::$config['driver'] != 'file' OR self::$config['driver'] != 'apc') {  // connect 
+            $paramsKey = array('hostname' => 1, 'port' => 2);
+            $servers   = array_intersect_key(self::$config['servers'], $paramsKey);
+
+            if ( ! isset($servers['hostname']) OR ! isset($servers['port'])) {
+                throw new Exception('A defined hostname could not be found.');
+            } else {
+                self::$driver->connectionSet = self::$config;
+                self::$driver->connect(self::$config['driver']);
             }
-            else
-            {
-                $this->_driver->connectionSet = $params;
-                $this->_driver->connectMemcacheFamily($this->_config['driver']);
+
+            if (self::$config['driver'] == 'redis') {  // Redis Configuration
+                if (isset(self::$config['servers']['weight'])) {
+                    unset(self::$config['servers']['weight']);
+                }
             }
             return true;
         }
-        else
-        {
-            return false;
-        }
     }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Set driver type
-     * 
-     * @param string $driver
-     * @return object
-     */
-    private function _setDriver($driver = null)
-    {
-        if($driver == null)
-        {
-            $driver = $this->_config['driver'];
-        }
-        elseif(mb_strtolower($driver) == 'memcache' OR mb_strtolower($driver) == 'memcached')
-        {
-            $this->_adapter = $driver;
-        }
-
-        $editDriverName  = str_replace('memcached','memcache',$driver); // Driver name is edited. Only for memcached.
-        $className       = 'Cache\Src\Cache_'.ucfirst(mb_strtolower($editDriverName));
-        $this->_driver   = new $className();         // Drivers needed for the class are created.
-
-    	return true;
-    }
-
-    // --------------------------------------------------------------------
-    
-    /**
-     * Get
-     * 
-     * @param string $id
-     * @return object
-     */
-    public function get($id)
-    {
-        return $this->_driver->get($id);
-    }
-
-    // --------------------------------------------------------------------
-    
-    /**
-     * Get
-     * 
-     * @param string $id
-     * @return object
-     */
-    public function getAllKeys()
-    {
-        if($this->_adapter == 'memcached')
-        {
-            return $this->_driver->getAllKeys();
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    // --------------------------------------------------------------------
-    
-    /**
-     * Save
-     * 
-     * @param string $id
-     * @return object
-     */
-    public function set($id, $data, $ttl = 60)
-    {
-        return $this->_driver->set($id, $data, $ttl);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Replace
-     * @param  [type]  $id
-     * @param  [type]  $data
-     * @param  integer $ttl
-     * @return [type]
-     */
-    public function replace($id, $data, $ttl = 60)
-    {
-        return $this->_driver->set($id, $data, $ttl);
-    }
-
-    /**
-     * Clean all data
-     * 
-     * @param string $id
-     * @return object
-     */
-    public function clean()
-    {
-        return $this->_driver->clean();
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Delete
-     * 
-     * @param string $id
-     * @return object
-     */
-    public function delete($id)
-    {
-        return $this->_driver->delete($id);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Cache Info
-     * 
-     * @param
-     * @return object
-     */
-    public function cacheInfo()
-    {
-        return $this->_driver->cacheInfo();
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Get Meta Data
-     * 
-     * @param string $id
-     * @return object
-     */
-    public function getMetaData($id)
-    {
-        return $this->_driver->getMetaData($id);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Controlling for supporting driver.
-     * 
-     * @param string $id
-     * @return object
-     */
-    private function _isSupported($driver)
-    {
-        return $this->_driver->isSupported($driver);
-    }
-
 }
 
 /* End of file cache.php */

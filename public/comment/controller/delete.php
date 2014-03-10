@@ -1,23 +1,25 @@
 <?php
 
 /**
- * $c approve
+ * $c delete
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-	new Url;
-	new Sess;
-	new Auth;
+$c = new Controller(
+    function () {
+        new Url;
+        new Form;
+        new Hvc;
+    }
+);
 
-	new Trigger('private','header');
-});
+$c->func(
+    'index.private_user',
+    function ($id) {
+        
+        $r = $this->hvc->delete('private/comments/delete/'.$id);
 
-$c->func('index', function($comment_id){
-
-    $this->db->where('comment_id', $comment_id);
-    $this->db->delete('comments');
-
-    $this->url->redirect('/comment/display');
-
-});
+        $this->form->setNotice($r['message'], $r['message']);       // set flash notice
+        $this->url->redirect('/comment/display');
+    }
+);

@@ -25,12 +25,14 @@ Class Zip {
     
     public function __construct()
     {
+        global $logger;
+
         if( ! isset(getInstance()->zip))
         {
             getInstance()->zip = $this; // Make available it in the controller $this->zip->method();
         }
 
-        logMe('debug', "Zip Class Initialized");
+        $logger->debug('Zip Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -440,5 +442,6 @@ Class Zip {
     }
     
 }
+
 /* End of file zip.php */
 /* Location: ./packages/zip/releases/0.0.1/zip.php */

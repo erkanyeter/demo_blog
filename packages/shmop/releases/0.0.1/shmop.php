@@ -14,6 +14,21 @@
 Class Shmop {
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {   
+        global $logger;
+
+        if( ! isset(getInstance()->shmop))
+        {
+            getInstance()->shmop = $this; // Make available it in the controller $this->shmop->method();
+        }
+        
+        $logger->debug('Shmop Class Initialized');
+    }
+
+    /**
      * Read from shared memory, if segment key
      * exists returns to "string"
      * otherwise it returns to "null".

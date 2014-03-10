@@ -1,6 +1,6 @@
 {
   "name": "obullo",
-  "description": "Obullo Core",
+  "description": "Obullo Package",
   "version": "2.0",
   "releases": ["2.0"],
   "author": {
@@ -10,15 +10,13 @@
   },
   "component" : "library",
   "dependencies": {
-    "log": "*",
+    "logger": "*",
     "error": "*",
     "exceptions": "*",
-    "bench": "*",
-    "i":"*",
     "config": "*",
     "uri": "*",
     "router": "*",
-    "locale": "*",
+    "translator": "*",
     "controller": "*"
   },
   "keywords": [

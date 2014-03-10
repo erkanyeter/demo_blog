@@ -17,12 +17,12 @@ Class Get
      */
     public function __construct()
     {
-        if( ! isset(getInstance()->get))
-        {
+        global $logger;
+
+        if( ! isset(getInstance()->get)) {
             getInstance()->get = $this; // Make available it in the controller $this->get->method();
         }
-
-        logMe('debug', 'Get Class Initialized');
+        $logger->debug('Get Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -33,26 +33,19 @@ Class Get
     * @access   public
     * @param    string
     * @param    bool
-    * @param    bool    Use global post values instead of HMVC scope.
+    * 
     * @return   string
     */
-    public function get($index = NULL, $xss_clean = FALSE, $use_global_var = false)
+    public function get($index = null, $xss_clean = false)
     {
-        $VAR = ($use_global_var) ? $GLOBALS['_GET_BACKUP'] : $_GET;   // People may want to use hmvc or app superglobals.
-
-        if ($index === NULL AND ! empty($VAR))  // Check if a field has been provided
-        {
+        if ($index === null AND ! empty($_GET)) {  // Check if a field has been provided
             $get = array();
-            
-            foreach (array_keys($VAR) as $key)  // loop through the full _GET array
-            {
-                $get[$key] = self::fetchFromArray($VAR, $key, $xss_clean);
+            foreach (array_keys($_GET) as $key) { // loop through the full _GET array
+                $get[$key] = self::fetchFromArray($_GET, $key, $xss_clean);
             }
-
             return $get;
         }
-
-        return self::fetchFromArray($VAR, $index, $xss_clean);
+        return self::fetchFromArray($_GET, $index, $xss_clean);
     }
 
     // --------------------------------------------------------------------
@@ -71,16 +64,16 @@ Class Get
     */
     public static function fetchFromArray(&$array, $index = '', $xss_clean = false)
     {
-        if ( ! isset($array[$index]))
-        {
+        if ( ! isset($array[$index])) {
             return false;
         }
-        
-        if ($xss_clean)
-        {
-            return getComponentInstance('security')->xssClean($array[$index]);
+        if ($xss_clean) {
+            if (isset(getInstance()->security)) {
+                return getInstance()->security->xssClean($array[$index]);
+            }
+            $security = new Security;
+            return $security->xssClean($array[$index]);
         }
-
         return $array[$index];
     }
 

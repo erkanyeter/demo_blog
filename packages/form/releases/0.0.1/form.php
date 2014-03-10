@@ -12,10 +12,10 @@
 Class Form {
 
     public static $template     = 'default';  // Default form template
-    public $_callback_functions = array();    // Store __callback_func* validation methods
 
-    private $_formMessages      = array();    // Validation errors.
-    private $_formValues        = array();    // Filtered safe values.
+    public $_callback_functions = array();    // Store __callback_func* validation methods
+    public $_formMessages       = array();    // Validation errors.
+    public $_formValues         = array();    // Filtered safe values.
 
     // ------------------------------------------------------------------------
 
@@ -24,14 +24,15 @@ Class Form {
      */
     public function __construct()
     {
-        self::getFormConfig();  // Initialize to form config and validator object.
+        global $logger;
 
-        if( ! isset(getInstance()->form))
-        {
+        if( ! isset(getInstance()->form)) {
+            new Validator;          // Create Validator Object
+
+            getInstance()->translator->load('form');
             getInstance()->form = $this; // Make available it in the controller $this->form->method();
         }
-
-        logMe('debug', 'Form Class Initialized');
+        $logger->debug('Form Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -46,18 +47,18 @@ Class Form {
      */
     public function __call($method, $arguments)
     {
-        global $packages;
+        global $packages, $logger;
 
-        if(method_exists(getInstance()->validator, $method))  // Call the Validator object methods
+        if($method != 'setMessage' AND method_exists(getInstance()->validator, $method))  // Call the Validator object methods
         {
-            logMe('debug', 'Form Class '.ucfirst($method).' Executed');
+            $logger->debug('Form Class '.$method.'() Executed');
 
             return call_user_func_array(array(getInstance()->validator, $method), $arguments);
         }
 
         if(isset($this->_callback_functions[$method])) // _callback functions for form validations
         {            
-            $this->__assignObjects();   // Assign all objects for and make it available $this->package->method() .. in the callback functions.
+            $this->__assignObjects();   // Assign all controller objects and make available them in this class.
 
             return call_user_func_array(Closure::bind($this->_callback_functions[$method], $this, get_class()), array());
         }
@@ -66,7 +67,7 @@ Class Form {
         {
             require (PACKAGES .'form'. DS .'releases'. DS .$packages['dependencies']['form']['version']. DS .'src'. DS .mb_strtolower($method). EXT);
 
-            logMe('debug', 'Form Class '.ucfirst($method).' Executed');
+            $logger->debug('Form Class '.$method.'() Executed');
         }
 
         return call_user_func_array('Form\Src\\'.$method, $arguments);
@@ -133,7 +134,7 @@ Class Form {
     {
         global $config;
 
-        $form = \Form::getFormConfig();  // get form template
+        $form = Form::getConfig();  // get form template
 
         if (is_string($attributes) AND strlen($attributes) > 0)
         {
@@ -224,7 +225,6 @@ Class Form {
         {
             return false;
         }
-        
         return getInstance()->validator;
     }
 
@@ -235,7 +235,7 @@ Class Form {
      * 
      * @return array
      */
-    public static function getFormConfig()
+    public static function getConfig()
     {
         $form = getConfig('form');
 
@@ -264,40 +264,26 @@ Class Form {
         $validator = getInstance()->validator;
         $validator->set('_callback_object', $this);
 
-        $valid = $validator->isValid($group);
-        $form  = \Form::getFormConfig();  // get form template
+        $form  = Form::getConfig();  // get form template
 
         // BUILD AJAX FRIENDLY RESPONSE DATA.
 
-        if($valid == false) // if validation not pass !
+        if($validator->isValid($group)) 
         {
-            $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['form_error_message'];
+            $this->_formMessages['success'] = 1;
+            $this->_formMessages['message'] = sprintf($form['notifications']['successMessage'], translate($form['response']['success']));
+            $this->_formMessages['errors']  = $validator->_error_array;
 
-            $this->_formMessages['messages']['success']     = 0;
-            $this->_formMessages['messages']['key']         = $form['response']['form_error_key'];
-            $this->_formMessages['messages']['code']        = $form['response']['form_error_code'];
-            $this->_formMessages['messages']['string']      = $message;
-            $this->_formMessages['messages']['translated']  = translate($message);
-            $this->_formMessages['messages']['message']     = sprintf($form['notifications']['errorMessage'], translate($message));
-            
-            $this->_formMessages['errors'] = $validator->_error_array;
+            return true;
         }
 
-        if($valid) 
-        {
-            $message = $form['response']['form_success_message'];
+        $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['error'];
 
-            $this->_formMessages['messages']['success']     = 1;
-            $this->_formMessages['messages']['key']         = $form['response']['form_success_key'];
-            $this->_formMessages['messages']['code']        = $form['response']['form_success_code'];
-            $this->_formMessages['messages']['string']      = $message;
-            $this->_formMessages['messages']['translated']  = translate($message);
-            $this->_formMessages['messages']['message']     = sprintf($form['notifications']['successMessage'], translate($message));
-            
-            $this->_formMessages['errors'] = $validator->_error_array;
-        }
+        $this->_formMessages['success'] = 0;
+        $this->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
+        $this->_formMessages['errors']  = $validator->_error_array;
 
-        return $valid;
+        return false;
     }
     
     // ------------------------------------------------------------------------
@@ -325,7 +311,20 @@ Class Form {
      */
     public function getMessage($key = 'message')
     {
-        return (isset($this->_formMessages['messages'][$key])) ? $this->_formMessages['messages'][$key] : '';
+        return (isset($this->_formMessages[$key])) ? $this->_formMessages[$key] : '';
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get safe outputs of the form 
+     * 
+     * @return array
+     */
+    public function getOutput()
+    {
+        unset($this->_formMessages['values']);
+        return $this->_formMessages;
     }
 
     // ------------------------------------------------------------------------
@@ -335,9 +334,62 @@ Class Form {
      * 
      * @return array
      */
-    public function getOutput()
+    public function getAllOutput()
     {
         return $this->_formMessages;
+    }
+
+    // ------------------------------------------------------------------------
+    
+    /**
+     * Set error(s) to form validator
+     * 
+     * @param mixed $key 
+     * @param string $val 
+     * @return type
+     */
+    public function setError($key, $val = '')
+    {
+        $validator = getInstance()->validator;
+        
+        if (is_array($key)) 
+        {
+            foreach ($key as $k => $v) 
+            {
+                $validator->_field_data[$k]['error'] = $v;
+                $validator->_error_array[$key] = $val;
+            }
+        } 
+        else
+        {
+            $validator->_field_data[$key]['error'] = $val;
+            $validator->_error_array[$key] = $val;
+
+            $form  = Form::getConfig();  // get form template
+            $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['error'];
+
+            $this->_formMessages['success'] = 0;
+            $this->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
+            $this->_formMessages['errors']  = $validator->_error_array;
+
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Set error key 
+     * 
+     * success,
+     * message,
+     * errors,
+     * 
+     * @param string $key error key
+     * @param string $val error value
+     */
+    public function setKey($key, $val)
+    {
+        $this->_formMessages[$key] = $val;
     }
 
     // ------------------------------------------------------------------------
@@ -349,8 +401,6 @@ Class Form {
      */
     private function __assignObjects()
     {
-        $modelKey = strtolower(get_class());
-
         foreach(get_object_vars(getInstance()) as $k => $v)  // Get object variables
         {
             if(is_object($v)) // Do not assign again reserved variables

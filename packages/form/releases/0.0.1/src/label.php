@@ -6,16 +6,17 @@ namespace Form\Src {
     /**
     * Form Label
     *
-    * @access	public
-    * @param	string	The text to appear onscreen
-    * @param	string	The id the label applies to
-    * @param	string	Additional attributes
-    * @return	string
+    * @access   public
+    * @param    string  The text to appear onscreen
+    * @param    string  The id the label applies to
+    * @param    string  Additional attributes
+    * @return   string
     */
     function label($label_text = '', $id = '', $attributes = "")
     {
         $label = '<label';
-
+        $label_text = translate($label_text);
+        
         if(empty($id))
         {
             $id = mb_strtolower($label_text);
@@ -37,7 +38,7 @@ namespace Form\Src {
 
         $label .= ">$label_text</label>";
 
-        $form = \Form::getFormConfig();
+        $form = \Form::getConfig();
 
         return sprintf($form['templates'][\Form::$template]['label'], $label);
     }

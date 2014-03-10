@@ -248,7 +248,7 @@ Class Schema_Builder_Mysql extends Schema_Builder {
             {
                 $currentType = $this->getCurrentDataType();
 
-                if(strpos($currentType, 'BIT') == 0) // add b for bit values
+                if(strpos($currentType, 'BIT') === 0) // add b for bit values
                 {
                      // DEFAULT b'0'
                     $this->dbCommands[3] = "DEFAULT $defaultValue[1]";

@@ -2,30 +2,26 @@
 
 /**
  * $c create
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-    new Url;
-    new Html;
-    new Form;
-    new Sess;
-    new Auth;
+$c = new Controller(
+    function () {
+        new Url;
+        new Form;
+        new Sess; 
+        new Auth;
+        new Hvc;
+    }
+);
 
-    new Trigger('private','header');
-    new Model('posts');
-});
+$c->func(
+    'index.private_user',
+    function ($id) {
 
-$c->func('index', function($id) use($c){
+        $r = $this->hvc->post('private/posts/delete/'.$id, array('user_id' => $this->auth->getIdentity('user_id')));
 
-    $this->posts->func('delete', function() use($id) {
-        $this->db->where('post_id', $id);
-        return $this->db->delete('posts', $this);
-    });
-
-    if($this->posts->delete())  // save post
-    {        
-        $this->form->setNotice('Post deleted successfully.',SUCCESS); // set flash notice
+        $this->form->setNotice($r['message'], $r['success']); // set flash notice
         $this->url->redirect('/post/manage');
-    } 
-});
+    }
+);

@@ -12,12 +12,12 @@
 | -------------------------------------------------------------------
 |
 */
-
 $form_builder = array(
 
     'captcha'   => array(
-        'hidden_field_name' => 'image_id',
-        'captchaFunc' => function(){  // Captcha Widget Settings
+        'image_template'    => '<img src="%s" />',
+        'hidden_input_name' => 'image_id',
+        'func' => function () {  // Captcha Widget Settings
 
             new Captcha;
 
@@ -31,12 +31,6 @@ $form_builder = array(
             $this->captcha->setNoiseColor(array('red','black','blue'));
             $this->captcha->create();
 
-            // return array(
-            //     'image_url'             => $this->captcha->getImageUrl(),
-            //     'image_id'              => $this->captcha->getImageId(),
-            //     'image_template'        => '<img src="%s" />',
-            //     'hidden_input_template' => '<input type="hidden" name="image_id" value="%s" />',
-            // );
             return array(
                 'image_url'             => $this->captcha->getImageUrl(),
                 'image_id'              => $this->captcha->getImageId(), // hidden_field_name

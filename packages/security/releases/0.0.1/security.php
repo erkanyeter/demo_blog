@@ -11,48 +11,42 @@
 
 Class Security {
 
-    /**
+     /**
      * Random Hash for protecting URLs
      *
      * @var string
      * @access protected
      */
-    protected $_xss_hash            = '';
-    /**
+     protected $_xss_hash         = '';
+     /**
      * Random Hash for Cross Site Request Forgery Protection Cookie
      *
      * @var string
      * @access protected
      */
-    protected $_csrf_hash           = '';
-    /**
+     protected $_csrf_hash        = '';
+     /**
      * Expiration time for Cross Site Request Forgery Protection Cookie
      * Defaults to two hours (in seconds)
      *
      * @var int
      * @access protected
      */
-    protected $_csrf_expire         = 7200;
-    /**
+     protected $_csrf_expire      = 7200;
+     /**
      * Token name for Cross Site Request Forgery Protection Cookie
      *
      * @var string
      * @access protected
      */
-    protected $_csrf_token_name     = 'ob_csrf_token';
-    /**
+     protected $_csrf_token_name  = 'ob_csrf_token';
+     /**
      * Cookie name for Cross Site Request Forgery Protection Cookie
      *
      * @var string
      * @access protected
      */
-    protected $_csrf_cookie_name    = 'ob_csrf_token';
-
-    /**
-     * component instance
-     * @var object
-     */
-    private static $instance;
+     protected $_csrf_cookie_name = 'ob_csrf_token';
 
     /**
      * List of never allowed strings
@@ -98,6 +92,20 @@ Class Security {
      */
     public function __construct()
     {
+        global $config, $logger;
+
+        if( ! isset(getInstance()->security))
+        {
+            getInstance()->security = $this; // Make available it in the controller $this->security->method();
+        }
+
+        $logger->debug('Security Class Initialized');
+    }
+
+    // --------------------------------------------------------------------
+
+    public function initCsrf()
+    {
         global $config;
 
         if ($config['csrf_protection'] === true)         // Is CSRF protection enabled?
@@ -117,22 +125,8 @@ Class Security {
 
             $this->_csrfSetHash();  // Set the CSRF hash
         }
-
-        logMe('debug', "Security Class Initialized");
     }
 
-    // --------------------------------------------------------------------
-
-    public static function getInstance()
-    {
-       if( ! self::$instance instanceof self)
-       {
-           self::$instance = new self();
-       } 
-       
-       return self::$instance;
-    }
-    
     // --------------------------------------------------------------------
 
     /**
@@ -142,33 +136,34 @@ Class Security {
      */
     public function csrfVerify()
     {
+        global $logger;
+
         if (strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST')  // If it's not a POST request we will set the CSRF cookie
         {
             return $this->csrfSetCookie();
         }
 
-        // Do the tokens exist in both the _POST and _COOKIE arrays?
+        // Do the tokens exist in both the _POST and _COOKIE arrays ?
+        
         if ( ! isset($_POST[$this->_csrf_token_name], $_COOKIE[$this->_csrf_cookie_name]))
         {
             $this->csrfShowError();
         }
 
-        // Do the tokens match?
-        if ($_POST[$this->_csrf_token_name] != $_COOKIE[$this->_csrf_cookie_name])
+        if ($_POST[$this->_csrf_token_name] != $_COOKIE[$this->_csrf_cookie_name])   // Do the tokens match?
         {
             $this->csrfShowError();
         }
+ 
+        unset($_POST[$this->_csrf_token_name]);     // We kill this since we're done and we don't want to
+                                                    // polute the _POST array
 
-        // We kill this since we're done and we don't want to
-        // polute the _POST array
-        unset($_POST[$this->_csrf_token_name]);
+        unset($_COOKIE[$this->_csrf_cookie_name]);  // Nothing should last forever
 
-        // Nothing should last forever
-        unset($_COOKIE[$this->_csrf_cookie_name]);
         $this->_csrfSetHash();
         $this->csrfSetCookie();
 
-        logMe('debug', 'CSRF token verified');
+        $logger->debug('CSRF token verified');
 
         return $this;
     }
@@ -182,7 +177,7 @@ Class Security {
      */
     public function csrfSetCookie()
     {
-        global $config;
+        global $config, $logger;
 
         $expire = time() + $this->_csrf_expire;
         $secure_cookie = ($config['cookie_secure'] === true) ? 1 : 0;
@@ -203,7 +198,7 @@ Class Security {
 
         setcookie($this->_csrf_cookie_name, $this->_csrf_hash, $expire, $config['cookie_path'], $config['cookie_domain'], $secure_cookie);
 
-        logMe('debug', "CRSF cookie Set");
+        $logger->debug('CRSF cookie Set');
 
         return $this;
     }
@@ -217,7 +212,9 @@ Class Security {
      */
     public function csrfShowError()
     {
-        showError('The action you have requested is not allowed.');
+        global $response;
+
+        $respone->showError('The action you have requested is not allowed.');
     }
 
     // --------------------------------------------------------------------
@@ -278,6 +275,8 @@ Class Security {
      */
     public function xssClean($str, $is_image = FALSE)
     {
+        global $logger;
+
         /*
          * Is the string an array?
          *
@@ -338,7 +337,7 @@ Class Security {
          * large blocks of data, so we use str_replace.
          */
 
-        if (strpos($str, "\t") !== FALSE)
+        if (strpos($str, "\t") !== false)
         {
             $str = str_replace("\t", ' ', $str);
         }
@@ -476,7 +475,8 @@ Class Security {
             return ($str == $converted_string) ? TRUE: FALSE;
         }
 
-        logMe('debug', "XSS Filtering completed");
+        $logger->debug('Xss Filtering Completed');
+
         return $str;
     }
 
@@ -630,6 +630,7 @@ Class Security {
         }
 
         do {
+
             $count = 0;
             $attribs = array();
 
@@ -672,8 +673,7 @@ Class Security {
      */
     protected function _sanitizeNaughtyHtml($matches)
     {
-        // encode opening brace
-        $str = '&lt;'.$matches[1].$matches[2].$matches[3];
+        $str = '&lt;'.$matches[1].$matches[2].$matches[3];        // encode opening brace
 
         // encode captured opening or closing brace to prevent recursive vectors
         $str .= str_replace(array('>', '<'), array('&gt;', '&lt;'),
@@ -871,13 +871,14 @@ Class Security {
             // We don't necessarily want to regenerate it with
             // each page load since a page could contain embedded
             // sub-pages causing this feature to fail
+        
             if (isset($_COOKIE[$this->_csrf_cookie_name]) AND
                 preg_match('#^[0-9a-f]{32}$#iS', $_COOKIE[$this->_csrf_cookie_name]) === 1)
             {
                 return $this->_csrf_hash = $_COOKIE[$this->_csrf_cookie_name];
             }
 
-            return $this->_csrf_hash = md5(uniqid(rand(), TRUE));
+            return $this->_csrf_hash = md5(uniqid(rand(), true));
         }
 
         return $this->_csrf_hash;

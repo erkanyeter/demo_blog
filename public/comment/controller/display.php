@@ -2,33 +2,33 @@
 
 /**
  * $c display
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-	new Url;
-	new Html;
-	new Form;
-    new Date_Format;
-    new View;
-	new Sess;
-	new Auth;
+$c = new Controller(
+    function () {
+        new Url;
+        new Html;
+        new Form;
+        new Date_Format;
+        new View;
+        new Hvc;
+    }
+);
 
-	new Trigger('private','header');
-});
-
-$c->func('index', function(){
-
-    $this->db->join('posts', 'post_id = comment_post_id');  // Get all comments
-    $this->db->orderBy('comment_status', 'ASC');
-    $this->db->get('comments'); // reset query
-    
-    $result = $this->db->getResult();
-
-	$this->view->get('display', function() use($result){
+$c->func(
+    'index.private_user',
+    function () {
         
-		$this->set('title', 'Display Comments');
-        $this->set('comments', $result);
-		$this->getScheme();
-	});
-});
+        $r = $this->hvc->get('private/comments/getall');
+
+        $this->view->get(
+            'display',
+            function () use ($r) {
+                $this->set('title', 'Display Comments');
+                $this->set('comments', $r['results']);
+                $this->getScheme();
+            }
+        );
+    }
+);
