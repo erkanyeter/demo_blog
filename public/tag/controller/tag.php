@@ -22,7 +22,7 @@ $c->func(
     'index.public_user',
     function ($tag) {
 
-        $r = $this->hvc->get('private/posts/getallbytag/{'.$tag.'}');
+        $r = $this->hvc->get('private/posts/getallbytag/'.$tag);
 
         $this->view->get(
             'tag',
