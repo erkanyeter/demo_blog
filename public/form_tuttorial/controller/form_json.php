@@ -160,6 +160,16 @@ $c->func(
                     'value' => '',
                     'order' => 7
                 ),
+                array(
+                    'name' => 'captcha',
+                    'type' => 'textbox',
+                    'rules' => 'required|exactLen(5)',
+                    'label' => 'Güvenlik Resmi',
+                    'attr'  => '',
+                    'title' => 'Lütfen güvenlik kodunu giriniz...',
+                    'value' => '',
+                    'order' => 11
+                ),
                 
             )
         );

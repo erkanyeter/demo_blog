@@ -79,7 +79,10 @@ function refreshCaptcha()
                     </tr>
                     <tr>
                         <td></td>
-                        <td><img src="/tutorials/hello_captcha_create" alt="" id="captcha"><a href="#" onclick="refreshCaptcha()" id="image">Refresh</a> </td>
+                        <td>
+                        <img src="/tutorials/hello_captcha_create" alt="" id="captcha">
+                        <a href="#" onclick="refreshCaptcha()" id="image">Refresh</a> 
+                        </td>
                     </tr>
                     <tr>
                         <td>Captcha Code</td>
