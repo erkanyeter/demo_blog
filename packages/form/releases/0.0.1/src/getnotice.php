@@ -11,7 +11,8 @@ namespace Form\Src {
      */
     function getNotice($error = '', $suffix = '')
     {
-        $sess         = (isset(getInstance()->sess)) ? getInstance()->sess : new \Sess;
+        $sess         = new \Sess;
+        $sess         = $sess::$driver;
         $form         = getConfig('form');
         $errorKey     = 'errorMessage';
         $noticeString = '';
@@ -45,9 +46,7 @@ namespace Form\Src {
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             return _getNoticeKey($error, $form, $sess, $suffix);
         }
 
@@ -69,29 +68,27 @@ namespace Form\Src {
     {
         switch ($error)  // get custom notice
         {
-            case 'error':
-                $errorKey = 'errorMessage';
-                $notice = $sess->getFlash('errorMessage_'.$suffix);
-                break;
-            
-            case 'success':
-                $errorKey = 'successMessage';
-                $notice = $sess->getFlash('successMessage_'.$suffix);
-                break;
+        case 'error':
+            $errorKey = 'errorMessage';
+            $notice = $sess->getFlash('errorMessage_'.$suffix);
+            break;
+        
+        case 'success':
+            $errorKey = 'successMessage';
+            $notice = $sess->getFlash('successMessage_'.$suffix);
+            break;
 
-            case 'info':
-                $errorKey = 'infoMessage';
-                $notice = $sess->getFlash('infoMessage_'.$suffix);
-                break;
+        case 'info':
+            $errorKey = 'infoMessage';
+            $notice = $sess->getFlash('infoMessage_'.$suffix);
+            break;
 
-            default:
-                $errorKey = 'errorMessage';
-                $notice = $sess->getFlash('errorMessage_'.$suffix);
-                break;
+        default:
+            $errorKey = 'errorMessage';
+            $notice = $sess->getFlash('errorMessage_'.$suffix);
+            break;
         }
-
-        if( ! empty($notice))
-        {
+        if ( ! empty($notice)) {
             return sprintf($form['notifications'][$errorKey], $notice);
         }
     }

@@ -8,7 +8,6 @@
     "email": "obulloframework@gmail.com",
     "url": "https://github.com/obullo"
   },
-  "component" : "library",
   "dependencies": {
     "log":"*"
   },

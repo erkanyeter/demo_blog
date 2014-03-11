@@ -2,19 +2,22 @@
 
 /**
  * $c test
+ * 
  * @var Controller
  */
-$c = new Controller(function(){
-    // __construct
-    
-    new Captcha;
-});
+$c = new Controller(
+    function () {
+        new Captcha;
+    }
+);
 
 $c->func(
     'index',
     function () {
+
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+
         $this->captcha->setDriver('secure');  // or set to "cool" with no background
         $this->captcha->setPool('alpha');
         $this->captcha->setChar(5);
@@ -24,11 +27,9 @@ $c->func(
         $this->captcha->setColor(array('red','black','blue'));
         $this->captcha->setNoiseColor(array('red','black','blue'));
         $this->captcha->setFont('NightSkK');
-        $this->captcha->sendOutputHeader();
         $this->captcha->create();
-
     }
 );
 
-/* End of file welcome.php */
-/* Location: .public/welcome/controller/welcome.php */
+/* End of file hello_captcha_create.php */
+/* Location: .public/tutorials/controller/hello_captcha_create.php */

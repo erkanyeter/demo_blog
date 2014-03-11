@@ -35,7 +35,7 @@ Class Sess_Database
         global $config, $logger;
 
         foreach (
-            array(
+        array(
             'cookie_name',
             'expiration',
             'expire_on_close',
@@ -46,8 +46,8 @@ Class Sess_Database
             'match_ip',
             'match_useragent',
             'time_to_update'
-            ) as $key) {
-            $this->$key = $this[$key];
+        ) as $key) {
+            $this->$key = $sess[$key];
         }
 
         $this->cookie_path = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
@@ -123,7 +123,7 @@ Class Sess_Database
 
         $session = $this->_unserialize($session); // Unserialize the session array
 
-        if ( ! is_array($session) OR ! isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
+        if (!is_array($session) OR !isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
                 OR !isset($session['ip_address']) OR !isset($session['user_agent']) OR !isset($session['last_activity'])) {
             $this->destroy();
             return false;
@@ -229,15 +229,14 @@ Class Sess_Database
      */
     public function _create()
     {
-        $thisid = '';
-        while (strlen($thisid) < 32) {
-            $thisid .= mt_rand(0, mt_getrandmax());
+        $sessid = '';
+        while (strlen($sessid) < 32) {
+            $sessid .= mt_rand(0, mt_getrandmax());
         }
-
-        $thisid .= $this->request->getIpAddress(); // To make the session ID even more secure we'll combine it with the user's IP
+        $sessid .= $this->request->getIpAddress(); // To make the session ID even more secure we'll combine it with the user's IP
 
         $this->userdata = array(
-            'session_id' => md5(uniqid($thisid, true)),
+            'session_id' => md5(uniqid($sessid, true)),
             'ip_address' => $this->request->getIpAddress(),
             'user_agent' => substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50),
             'last_activity' => $this->now
@@ -441,17 +440,14 @@ Class Sess_Database
     public function _unserialize($data)
     {
         $data = unserialize(stripslashes($data));
-
         if (is_array($data)) {
             foreach ($data as $key => $val) {
                 if (is_string($val)) {
                     $data[$key] = str_replace('{{slash}}', '\\', $val);
                 }
             }
-
             return $data;
         }
-
         return (is_string($data)) ? str_replace('{{slash}}', '\\', $data) : $data;
     }
 
@@ -469,7 +465,6 @@ Class Sess_Database
     public function _gC()
     {
         srand(time());
-
         if ((rand() % 100) < $this->gc_probability) {
             global $logger;
 
@@ -485,72 +480,62 @@ Class Sess_Database
     // ------------------------------------------------------------------------
 
     /**
-    * Destroy the current session
-    *
-    * @access    public
-    * @return    void
-    */
+     * Destroy the current session
+     *
+     * @access    public
+     * @return    void
+     */
     public function destroy()
     {
-        // Db driver changes..
-        // -------------------------------------------------------------------
-        
-        if(isset($this->userdata['session_id'])) // Kill the session DB row
-        {
+        if (isset($this->userdata['session_id'])) { // Kill the session DB row
             $this->db->where('session_id', $this->userdata['session_id']);
             $this->db->delete($this->table_name);
         }
         // -------------------------------------------------------------------
-        
         // Kill the cookie
-        setcookie(           
-                    $this->cookie_name, 
-                    addslashes(serialize(array())), 
-                    ($this->now - 31500000), 
-                    $this->cookie_path, 
-                    $this->cookie_domain, 
-                    false
+        setcookie(
+                $this->cookie_name, addslashes(serialize(array())), ($this->now - 31500000), $this->cookie_path, $this->cookie_domain, false
         );
     }
 
     // ------------------------------------------------------------------------
 
     /**
-    * Fetch a specific item from the session array
-    *
-    * @access   public
-    * @param    string
-    * @return   string
-    */        
+     * Fetch a specific item from the session array
+     *
+     * @access   public
+     * @param    string
+     * @return   string
+     */
     public function get($item, $prefix = '')
     {
-        return ( ! isset($this->userdata[$prefix.$item])) ? false : $this->userdata[$prefix.$item];
+        return (!isset($this->userdata[$prefix . $item])) ? false : $this->userdata[$prefix . $item];
     }
 
     // --------------------------------------------------------------------
 
     /**
-    * Fetch all session data
-    *
-    * @access    public
-    * @return    mixed
-    */
+     * Fetch all session data
+     *
+     * @access    public
+     * @return    mixed
+     */
     public function getAllData()
     {
-        return ( ! isset($this->userdata)) ? false : $this->userdata;
+        return (!isset($this->userdata)) ? false : $this->userdata;
     }
 
     // ------------------------------------------------------------------------
 
     /**
-    * Add or change flashdata, only available
-    * until the next request
-    *
-    * @access   public
-    * @param    mixed
-    * @param    string
-    * @return   void
-    */
+     * Add or change flashdata, only available
+     * until the next request
+     *
+     * @access   public
+     * @param    mixed
+     * @param    string
+     * @return   void
+     */
     public function setFlash($newdata = array(), $newval = '')  // ( obullo changes ... )
     {
         if (is_string($newdata)) {
@@ -558,72 +543,71 @@ Class Sess_Database
         }
         if (count($newdata) > 0) {
             foreach ($newdata as $key => $val) {
-                $flashdata_key = $this->flashdata_key.':new:'.$key;
+                $flashdata_key = $this->flashdata_key . ':new:' . $key;
                 $this->set($flashdata_key, $val);
             }
         }
-    } 
+    }
 
     // --------------------------------------------------------------------
 
     /**
-    * Fetch a specific flashdata item from the session array
-    *
-    * @access   public
-    * @param    string  $key you want to fetch
-    * @param    string  $prefix html open tag
-    * @param    string  $suffix html close tag
-    * 
-    * @version  0.1
-    * @version  0.2     added prefix and suffix parameters.
-    * 
-    * @return   string
-    */
+     * Fetch a specific flashdata item from the session array
+     *
+     * @access   public
+     * @param    string  $key you want to fetch
+     * @param    string  $prefix html open tag
+     * @param    string  $suffix html close tag
+     * 
+     * @version  0.1
+     * @version  0.2     added prefix and suffix parameters.
+     * 
+     * @return   string
+     */
     public function getFlash($key, $prefix = '', $suffix = '')  // obullo changes ...
     {
-        $flashdata_key = $this->flashdata_key.':old:'.$key;
+        $flashdata_key = $this->flashdata_key . ':old:' . $key;
         $value = $this->get($flashdata_key);
-        
+
         if ($value == '') {
             $prefix = '';
             $suffix = '';
         }
-        return $prefix.$value.$suffix;
+        return $prefix . $value . $suffix;
     }
 
     // ------------------------------------------------------------------------
 
     /**
-    * Keeps existing flashdata available to next request.
-    *
-    * @access   public
-    * @param    string
-    * @return   void
-    */
+     * Keeps existing flashdata available to next request.
+     *
+     * @access   public
+     * @param    string
+     * @return   void
+     */
     public function keepFlash($key) // ( obullo changes ...)
     {
         // 'old' flashdata gets removed.  Here we mark all 
         // flashdata as 'new' to preserve it from _flashdataSweep()
         // Note the function will return false if the $key 
         // provided cannot be found
-        $old_flashdata_key = $this->flashdata_key.':old:'.$key;
+        $old_flashdata_key = $this->flashdata_key . ':old:' . $key;
         $value = $this->get($old_flashdata_key);
 
-        $new_flashdata_key = $this->flashdata_key.':new:'.$key;
+        $new_flashdata_key = $this->flashdata_key . ':new:' . $key;
         $this->set($new_flashdata_key, $value);
     }
-
 
     // --------------------------------------------------------------------
 
     /**
-    * Add or change data in the "userdata" array
-    *
-    * @access   public
-    * @param    mixed
-    * @param    string
-    * @return   void
-    */ 
+     * Add or change data in the "userdata" array
+     *
+     * @access   public
+     * @param    mixed
+     * @param    string
+     * @return   void
+     */
     public function set($newdata = array(), $newval = '', $prefix = '')
     {
         if (is_string($newdata)) {
@@ -631,7 +615,7 @@ Class Sess_Database
         }
         if (count($newdata) > 0) {
             foreach ($newdata as $key => $val) {
-                $this->userdata[$prefix.$key] = $val;
+                $this->userdata[$prefix . $key] = $val;
             }
         }
         $this->_write();
@@ -640,11 +624,11 @@ Class Sess_Database
     // ------------------------------------------------------------------------
 
     /**
-    * Delete a session variable from the "userdata" array
-    *
-    * @access    public
-    * @return    void
-    */       
+     * Delete a session variable from the "userdata" array
+     *
+     * @access    public
+     * @return    void
+     */
     public function remove($newdata = array(), $prefix = '')
     {
         if (is_string($newdata)) {
@@ -652,7 +636,7 @@ Class Sess_Database
         }
         if (count($newdata) > 0) {
             foreach ($newdata as $key => $val) {
-                unset($this->userdata[$prefix.$key]);
+                unset($this->userdata[$prefix . $key]);
             }
         }
         $this->_write();
@@ -667,7 +651,7 @@ Class Sess_Database
      */
     public function isExpired()
     {
-        if ( ! isset($this->userdata['last_activity'])) {
+        if (!isset($this->userdata['last_activity'])) {
             return false;
         }
         $expire = $this->now - $this->expiration;

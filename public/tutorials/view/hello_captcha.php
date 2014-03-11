@@ -39,14 +39,11 @@ var ajax = {
         // paste here
     }
 }
-
-function refreshCaptcha()
-{
+function refreshCaptcha(){
     refreshCaptchaUrl = '/tutorials/hello_captcha_create/'+Math.random();
-    document.getElementById("captcha").src=refreshCaptchaUrl;     
+    document.getElementById('captcha').src=refreshCaptchaUrl;
     return false; // Do not do form submit;
 }
-
 </script>
     </head>
     <body>
@@ -60,7 +57,7 @@ function refreshCaptcha()
 
         <section>
 
-            <?php echo $this->form->open('tutorials/hello_captcha/index', array('method' => 'POST')) ?>
+            <?php echo $this->form->open('tutorials/hello_captcha', array('method' => 'POST')) ?>
 
                 <table width="100%">
                     <tr>
@@ -98,11 +95,8 @@ function refreshCaptcha()
                     <tr>
                         <td colspan="2">&nbsp;</td>
                     </tr>
-
                     </table>
-                
                 <?php echo $this->form->close() ?>
-
         </section> 
         
         <section>

@@ -2,14 +2,14 @@
 
 /*
 |--------------------------------------------------------------------------
-| Logger File Configuration
+| Logger File Configuration ( Default Driver )
 |--------------------------------------------------------------------------
 | Prototype: 
 |
 |   $logger_file['key'] = value;
 |
 */
-$logger_file = array(
+$logger = array(
     'batch'     => true,                   // batch process should be enabled for best performance
     'path'      => 'data/logs/app.log',
     'path_cli'  => 'data/logs/cli/app.log',    
@@ -22,7 +22,7 @@ $logger_file = array(
 | Formatter function must return to @array.
 | 
 */
-$logger_file['extend']['format'] = function ($record) {
+$logger['extend']['format'] = function ($record) {
     if (sizeof($record['context']) == 0) {
         $record['context'] = '';
     } else {
@@ -38,7 +38,7 @@ $logger_file['extend']['format'] = function ($record) {
 | Write function must return to @boolean.
 | 
 */
-$logger_file['extend']['write'] = function ($file, $data) {
+$logger['extend']['write'] = function ($file, $data) {
     if ( ! $fop = fopen($file, 'ab')) {
         return false;
     }
@@ -52,5 +52,5 @@ $logger_file['extend']['write'] = function ($file, $data) {
     return true;
 };
 
-/* End of file logger_file.php */
-/* Location: .app/config/debug/logger_file.php */
+/* End of file logger.php */
+/* Location: .app/config/debug/logger.php */

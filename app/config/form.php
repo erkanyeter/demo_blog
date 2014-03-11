@@ -54,7 +54,7 @@ $form = array(
         'infoMessage'    => '<div class="notification info">%s</div>',
     ),
 
-    // Experiential Settings ( Response Data )
+    // Form Output
     'response' => array(
         'error'   => 'There are some errors in the form fields.',
         'success' => 'Operation successful.',

@@ -115,7 +115,6 @@ Class Sess_Native
 
         $logger->debug('Session Native Driver Initialized');
         $logger->debug('Session routines successfully run');
-
         return true;
     }
 
@@ -152,7 +151,6 @@ Class Sess_Native
                 return false;
             }
         }
-
         $session = $this->_unserialize($session); // Unserialize the session array
 
         if ( ! is_array($session) OR ! isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
@@ -188,7 +186,6 @@ Class Sess_Native
 
         $this->userdata = $session;   // Session is valid!
         unset($session);
-
         return true;
     }
 
@@ -230,7 +227,6 @@ Class Sess_Native
         if (($this->userdata['last_activity'] + $this->time_to_update) >= $this->now) {  // We only update the session every five minutes by default
             return;
         }
-
         $this->userdata['last_activity'] = $this->now;
 
         // Update the session ID and last_activity
@@ -240,13 +236,10 @@ Class Sess_Native
         foreach (array('session_id', 'ip_address', 'user_agent', 'last_activity') as $val) {
             $cookie_data[$val] = $this->userdata[$val];
         }
-
         $_SESSION['session_id']    = $this->userdata['session_id'];
         $_SESSION['last_activity'] = $this->userdata['last_activity'];
 
         $this->_setCookie($cookie_data); // Write the cookie
-
-        session_write_close(); // end the current session and store session data.
     }
 
     // --------------------------------------------------------------------
@@ -318,13 +311,6 @@ Class Sess_Native
             if (session_status() == PHP_SESSION_ACTIVE) { // http://stackoverflow.com/questions/13114185/how-can-you-check-if-a-php-session-exists
                 session_destroy();
             }
-
-            // setcookie($this->cookie_name,
-            //     '', 
-            //     ($this->now - 42000), 
-            //     $this->cookie_path, 
-            //     $this->cookie_domain
-            // );
 
             setcookie($this->cookie_name . '_userdata', '', ($this->now - 42000), $this->cookie_path, $this->cookie_domain
             );

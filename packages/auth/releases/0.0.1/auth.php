@@ -50,9 +50,7 @@ Class Auth
 
         if ( ! isset(getInstance()->auth)) {
             getInstance()->auth = $this;  // Make available it in the controller.
-            $this->_assignObjects();
         }
-
         $logger->debug('Auth Class Initialized');
     }
 
@@ -230,22 +228,6 @@ Class Auth
             }
         }
         return $identityData;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Assign all objects.
-     * 
-     * @return void
-     */
-    private function _assignObjects()
-    {
-        foreach (get_object_vars(getInstance()) as $k => $v) {   // Get object variables
-            if (is_object($v)) {  // Do not assign again reserved variables
-                $this->{$k} = getInstance()->$k;
-            }
-        }
     }
 
 }

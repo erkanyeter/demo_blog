@@ -9,14 +9,7 @@
  * @link
  */
 Class Captcha
-{
-    private $Yperiod = 12;         // Wave Y axis
-    private $Yamplitude = 14;         // Wave Y amplitude
-    private $Xperiod = 11;         // Wave X axis
-    private $Xamplitude = 5;          // Wave Y amplitude
-    private $scale = 2;          // Wave default scale
-    private $image;                     // Gd image content
-    private $code;                      // Generated image code
+{    
     public $driver;                  // Driver type
     public $captcha_id;              // captcha_id 
     public $colors;                  // Defined system colors
@@ -42,6 +35,14 @@ Class Captcha
     public $send_output_header = false; // Whether to create captcha at browser header
 
     // ------------------------------------------------------------------------
+    
+    private $Yperiod    = 12;         // Wave Y axis
+    private $Yamplitude = 14;         // Wave Y amplitude
+    private $Xperiod    = 11;         // Wave X axis
+    private $Xamplitude = 5;          // Wave Y amplitude
+    private $scale      = 2;          // Wave default scale
+    private $image;                     // Gd image content
+    private $code;                      // Generated image code
 
     /**
      * Constructor
@@ -53,22 +54,21 @@ Class Captcha
         global $packages, $logger;
 
         $this->config = getConfig('captcha'); // config->captcha.php config
-        $sess = $this->config['sess']();     // get session dependency
-        $this->sess = $sess::$driver;     // run dependecy class
+        $sess = $this->config['sess']();      // get session dependency
+        $this->sess = $sess::$driver;         // run dependecy class
         $this->init();
-
-        $this->img_path = ROOT . str_replace('/', DS, trim($this->config['img_path'], '/')) . DS;  // replace with DS
-        $this->img_url = getInstance()->uri->getBaseUrl($this->config['img_path'] . DS); // add Directory Seperator ( DS )
-        $this->user_font_path = ROOT . $this->config['user_font_path'] . DS;
+        
+        $this->img_path          = ROOT . str_replace('/', DS, trim($this->config['img_path'], '/')) . DS;  // replace with DS
+        $this->img_url           = getInstance()->uri->getBaseUrl($this->config['img_path'] . DS); // add Directory Seperator ( DS )
+        $this->user_font_path    = ROOT . $this->config['user_font_path'] . DS;
         $this->default_font_path = PACKAGES . 'captcha' . DS . 'releases' . DS . $packages['dependencies']['captcha']['version'] . DS . 'src' . DS . 'fonts' . DS;
 
-        if (!isset(getInstance()->captcha)) {
+        if ( ! isset(getInstance()->captcha)) {
             getInstance()->captcha = $this; // Make available it in the controller $this->captcha->method();
         }
 
-        if (mt_rand(1, $this->del_rand) == 1) {  // run garbage collection
-            $this->gc();
-        }
+        $this->gc(); // run garbage collection
+
         $logger->debug('Captcha Class Initialized');
     }
 
@@ -81,22 +81,22 @@ Class Captcha
      */
     private function init()
     {
-        $this->driver = $this->config['driver'];
-        $this->captcha_id = $this->config['captcha_id'];
-        $this->colors = $this->config['colors'];
-        $this->default_text_color = $this->config['default_text_color'];
+        $this->driver              = $this->config['driver'];
+        $this->captcha_id          = $this->config['captcha_id'];
+        $this->colors              = $this->config['colors'];
+        $this->default_text_color  = $this->config['default_text_color'];
         $this->default_noise_color = $this->config['default_noise_color'];
-        $this->default_fonts = array_keys($this->config['fonts']);
-        $this->fonts = $this->config['fonts'];
-        $this->expiration = $this->config['expiration'];
-        $this->char = $this->config['char'];
-        $this->height = $this->config['height'];
-        $this->font_size = $this->config['font_size'];
-        $this->set_pool = $this->config['set_pool'];
-        $this->wave_image = $this->config['wave_image'];
-        $this->char_pool = $this->config['char_pool'];
-        $this->image_type = $this->config['image_type'];
-        $this->send_output_header = $this->config['send_output_header'];
+        $this->default_fonts       = array_keys($this->config['fonts']);
+        $this->fonts               = $this->config['fonts'];
+        $this->expiration          = $this->config['expiration'];
+        $this->char                = $this->config['char'];
+        $this->height              = $this->config['height'];
+        $this->font_size           = $this->config['font_size'];
+        $this->set_pool            = $this->config['set_pool'];
+        $this->wave_image          = $this->config['wave_image'];
+        $this->char_pool           = $this->config['char_pool'];
+        $this->image_type          = $this->config['image_type'];
+        $this->send_output_header  = $this->config['send_output_header'];
     }
 
     // ------------------------------------------------------------------------
@@ -122,39 +122,35 @@ Class Captcha
      * 
      * @param string $variable variable name
      * @param string $defaultVariable default variable name
-     * @param string | array $keys            [description]
+     * @param string | array $values
      */
     private function _setDefaults($variable, $defaultVariable, $values)
     {
         $array = array();
-
         if (is_string($values)) {
             $values = array($values);
         }
-
-        foreach ($values as $key => $val) {
+        foreach ($values as $val) {
             if (array_key_exists($val, $this->$variable)) {
                 $array[$val] = $val;
             }
         }
-
-        if (!empty($array)) {
-            $this->$defaultVariable = $array;
+        if ( ! empty($array)) {
+            $this->{$defaultVariable} = $array;
         }
-
         unset($array);
-        unset($keys);
     }
 
     // ------------------------------------------------------------------------
+    
     /**
-     * [captchaId description]
+     * Set capthca id
      * 
-     * @param [char] $captchaId 
+     * @param string captcha id
      * 
-     * @return [object] 
+     * @return void
      */
-    public function captchaId($captchaId)
+    public function setCaptchaId($captchaId)
     {
         $this->captcha_id = $captchaId;
     }
@@ -164,7 +160,8 @@ Class Captcha
     /**
      * Set background noise color
      * 
-     * @param mixed $values
+     * @param mixed $values 
+     * 
      * @return object
      */
     public function setNoiseColor($values = '')
@@ -172,7 +169,6 @@ Class Captcha
         if (empty($values)) {
             return $this;
         }
-
         $this->_setDefaults('colors', 'default_noise_color', $values);
         return $this;
     }
@@ -190,9 +186,7 @@ Class Captcha
         if (empty($values)) {
             return $this;
         }
-
         $this->_setDefaults('colors', 'default_text_color', $values);
-
         return $this;
     }
 
@@ -209,9 +203,7 @@ Class Captcha
         if (empty($values)) {
             return $this;
         }
-
         $this->_setDefaults('fonts', 'default_fonts', $values);
-
         return $this;
     }
 
@@ -313,7 +305,6 @@ Class Captcha
             $possible = $this->char_pool[$this->set_pool];
             $this->code = '';
             $i = 0;
-
             while ($i < $this->char) {
                 $this->code.= mb_substr($possible, mt_rand(0, mb_strlen($possible, $config['charset']) - 1), 1, $config['charset']);
                 $i++;
@@ -360,7 +351,6 @@ Class Captcha
         if ($this->driver != 'cool') {
             $w_h_value = $this->width / $this->height;
             $w_h_value = $this->height * $w_h_value;
-
             for ($i = 0; $i < $w_h_value; $i++) {
                 imagefilledellipse($this->image, mt_rand(0, $this->width), mt_rand(0, $this->height), 1, 1, $noise_color);
             }
@@ -384,7 +374,6 @@ Class Captcha
         if ($this->driver != 'cool') {
             $w_h_value = $this->width / $this->height;
             $w_h_value = $w_h_value / 2;
-
             for ($i = 0; $i < $w_h_value; $i++) {
                 imageline($this->image, mt_rand(0, $this->width), mt_rand(0, $this->height), mt_rand(0, $this->width), mt_rand(0, $this->height), $noise_color);
             }
@@ -398,7 +387,6 @@ Class Captcha
             imagepng($this->image, $this->img_path . $imgName);
             imagedestroy($this->image);
         }
-
         $this->sess->set($this->captcha_id, array('image_name' => $this->sessionKey, 'code' => $this->code));
     }
 
@@ -458,21 +446,22 @@ Class Captcha
      */
     public function gc()
     {
+        if ($this->send_output_header) {
+            return;
+        }
+        if (mt_rand(1, $this->del_rand) !== 1) {  // don't do delete operation every time 
+            return;
+        }
         global $config;
         $expire = time() - $this->expiration;
 
-        if (!$this->img_path OR mb_strlen($this->img_path, $config['charset']) < 2) {
-            return; // safety guard
+        if ( ! $this->img_path OR mb_strlen($this->img_path, $config['charset']) < 2) {  // safety guard
+            return; 
         }
-
         foreach (new DirectoryIterator($this->img_path) as $file) {
-            if (!$file->isDot() AND !$file->isDir()) {
+            if ( ! $file->isDot() AND ! $file->isDir()) {
                 if (file_exists($file->getPathname()) AND $file->getMTime() < $expire) {
                     unlink($file->getPathname());
-
-                    $sessionKey = str_replace('.' . $this->image_type, '', $file->getFilename());
-
-                    $this->sess->remove($this->captcha_id);   // Remove expired captcha
                 }
             }
         }
@@ -507,22 +496,27 @@ Class Captcha
 
     /**
      * Exclude fonts you don't want
-     * @param mixed $values
+     * 
+     * @param mixed $values fonts
+     * 
      * @return object
      */
     public function excludeFont($values)
     {
-        if (!is_array($values)) {
+        if ( ! is_array($values)) {
             $values = array($values);
         }
-
         $this->default_fonts = array_diff($this->default_fonts, $values);
-
         return $this;
     }
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Send Output Header
+     * 
+     * @return void
+     */
     public function sendOutputHeader()
     {
         $this->send_output_header = true;
@@ -537,9 +531,8 @@ Class Captcha
      */
     public function fontTest()
     {
-        $Quicktest = new Captcha\Src\Captcha_Quicktest();
-
-        return $Quicktest->fontTest();
+        $quicktest = new Captcha\Src\Captcha_Quicktest();
+        return $quicktest->fontTest();
     }
 
     // ------------------------------------------------------------------------
@@ -551,9 +544,8 @@ Class Captcha
      */
     public function varTest()
     {
-        $Quicktest = new Captcha\Src\Captcha_Quicktest();
-
-        return $Quicktest->variableTest();
+        $quicktest = new Captcha\Src\Captcha_Quicktest();
+        return $quicktest->variableTest();
     }
 
 }

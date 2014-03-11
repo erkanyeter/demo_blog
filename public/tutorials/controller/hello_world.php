@@ -10,9 +10,6 @@ $c = new Controller(
         new View;
 
         $this->logger->output = true;
-
-        new Sess;
-
     }
 );
 

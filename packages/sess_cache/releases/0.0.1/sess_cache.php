@@ -33,7 +33,7 @@ Class Sess_Cache
         global $config, $logger;
 
         foreach (
-            array(
+        array(
             'cookie_name',
             'expiration',
             'expire_on_close',
@@ -44,7 +44,7 @@ Class Sess_Cache
             'match_ip',
             'match_useragent',
             'time_to_update'
-            ) as $key) {
+        ) as $key) {
             $this->$key = $sess[$key];
         }
 
@@ -301,7 +301,7 @@ Class Sess_Cache
         $new_sessid .= $this->request->getIpAddress();         // To make the session ID even more secure
         $new_sessid = md5(uniqid($new_sessid, true));   // Turn it into a hash
 
-        $this->userdata['session_id']    = $new_sessid; // Update the session data in the session data array
+        $this->userdata['session_id'] = $new_sessid; // Update the session data in the session data array
         $this->userdata['last_activity'] = $this->now;
 
         $this->_replace($old_sessid, $new_sessid, $this->userdata, time() + $this->expiration);
@@ -496,7 +496,7 @@ Class Sess_Cache
         // -------------------------------------------------------------------
         // Kill the cookie
         setcookie(
-            $this->cookie_name, addslashes(serialize(array())), ($this->now - 31500000), $this->cookie_path, $this->cookie_domain, false
+                $this->cookie_name, addslashes(serialize(array())), ($this->now - 31500000), $this->cookie_path, $this->cookie_domain, false
         );
     }
 
@@ -511,7 +511,7 @@ Class Sess_Cache
      */
     public function get($item, $prefix = '')
     {
-        return ( ! isset($this->userdata[$prefix . $item])) ? false : $this->userdata[$prefix . $item];
+        return (!isset($this->userdata[$prefix . $item])) ? false : $this->userdata[$prefix . $item];
     }
 
     // --------------------------------------------------------------------
@@ -524,7 +524,7 @@ Class Sess_Cache
      */
     public function getAllData()
     {
-        return ( ! isset($this->userdata)) ? false : $this->userdata;
+        return (!isset($this->userdata)) ? false : $this->userdata;
     }
 
     // ------------------------------------------------------------------------
@@ -653,7 +653,7 @@ Class Sess_Cache
      */
     public function isExpired()
     {
-        if ( ! isset($this->userdata['last_activity'])) {
+        if (!isset($this->userdata['last_activity'])) {
             return false;
         }
         $expire = $this->now - $this->expiration;
