@@ -147,7 +147,8 @@ Class Sess_Native
             $session = substr($session, 0, strlen($session) - 32); // get last 32 chars
 
             if ($hash !== md5($session . $this->encryption_key)) {  // Does the md5 hash match?                                                        // This is to prevent manipulation of session data in userspace
-                $logger->error('The session cookie data did not match what was expected. This could be a possible hacking attempt');
+                $logger->channel('security');
+                $logger->alert('The session cookie data did not match what was expected. This could be a possible hacking attempt');
                 $this->destroy();
                 return false;
             }
@@ -230,7 +231,6 @@ Class Sess_Native
         if (($this->userdata['last_activity'] + $this->time_to_update) >= $this->now) {  // We only update the session every five minutes by default
             return;
         }
-        echo 'sad';
         if ($this->regenerate_id) {
             $this->regenerateId();
             $this->userdata['session_id'] = session_id(); // Update the session id.
@@ -394,7 +394,6 @@ Class Sess_Native
         if (is_string($newdata)) {
             $newdata = array($newdata => $newval);
         }
-
         if (sizeof($newdata) > 0) {
             foreach ($newdata as $key => $val) {
                 $_SESSION[$prefix . $key] = $val;
@@ -415,7 +414,6 @@ Class Sess_Native
         if (is_string($newdata)) {
             $newdata = array($newdata => '');
         }
-
         if (sizeof($newdata) > 0) {
             foreach ($newdata as $key => $val) {
                 unset($_SESSION[$prefix . $key]);
