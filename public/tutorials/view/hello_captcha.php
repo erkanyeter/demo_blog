@@ -40,15 +40,13 @@ var ajax = {
     }
 }
 
+
 function submitAjax(){
     //--------------- Ajax ----------------//
-    refreshCaptchaUrl = 'http://<?php echo $_SERVER["HTTP_HOST"];?>/tutorials/hello_captcha_refresh';
-
+    refreshCaptchaUrl = '/tutorials/hello_captcha_refresh';
     ajax.post( refreshCaptchaUrl, function(returnImage){
-        imgpath = 'http://<?php echo $_SERVER["HTTP_HOST"];?>'+returnImage;
-        document.getElementById("captcha").src=imgpath;
-        $('#aaaa').attr('src',dataCheck);   
-     
+        imgpath = 'http://demo_blog/'+returnImage;
+        document.getElementById("captcha").src=imgpath;     
     });
     return false; // Do not do form submit;
 }
@@ -64,6 +62,9 @@ function submitAjax(){
         <section><?php echo $this->form->getErrorString() ?></section>
 
         <section>
+
+        
+
             <?php echo $this->form->open('tutorials/hello_captcha/index', array('method' => 'POST')) ?>
 
                 <table width="100%">

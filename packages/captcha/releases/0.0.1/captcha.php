@@ -42,6 +42,7 @@ Class Captcha {
     public $expiration;              // How long to keep generated images
     public $sessionKey;              // Random session key for saving captcha code.
     public $imageUrl;                // Captcha image display url with base url
+    public $send_output_header = false; // Whether to create captcha at browser header
 
     // ------------------------------------------------------------------------
 
@@ -52,7 +53,6 @@ Class Captcha {
      */
     public function __construct($config = array())
     {
-
         global $packages, $logger;
 
         $this->config = getConfig('captcha'); // config->captcha.php config
@@ -65,14 +65,13 @@ Class Captcha {
         $this->user_font_path = ROOT . $this->config['user_font_path'] . DS;
         $this->default_font_path = PACKAGES . 'captcha' . DS . 'releases' . DS . $packages['dependencies']['captcha']['version'] . DS . 'src' . DS . 'fonts' . DS;
 
-        if (!isset(getInstance()->captcha)) {
+        if ( ! isset(getInstance()->captcha)) {
             getInstance()->captcha = $this; // Make available it in the controller $this->captcha->method();
         }
 
         if (mt_rand(1, $this->del_rand) == 1) {
             $this->gc();
         }
-
         $logger->debug('Captcha Class Initialized');
     }
 
@@ -100,8 +99,8 @@ Class Captcha {
         $this->wave_image          = $this->config['wave_image'];
         $this->char_pool           = $this->config['char_pool'];
         $this->image_type          = $this->config['image_type'];
+        $this->send_output_header  = $this->config['send_output_header'];
     }
-
 
     // ------------------------------------------------------------------------
 
@@ -113,11 +112,9 @@ Class Captcha {
      */
     public function setDriver($driver = 'cool')
     {
-        if($driver == 'secure' || $driver == 'cool')
-        {
+        if($driver == 'secure' || $driver == 'cool') {
             $this->driver = $driver;
         }
-
         return $this;
     }
 
@@ -416,10 +413,20 @@ Class Captcha {
                 imageline($this->image, mt_rand(0,$this->width), mt_rand(0,$this->height), mt_rand(0,$this->width), mt_rand(0,$this->height), $noise_color);
             }
         }
-    
-        imagepng($this->image, $this->img_path.$imgName);
-        imagedestroy($this->image);
 
+        if($this->send_output_header)
+        {
+            header('Content-Type: image/png');
+            imagepng($this->image);
+            imagedestroy($im);
+
+        } 
+        else 
+        {
+            imagepng($this->image, $this->img_path.$imgName);
+            imagedestroy($this->image);
+        }
+        
         $this->sess->set($this->captcha_id, array('image_name' =>$this->sessionKey, 'code'=> $this->code));
 
     }
@@ -540,7 +547,7 @@ Class Captcha {
      * 
      * @return [type] [description]
      */
-    public function reGenerate()
+    public function regenerate()
     {
         if ($this->sess->get($this->captcha_id)) {
             $captcha_value = $this->sess->get($this->captcha_id);
@@ -573,6 +580,11 @@ Class Captcha {
     }
 
     // ------------------------------------------------------------------------
+
+    public function setOutputHeader()
+    {
+        $this->send_output_header = true;
+    }
 
     /**
      * Do test for all fonts

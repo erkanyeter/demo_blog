@@ -15,7 +15,7 @@ $c->func(
     function () {
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-         $this->captcha->setDriver('secure');  // or set to "cool" with no background
+        $this->captcha->setDriver('secure');  // or set to "cool" with no background
         $this->captcha->setPool('alpha');
         $this->captcha->setChar(5);
         $this->captcha->setFontSize(15);
@@ -25,6 +25,9 @@ $c->func(
         $this->captcha->setNoiseColor(array('red','black','blue'));
         $this->captcha->setFont('NightSkK');
         $this->captcha->reGenerate();
+
+        
+        
         $url = $this->captcha->getImageUrl();
         echo $url;
     }
