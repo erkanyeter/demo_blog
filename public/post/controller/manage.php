@@ -11,8 +11,6 @@ $c = new Controller(
         new Html;
         new Form;
         new View;
-        new Sess;
-        new Auth;
         new Post;
         new Db;
         new Hvc;

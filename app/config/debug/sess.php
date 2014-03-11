@@ -18,7 +18,6 @@ $sess = array(
     'expiration'      => 7200,          // The number of SECONDS you want the session to last. By default two hours. "0" is no expiration.
     'expire_on_close' => false,         // Whether to cause the session to expire automatically when the browser window is closed
     'encrypt_cookie'  => false,         // Whether to encrypt the cookie
-    'regenerate_id'   => false,         // Whether to regenerate id every update ( use reference as time_to_update value. )
     'request' => function () { // Set Request Object
         return new Request;
     },

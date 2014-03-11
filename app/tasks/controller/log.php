@@ -113,7 +113,8 @@ $c->func(
                         }
 
                         if (strpos($out[1], 'SQL') !== false) {   // remove unnecessary spaces from sql output
-                            $line = str_replace('SQL: ', '', "\033[1;32m".preg_replace('/\s+/', ' ', $line)."\033[0m");
+                            $line = str_replace('SQL: ', '', "\033[1;32m".preg_replace('/[\s]+/', ' ', $line)."\033[0m");
+                            // $line = preg_replace('/[\r\n]/', "\n", $line);
                         }
 
                         if (strpos($out[1], '$_') !== false) {
@@ -151,7 +152,7 @@ $c->func(
                         }
                         $debug_output = explode(' ', $out[1]);
                         // print_r($debug_output);
-                        if (isset($debug_output[2]) AND trim($debug_output[2]) == 'Final' AND trim($debug_output[3]) == 'output') {
+                        if (isset($debug_output[2]) AND trim($debug_output[2]) == 'Final') {
                             $line = "\033[1;36m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
                                 echo $line."\n";

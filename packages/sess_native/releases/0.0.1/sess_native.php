@@ -50,9 +50,9 @@ Class Sess_Native
     /**
      * Initialize to Sess class configuration
      * 
-     * @param  array $sess session configuration array comes from sess config file
+     * @param array $sess session configuration array comes from sess config file
      * 
-     * @return [type]         [description]
+     * @return boolean
      */
     public function init($sess = array())
     {
@@ -64,7 +64,6 @@ Class Sess_Native
             'expiration',
             'expire_on_close',
             'encrypt_cookie',
-            'regenerate_id',
             'request',
             'table_name',
             'match_ip',
@@ -128,7 +127,7 @@ Class Sess_Native
      * @access    public
      * @return    array() sessions.
      */
-    function _read()
+    public function _read()
     {
         global $logger;
 
@@ -156,8 +155,8 @@ Class Sess_Native
 
         $session = $this->_unserialize($session); // Unserialize the session array
 
-        if (!is_array($session) OR !isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
-                OR !isset($session['ip_address']) OR !isset($session['user_agent']) OR !isset($session['last_activity'])) {
+        if ( ! is_array($session) OR ! isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
+                OR ! isset($session['ip_address']) OR !isset($session['user_agent']) OR ! isset($session['last_activity'])) {
             $this->destroy();
             return false;
         }
@@ -231,10 +230,7 @@ Class Sess_Native
         if (($this->userdata['last_activity'] + $this->time_to_update) >= $this->now) {  // We only update the session every five minutes by default
             return;
         }
-        if ($this->regenerate_id) {
-            $this->regenerateId();
-            $this->userdata['session_id'] = session_id(); // Update the session id.
-        }
+
         $this->userdata['last_activity'] = $this->now;
 
         // Update the session ID and last_activity
@@ -275,6 +271,8 @@ Class Sess_Native
         session_start();
 
         $_SESSION = $old_session_data; // restore the old session data into the new session
+
+        session_write_close(); // end the current session and store session data.
     }
 
     // --------------------------------------------------------------------
@@ -285,7 +283,7 @@ Class Sess_Native
      * @access    public
      * @return    void
      */
-    function _setCookie($cookie_data = null)
+    public function _setCookie($cookie_data = null)
     {
         $cookie_data = $this->_serialize($cookie_data); // Serialize the userdata for the cookie
 
@@ -437,7 +435,6 @@ Class Sess_Native
         if (is_string($newdata)) {
             $newdata = array($newdata => $newval);
         }
-
         if (sizeof($newdata) > 0) {
             foreach ($newdata as $key => $val) {
                 $flashdata_key = $this->flashdata_key . ':new:' . $key;
@@ -485,14 +482,12 @@ Class Sess_Native
     public function getFlash($key, $prefix = '', $suffix = '')
     {
         $flashdata_key = $this->flashdata_key . ':old:' . $key;
-
         $value = $this->get($flashdata_key);
 
         if ($value == '') {
             $prefix = '';
             $suffix = '';
         }
-
         return $prefix . $value . $suffix;
     }
 
@@ -508,7 +503,6 @@ Class Sess_Native
     public function _flashdataMark()
     {
         $userdata = $this->getAllData();
-
         foreach ($userdata as $name => $value) {
             $parts = explode(':new:', $name);
             if (is_array($parts) && count($parts) === 2) {
@@ -581,7 +575,6 @@ Class Sess_Native
                 $data = str_replace('\\', '{{slash}}', $data);
             }
         }
-
         return serialize($data);
     }
 
@@ -607,10 +600,8 @@ Class Sess_Native
                     $data[$key] = str_replace('{{slash}}', '\\', $val);
                 }
             }
-
             return $data;
         }
-
         return (is_string($data)) ? str_replace('{{slash}}', '\\', $data) : $data;
     }
 

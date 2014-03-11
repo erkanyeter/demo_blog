@@ -13,10 +13,6 @@ $c = new Controller(
 
         new Sess;
 
-        // $var   = '$_POST';
-        // $myvar = $$var;
-        
-        // $myvar['test'];
     }
 );
 

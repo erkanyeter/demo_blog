@@ -44,27 +44,16 @@ Class Auth
         $class      = $session();
         $this->sess = $class::$driver;
 
+        if ($this->regenerate_sess_id) {   // regenerate the session id on every page load
+            $this->sess->regenerateId();
+        }
+
         if ( ! isset(getInstance()->auth)) {
             getInstance()->auth = $this;  // Make available it in the controller.
             $this->_assignObjects();
         }
 
         $logger->debug('Auth Class Initialized');
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Send post query to login
-     * 
-     * @param string $password  manually login password
-     * @param string $closure
-     * 
-     * @return boolean | object  If auth is fail it returns to false otherwise "Object"
-     */
-    public function query($closure)
-    {
-        return call_user_func_array(Closure::bind($closure, $this, get_class()), array());
     }
 
     // --------------------------------------------------------------------
