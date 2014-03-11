@@ -16,6 +16,25 @@
  	  <script src="/lib/js/header/header.js" type="text/javascript"></script>
  	  <script src="/lib/js/register/register.js" type="text/javascript"></script>
  	  <script src="/assets/js/underscore-min.js" type="text/javascript"></script>
+
+ 	  <script>
+
+ 	  	function refreshCaptcha()
+		{
+		    return false; refreshCaptchaUrl = '/tutorials/hello_captcha_create/'+Math.random();
+		    //console.log(refreshCaptchaUrl);
+		    document.getElementById("captchaImg").src = refreshCaptchaUrl;     
+		    console.log($('#captchaImg').attr('src'));
+		    return false; // Do not do form submit;
+		}
+
+
+		$( document ).delegate(".captcha_link", "click", function() {
+		  console.log($('#captchaImg').attr('src'));
+		});
+
+ 	  </script>
+
 	</head>
 	<body>
 <div class="page-wrapper"> 
@@ -291,7 +310,7 @@
 										<% _.each(input.groupDropdown, function ( value ) { %>
 											<select name="<%- value.name %>" <%= value.formAttr %> >
 												<option value=""> <%- value.firstOption %></option>
-												<% _.each(value.dataDropdown, function ( row, key ) { console.log(row + "---" + key); var selected = ""; %>
+												<% _.each(value.dataDropdown, function ( row, key ) { var selected = ""; %>
 												<% if(value.value == key){ selected = "selected='selected'" } %>
 													<option <%= selected %> value="<%- key %>"> <%- row %></option>
 												<% }) %>
@@ -324,14 +343,27 @@
 							</div>
 				<%
 						break;
+						case 'captcha' :
+				%>
+						<div class='row'>
+							<div class='form-group col-sm-12 has-feedback'>
+								
+								<div class='col-sm-2'>
+									<img src="/tutorials/hello_captcha_create" id="captchaImg" class="captcha_img"> 
+								</div>
+								<div class='col-sm-4'>
+									<a href="#" class="capthca_link" onclick="refreshCaptcha()">Yeni bir güvenlik kodu al</a>
+								</div>
+
+							</div>
+						</div>
+
+				<%
+						break;
 					}
 				%>
 
 				<% }) %>
-
-				<div class="register-submit">
-		            <input type="button" value="Kaydol" id="submitbtn" class="" name="submitbtn" focused="0" onClick="formpost()" />
-				</div>
 
 			</form>
 		</script>
@@ -372,15 +404,20 @@
 	{	
 		//console.log(formData);
 		var template = $(".template").html();
-	    $("#registerForm").html(_.template(template,{formData:formData}));    
+	    $("#registerForm").html(_.template(template,{formData:formData}));
 	}
 
 	createHtml(<?php echo $jsonData;?>);
 	function formpost(){
 		$.post( $('#testForm').attr( "action" ), $( "#testForm" ).serialize(), function(data){
-	    	console.log(data);
+	    	//console.log(data);
 	    });
 	}
+
+	$( document ).ready(function() {
+		//refreshCaptcha();
+	});
+
 </script>
 
 </body>
