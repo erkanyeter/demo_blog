@@ -99,7 +99,6 @@ Class Captcha {
         $this->wave_image          = $this->config['wave_image'];
         $this->char_pool           = $this->config['char_pool'];
         $this->image_type          = $this->config['image_type'];
-        $this->send_output_header  = $this->config['send_output_header'];
     }
 
     // ------------------------------------------------------------------------
@@ -351,7 +350,7 @@ Class Captcha {
      */
     public function create()
     {
-       $this->generateCode();  // generate captcha code
+        $this->generateCode();  // generate captcha code
 
         $key_rand = array_rand($this->default_fonts);
 
@@ -528,36 +527,19 @@ Class Captcha {
      */
     public function check($code)
     {
+
         if ($this->sess->get($this->captcha_id)) {
             $captcha_value = $this->sess->get($this->captcha_id);
             if ($code == $captcha_value['code']) {
-                unlink($this->img_path.$captcha_value['image_name'].'.'.$this->image_type);
+                if($this->send_output_header == false){
+                    unlink($this->img_path.$captcha_value['image_name'].'.'.$this->image_type);
+                }
                 $this->sess->remove($this->captcha_id); 
                 return true;
             } 
             return false;
         }
         return false;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * [reGenerate description]
-     * 
-     * @return [type] [description]
-     */
-    public function regenerate()
-    {
-        if ($this->sess->get($this->captcha_id)) {
-            $captcha_value = $this->sess->get($this->captcha_id);
-            if (file_exists($this->img_path.$captcha_value['image_name'].'.'.$this->image_type))
-            {
-                unlink($this->img_path.$captcha_value['image_name'].'.'.$this->image_type);
-            }
-            $this->sess->remove($this->captcha_id); 
-        }
-        $this->create();
     }
 
     // ------------------------------------------------------------------------
@@ -581,7 +563,7 @@ Class Captcha {
 
     // ------------------------------------------------------------------------
 
-    public function setOutputHeader()
+    public function sendOutputHeader()
     {
         $this->send_output_header = true;
     }

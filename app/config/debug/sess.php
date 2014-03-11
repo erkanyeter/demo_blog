@@ -37,8 +37,8 @@ $sess['driver'] =  function () {
             'session.gc_divisor'      => 100,      // Configure garbage collection
             'session.gc_maxlifetime'  => 7200,
             'session.cookie_lifetime' => 0,
-            // 'session.save_handler'    => 'redis',
-            // 'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
+            'session.save_handler'    => 'redis',
+            'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
         )
     );
 };

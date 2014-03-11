@@ -32,7 +32,6 @@ $captcha = array(
                         'yellow' => '255,255,0',
                         'cyan'   => '0,146,134',
                     ),
-    'send_output_header' => true,  // whether to create captcha at browser header
     // Captcha text color
     'default_text_color' => array('cyan'),  // If its more than one produce random colors
     // Background noise color

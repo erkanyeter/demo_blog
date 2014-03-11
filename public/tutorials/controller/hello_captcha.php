@@ -30,6 +30,7 @@ $c->func(
                 'callback_captcha',
                 function () {
                     $this->setMessage('callback_captcha', 'Wrong Captcha Code');
+                    $this->captcha->sendOutputHeader();
                     return $this->captcha->check($this->post->get('captcha'));
                 }
             );
@@ -39,25 +40,12 @@ $c->func(
                 $this->url->redirect('tutorials/hello_captcha');          // Redirect to user same page.
             }
         }
-  
-        $this->captcha->setDriver('secure');  // or set to "cool" with no background
-        $this->captcha->setPool('alpha');
-        $this->captcha->setChar(5);
-        $this->captcha->setFontSize(15);
-        $this->captcha->setHeight(25);
-        $this->captcha->setWave(false);
-        $this->captcha->setColor(array('red','black','blue'));
-        $this->captcha->setNoiseColor(array('red','black','blue'));
-        $this->captcha->setFont('NightSkK');
-        $this->captcha->create();
-        $new_image = $this->captcha->getImageUrl();
      
         $this->view->get(
             'hello_captcha',
-            function () use ($new_image) {
+            function () {
                 $this->set('name', 'Obullo');
                 $this->set('title', 'Hello Captcha !');
-                $this->set('newCaptcha', $new_image);
                 $this->getScheme('welcome');
             }
         );
