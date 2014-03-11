@@ -119,7 +119,9 @@ Class Logger
      */
     public function push($handler = 'email')
     {
-        if ( ! isset($this->record['level']) OR! $this->isAllowed($this->record['level'])) {  // check allowed
+        return; // this feature disabled for now. we improve it.
+
+        if ( ! isset($this->record['level']) OR ! $this->isAllowed($this->record['level'])) {  // check allowed
             return;
         }
 

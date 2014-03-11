@@ -9,23 +9,37 @@ $c = new Controller(
     function () {
         new Form;
         new Request;
+        new Post;
     }
 );
 
 $c->func(
     'index',
     function () {
-        if ($this->request->isXmlHttp()) { // Is request Ajax ?
+
+        if ($this->request->isXmlHttp()) { 
             new Hvc;
         	$jsonData = json_decode($this->hvc->get('form_tuttorial/form_json/register'));
         	
         	foreach($jsonData->inputs as $value){
         		
-        		//$this->form->setRules($value->key, $value->name);
+        		switch ($value->type){
+
+        			case 'subheader' : 
+        				continue;
+    				break;
+        			case 'groupDropdown' : 
+        				foreach($value->groupDropdown as $val){
+        					$this->form->setRules($val->name, $val->label, $val->rules);	
+        				}        				
+        			break;
+        			default : 
+        				$this->form->setRules($value->name, $value->label, $value->rules);
+        			break;
+
+        		}
 
         	}
-
-        	$this->form->setRules('username', 'User Agreement', 'required');
 
             if ( $this->form->isValid() ) {
                 $this->form->setMessage('User saved successfully !');
@@ -38,18 +52,7 @@ $c->func(
             echo json_encode($this->form->getOutput());
 
         } else {
-            new Url;
-            new Html;
-            new View;
-
-            $this->view->get(
-                'hello_ajax',
-                function () {
-                    $this->set('name', 'Obullo');
-                    $this->set('title', 'Hello Ajax World !');
-                    $this->getScheme('welcome');
-                }
-            );
+            echo "Access denied!";
         }
     }
 );

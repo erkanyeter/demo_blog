@@ -40,18 +40,13 @@ var ajax = {
     }
 }
 
-function submitAjax(){
-    //--------------- Ajax ----------------//
-    refreshCaptchaUrl = 'http://<?php echo $_SERVER["HTTP_HOST"];?>/tutorials/hello_captcha_refresh';
-
-    ajax.post( refreshCaptchaUrl, function(returnImage){
-        imgpath = 'http://<?php echo $_SERVER["HTTP_HOST"];?>'+returnImage;
-        document.getElementById("captcha").src=imgpath;
-        $('#aaaa').attr('src',dataCheck);   
-     
-    });
+function refreshCaptcha()
+{
+    refreshCaptchaUrl = '/tutorials/hello_captcha_create/'+Math.random();
+    document.getElementById("captcha").src=refreshCaptchaUrl;     
     return false; // Do not do form submit;
 }
+
 </script>
     </head>
     <body>
@@ -64,6 +59,7 @@ function submitAjax(){
         <section><?php echo $this->form->getErrorString() ?></section>
 
         <section>
+
             <?php echo $this->form->open('tutorials/hello_captcha/index', array('method' => 'POST')) ?>
 
                 <table width="100%">
@@ -83,7 +79,7 @@ function submitAjax(){
                     </tr>
                     <tr>
                         <td></td>
-                        <td><?php  echo '<img src="'.$newCaptcha.'" alt=""  id="captcha"> '; ?> <a href="#" onclick="submitAjax()" id="image">Refresh</a> </td>
+                        <td><img src="/tutorials/hello_captcha_create" alt="" id="captcha"><a href="#" onclick="refreshCaptcha()" id="image">Refresh</a> </td>
                     </tr>
                     <tr>
                         <td>Captcha Code</td>

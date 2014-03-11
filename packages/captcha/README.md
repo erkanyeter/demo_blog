@@ -310,45 +310,49 @@ if($this->post->get('answer') == $code)
 
 ------
 
-#### $this->captcha->setDriver($string);
+#### $this->captcha->setDriver(string);
 
 Sets captcha driver ( <kbd>secure</kbd> or <kbd>cool</kbd> ), default is secure.
 
-#### $this->captcha->setNoiseColor($string);
+#### $this->captcha->setNoiseColor(string);
 
 Sets image text background noise colors.
 
-#### $this->captcha->setColor($string or $array);
+#### $this->captcha->setColor(string or array);
 
 Sets image text color.
 
-#### $this->captcha->setFont($string or $array);
+#### $this->captcha->setFont(string or array);
 
 Sets image font.
 
-#### $this->captcha->excludeFont($string or $array);
+#### $this->captcha->excludeFont(string or array);
 
 Excludes font(s) from available fonts.
 
-#### $this->captcha->setFontSize($int);
+#### $this->captcha->setFontSize(integer);
 
 Sets font size.
 
-#### $this->captcha->setHeight($int);
+#### $this->captcha->setHeight(integer);
 
 Sets image height.
 
-#### $this->captcha->setPool($text);
+#### $this->captcha->setPool(string);
 
 Sets character pools.
 
-#### $this->captcha->setChar($int);
+#### $this->captcha->setChar(integer);
 
 Sets the number of characters of image.
 
 #### $this->captcha->setWave(true or false);
 
 Starts and stops the text wave.
+
+#### $this->captcha->setOutputHeader();
+
+Whether to create captcha at browser header.
 
 #### $this->captcha->create();
 
