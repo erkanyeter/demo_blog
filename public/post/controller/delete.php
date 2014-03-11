@@ -9,8 +9,6 @@ $c = new Controller(
     function () {
         new Url;
         new Form;
-        new Sess; 
-        new Auth;
         new Hvc;
     }
 );

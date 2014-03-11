@@ -13,8 +13,6 @@ $c = new Controller(
         new Tag_Cloud;
         new Form;
         new View;
-        new Sess;
-        new Auth;
         new Post;
         new Hvc;
     }

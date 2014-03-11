@@ -6,21 +6,23 @@
 | -------------------------------------------------------------------
 | This file specifies captcha package default settings: colors,
 | driver, expiration, image height, image font, image wave and so on.
-|
+|new Sess;
+        new Auth;captcha_id
 */
 $captcha = array(
-    'sess'           => function () {           // Sess Dependecy
-        return new Sess;
-    },
+    'sess'           => function () {
+                        return new Sess;
+                    },
+    'captcha_id'     => 'captcha_id',           // captcha_id set
     'driver'         => 'cool',                 // Set default driver ( "secure" or "cool" ).
     'set_pool'       => 'random',               // Pools: numbers - alpha - random
     'char'           => '5',                    // Character length of captcha code
     'font_size'      => '20',                   // Font size
-    'height'         => '40',                   // Height of captcha image, "width = auto" no need to set it.
+    'height'         => '20',                   // Height of captcha image, "width = auto" no need to set it.
     'wave_image'     => true,                   // Image wave for more strong captchas.
     'img_path'       => '/data/temp/captcha',   // Set captcha image path
     'user_font_path' => '/assets/fonts',        // Set captcha font path
-    'image_type'     => 'gif',                  // Set image extension
+    'image_type'     => 'png',                  // Set image extension
     'expiration'     => '10',                   // Expiration time of captcha ( second )
     'colors' => array(                          // Color Schema
                         'red'    => '255,0,0',

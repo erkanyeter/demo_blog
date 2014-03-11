@@ -1,4 +1,5 @@
 <?php
+
 defined('STDIN') or die('Access Denied');
 
 /**
