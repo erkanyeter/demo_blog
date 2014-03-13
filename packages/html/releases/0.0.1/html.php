@@ -235,19 +235,19 @@ Class Html {
                 if(pathinfo($source_dir.$filename, PATHINFO_EXTENSION) == 'js')
                 {
                     if ( count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles'])) {
-                        $files .= _js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
+                        $files .= $this->_js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
                     }
                     if ( count($data['excludeFiles']) > 0 AND ! in_array($filename, $data['excludeFiles'])) {
-                        $files .= _js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
+                        $files .= $this->_js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
                     }
                     if (count($data['includeFiles']) == 0 AND count($data['excludeFiles']) == 0) {
-                        $files .= _js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
+                        $files .= $this->_js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
                     }
                 }
             }
             return $files;
         }
-        return _js($src, $arguments, $type, $index_page);
+        return $this->_js($src, $arguments, $type, $index_page);
     }
 
     // ------------------------------------------------------------------------
