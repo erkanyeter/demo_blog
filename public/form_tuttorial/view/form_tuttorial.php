@@ -15,28 +15,29 @@
  	  <script src="/lib/js/base-js/bootstrap.min.js" type="text/javascript"></script>
  	  <script src="/lib/js/header/header.js" type="text/javascript"></script>
  	  <script src="/lib/js/register/register.js" type="text/javascript"></script>
+ 	  <script src="/assets/js/form.js" type="text/javascript"></script>
  	  <script src="/assets/js/underscore-min.js" type="text/javascript"></script>
-
+ 	  <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
  	  <script>
+ 	  	var jsonData = <?php echo $jsonData;?>;
 
  	  	function refreshCaptcha()
 		{
-		    return false; refreshCaptchaUrl = '/tutorials/hello_captcha_create/'+Math.random();
-		    //console.log(refreshCaptchaUrl);
-		    document.getElementById("captchaImg").src = refreshCaptchaUrl;     
-		    console.log($('#captchaImg').attr('src'));
+		    refreshCaptchaUrl = '/tutorials/hello_captcha_create/'+Math.random();		    
+		    document.getElementById("captchaImg").src = refreshCaptchaUrl;     		    
 		    return false; // Do not do form submit;
 		}
 
+	
 
-		$( document ).delegate(".captcha_link", "click", function() {
-		  console.log($('#captchaImg').attr('src'));
-		});
+
 
  	  </script>
 
+
+
 	</head>
-	<body>
+<body>
 <div class="page-wrapper"> 
 
 <!-- Header Language Modal -->
@@ -235,139 +236,10 @@
 		<br clear="all">
 		<p class="page-hint">Lütfen, bu formu yalnızca Latin alfabesini kullanarak, Türkçe karakterlere yer vermeden doldurun.</p>
 
-		<script type="text/template" class="template">
+		<!--#include virtual="/assets/js/form_template.html" -->
 
-			<form id="testForm" class="form-horizontal register-form" style='width:80%; margin:0' role="form" method="post" action="<%- formData.postUrl %>">
-				<% _.each( formData.inputs, function( input ){
-
-					switch(input.type) { 
-						case 'textbox':
-				%>
-							<div class='row'>
-								<div class='form-group col-sm-12 has-feedback'>
-									<div class='col-sm-3'> 
-										<label for="<%- input.name %>" class="control-label"> <%- input.label %></label>
-										<span class="form-required"> *</span>
-									</div>
-									<div class='col-sm-6'  data-toggle="tooltip" data-placement="right" title="<%- input.title %>">
-										<input type="text" name="<%- input.name %>" value="<%- input.value %>" id="<%- input.name %>" <%= input.attr %> /> 
-									</div>
-								</div>
-							</div>
-			  	<% 
-		  				break; 
-		  				case 'password': 
-				%>
-						  	<div class='row'>
-								<div class='form-group col-sm-12 has-feedback'>
-									<div class='col-sm-3'> 
-										<label for="<%- input.name %>" class="control-label"> <%- input.label %></label>
-										<span class="form-required"> *</span>
-									</div>
-									<div class='col-sm-6' data-toggle="tooltip" data-placement="right" title="<%- input.title %>">
-										<input type="password" name="<%- input.name %>" id="<%- input.name %>" value="<%- input.value %>" <%= input.attr %>  /> 
-									</div>
-								</div>
-							</div>
-			  	<% 
-				  		break;
-				  		case 'dropdown':
-		  		%>
-				  			<div class='row'>
-								<div class='form-group col-sm-12 has-feedback'>
-									<div class='col-sm-3'> 
-										<label for="<%- input.name %>" class="control-label"> <%- input.label %> </label>
-										<span class="form-required"> *</span>
-									</div>
-									<div class='col-sm-6' title="<%- input.title %>">
-										<select name="<%- input.name %>" id="<%- input.name %>" <%= input.attr %>>
-
-		  		<%
-		  									_.each(input.dataDropdown, function ( value, key ) {
-		  										var selected;
-		  										if(input.value == key){ selected = "selected='selected'" }
-		  		%>
-				  								<option <%= selected %> value = "<%- key %>"><%- value %></option>
-		  		<%
-				  							})
-				%>
-										</select>
-									</div>
-								</div>
-							</div>
-				<% 
-						break;
-						case 'groupDropdown' :
-				%>
-							<div class='row'>
-								<div class='form-group col-sm-12 has-feedback'>
-									<div class='col-sm-3'> 
-										<label for="birthday" class="control-label"> <%- input.label %> </label>
-										<span class="form-required"> *</span>
-									</div>
-									<div class='col-sm-6 date-container'  data-toggle="tooltip" data-placement="right" title="<%- input.title %>">
-										
-										<% _.each(input.groupDropdown, function ( value ) { %>
-											<select name="<%- value.name %>" <%= value.formAttr %> >
-												<option value=""> <%- value.firstOption %></option>
-												<% _.each(value.dataDropdown, function ( row, key ) { var selected = ""; %>
-												<% if(value.value == key){ selected = "selected='selected'" } %>
-													<option <%= selected %> value="<%- key %>"> <%- row %></option>
-												<% }) %>
-											</select>
-
-										<% }) %>
-									</div>
-								</div>
-							</div>
-				<%
-						break;
-						case 'subheader' : 
-				%>
-						<br clear="all"><h3 class="form-sectionTitle"><%= input.data %></h3>
-				<%
-						break;
-						case 'verify' : 
-				%>
-							<div class='row form-pb25'>
-								<div class='form-group col-sm-12 has-feedback'>
-									<div class='col-sm-3'> 
-										<label for="<%- input.name %>" class="control-label"><%- input.label %></label>
-										<span class="form-required"> *</span>
-									</div>
-									<div class='col-sm-6'>
-										<input type="text" name="<%- input.name %>" value="" id="<%- input.name %>"  class="form-control input-sm validation" /> 
-										<input type="button" value="<%- input.bttn_value %>" id="verifybtn" class="" name="verifybtn" focused="0" onClick="verify()" />
-									</div>
-								</div>
-							</div>
-				<%
-						break;
-						case 'captcha' :
-				%>
-						<div class='row'>
-							<div class='form-group col-sm-12 has-feedback'>
-								
-								<div class='col-sm-2'>
-									<img src="/tutorials/hello_captcha_create" id="captchaImg" class="captcha_img"> 
-								</div>
-								<div class='col-sm-4'>
-									<a href="#" class="capthca_link" onclick="refreshCaptcha()">Yeni bir güvenlik kodu al</a>
-								</div>
-
-							</div>
-						</div>
-
-				<%
-						break;
-					}
-				%>
-
-				<% }) %>
-
-			</form>
-		</script>
-		<div id="registerForm"></div>
+		<!-- Form Content -->
+			<div id="creteFormId"></div>
 
 	</div> 
 
@@ -398,27 +270,5 @@
 
 <!-- Content End -->
 </div>
-
-<script type="text/javascript">
-	function createHtml(formData)
-	{	
-		//console.log(formData);
-		var template = $(".template").html();
-	    $("#registerForm").html(_.template(template,{formData:formData}));
-	}
-
-	createHtml(<?php echo $jsonData;?>);
-	function formpost(){
-		$.post( $('#testForm').attr( "action" ), $( "#testForm" ).serialize(), function(data){
-	    	//console.log(data);
-	    });
-	}
-
-	$( document ).ready(function() {
-		//refreshCaptcha();
-	});
-
-</script>
-
 </body>
 </html>

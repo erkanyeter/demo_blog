@@ -23,8 +23,10 @@ $c->func(
         	
         	foreach($jsonData->inputs as $value){
         		
+
         		switch ($value->type){
 
+        			case 'hidden' :
         			case 'subheader' : 
         				continue;
     				break;
@@ -34,7 +36,19 @@ $c->func(
         				}        				
         			break;
         			default : 
-        				$this->form->setRules($value->name, $value->label, $value->rules);
+
+   						if($value->name == 'captcha'){
+   							new Captcha;
+   							$this->form->func(
+				                'callback_captcha',
+				                function () {
+				                    $this->setMessage('callback_captcha', 'Wrong Captcha Code');
+				                    $this->captcha->sendOutputHeader();
+				                    return $this->captcha->check($this->post->get('captcha'));
+				                }
+				            );
+   						}
+						$this->form->setRules($value->name, $value->label, $value->rules);
         			break;
 
         		}

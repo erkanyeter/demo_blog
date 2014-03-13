@@ -117,7 +117,8 @@ function submitAjax(formId){
         );
         return false; // Do not do form submit;
     }
-}</script>
+}
+</script>
 
     </head>
     <body>

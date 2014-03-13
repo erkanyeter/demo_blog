@@ -33,6 +33,7 @@ $c->func(
 
         $register = array(
             'postUrl' => 'form_tuttorial/form_tuttorial_post',
+            'formId' => 'registerForm',
             'inputs' => array(
                 array(
                     'type'  => 'subheader',
@@ -42,7 +43,7 @@ $c->func(
                 array(
                     'name' => 'user_firstname',
                     'type' => 'textbox',
-                    'rules' => 'required|min[6]|max[15]',
+                    'rules' => 'required|minLen(6)|maxLen(15)',
                     'label' => 'Firstname',
                     'attr'  => 'class="form-control input-sm validation"',
                     'title' => 'Lütfen Adınızı Giriniz...',
@@ -52,28 +53,7 @@ $c->func(
                 array(
                     'name' => 'user_surname',
                     'type' => 'textbox',
-                    'rules' => 'required|min[6]|max[15]',
-                    'label' => 'Surname',
-                    'attr'  => 'class="form-control input-sm validation"',
-                    'title' => 'Lütfen Soyadınızı Giriniz...',
-                    'value' => 'Akkaya',
-                    'order' => 3
-                ),
-                                                array(
-                    'name' => 'user_surname',
-                    'type' => 'textbox',
-                    'rules' => 'required|min[6]|max[15]',
-                    'label' => 'Surname',
-                    'attr'  => 'class="form-control input-sm validation"',
-                    'title' => 'Lütfen Soyadınızı Giriniz...',
-                    'value' => 'Akkaya',
-                    'order' => 3
-                ),
-
-                array(
-                    'name' => 'user_surname',
-                    'type' => 'textbox',
-                    'rules' => 'required|min[6]|max[15]',
+                    'rules' => 'required|minLen(6)|maxLen(15)',
                     'label' => 'Surname',
                     'attr'  => 'class="form-control input-sm validation"',
                     'title' => 'Lütfen Soyadınızı Giriniz...',
@@ -161,14 +141,54 @@ $c->func(
                     'order' => 7
                 ),
                 array(
+                    'type'  => 'subheader',
+                    'data'  => 'Güvenlik Resmi',
+                    'order' => 10
+                ),
+                array(
                     'name' => 'captcha',
-                    'type' => 'textbox',
-                    'rules' => 'required|exactLen(5)',
+                    'type' => 'captcha',
+                    'rules' => 'required|exactLen(5)|callback_captcha',
                     'label' => 'Güvenlik Resmi',
                     'attr'  => '',
                     'title' => 'Lütfen güvenlik kodunu giriniz...',
                     'value' => '',
                     'order' => 11
+                ),
+                array(
+                    'name' => 'submitbtn',
+                    'type' => 'submit_button',
+                    'rules' => '',
+                    'label' => 'Kaydet',
+                    'attr'  => '',
+                    'value' => '',
+                    'title' => 'Formu Kaydet',
+                    'order' => 12
+                ),
+                array(
+                    'type'  => 'subheader',
+                    'data'  => 'Confirmation',
+                    'order' => 13
+                ),
+                array(
+                    'name' => 'user_18_age_agreement',
+                    'type' => 'checkbox',
+                    'rules' => 'required',
+                    'label' => 'I am over 18 years of age and have read and accepted the general terms and conditions(see Terms and Conditions). I agree to receive information from your company. I can cancel this service in my account at any time. Please note that betin does not offer any bets to US residents.',
+                    'attr'  => '',
+                    'value' => 1,
+                    'title' => '',
+                    'order' => 14
+                ),
+                array(
+                    'name' => 'testHidden',
+                    'type' => 'hidden',
+                    'rules' => '',
+                    'label' => '',
+                    'attr'  => '',
+                    'value' => 1,
+                    'title' => '',
+                    'order' => 15
                 ),
                 
             )
@@ -180,7 +200,7 @@ $c->func(
             $register['inputs'][] = array(
                                         'type'  => 'subheader',
                                         'data'  => 'Verify',
-                                        'order' => 9
+                                        'order' => 8
                                     );
 
             $register['inputs'][] = array(
@@ -191,7 +211,7 @@ $c->func(
                                         'attr'  => '',
                                         'title' => 'Doğrulama kodunu giriniz.',
                                         'bttn_value' => 'Gönder',
-                                        'order' => 10
+                                        'order' => 9
                                     );
         }
 
