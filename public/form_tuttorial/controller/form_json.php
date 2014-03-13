@@ -133,7 +133,7 @@ $c->func(
                 array(
                     'name' => 'user_email_repeat',
                     'type' => 'textbox',
-                    'rules' => 'required|match[\'user_email\']',
+                    'rules' => 'required|matches(\'user_email\')',
                     'label' => 'Email Adresiniz tekrar',
                     'attr'  => 'class="form-control input-sm validation"',
                     'title' => 'Lütfen Email Giriniz...',

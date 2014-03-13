@@ -31,18 +31,18 @@ $sess = array(
 );
 
 $sess['driver'] =  function () use ($sess) { 
-    return new Sess_Database;
+    // return new Sess_Database;
     
-    // return new Sess_Native(
-    //     array(
-    //         'session.gc_divisor'      => 100,      // Configure garbage collection
-    //         'session.gc_maxlifetime'  => $sess['expiration'],
-    //         'session.cookie_lifetime' => 0,
-    //         // 'session.use_cookies' => 1,
-    //         'session.save_handler'    => 'redis',
-    //         'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
-    //     )
-    // );
+    return new Sess_Native(
+        array(
+            'session.gc_divisor'      => 100,      // Configure garbage collection
+            'session.gc_maxlifetime'  => $sess['expiration'],
+            'session.cookie_lifetime' => 0,
+            // 'session.use_cookies' => 1,
+            'session.save_handler'    => 'redis',
+            'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
+        )
+    );
 };
 
 /* End of file sess.php */

@@ -158,7 +158,7 @@
 		<% }) %>
 		
 		<div class="register-submit">
-		      <input type="button" value="Kaydol" id="submitbtn" class="" onClick="formpost(<%= formData.formId %>)" name="submitbtn" focused="0" />
+		      <input type="submit" value="Kaydol" id="submitbtn" class="" name="submitbtn" focused="0" />
 		</div>
 
 	</form>

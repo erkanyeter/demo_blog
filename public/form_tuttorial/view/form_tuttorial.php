@@ -17,7 +17,6 @@
  	  <script src="/lib/js/register/register.js" type="text/javascript"></script>
  	  <script src="/assets/js/form.js" type="text/javascript"></script>
  	  <script src="/assets/js/underscore-min.js" type="text/javascript"></script>
- 	  <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
  	  <script>
  	  	var jsonData = <?php echo $jsonData;?>;
 
@@ -28,7 +27,24 @@
 		    return false; // Do not do form submit;
 		}
 
-	
+
+		$(document).ready(function(){
+
+			var xform = new form(); // creating form instance
+			xform.createTemplate('creteFormId', jsonData); // building form template
+			xform.whenSubmit( // set submit & validation listener.
+				function (data) {
+					// process response here
+				},
+				function () {
+					// extra checkes before submitting form
+					// you can set error : xform.setError('error-ref', 'Error Message', 'input-name');
+					// return false : form will not be submitted
+					// return true : form will be sumitted
+				}
+			);
+			
+		});
 
 
 
@@ -240,7 +256,6 @@
 
 		<!-- Form Content -->
 			<div id="creteFormId"></div>
-
 	</div> 
 
 
