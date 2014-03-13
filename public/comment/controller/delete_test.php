@@ -17,9 +17,13 @@ $c->func(
     'index.Private_User',
     function ($id) {
         
-        $r = $this->hvc->delete('private/comments/delete/', array('id' => $id));
+        new Unit_Test;
 
-        $this->form->setNotice($r['message'], $r['message']);       // set flash notice
-        $this->url->redirect('/comment/display');
+        // TEST DATABASE NOT
+
+        // $r = $this->hvc->delete('private/comments/delete/', array('id' => $id));
+
+        $this->unit->run($r['success'], true, 'delete comment');
+
     }
 );

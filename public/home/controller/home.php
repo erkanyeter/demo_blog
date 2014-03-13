@@ -64,8 +64,19 @@ $c = new Controller(
 );
 
 $c->func(
-    'index.public_user',
+    'index.Public_User',
     function () {
+
+        $this->logger->output = true;
+        
+        $this->logger->channel('security');
+        $this->logger->alert('Possible hacking attempt !', array('username' => 'test'));
+
+        $this->logger->channel('disaster');
+        $this->logger->emergency('Site down !! system unusable ! ');
+        $this->logger->push('mongo'); // use it
+        $this->logger->push('email'); // use it
+
 
         $r = $this->hvc->get('private/posts/getallhome'); // get all post data
 

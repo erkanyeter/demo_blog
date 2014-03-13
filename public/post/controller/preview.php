@@ -9,7 +9,6 @@ $c = new Controller(
     function () {
         new Url;
         new Html;
-        new Db;
         new Date_Format;
         new Tag_Cloud;
         new Form;
@@ -20,7 +19,7 @@ $c = new Controller(
 );
 
 $c->func(
-    'index.private_user',
+    'index.Private_User',
     function ($id) {
 
         $posts    = $this->hvc->get('private/posts/getone/'.$id);  // get one post

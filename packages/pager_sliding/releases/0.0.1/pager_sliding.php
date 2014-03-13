@@ -1,7 +1,5 @@
 <?php
 
-namespace Pager\Src;
-
 /**
  * Pager Sliding Driver
  *
@@ -38,9 +36,8 @@ Class Pager_Sliding extends Pager_Common
         $res = $this->setOptions($options);
 
         if ($res !== true) {
-            throw new \Exception('Pager Unknown Error.');
+            throw new Exception('Pager Unknown Error.');
         }
-
         $this->build();
     }
 
@@ -269,4 +266,4 @@ Class Pager_Sliding extends Pager_Common
 // END Pager_sliding Class
 
 /* End of file Pager_sliding.php */
-/* Location: ./packages/pager/releases/0.0.1/src/pager_sliding.php */
+/* Location: ./packages/pager/releases/0.0.1/pager_sliding.php */

@@ -17,7 +17,7 @@ $c = new Controller(
 );
 
 $c->func(
-    'index.private_user',
+    'index.Private_User',
     function () {
         
         $r = $this->hvc->get('private/comments/getall');

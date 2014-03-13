@@ -174,6 +174,7 @@ require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obull
 | Default Packages
 |--------------------------------------------------------------------------
 */
+
 $cfg        = new Config;
 $translator = new Translator;
 $response   = new Response;
@@ -192,7 +193,7 @@ if ($config['csrf_protection'] OR $config['global_xss_filtering']) { // CSRF Pro
 | Run Your Application
 |--------------------------------------------------------------------------
 */
-new Obullo;
+Framework_Run();
 
 // @todo
 // $app = new Obullo;

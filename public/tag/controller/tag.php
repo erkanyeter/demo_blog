@@ -12,14 +12,12 @@ $c = new Controller(
         new Date_Format;
         new Tag_Cloud;
         new View;
-        new Sess;
-        new Auth;
         new Hvc;
     }
 );
 
 $c->func(
-    'index.public_user',
+    'index.Public_User',
     function ($tag) {
 
         $r = $this->hvc->get('private/posts/getallbytag/'.$tag);

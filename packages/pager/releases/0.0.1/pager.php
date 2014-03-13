@@ -25,7 +25,7 @@ Class Pager
         global $logger;
 
         $mode = (isset($options['mode']) ? strtolower($options['mode']) : 'jumping');
-        $classname = 'Pager\Src\Pager_' . ucfirst($mode);
+        $classname = 'Pager_' . ucfirst($mode);
 
         if (count($options) > 0) {
             $instance = new $classname($options);

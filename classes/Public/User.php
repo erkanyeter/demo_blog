@@ -26,12 +26,12 @@ Class Public_User
         if ( ! isset(getInstance()->public_user)) {
             getInstance()->public_user = $this;      // Available it in the contoller $this->public_user->method();
         }
-        $logger->debug('Public User Class Initialized');
 
         new Sess;
         new Auth;
 
         $this->init();
+        $logger->debug('Public User Class Initialized');
     }
 
     // ------------------------------------------------------------------------

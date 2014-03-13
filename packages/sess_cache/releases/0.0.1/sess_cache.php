@@ -52,8 +52,8 @@ Class Sess_Cache
         $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
         $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
 
-        $db = $this->db;    // set database;
-        $this->db = $db();
+        $dbo = $this->db;    // set database;
+        $this->db = $dbo();
 
         $this->now = $this->_getTime();
         $this->encryption_key = $config['encryption_key'];
@@ -110,7 +110,7 @@ Class Sess_Cache
             $hash = substr($session, strlen($session) - 32);    // encryption was not used, so we need to check the md5 hash
             $session = substr($session, 0, strlen($session) - 32); // get last 32 chars
 
-            if ($hash !== md5($session . $this->encryption_key)) {  // Does the md5 hash match?                                                        // This is to prevent manipulation of session data in userspace
+            if ($hash !== md5($session . $this->encryption_key)) {  // Does the md5 hash match?  // This is to prevent manipulation of session data in userspace
                 $logger->channel('security');
                 $logger->alert('The session cookie data did not match what was expected. This could be a possible hacking attempt');
                 $this->destroy();
@@ -120,8 +120,12 @@ Class Sess_Cache
 
         $session = $this->_unserialize($session); // Unserialize the session array
 
-        if (!is_array($session) OR !isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
-                OR !isset($session['ip_address']) OR !isset($session['user_agent']) OR !isset($session['last_activity'])) {
+        if ( ! is_array($session) 
+            OR ! isset($session['session_id'])          // Is the session data we unserialized an array with the correct format?
+            OR ! isset($session['ip_address']) 
+            OR ! isset($session['user_agent']) 
+            OR ! isset($session['last_activity'])
+        ) {
             $this->destroy();
             return false;
         }
@@ -206,20 +210,8 @@ Class Sess_Cache
             $custom_userdata = $this->_serialize($custom_userdata); // Serialize the custom data array so we can store it
         }
 
-        //-------- memory container update support --------// 
+        $this->_replace($this->userdata['session_id'], $this->userdata['session_id'], $this->userdata, time() + $this->expiration);
 
-        $cached_userdata = $this->db->get($this->userdata['session_id']);
-        $unserialized_old_data = $this->_unserialize($cached_userdata);
-
-        $unserialized_old_data['last_activity'] = $this->userdata['last_activity'];
-        $unserialized_old_data['user_data'] = $custom_userdata;
-
-        //-------------------------------------------------// 
-
-        $new_data = $this->_serialize($unserialized_old_data);
-
-        // Write to memory
-        $this->db->set($this->userdata['session_id'], $new_data, time() + $this->expiration);
 
         // Write the cookie.  Notice that we manually pass the cookie data array to the
         // _setCookie() function. Normally that function will store $this->userdata, but 
@@ -379,10 +371,10 @@ Class Sess_Cache
     /**
      * Write the session cookie
      *
-     * @access    public
+     * @access    private
      * @return    void
      */
-    public function _setCookie($cookie_data = null)
+    private function _setCookie($cookie_data = null)
     {
         if (is_null($cookie_data)) {
             $cookie_data = $this->userdata;
@@ -417,7 +409,7 @@ Class Sess_Cache
      * @param    array
      * @return   string
      */
-    function _serialize($data)
+    private function _serialize($data)
     {
         if (is_array($data)) {
             foreach ($data as $key => $val) {
@@ -446,7 +438,7 @@ Class Sess_Cache
      * @param    array
      * @return   string
      */
-    function _unserialize($data)
+    private function _unserialize($data)
     {
         $data = unserialize(stripslashes($data));
         if (is_array($data)) {
@@ -511,7 +503,7 @@ Class Sess_Cache
      */
     public function get($item, $prefix = '')
     {
-        return (!isset($this->userdata[$prefix . $item])) ? false : $this->userdata[$prefix . $item];
+        return ( ! isset($this->userdata[$prefix . $item])) ? false : $this->userdata[$prefix . $item];
     }
 
     // --------------------------------------------------------------------
@@ -653,7 +645,7 @@ Class Sess_Cache
      */
     public function isExpired()
     {
-        if (!isset($this->userdata['last_activity'])) {
+        if ( ! isset($this->userdata['last_activity'])) {
             return false;
         }
         $expire = $this->now - $this->expiration;

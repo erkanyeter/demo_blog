@@ -124,7 +124,6 @@ Class Logger
         if ( ! isset($this->record['level']) OR ! $this->isAllowed($this->record['level'])) {  // check allowed
             return;
         }
-
         $handler_class = $this->push_handlers[$handler];
         $driver        = strtolower($handler_class);
 
@@ -236,7 +235,7 @@ Class Logger
             return;
         }
         if ($this->output) {
-            $output = new Logger\Src\Output($this);
+            $output = new Logger_Output($this);
             echo $output;
         }
         $this->driver->write();  // start default driver batch process

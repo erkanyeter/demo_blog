@@ -14,7 +14,7 @@ $c = new Controller(
     }
 );
 $c->func(
-    'index.public_user',
+    'index.Public_User',
     function () {
         
         $this->view->get(

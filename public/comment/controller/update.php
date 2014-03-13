@@ -14,7 +14,7 @@ $c = new Controller(
 );
 
 $c->func(
-    'index.private_user',
+    'index.Private_User',
     function ($id, $status = 'approve') {
 
         $r = $this->hvc->put('private/comments/update/'.$id.'/'.$status);
