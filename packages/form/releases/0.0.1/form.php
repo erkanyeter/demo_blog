@@ -351,13 +351,14 @@ Class Form {
     public function setError($key, $val = '')
     {
         $validator = getInstance()->validator;
+        $form  = Form::getConfig();  // get form template
         
         if (is_array($key)) 
         {
             foreach ($key as $k => $v) 
             {
                 $validator->_field_data[$k]['error'] = $v;
-                $validator->_error_array[$key] = $val;
+                $validator->_error_array[$k] = $v;
             }
         } 
         else
@@ -365,14 +366,11 @@ Class Form {
             $validator->_field_data[$key]['error'] = $val;
             $validator->_error_array[$key] = $val;
 
-            $form  = Form::getConfig();  // get form template
+        }
             $message = (isset($validator->_error_messages['message'])) ? $validator->_error_messages['message'] : $form['response']['error'];
-
             $this->_formMessages['success'] = 0;
             $this->_formMessages['message'] = sprintf($form['notifications']['errorMessage'], translate($message));
             $this->_formMessages['errors']  = $validator->_error_array;
-
-        }
     }
 
     // ------------------------------------------------------------------------
