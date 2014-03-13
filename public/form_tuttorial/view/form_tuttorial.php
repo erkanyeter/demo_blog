@@ -30,9 +30,12 @@
 
 		$(document).ready(function(){
 
-			/** -------------- start form.js -------------- **/
+			////////////////////////////////////////////////////////
+			// -------------- Start Form.js code -------------- ///
+			//////////////////////////////////////////////////////
 
-			var xform = new form(); // creating form instance
+			// Please be aware while creating new instances, to avoid names conflicts
+			var xform = new form(); // creating form instance. must be unique.
 
 			xform.setLoading(function(){ // set loading after ajax submit
 				xform.formElement.fadeOut('slow'); // test
@@ -57,7 +60,9 @@
 				}
 			);
 
-			/** -------------- end form.js -------------- **/
+			/////////////////////////////////////////////////////
+			// -------------- End Form.js code -------------- //
+			///////////////////////////////////////////////////
 
 		});
 
