@@ -4,6 +4,9 @@
  * @author rabihsyw <rabihsyw@gmail.com>
  * Form template-creating & validating plugin
  * 
+ * Dependency : Jquery
+ * 				UnderscoreJs
+ * 
  * @type Object
  */
 
