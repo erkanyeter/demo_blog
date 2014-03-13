@@ -332,7 +332,7 @@ var form = function(){
     };
     
     
-    obj.checkAjax = function () {
+    obj.checkAjax = function () { // check if ajax-post or normal-post
     	return true;
     };
 
