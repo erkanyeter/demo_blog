@@ -34,6 +34,7 @@ $c->func(
         $register = array(
             'postUrl' => 'form_tuttorial/form_tuttorial_post',
             'formId' => 'registerForm',
+            'ajax' => 1,
             'inputs' => array(
                 array(
                     'type'  => 'subheader',

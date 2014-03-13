@@ -6,6 +6,20 @@
  * 
  * Dependency : Jquery
  * 				UnderscoreJs
+ *
+ *
+ * functions :
+ * 				setLoading(param1)			 			: param1      = function
+ * 				createTemplate(containerId, jsonForm)	: containerId = string, jsonForm = json
+ * 				setFormId(id)							: id          = string
+ * 				whenSubmit(afterSubmit, beforeSubmit)	: afterSubmit = function, beforeSubmit = function
+ * 				setMessage(msg)							: msg         = string
+ * 				setError(inputName, msg, ref)			: inputName   = string, msg = string, ref = string
+ * 				
+ * Attributes:
+ * 				formElement : jquery-object for form
+ * 				formId 		: string
+ * 				response 	: json or string
  * 
  * @type Object
  */
@@ -13,18 +27,31 @@
 
 var form = function(){
     var obj = {
-		success			: true,
-		formElement		: '',
-		containerElement: '',
-		formId 			: '',
-		containerId 	: '',
-		response	 	: false,
-		template 		: '',
+		success			: true,				// validation is success or not.
+		formElement		: '',				// jquery-object for the form
+		containerElement: '',				// jquery-object for the form container
+		formId 			: '',				// form id
+		containerId 	: '',				// form-container id
+		response	 	: false,			// response after ajax post
+		template 		: '',				// template
+		loadingClosure	: function (){},    // closure for loading when ajax submit
 		emailRegex : /^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/i,
         passwordRegex: /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(\w{8,15})$/,
     };
 
-    obj.loadingClosure = function(){}; // closure for loading when ajax submit
+    var getInputObj = function (input) { // this function return jquery-object for an input-name
+    	if(typeof input == 'string')
+        {
+            input = obj.formElement.find('*[name='+input+']');
+        }
+        return input;
+    };
+
+    obj.construct = function(){
+    	// some statements here for constructor. //
+    };
+
+    obj.construct();
 
     obj.createTemplate = function (containerId, jsonData) { // this function builds form template
 
@@ -51,11 +78,11 @@ var form = function(){
     	// obj.formElement.attr('id', obj.formId);
     };
 
-    obj.construct = function(){
-    	// some statements here for constructor. //
+    obj.setLoading = function(closure){
+        if( typeof closure === 'function'){
+            obj.loadingClosure = closure;
+        }
     };
-
-    obj.construct();
 
     obj.setFormId = function (id) {
     	obj.formId = id;
@@ -69,29 +96,29 @@ var form = function(){
         }
     };
 
-    var getInputObj = function (input) { // this function return jquery-object for an input-name
-    	if(typeof input == 'string')
-        {
-            input = obj.formElement.find('*[name='+input+']');
-        }
-        return input;
-    };
 
-    obj.setError = function(ref, msg, input){ // setting input's error message
+    obj.setError = function(input, msg, ref){ // setting input's error message
         
         obj.setSuccess(false);
 
         inputObj = getInputObj(input);
 
         var err = $(document.createElement('div')).attr({'class':'form-error', 'ref' : ref}).html(msg).hide();
-        inputObj.parent('div').append(err.fadeIn());
+        inputObj.parent('*').append(err.fadeIn());
+    };
+
+    obj.setMessage = function(msgText){ // setting form message
+        
+        var msg = $(document.createElement('div')).html(msgText).addClass('form-message'); // creating message element.
+
+		obj.formElement.before(msg); // adding msg element before the form.
     };
 
     obj.removeError = function(ref, input){ // delete input's error message
     	
     	inputObj = getInputObj(input);
 
-        inputObj.parent('div').find("div[ref="+ref+"]").fadeOut().remove();
+        inputObj.parent('*').find("div[ref="+ref+"]").fadeOut().remove();
     }
 
     obj.validateEmail = function(input){
@@ -102,7 +129,7 @@ var form = function(){
 
         if( ! obj.emailRegex.test(inputObj.val()) )
         {
-            obj.setError(ref,'Invalid email address', input);
+            obj.setError(input, 'Invalid email address', ref);
         }
     };
 
@@ -113,7 +140,7 @@ var form = function(){
 
         if( ! obj.passwordRegex.test(inputObj.val()) )
         {
-            obj.setError(ref,'Password must be minimum 8 characters having at least 1 digit and 1 small letter 1 capital letter.', input);
+            obj.setError(input, 'Password must be minimum 8 characters having at least 1 digit and 1 small letter 1 capital letter.', ref);
         }
     };
 
@@ -126,12 +153,12 @@ var form = function(){
         {
             if(! inputObj.is(':checked'))
             {
-                obj.setError(ref,'This field is required.', input);
+                obj.setError(input, 'This field is required.', ref);
             }
         }
         else if(inputObj.val() === null || inputObj.val() === '')
         {
-            obj.setError(ref,'This field is required.', input);
+            obj.setError(input, 'This field is required.', ref);
         }
     };
 
@@ -144,7 +171,7 @@ var form = function(){
         // inputObj = obj.formElement.find('*[name='+input+']');
 
         if(! intRegex.test(inputObj.val())) {
-           obj.setError(ref,'Must be an integer value.', input);
+           obj.setError(input, 'Must be an integer value.', ref);
         }
     }
 
@@ -156,7 +183,7 @@ var form = function(){
         inputObj = getInputObj(input);
 
         if(! strRegex.test(inputObj.val())) {
-           obj.setError(ref,'Shouldn\'t contain numbers or special characters.', input);
+           obj.setError(input, 'Shouldn\'t contain numbers or special characters.', ref);
         }
     }
 
@@ -168,7 +195,7 @@ var form = function(){
 
         if(secondObj.val() != firstObj.val())
         {
-            obj.setError(ref,'It doesn\'t match', second);
+            obj.setError(input, 'It doesn\'t match', ref);
         }
     }
 
@@ -179,7 +206,7 @@ var form = function(){
 
         if(inputObj.val().length < len)
         {
-            obj.setError(ref,'Must be at least '+len+' characters.', input);
+            obj.setError(input, 'Must be at least '+len+' characters.', ref);
         }
     }
 
@@ -190,7 +217,7 @@ var form = function(){
 
         if(inputObj.val().length > len)
         {
-            obj.setError(ref,'Must be maximum '+len+' characters.', input);
+            obj.setError(input, 'Must be maximum '+len+' characters.', ref);
         }
     }
 
@@ -199,7 +226,7 @@ var form = function(){
         obj.success = true;
 
         obj.formElement.find('.form-error').remove();
-        $('.form-message').remove();
+        obj.formElement.parent('*').find('.form-message').remove();
         
         var rulesElements = obj.formElement.find("*[data-validate]");
 
@@ -207,11 +234,11 @@ var form = function(){
         	obj.validateRules($(this).attr('name'), $(this).data('validate'));
         });
 
-        var passwords = obj.formElement.find('input[type=password]');
-        for(var i = 0; i < passwords.length ; i++)
-        {
-            obj.validatePassword($(passwords[i]));
-        }
+        // var passwords = obj.formElement.find('input[type=password]');
+        // for(var i = 0; i < passwords.length ; i++)
+        // {
+        //     obj.validatePassword($(passwords[i]).attr('name'));
+        // }
 
         return obj.success;
     };
@@ -282,7 +309,7 @@ var form = function(){
 
             if (xmlhttp.readyState==4 && xmlhttp.status==200){
                 
-                obj.setResponse(xmlhttp.responseText); // setting response body to form object
+                obj.response = (xmlhttp.responseText); // setting response body to form object
 
                 if( typeof closure === 'function'){
                     closure(xmlhttp.responseText);
@@ -305,35 +332,30 @@ var form = function(){
                     obj.processMessagesResponse(errors[i]);
                     console.log('setError : form-input not found');
                 }else{
-                   obj.setError('autoMsg', errors[i], input);
+                   obj.setError(input, errors[i], 'autoMsg');
                 }
             }
         }
     };
 
     obj.processMessagesResponse = function(messages){
-        var msgWrapper = obj.formId+'-message';
-        $('#'+msgWrapper).html('');
-        var msgsContainer = $(document.createElement('div')).attr('id', msgWrapper).addClass('form-message');
         if($.isArray(messages)) {
             if(messages.length > 0){
                 for(var i in messages)
                 {
-                    var msg = $(document.createElement('div')).html(messages[i]);
-                    $(msgsContainer).append(msg);
+                	obj.setMessage(messages[i]);
                 }
-                obj.formElement.parent('div').before(msgsContainer);
             }
-        }else if(messages.length > 0){
-            var msg = $(document.createElement('div')).html(messages);
-            $(msgsContainer).append(msg);
-            obj.formElement.parent('div').before(msgsContainer);
+        }else if(messages.length > 0){ // this check to avoid error message if message is empty.
+            obj.setMessage(messages);
         }
     };
     
     
     obj.checkAjax = function () { // check if ajax-post or normal-post
-    	return true;
+    	if(obj.formElement.data('ajax') == 1)
+            return true;
+        return false;
     };
 
     obj.whenSubmit = function(closureAfter, closureBefore){
@@ -341,10 +363,15 @@ var form = function(){
         obj.closureAfter = closureAfter;
         obj.closureBefore = closureBefore;
 
+        if(obj.formId == '') {
+        	alert('Formjs error');
+        	console.log('There is no form to submitted, please make sure of declaring the form using : setFormId or createTemplate');
+        }
+
         $(document).on('submit', "#"+obj.formId, function(){
 
             console.log(obj.formId + ' -> submitting');
-
+            console.log('is vlaid : ' + obj.isValid());
             if( obj.isValid() )
             {
                 var execute = true; // beforeClosure return true or false;
@@ -366,11 +393,15 @@ var form = function(){
 
                         obj.ajaxPost( function(res){
 
+                        	try {
+							    res = jQuery.parseJSON(res);
+							} catch(error) {
+							    // okay not json
+							}
+
                         	if (typeof obj.closureAfter == 'function') {
 	                            obj.closureAfter(res);
                         	}
-
-                            res = JSON.parse(res);
 
                             if(res.hasOwnProperty('redirect')){
                                 window.location.replace(res.redirect);

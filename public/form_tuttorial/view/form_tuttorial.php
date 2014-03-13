@@ -30,20 +30,35 @@
 
 		$(document).ready(function(){
 
+			/** -------------- start form.js -------------- **/
+
 			var xform = new form(); // creating form instance
+
+			xform.setLoading(function(){ // set loading after ajax submit
+				xform.formElement.fadeOut('slow'); // test
+				xform.formElement.fadeIn('slow'); // test
+			});
+
 			xform.createTemplate('creteFormId', jsonData); // building form template
+			// xform.setFormId('blabla'); // used with static forms, don't need to createTemplate, just use this.
+
 			xform.whenSubmit( // set submit & validation listener.
 				function (data) {
 					// process response here
+					// for example proceeding a second form : var secondForm = new form(); etc..
+					xform.setMessage('Form has been submitted.');
 				},
 				function () {
-					// extra checkes before submitting form
-					// you can set error : xform.setError('error-ref', 'Error Message', 'input-name');
-					// return false : form will not be submitted
+					// extra validates before submitting form
+					// return false : prevent submitting the form
 					// return true : form will be sumitted
+					xform.setError('user_firstname', 'User name should be unique'); // for example
+					return true; // return true to continue posting the form
 				}
 			);
-			
+
+			/** -------------- end form.js -------------- **/
+
 		});
 
 
@@ -143,11 +158,11 @@
 	<div class="modal-body">
     	<div class="header-login-error-modal-left">
     		<p class="header-login-error-message">Üzgünüz, oturum açma bilgilerinizi tanıyamadık. Lütfen, tekrar deneyin</p>
-			<form method="post" action="">
+			<form id='second-form' method="post" action="">
  				<div class="control-field">
 					<label class="control-label" for="">Kullanıcı adı</label>
 					<div class="controls">
-						<input type="text" class="login-error-input" id="" name="">
+						<input type="text" data-validate='required' class="login-error-input" id="" name="">
 					</div>
 				</div>
 				<div class="control-field">
@@ -219,7 +234,7 @@
 							</ul>
 						</div>
 						<div class="header-right-bottom">
-							<form action="#" method="post" class="header-login-form">
+							<form action="#" method="post" class="header-login-form" id="first-form">
 								<input type="text" name="username" placeholder="Kullanıcı adı">
 								<input type="password" name="password" placeholder="Parola">
 								<button type="submit" class="btn btn-primary login-button" id="header-submit" name="header-submit">Oturum Aç</button>

@@ -1,6 +1,6 @@
 <script type="text/template" class="template">
 
-	<form id="<%= formData.formId %>" class="form-horizontal register-form" style='width:80%; margin:0' role="form" method="post" action="<%- formData.postUrl %>" novalidate="novalidate">
+	<form id="<%= formData.formId %>" data-ajax="<%= formData.ajax %>" class="form-horizontal register-form" style='width:80%; margin:0' role="form" method="post" action="<%- formData.postUrl %>" novalidate="novalidate">
 		<% _.each( formData.inputs, function( input ){
 
 			switch(input.type) { 
