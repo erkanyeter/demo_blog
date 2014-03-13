@@ -8,19 +8,21 @@
 $c = new Controller(
     function () {  
         new Db;
-        new Pdo_Crud;
+        new Get;
     }
 );
 
 $c->func(
     'index',
-    function ($id) {
+    function () { // deprecated
         try
         {
             $this->db->transaction();
-            $this->db->where('comment_id', $id);
-            $this->db->delete('comments');
+            $this->db->prepare("DELETE FROM comments WHERE comment_id = ?");
+            $this->db->bindValue(1, $this->get->get('id'), PARAM_INT);
+            $this->db->execute();
             $this->db->commit();
+
             $r = array(
                 'success' => 1,
                 'results' => array(),

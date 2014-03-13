@@ -8,8 +8,6 @@
 $c = new Controller(
     function () {
         new View;
-
-        $this->logger->output = true;
     }
 );
 

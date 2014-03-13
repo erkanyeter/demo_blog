@@ -32,9 +32,8 @@ Class Pdo_Adapter
     public $prefix = '';
 
     //--------------------------------------------------------------
-
-    public $prepare = false;    // prepare switch
-    public $p_opt = array();    // prepare options
+    
+    public $prepare = false;    // Prepare used or not
     public $last_sql = null;     // stores last queried sql
     public $last_values = array();  // stores last executed PDO values by exec_count
     public $query_count = 0;        // count all queries.
@@ -159,13 +158,18 @@ Class Pdo_Adapter
     /**
      * Set PDO native Prepare() function
      *
-     * @param    array $options prepare options
+     * @param string $sql     prepared query
+     * @param array  $options prepare options
+     *
+     * @return object adapter
      */
-    public function prepare($options = array())
+    public function prepare($sql, $options = array())
     {
-        $this->p_opt = $options;
+        $this->Stmt = $this->_conn->prepare($sql, $options);
+        $this->prep_queries[] = $sql;  // Save the  query for debugging
         $this->prepare = true;
-        return $this;
+        ++$this->query_count;
+        return ($this);
     }
 
     // --------------------------------------------------------------------
@@ -182,12 +186,6 @@ Class Pdo_Adapter
 
         $this->last_sql = $sql;
 
-        if ($this->prepare) {
-            $this->Stmt = $this->_conn->prepare($sql, $this->p_opt);
-            $this->prep_queries[] = $sql;  // Save the  query for debugging
-            ++$this->query_count;
-            return $this;
-        }
         //------------------------------------
 
         list($smt, $sst) = explode(' ', microtime());
@@ -198,7 +196,7 @@ Class Pdo_Adapter
 
         if ($config['log_queries']) {
             list($emt, $est) = explode(' ', microtime());
-            $logger->debug('SQL:', array('time' => number_format(($emt + $est) - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $logger->debug('$_SQL ( Query ):', array('time' => number_format(($emt + $est) - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         ++$this->query_count;
         return ($this);
@@ -510,12 +508,12 @@ Class Pdo_Adapter
      * @param    string  $bind_value
      * @return   object  | void
      */
-    public function exec($array = null)
+    public function execute($array = null)
     {
         global $config, $logger;
 
-        if (!empty($array) AND !$this->isAssocArray($array)) {
-            throw new \Exception('PDO bind data must be associative array');
+        if ( ! empty($array) AND ! $this->isAssocArray($array)) {
+            throw new Exception('PDO bind data must be associative array');
         }
 
         //------------------------------------
@@ -529,7 +527,8 @@ Class Pdo_Adapter
 
         if ($config['log_queries'] AND isset($this->prep_queries[0])) {
             list($emt, $est) = explode(' ', microtime());
-            $logger->debug('SQL: ' . trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n") . ' ( Prepared Query ) time: ' . number_format(($emt + $est) - $start_time, 4));
+            $end_time = ($emt + $est);
+            $logger->debug('$_SQL ( Execute ):', array('time' => number_format($end_time - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
         }
 
         $this->prepare = false;   // reset prepare variable and prevent collision with next query ..
@@ -564,7 +563,7 @@ Class Pdo_Adapter
      * @param    string $sql
      * @return   boolean
      */
-    public function execQuery($sql)
+    public function exec($sql)
     {
         global $config, $logger;
         $this->last_sql = $sql;
@@ -580,11 +579,7 @@ Class Pdo_Adapter
         if ($config['log_queries']) {
             list($emt, $est) = explode(' ', microtime());
             $end_time = ($emt + $est);
-            if (isset($this->prep_queries[0])) {
-                $logger->debug('SQL: ' . trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n") . ' ( Exec Query ) time: ' . number_format($end_time - $start_time, 4));
-                return $affected_rows;
-            }
-            $logger->debug('SQL: ' . trim(preg_replace('/\n/', ' ', $sql), "\n") . ' time: ' . number_format($end_time - $start_time, 4));
+            $logger->debug('$_SQL ( Exec ):', array('time' => number_format($end_time - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         return $affected_rows;
     }

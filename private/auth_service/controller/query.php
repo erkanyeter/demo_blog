@@ -27,18 +27,17 @@ $c->func(
             echo json_encode($r);
             return;
         }
-        //-------- QUERY -------//
+        //-------- Secure Pdo Query -------//
 
-        $this->db->prepare();
-        $this->db->query(
+        $this->db->prepare(
             'SELECT user_id,
             user_username,
             user_password,
             user_email 
             FROM users WHERE user_email = :user_email'
         );
-        $this->db->bindParam(':user_email', $this->post->get('email'), PARAM_STR, 60);
-        $this->db->exec();
+        $this->db->bindValue(':user_email', $this->post->get('email'), PARAM_STR, 10);
+        $this->db->execute();
         $row = $this->db->getRowArray();
 
         //-------- WRONG USERMAME -------//

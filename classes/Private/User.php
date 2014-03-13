@@ -31,7 +31,6 @@ Class Private_User
         new Auth;
 
         $this->init();
-
         $logger->debug('Private User Class Initialized');
     }
 

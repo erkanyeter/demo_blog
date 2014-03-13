@@ -16,7 +16,7 @@ $c->func(
     'index',
     function ($status = 0) {
 
-        $this->db->query('SELECT * FROM comments WHERE comment_status = '.$status);
+        $this->db->query('SELECT * FROM comments WHERE comment_status = '.$this->db->escape($status));
         
         $r = array(
             'results' => array('count' => $this->db->getCount()),

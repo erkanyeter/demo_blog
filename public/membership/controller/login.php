@@ -17,7 +17,7 @@ $c = new Controller(
 );
 
 $c->func(
-    'index.public_user',
+    'index.Public_User',
     function () {
 
         if ($this->post->get('dopost')) {  // login button is submit ?
@@ -27,7 +27,7 @@ $c->func(
 
             if ($this->form->isValid()) {  // form is valid ?
 
-                $r = $this->hvc->post('private/auth/query');
+                $r = $this->hvc->get('private/auth_service/query');
 
                 if ($r['success']) {      // Authorize to user
                     $this->auth->authorize();

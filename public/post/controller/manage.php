@@ -12,13 +12,12 @@ $c = new Controller(
         new Form;
         new View;
         new Post;
-        new Db;
         new Hvc;
     }
 );
 
 $c->func(
-    'index.private_user',
+    'index.Private_User',
     function () {
 
         $r = $this->hvc->get('private/posts/getallmanage'); // get all post data

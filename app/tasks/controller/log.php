@@ -107,116 +107,104 @@ $c->func(
                 // $line = trim(preg_replace('/[\r\n]/', ' ', $line), "\n");
                 
                 $line = trim(preg_replace('/[\r\n]/', "\n", $line), "\n");
-                $line = str_replace('[@]', "\n", $line); // new line
+                // $line = str_replace('[@]', "\n", $line); // new line
                 $out  = explode('.', $line);  // echo print_r($out, true)."\n\n";
-                
-                // print_r($out);
 
-                if ($level == '' OR $level == 'debug') {
-                    
-                    if (isset($out[1])) {
+                if (($level == '' OR $level == 'debug') AND isset($out[1])) {
 
-                        if (strpos($out[1], '[') !== false) {   // colorful logs.
-                            $line = "\033[0;33m".$line."\033[0m";
+                    if (strpos($out[1], '$_SQL') !== false) {   // remove unnecessary spaces from sql output
+                        $line = "\033[1;32m".preg_replace('/[\s]+/', ' ', $line)."\033[0m";
+                        $line = preg_replace('/[\r\n]/', "\n", $line);
+                    }
+                    if (strpos($out[1], '$_') !== false) {
+                        $line = preg_replace('/\s+/', ' ', $line);
+                        $line = preg_replace('/\[/', "[", $line);  // do some cleaning
+
+                        if (strpos($out[1], '$_REQUEST_URI') !== false) {
+                            $break = "\n------------------------------------------------------------------------------------------";
+                            $line = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
+                        } elseif (strpos($out[1], '$_HVC') !== false) {
+                            $line = "\033[1;34m".strip_tags($line)."\033[0m";
+                        } else {
+                            $line = "\033[1;35m".$line."\033[0m";
                         }
-
-                        if (strpos($out[1], 'SQL') !== false) {   // remove unnecessary spaces from sql output
-                            $line = str_replace('SQL: ', '', "\033[1;32m".preg_replace('/[\s]+/', ' ', $line)."\033[0m");
-                            $line = preg_replace('/[\r\n]/', "\n", $line);
-                        }
-
-                        if (strpos($out[1], '$_') !== false) {
-                            $line = preg_replace('/\s+/', ' ', $line);
-                            $line = preg_replace('/\[/', "[", $line);  // do some cleaning
-
-                            if (strpos($out[1], '$_REQUEST_URI') !== false) {
-                                $break = "\n------------------------------------------------------------------------------------------";
-                                $line = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
-                            } elseif (strpos($out[1], '$_HVC') !== false) {
-                                $line = "\033[1;34m".strip_tags($line)."\033[0m";
-                            } else {
-                                $line = "\033[1;35m".$line."\033[0m";
+                    }
+                    if (strpos($out[1], '$_TASK') !== false) {
+                        $line = "\033[1;34m".$line."\033[0m";
+                    }
+                    if (strpos($out[1], 'loaded:') !== false) {
+                        $line = "\033[0;35m".$line."\033[0m";
+                    }
+                    if (strpos($out[1], 'debug') !== false) {   // Do not write two times
+                        if ($level == '' OR $level == 'debug') {
+                            if (strpos($out[1], 'Final output sent to browser') !== false) {
+                                $line = "\033[1;36m".$line."\033[0m";
+                            }
+                            $line = "\033[0;35m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
                             }
                         }
+                    }
+                    if (strpos($out[1], 'info') !== false) {
+                        if ($level == '' OR $level == 'info') {
+                            $line = "\033[1;35m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
+                    if (strpos($out[1], 'error') !== false) {
+                        if ($level == '' OR $level == 'error') {
+                            $line = "\033[1;31m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
+                    if (strpos($out[1], 'alert') !== false) {
+                        if ($level == '' OR $level == 'alert') {
+                            $line = "\033[1;31m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
+                    if (strpos($out[1], 'emergency') !== false) {
+                        if ($level == '' OR $level == 'emergency') {
+                            $line = "\033[1;31m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
+                    if (strpos($out[1], 'critical') !== false) {
+                        if ($level == '' OR $level == 'critical') {
+                            $line = "\033[1;31m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
+                    if (strpos($out[1], 'warning') !== false) {
+                        if ($level == '' OR $level == 'warning') {
+                            $line = "\033[1;33m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
+                    if (strpos($out[1], 'notice') !== false) {
+                        if ($level == '' OR $level == 'notice') {
+                            $line = "\033[1;33m".$line."\033[0m";
+                            if ( ! isset($lines[$line])) {
+                                echo $line."\n";
+                            }
+                        }
+                    }
 
-                        if (strpos($out[1], 'Task') !== false) {
-                            $line = "\033[1;34m".$line."\033[0m";
-                        }
-                        if (strpos($out[1], 'loaded:') !== false) {
-                            $line = "\033[0;35m".$line."\033[0m";
-                        }
-                    }
-                }
+                } // end isset
 
-                if (strpos($out[1], 'debug') !== false) {   // Do not write two times
-                    if ($level == '' OR $level == 'debug') {
-
-                        if (strpos($out[1], 'Final output sent to browser') !== false) {
-                            $line = "\033[1;36m".$line."\033[0m";
-                        }
-
-                        $line = "\033[0;35m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'info') !== false) {
-                    if ($level == '' OR $level == 'info') {
-                        $line = "\033[1;35m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'error') !== false) {
-                    if ($level == '' OR $level == 'error') {
-                        $line = "\033[1;31m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'alert') !== false) {
-                    if ($level == '' OR $level == 'alert') {
-                        $line = "\033[1;31m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'emergency') !== false) {
-                    if ($level == '' OR $level == 'emergency') {
-                        $line = "\033[1;31m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'critical') !== false) {
-                    if ($level == '' OR $level == 'critical') {
-                        $line = "\033[1;31m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'warning') !== false) {
-                    if ($level == '' OR $level == 'warning') {
-                        $line = "\033[1;33m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
-                if (strpos($out[1], 'notice') !== false) {
-                    if ($level == '' OR $level == 'notice') {
-                        $line = "\033[1;33m".$line."\033[0m";
-                        if ( ! isset($lines[$line])) {
-                            echo $line."\n";
-                        }
-                    }
-                }
                 $i++;
                 $lines[$line] = $line;
             }

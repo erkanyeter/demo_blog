@@ -1,7 +1,5 @@
 <?php
 
-namespace Pager\Src;
-
 /**
  * Pager Jumping Driver
  *
@@ -21,14 +19,13 @@ Class Pager_Jumping extends Pager_Common
      *                       names and their values
      * @access public
      */
-    function __construct($options = array())
+    public function __construct($options = array())
     {
         $res = $this->setOptions($options);
 
         if ($res !== true) {
             throw new \Exception('Pager Unknown Error.');
         }
-
         $this->build();
     }
 
@@ -219,4 +216,4 @@ Class Pager_Jumping extends Pager_Common
 // END Pager_Jumping Class
 
 /* End of file Pager_Jumping.php */
-/* Location: ./packages/pager/releases/0.0.1/src/pager_jumping.php */
+/* Location: ./packages/pager/releases/0.0.1/pager_jumping.php */

@@ -1,5 +1,4 @@
 <?php
-namespace Logger\Src;
 
 /**
  * Logger Output Class
@@ -11,7 +10,7 @@ namespace Logger\Src;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class Output
+Class Logger_Output
 {
     public $logger;
 
@@ -42,7 +41,7 @@ Class Output
             foreach ($this->logger->getRecordArray() as $value) {
                 $output.= str_replace('\n', '<br />', $value);
             }
-            $template = file_get_contents(PACKAGES .'logger'. DS .'releases'. DS .$packages['dependencies']['logger']['version']. DS .'src'. DS .'output_html'. EXT);
+            $template = file_get_contents(PACKAGES .'logger_output'. DS .'releases'. DS .$packages['dependencies']['logger_output']['version']. DS .'src'. DS .'html'. EXT);
             return str_replace(array('{output}','{title}'), array($output,'LOGGER OUTPUT'), $template);
         }
         return $output;

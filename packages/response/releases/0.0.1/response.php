@@ -83,7 +83,7 @@ Class Response
         // --------------------------------------------------------------------
 
         if (count($this->headers) > 0) {
-            if (!headers_sent()) {
+            if ( ! headers_sent()) {
                 foreach ($this->headers as $header) {
                     header($header[0], $header[1]);
                 }
@@ -92,8 +92,8 @@ Class Response
 
         // --------------------------------------------------------------------
 
-        if ( ! function_exists('getInstance')) {              // Does the getInstance() function exist?                                                   // If not we know we are dealing with a cache file so we'll
-            echo $output;                                   // simply echo out the data and exit. 
+        if ( ! function_exists('getInstance')) {     // Does the getInstance() function exist ? // If not we know we are dealing with a cache file so we'll
+            echo $output;                            // simply echo out the data and exit. 
             $logger->debug('Final output sent to browser');
             return true;
         }
@@ -105,7 +105,6 @@ Class Response
         }
 
         $extra = array();
-
         if ($config['log_benchmark']) { // Do we need to generate benchmark data ? If so, enable and run it.
             $memory_usage = 'memory_get_usage() function not found on your php configuration.';
 

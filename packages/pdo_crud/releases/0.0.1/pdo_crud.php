@@ -361,7 +361,6 @@ Class Pdo_Crud
         }
 
         $prefix = (sizeof($this->ar_where) == 0) ? '' : $type;
-
         $where_in = $prefix . $this->_protectIdentifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
 
         $this->ar_where[] = $where_in;
@@ -718,7 +717,7 @@ Class Pdo_Crud
     public function _hasOperator($str)
     {
         $str = trim($str);
-        if (!preg_match("/(\s|<|>|!|=|is null|is not null)/i", $str)) {
+        if ( ! preg_match("/(\s|<|>|!|=|is null|is not null)/i", $str)) {
             return false;
         }
         return true;
@@ -1081,7 +1080,6 @@ Class Pdo_Crud
         } else {
             $table = $this->_protectIdentifiers($table, true, null, false);
         }
-
         if (sizeof($this->ar_where) == 0 AND sizeof($this->ar_wherein) == 0 AND sizeof($this->ar_like) == 0) {
             throw new Exception('Deletes are not allowed unless they contain a "where" or "like" clause.');
         }
@@ -1092,7 +1090,7 @@ Class Pdo_Crud
         if ($reset_data) {
             $this->_resetWrite();
         }
-        return $this->adapter->execQuery($sql); // return number of  affected rows
+        return $this->adapter->exec($sql); // return number of  affected rows
     }
 
     // --------------------------------------------------------------------
@@ -1149,7 +1147,7 @@ Class Pdo_Crud
         }
         $sql = $this->adapter->_replace($this->_protectIdentifiers($table, true, null, false), array_keys($this->ar_set), array_values($this->ar_set));
         $this->_resetWrite();
-        return $this->adapter->query($sql);
+        return $this->adapter->exec($sql);
     }
 
     // --------------------------------------------------------------------
@@ -1183,7 +1181,7 @@ Class Pdo_Crud
         $sql = $this->adapter->_update($this->_protectIdentifiers($table, true, null, false), $this->ar_set, $this->ar_where, $this->ar_orderby, $this->ar_limit);
         $this->_resetWrite();
 
-        return $this->adapter->execQuery($sql);  // return number of affected rows.  
+        return $this->adapter->exec($sql);  // return number of affected rows.  
     }
 
     // --------------------------------------------------------------------
@@ -1211,9 +1209,9 @@ Class Pdo_Crud
             $this->set($set);
         }
         $sql = $this->adapter->_insert($this->_protectIdentifiers($table, true, null, false), array_keys($this->ar_set), array_values($this->ar_set));
-
         $this->_resetWrite();
-        return $this->adapter->execQuery($sql);  // return affected rows ( PDO support )
+
+        return $this->adapter->exec($sql);  // return affected rows ( PDO support )
     }
 
     /**

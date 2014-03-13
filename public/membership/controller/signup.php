@@ -11,15 +11,13 @@ $c = new Controller(
         new Html;
         new Form;
         new View;
-        new Sess;
-        new Auth;
         new Post;
         new Hvc;
     }
 );
 
 $c->func(
-    'index.public_user',
+    'index.Public_User',
     function () {
         if ($this->post->get('dopost')) {  // if isset post submit
             
@@ -33,7 +31,6 @@ $c->func(
                 'callback_username',
                 function () {
                     $r = $this->hvc->post('private/users/getcount');
-
                     if ($r['results']['count'] > 0) {   // unique control
                         $this->form->setMessage('callback_username', 'The username is already taken by another member');
                         return false;

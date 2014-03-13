@@ -15,11 +15,9 @@ Class Task {
     {
         global $logger;
 
-        if( ! isset(getInstance()->task))
-        {
+        if( ! isset(getInstance()->task)) {
             getInstance()->task = $this; // Make available it in the controller $this->task->method();
         }
-
         $logger->debug('Task Class Initialized');
     }
 
@@ -34,7 +32,6 @@ Class Task {
     public function run($uri, $debug = false)
     {
         global $logger;
-
         $uri    = explode('/', trim($uri));
         $module = array_shift($uri);
 
@@ -43,7 +40,6 @@ Class Task {
                 $uri[$i] = 'false';
             }
         }
-
         $shell  = PHP_PATH .' '. FPATH .'/'. TASK_FILE .' '. $module .' '. implode('/', $uri) .' OB_TASK_REQUEST';
 
         if($debug) // Enable debug output to log folder.
@@ -53,7 +49,7 @@ Class Task {
             // clear console colors
             // $output = trim(preg_replace('/\n/', '#', $output), "\n");
             $output = preg_replace(array('/\033\[36m/','/\033\[31m/','/\033\[0m/'), array('','',''), shell_exec($shell));
-            $logger->debug('Task request : '.$shell, array('output' => $output));
+            $logger->debug('$_TASK request: '.$shell, array('output' => $output));
             return $output;
         }
         else   // continious task
@@ -62,7 +58,7 @@ Class Task {
 
             shell_exec($shell.' > /dev/null &');
         }
-        $logger->debug('Task command : '. $shell);
+        $logger->debug('$_TASK command: '. $shell);
     }
 
 }
