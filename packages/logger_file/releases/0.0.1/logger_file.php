@@ -8,7 +8,7 @@
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/logger
+ * @link      http://obullo.com/package/logger_file
  */
 Class Logger_File 
 {
@@ -19,15 +19,15 @@ Class Logger_File
     /**
      * Constructor
      * 
-     * @param object $logger object of logger
+     * @param object $log object of logger
      */
-    public function __construct($logger)
+    public function __construct(Logger $log)
     {
-        if ( ! isset($logger_file)) {  // Load config file
-            include APP .'config'. DS . strtolower(ENV) . DS .'logger_file'. EXT;
-        }
-        $this->logger = $logger;
-        $this->config = $logger_file;
+        $logger = null;
+        include APP .'config'. DS . strtolower(ENV) . DS .'logger'. EXT;
+        
+        $this->config = $logger;
+        $this->logger = $log;
 
         $this->logger->setProperty('batch', $this->config['batch']);  // set batch switch
 

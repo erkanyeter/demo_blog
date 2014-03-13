@@ -67,8 +67,6 @@ $c->func(
     'index.public_user',
     function () {
 
-        new Db;
-
         $r = $this->hvc->get('private/posts/getallhome'); // get all post data
 
         $this->view->get(

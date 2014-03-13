@@ -31,7 +31,7 @@ $config = array(
                                         'database',
                                         'routes',
                                         'sess',
-                                        'logger_file',
+                                        'logger',
                                         'logger_mongo',
                                         'mongo'
                                 ),

@@ -55,6 +55,7 @@
                 <li><?php echo $this->url->anchor('/tutorials/hello_ajax', 'Hello Ajax') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_task', 'Hello Task') ?></li>
                 <li><?php echo $this->url->anchor('/tutorials/hello_hvc', 'Hello Hvc') ?></li>
+                <li><?php echo $this->url->anchor('/tutorials/hello_captcha', 'Hello Captcha') ?></li>
             </ol>
         </section>
 

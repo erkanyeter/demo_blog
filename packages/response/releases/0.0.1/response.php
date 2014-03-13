@@ -1,6 +1,6 @@
 <?php
 
- /**
+/**
  * Response Class
  * 
  * Set Http Response, Set Output Errors
@@ -11,16 +11,15 @@
  * @category      output
  * @link
  */
-
-Class Response {
-    
+Class Response
+{
     public $final_output;
     public $headers = array();
 
     // --------------------------------------------------------------------
 
     public function __construct()
-    {   
+    {
         global $logger;
         $logger->debug('Response Class Initialized');
     }
@@ -28,14 +27,14 @@ Class Response {
     // --------------------------------------------------------------------
 
     /**
-    * Append Output
-    *
-    * Appends data onto the output string
-    *
-    * @access    public
-    * @param     string
-    * @return    void
-    */    
+     * Append Output
+     *
+     * Appends data onto the output string
+     *
+     * @access    public
+     * @param     string
+     * @return    void
+     */
     public function appendOutput($output)
     {
         if ($this->final_output == '') {
@@ -46,7 +45,7 @@ Class Response {
     }
 
     // --------------------------------------------------------------------
-    
+
     /**
      * Display Output
      *
@@ -60,25 +59,21 @@ Class Response {
      *
      * @access    public
      * @return    mixed
-     */        
+     */
     public function _sendOutput($output = '')
     {
         global $config, $logger;
 
-        if ($output == '')  // Set the output data
-        {
-            $output =& $this->final_output;
+        if ($output == '') {  // Set the output data
+            $output = & $this->final_output;
         }
 
         // Is compression requested?  
         // --------------------------------------------------------------------
-        
-        if ($config['compress_output'])
-        {
-            if (extension_loaded('zlib'))
-            {             
-                if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false)
-                {   
+
+        if ($config['compress_output']) {
+            if (extension_loaded('zlib')) {
+                if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
                     ob_start('ob_gzhandler');
                 }
             }
@@ -86,55 +81,74 @@ Class Response {
 
         // Are there any server headers to send ?
         // --------------------------------------------------------------------
-        
-        if(count($this->headers) > 0 ) 
-        {       
-            if ( ! headers_sent())
-            {
-                foreach ($this->headers as $header)
-                {
+
+        if (count($this->headers) > 0) {
+            if (!headers_sent()) {
+                foreach ($this->headers as $header) {
                     header($header[0], $header[1]);
                 }
-            }        
+            }
         }
 
         // --------------------------------------------------------------------
-        
-        if ( ! function_exists('getInstance'))              // Does the getInstance() function exist?
-        {                                                   // If not we know we are dealing with a cache file so we'll
+
+        if ( ! function_exists('getInstance')) {              // Does the getInstance() function exist?                                                   // If not we know we are dealing with a cache file so we'll
             echo $output;                                   // simply echo out the data and exit. 
-            
             $logger->debug('Final output sent to browser');
-            
             return true;
         }
-        
-        if (method_exists(getInstance(), '_response'))  // Does the controller contain a function named _output()?
-        {           
+
+        if (method_exists(getInstance(), '_response')) {  // Does the controller contain a function named _output()?
             getInstance()->_response($output);          // If so send the output there.  Otherwise, echo it.
-        }
-        else
-        {
+        } else {
             echo $output;  // Send it to the browser!
         }
-        
-        $info = array();
 
-        if ($config['log_benchmark']) // Do we need to generate benchmark data ? If so, enable and run it.
-        {
+        $extra = array();
+
+        if ($config['log_benchmark']) { // Do we need to generate benchmark data ? If so, enable and run it.
             $memory_usage = 'memory_get_usage() function not found on your php configuration.';
 
-            if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '')
-            {
-                $memory_usage = number_format($usage).' bytes';
+            if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
+                $memory_usage = number_format($usage) . ' bytes';
             }
-            $info = array('memory_usage' => $memory_usage);
+            $extra = array('memory' => $memory_usage);
         }
-        $logger->debug('Final output sent to browser', $info);
+        $logger->debug('Final output sent to browser', $extra);
+    }
+
+    // ------------------------------------------------------------------------
+    
+    /**
+    * Get Output
+    *
+    * Returns the current output string
+    *
+    * @access    public
+    * @return    string
+    */    
+    public function getOutput()
+    {
+        return $this->final_output;
     }
 
     // --------------------------------------------------------------------
-
+    
+    /**
+    * Set HTTP Status Header
+    * 
+    * @access   public
+    * @param    int     the status code
+    * @param    string    
+    * @return   void
+    */    
+    public function setHttpResponse($code = 200, $text = '')
+    {
+        http_response_code($code);  // Php >= 5.4.0 
+    }
+        
+    // ------------------------------------------------------------------------
+    
     /**
      * Call helper functions
      * 
@@ -146,11 +160,12 @@ Class Response {
     {
         global $packages;
 
-        if ( ! function_exists('Response\Src\\'.$method)) {
-            include PACKAGES .'response'. DS .'releases'. DS .$packages['dependencies']['response']['version']. DS .'src'. DS .strtolower($method). EXT;
+        if ( ! function_exists('Response\Src\\' . $method)) {
+            include PACKAGES . 'response' . DS . 'releases' . DS . $packages['dependencies']['response']['version'] . DS . 'src' . DS . strtolower($method) . EXT;
         }
-        return call_user_func_array('Response\Src\\'.$method, $arguments);
+        return call_user_func_array('Response\Src\\' . $method, $arguments);
     }
+
 }
 
 // END Response Class

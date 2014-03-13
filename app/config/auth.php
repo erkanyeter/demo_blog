@@ -10,7 +10,7 @@
 $auth = array(
     'session_prefix'     => 'auth_',   // Set a prefix to prevent collisions with original session object.
     'allow_login'        => true,      // Whether to allow logins to be performed on login form.
-    'regenerate_sess_id' => false,     // Set to true to regenerate the session id on every page load or leave as false to regenerate only upon new login.
+    'regenerate_sess_id' => false,     // Set to true to regenerate the session id on every page load
 );
 
 /*
@@ -24,7 +24,7 @@ $auth['session']   = function () {   // Session Dependency
     return new Sess;                 // Start the sessions
 };
 $auth['algorithm'] = function () {   // Whether to use "bcrypt" or another custom object 
-    return new Bcrypt;               // return 'sha256'    // if you don't want to use Bcrypt object return "sha1", "sha256" or any hash type ,.
+    return new Bcrypt;               // return null;  if you don't want to use the class.
 };
 
 /*

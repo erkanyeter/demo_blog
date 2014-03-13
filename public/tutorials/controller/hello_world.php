@@ -10,11 +10,6 @@ $c = new Controller(
         new View;
 
         $this->logger->output = true;
-
-        // $var   = '$_POST';
-        // $myvar = $$var;
-        
-        // $myvar['test'];
     }
 );
 

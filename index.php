@@ -194,6 +194,12 @@ if ($config['csrf_protection'] OR $config['global_xss_filtering']) { // CSRF Pro
 */
 new Obullo;
 
+// @todo
+// $app = new Obullo;
+// 
+// global $app;
+// $app->bind('package.view', 'View');
+//  
 // $app->registry('package.view', 'View');
 // $app->registry('package.logger', 'Logger');
 // $app->registry('package.logger', 'Mailer');
