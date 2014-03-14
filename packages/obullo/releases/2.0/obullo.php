@@ -16,7 +16,10 @@
  */
 function Framework_Run() {
 
+    $start = microtime(true);
+
     global $config, $uri, $router, $response, $logger;
+
     /*
      * ------------------------------------------------------
      *  Instantiate the hooks class
@@ -67,7 +70,7 @@ function Framework_Run() {
      * ------------------------------------------------------
      */
     if ($logger->getProperty('enabled')) {
-        $logger->debug('$_REQUEST_URI: ' .$uri->getRequestUri());
+        $logger->debug('$_REQUEST_URI: ' .$uri->getRequestUri(), $_REQUEST);
         $logger->debug('$_COOKIE: ', $_COOKIE);
         $logger->debug('$_POST: ', $_POST);
         $logger->debug('$_GET: ', $_GET);
@@ -153,6 +156,20 @@ function Framework_Run() {
     if ($config['enable_hooks']) {
         $hooks->call('post_system');
     }
+
+    $time = microtime(true) - $start;
+
+    $extra = array();
+    if ($config['log_benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
+        $usage = 'memory_get_usage() function not found on your php configuration.';
+        if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
+            $usage = number_format($usage) . ' bytes';
+        }
+        $extra = array('time' => number_format($time, 4), 'memory' => $usage);
+    }
+
+    $logger->debug('Final output sent to browser', $extra);
+        
 }
 // end construct
 
