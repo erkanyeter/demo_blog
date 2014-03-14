@@ -32,8 +32,6 @@ Class Sess
             self::$driver = $sess['driver']();
             self::$driver->init($sess);  // Start the sessions            
 
-            getInstance()->sess = self::$driver;  // Available it in the contoller $this->sess->method();
-
             $logger->debug('Sess Class Initialized');
             $logger->debug('$_SESSION: ', self::$driver->getAllData());
 

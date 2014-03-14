@@ -1,6 +1,6 @@
 <script type="text/template" class="template">
 
-	<form id="<%= formData.formId %>" class="form-horizontal register-form" style='width:80%; margin:0' role="form" method="post" action="<%- formData.postUrl %>" novalidate="novalidate">
+	<form id="<%= formData.formId %>" data-ajax="<%= formData.ajax %>" class="form-horizontal register-form" style='width:80%; margin:0' role="form" method="post" action="<%- formData.postUrl %>" novalidate="novalidate">
 		<% _.each( formData.inputs, function( input ){
 
 			switch(input.type) { 
@@ -158,7 +158,7 @@
 		<% }) %>
 		
 		<div class="register-submit">
-		      <input type="button" value="Kaydol" id="submitbtn" class="" onClick="formpost(<%= formData.formId %>)" name="submitbtn" focused="0" />
+		      <input type="submit" value="Kaydol" id="submitbtn" class="" name="submitbtn" focused="0" />
 		</div>
 
 	</form>
