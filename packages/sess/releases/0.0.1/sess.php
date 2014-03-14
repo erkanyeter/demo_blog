@@ -39,6 +39,8 @@ Class Sess
 
             $sessionStart = true;
         }
+
+        getInstance()->sess = self::$driver;  // Available it in the contoller $this->sess->method();
     }
 }
 

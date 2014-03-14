@@ -11,17 +11,14 @@ $c = new Controller(
         new Html;
         new View;
 
-        new Amqp_Rabbit;
+        // new Amqp_Rabbit;
+        // new User_Login_Access;
     }
 );
 
 $c->func(
     'index',
     function () {
-
-        $this->config->load('user/test');
-        echo $this->config->getItem('test');
-
 
         $this->view->get(
             'welcome', 

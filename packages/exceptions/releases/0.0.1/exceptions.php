@@ -82,6 +82,7 @@ Class Exceptions
         //-----------------------------------------------------------------------
 
         $logger->error($type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+        $logger->__destruct(); // continue write all logs to data
 
         // Displaying Errors
         //-----------------------------------------------------------------------            

@@ -36,7 +36,7 @@ $c->func(
             user_email 
             FROM users WHERE user_email = :user_email'
         );
-        $this->db->bindValue(':user_email', $this->post->get('email'), PARAM_STR, 10);
+        $this->db->bindValue(':user_email', $this->post->get('email'), PARAM_STR);
         $this->db->execute();
         $row = $this->db->getRowArray();
 
