@@ -70,10 +70,12 @@ function Framework_Run() {
      * ------------------------------------------------------
      */
     if ($logger->getProperty('enabled')) {
-        $logger->debug('$_REQUEST_URI: ' .$uri->getRequestUri(), $_REQUEST);
-        $logger->debug('$_COOKIE: ', $_COOKIE);
-        $logger->debug('$_POST: ', $_POST);
-        $logger->debug('$_GET: ', $_GET);
+        $logger->debug('$_REQUEST_URI: ' .$uri->getRequestUri());
+        if (ENV == 'DEBUG' OR ENV == 'TEST') {
+            $logger->debug('$_COOKIE: ', $_COOKIE);
+            $logger->debug('$_POST: ', $_POST);
+            $logger->debug('$_GET: ', $_GET);
+        }
     }
     /*
      * ------------------------------------------------------
