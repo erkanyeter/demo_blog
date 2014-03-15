@@ -10,15 +10,14 @@ $c = new Controller(
         new Url;
         new Html;
         new View;
-
-        // new Amqp_Rabbit;
-        // new User_Login_Access;
     }
 );
 
 $c->func(
     'index',
     function () {
+
+        echo md5(rand(time()));
 
         $this->view->get(
             'welcome', 

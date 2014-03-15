@@ -980,7 +980,7 @@ Class Pdo_Crud
             }
 
             if ($protect_identifiers === true) {
-                $item = $this->adaper->_escapeIdentifiers($item);
+                $item = $this->adapter->_escapeIdentifiers($item);
             }
 
             return $item . $alias;

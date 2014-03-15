@@ -27,7 +27,7 @@ $c->func(
 
             if ($this->form->isValid()) {  // form is valid ?
 
-                $r = $this->hvc->get('private/auth_service/query');
+                $r = $this->hvc->get('private/auth.service/query');
 
                 if ($r['success']) {      // Authorize to user
                     $this->auth->authorize();
