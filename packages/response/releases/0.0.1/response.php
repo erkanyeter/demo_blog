@@ -94,7 +94,6 @@ Class Response
 
         if ( ! function_exists('getInstance')) {     // Does the getInstance() function exist ? // If not we know we are dealing with a cache file so we'll
             echo $output;                            // simply echo out the data and exit. 
-            $logger->debug('Final output sent to browser');
             return true;
         }
 
@@ -103,17 +102,6 @@ Class Response
         } else {
             echo $output;  // Send it to the browser!
         }
-
-        $extra = array();
-        if ($config['log_benchmark']) { // Do we need to generate benchmark data ? If so, enable and run it.
-            $memory_usage = 'memory_get_usage() function not found on your php configuration.';
-
-            if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
-                $memory_usage = number_format($usage) . ' bytes';
-            }
-            $extra = array('memory' => $memory_usage);
-        }
-        $logger->debug('Final output sent to browser', $extra);
     }
 
     // ------------------------------------------------------------------------

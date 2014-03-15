@@ -74,14 +74,21 @@ Class Exceptions
         // Load Error Template
         //-----------------------------------------------------------------------
 
-        ob_start();
-        include PACKAGES . 'exceptions' . DS . 'releases' . DS . $packages['dependencies']['exceptions']['version'] . DS . 'src' . DS . 'error' . EXT;
-        $error_msg = ob_get_clean();
+        $request = new Request;
+        if ($request->isXmlHttp()) {
+            $error_msg =  $e->getMessage() . ' File: ' . $error->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
+            $error_msg = strip_tags($error_msg);
+        } else {
+            ob_start();
+            include PACKAGES . 'exceptions' . DS . 'releases' . DS . $packages['dependencies']['exceptions']['version'] . DS . 'src' . DS . 'error' . EXT;
+            $error_msg = ob_get_clean();
+        }
 
         // Log Php Errors
         //-----------------------------------------------------------------------
 
         $logger->error($type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+        $logger->__destruct(); // continue write all logs to data
 
         // Displaying Errors
         //-----------------------------------------------------------------------            

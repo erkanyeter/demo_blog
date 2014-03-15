@@ -34,6 +34,7 @@ $c->func(
         $register = array(
             'postUrl' => 'form_tuttorial/form_tuttorial_post',
             'formId' => 'registerForm',
+            'ajax' => 1,
             'inputs' => array(
                 array(
                     'type'  => 'subheader',
@@ -133,7 +134,7 @@ $c->func(
                 array(
                     'name' => 'user_email_repeat',
                     'type' => 'textbox',
-                    'rules' => 'required|match[\'user_email\']',
+                    'rules' => 'required|matches(\'user_email\')',
                     'label' => 'Email Adresiniz tekrar',
                     'attr'  => 'class="form-control input-sm validation"',
                     'title' => 'Lütfen Email Giriniz...',

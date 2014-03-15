@@ -187,16 +187,17 @@ Class Pdo_Adapter
         $this->last_sql = $sql;
 
         //------------------------------------
+        
+        $start = microtime(true);
 
-        list($smt, $sst) = explode(' ', microtime());
-        $start_time = ($smt + $sst);
         $this->Stmt = $this->_conn->query($sql);
+        
+        $time  = microtime(true) - $start;
 
         //------------------------------------
 
         if ($config['log_queries']) {
-            list($emt, $est) = explode(' ', microtime());
-            $logger->debug('$_SQL ( Query ):', array('time' => number_format(($emt + $est) - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $logger->debug('$_SQL ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         ++$this->query_count;
         return ($this);
@@ -518,17 +519,16 @@ Class Pdo_Adapter
 
         //------------------------------------
 
-        list($smt, $sst) = explode(' ', microtime());
-        $start_time = ($smt + $sst);
+        $start = microtime(true);
 
         $this->Stmt->execute($array);
+
+        $time  = microtime(true) - $start;
 
         //------------------------------------
 
         if ($config['log_queries'] AND isset($this->prep_queries[0])) {
-            list($emt, $est) = explode(' ', microtime());
-            $end_time = ($emt + $est);
-            $logger->debug('$_SQL ( Execute ):', array('time' => number_format($end_time - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
+            $logger->debug('$_SQL ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
         }
 
         $this->prepare = false;   // reset prepare variable and prevent collision with next query ..
@@ -570,9 +570,11 @@ Class Pdo_Adapter
 
         //------------------------------------
 
-        list($smt, $sst) = explode(' ', microtime());
-        $start_time = ($smt + $sst);
+        $start = microtime(true);
+
         $affected_rows = $this->_conn->exec($sql);
+
+        $time  = microtime(true) - $start;
 
         //------------------------------------
 
