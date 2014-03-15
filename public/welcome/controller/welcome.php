@@ -11,9 +11,6 @@ $c = new Controller(
         new Url;
         new Html;
         new View;
-
-        // new Amqp_Rabbit;
-        // new User_Login_Access;
     }
 );
 

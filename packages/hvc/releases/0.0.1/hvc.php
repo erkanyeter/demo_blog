@@ -31,6 +31,7 @@ Class Hvc
     public $connection = true;
     protected $conn_string = '';       // Unique HVC connection string that we need to convert it to conn_id.
     protected static $cid  = array();  // Static HVC Connection ids. DO NOT CLEAR IT !!!
+    protected $hvc_uri;
 
     // Benchmark
     public static $start_time = '';     // benchmark start time
