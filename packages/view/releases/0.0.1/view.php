@@ -28,9 +28,10 @@ Class View
     {
         global $logger;
 
-        if (!isset(getInstance()->view)) {
+        if ( ! isset(getInstance()->view)) {
             getInstance()->view = $this; // Make available it in the controller $this->view->method();
         }
+
         $logger->debug('View Class Initialized');
     }
 
@@ -99,11 +100,26 @@ Class View
     /**
      * Set variables
      * 
-     * @param string $key 
-     * @param mixed $val
+     * @param string $key view key data
+     * @param mixed  $val mixed
+     * 
+     * @return void
      */
     public function set($key, $val)
     {
+        if (is_string($val) AND strpos($val, '@') === 0 ) {
+
+            $matches = explode('.', $val);
+            $method  = trim($matches[0], '@');
+            $uri     = $matches[1];
+            $param   = (isset($matches[2])) ? $matches[2] : 0;
+
+            if ( ! class_exists('Hvc', false)) {
+                new Hvc;
+            }
+            $val = getInstance()->hvc->$method($uri, $param);
+        }
+
         $val = $this->_isCallable($val);
 
         if (is_string($val) OR is_int($val)) {
@@ -123,7 +139,6 @@ Class View
         } else {
             $this->_string[$key] = (string) $val;
         }
-
         return $this;
     }
 

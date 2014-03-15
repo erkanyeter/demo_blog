@@ -11,16 +11,12 @@ $c = new Controller(
         new Html;
         new View;
 
-        new Amqp_Rabbit;
     }
 );
 
 $c->func(
     'index',
     function () {
-
-        $this->config->load('user/test');
-        echo $this->config->getItem('test');
 
 
         $this->view->get(
