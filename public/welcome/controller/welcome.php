@@ -7,6 +7,7 @@
  */
 $c = new Controller(
     function () {
+        new Auth;
         new Url;
         new Html;
         new View;
@@ -16,7 +17,7 @@ $c = new Controller(
 $c->func(
     'index',
     function () {
-
+       
         $this->view->get(
             'welcome', 
             function () {
