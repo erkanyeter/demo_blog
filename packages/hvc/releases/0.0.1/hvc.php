@@ -442,25 +442,24 @@ echo $this->view->get(
 
         // ----------------- Memory Cache Control -------------------//
 
-
-        list($smt, $sst) = explode(' ', microtime());  // Start the Query Timer 
-        $start_time = ($smt + $sst);
+        $start = microtime(true); // Start the Query Timer 
 
         if ($expiration > 0) {
             $cache = $this->config['cache'](); 
             $cache = $cache::$driver;
             $response = $cache->get($KEY);
             if ( ! empty($response)) {              // If cache exists return to cached string.
-                $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => $this->_endTime($start_time), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+                $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
                 return base64_decode($response);    // encoding for specialchars
             }
         }
+
         // ----------------- Static Php Cache -------------------//
 
         if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
             $this->_clear();                // This cache type not related with Cache package.
             $response = $this->getResponse();
-            $logger->debug('$_HVC: '.$this->getKey(), array('time' => $this->_endTime($start_time), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
             return $response;    // This is native system cache !
         }
 
@@ -592,7 +591,7 @@ echo $this->view->get(
             $cache->set($KEY, base64_encode($response), (int)$expiration);
         }
 
-        $logger->debug('$_HVC: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+        $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
         return $response;
     }
