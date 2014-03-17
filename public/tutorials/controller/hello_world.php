@@ -14,6 +14,11 @@ $c = new Controller(
 $c->func(
     'index',
     function () {
+
+        // new Hvc;
+
+        // $r = getInstance()->hvc->post('private/posts/getallhome');
+
         $this->view->get(
             'hello_world', 
             function () {

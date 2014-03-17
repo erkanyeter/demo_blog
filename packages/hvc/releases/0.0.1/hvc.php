@@ -414,7 +414,7 @@ echo $this->view->get(
                 return;
             }
 
-            if ($rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'DEBUG' OR ENV == 'TEST')) {  // Show exceptional message to developers if environment not LIVE.
+            if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'DEBUG' OR ENV == 'TEST')) {  // Show exceptional message to developers if environment not LIVE.
                 $rsp['message'] = $rsp['e'];
             }
             return $rsp;
@@ -438,11 +438,22 @@ echo $this->view->get(
         static $storage = array();      // store "$c " variables ( called controllers )
         // ------------------------------------------------------------------------
 
-        $KEY = $this->getKey();     // Get Hvc Key
+        $KEY = $this->getKey();   // Get Hvc Key
+        $start = microtime(true); // Start the Query Timer 
+
+        // ----------------- Static Php Cache -------------------//
+
+        if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
+                                            // This cache type not related with Cache package.
+            $response = $this->getResponse();
+            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+            $this->_clear();
+            return $response;    // This is native system cache !
+        }
+
+        self::$cid[$KEY] = $KEY;    // store connection id.
 
         // ----------------- Memory Cache Control -------------------//
-
-        $start = microtime(true); // Start the Query Timer 
 
         if ($expiration > 0) {
             $cache = $this->config['cache'](); 
@@ -450,20 +461,10 @@ echo $this->view->get(
             $response = $cache->get($KEY);
             if ( ! empty($response)) {              // If cache exists return to cached string.
                 $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+                $this->_clear();
                 return base64_decode($response);    // encoding for specialchars
             }
         }
-
-        // ----------------- Static Php Cache -------------------//
-
-        if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
-            $this->_clear();                // This cache type not related with Cache package.
-            $response = $this->getResponse();
-            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
-            return $response;    // This is native system cache !
-        }
-
-        self::$cid[$KEY] = $KEY;    // store connection id.
 
         // ----------------- Route is Valid -------------------//
 
@@ -523,8 +524,8 @@ echo $this->view->get(
         if (strncmp($router->fetchMethod(), '_', 1) == 0 
             OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
         ) {
-            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             $this->_clear();
+            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             return $this->getResponse();
         }
 
@@ -538,8 +539,8 @@ echo $this->view->get(
         //----------------------------
 
         if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {
-            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             $this->_clear();
+            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             return $this->getResponse();
         }
 
@@ -549,9 +550,6 @@ echo $this->view->get(
         $arguments = array_slice($uri->rsegments, 2);
 
         //----------------------------
-
-        list($smt, $sst) = explode(' ', microtime());  // Start the Query Timer 
-        $start_time = ($smt + $sst);
 
         ob_start(); // Start the output buffer.
 
@@ -594,19 +592,6 @@ echo $this->view->get(
         $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
         return $response;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Calculate end time
-     * 
-     * @return float time
-     */
-    private function _endTime($start_time)
-    {
-        list($emt, $est) = explode(' ', microtime());
-        return number_format(($emt + $est) - $start_time, 4);
     }
 
     // --------------------------------------------------------------------
