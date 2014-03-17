@@ -579,9 +579,8 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries']) {
-            list($emt, $est) = explode(' ', microtime());
-            $end_time = ($emt + $est);
-            $logger->debug('$_SQL ( Exec ):', array('time' => number_format($end_time - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+
+            $logger->debug('$_SQL ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         return $affected_rows;
     }

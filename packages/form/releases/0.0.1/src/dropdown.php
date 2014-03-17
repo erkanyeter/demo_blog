@@ -6,13 +6,13 @@ namespace Form\Src {
     /**
     * Drop-down Menu
     *
-    * @access	public
-    * @param	string $name
-    * @param	mixed $options      @getSchema.posts.field
-    * @param	array $selected
-    * @param	string extra data
+    * @access   public
+    * @param    string $name
+    * @param    mixed $options      @getSchema.posts.field
+    * @param    array $selected
+    * @param    string extra data
     * 
-    * @return	string
+    * @return   string
     */
     function dropdown($name = '', $options = '', $selected = array(), $extra = '')
     {
@@ -25,26 +25,19 @@ namespace Form\Src {
 
         if(is_string($options) AND strpos($options, '@') === 0) // Use hvc or not
         {
-            if( ! isset(getInstance()->hvc))
-            {
+            $matches = explode('.', $val);
+            $method  = trim($matches[0], '@');
+            $uri     = $matches[1];
+            $param   = (isset($matches[2])) ? $matches[2] : 0;
+
+            if( ! isset(getInstance()->hvc)) {
                 new \Hvc; // call hvc class
             }
 
-            $uri_string = str_replace(array('"',"'"), array('',''), trim($options, '@'));
-            preg_match('#^(?<method>get|post)\((?<uri>.*?)((\))|\,)((?<param>[0-9])?\))?#', $uri_string, $matches);
+            $r = getInstance()->hvc->$method($uri, $param);
 
-            if(isset($matches['method']) AND isset($matches['uri'])) 
-            {
-                $method = $matches['method'];
-                $uri    = $matches['uri'];
-                $param  = (isset($matches['param'])) ? $matches['param'] : 0;
-
-                $r = getInstance()->hvc->$method($uri, $param);
-
-                if(isset($r['results']) AND is_array($r['results']))
-                {
-                    $options = $r['results'];
-                }
+            if(isset($r['results']) AND is_array($r['results'])) {
+                $options = $r['results'];
             }
         } 
 

@@ -7,6 +7,7 @@
  */
 $c = new Controller(
     function () {
+        new Auth;
         new Url;
         new Html;
         new View;
@@ -16,9 +17,7 @@ $c = new Controller(
 $c->func(
     'index',
     function () {
-
-        echo md5(rand(time()));
-
+       
         $this->view->get(
             'welcome', 
             function () {
