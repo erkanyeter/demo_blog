@@ -33,6 +33,8 @@ Class Hvc
     protected static $cid  = array();  // Static HVC Connection ids. DO NOT CLEAR IT !!!
     protected $hvc_uri;
 
+    const KEY = 'Hvc:';   // Hvc key prefix
+
     // Benchmark
     public static $start_time = '';     // benchmark start time
 
@@ -60,7 +62,6 @@ Class Hvc
 
         // Cache and Connection
         $this->connection  = true;
-        $this->conn_string = '';
 
         // $GLOBALS['_GET_BACKUP']     = array();    // Reset global variables
         // $GLOBALS['_POST_BACKUP']    = array();
@@ -94,12 +95,12 @@ Class Hvc
     /**
      * Prepare HVC Request (Set the URI String).
      *
-     * @access    private
-     * @param     string $uri
-     * @param     integer $expiration whether to use "Cache" package
+     * @access private
+     * @param string $uri uri
+     * 
      * @return    void
      */
-    public function setRequestUrl($uriString = '', $expiration = 0)
+    public function setRequestUrl($uriString = '')
     {
         // ----------- Visibility -----------------
 
@@ -252,7 +253,7 @@ Class Hvc
      * @param  integer $expiration whether to use cache
      * @return string         
      */
-    public function get($uri, $data = '', $expiration = 0)
+    public function get($uri, $data = '', $expiration = null)
     {
         return $this->request('GET', $uri, $data, $expiration);
     }
@@ -267,7 +268,7 @@ Class Hvc
      * @param  integer $expiration whether to use cache
      * @return string         
      */
-    public function post($uri, $data = '', $expiration = 0)
+    public function post($uri, $data = '', $expiration = null)
     {
         return $this->request('POST', $uri, $data, $expiration);
     }
@@ -322,7 +323,7 @@ Class Hvc
      * @param  integer $ttl
      * @return string
      */
-    public function request($method, $uri, $data = '', $expiration = 0)
+    public function request($method, $uri, $data = '', $expiration = null)
     {
         if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
@@ -432,7 +433,7 @@ echo $this->view->get(
      *
      * @return   string
      */
-    public function exec($expiration = 0)
+    public function exec($expiration = null)
     {
         global $uri, $router, $logger;
         static $storage = array();      // store "$c " variables ( called controllers )
@@ -446,7 +447,7 @@ echo $this->view->get(
         if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
                                             // This cache type not related with Cache package.
             $response = $this->getResponse();
-            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
             $this->_clear();
             return $response;    // This is native system cache !
         }
@@ -455,12 +456,12 @@ echo $this->view->get(
 
         // ----------------- Memory Cache Control -------------------//
 
-        if ($expiration > 0) {
+        if ($this->config['memory_caching']) {
             $cache = $this->config['cache'](); 
             $cache = $cache::$driver;
             $response = $cache->get($KEY);
             if ( ! empty($response)) {              // If cache exists return to cached string.
-                $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+                $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
                 $this->_clear();
                 return base64_decode($response);    // encoding for specialchars
             }
@@ -483,7 +484,7 @@ echo $this->view->get(
         //  may collission with standart uri, also we need it for caching feature.
         //  --------------------------------------------------------------------------
 
-        $uri->setUriString(rtrim($uri->getUriString(), '/') . '/' . $this->config['unique_key_prefix'] . $KEY); // Create an uniq HVC Uri with md5 hash
+        $uri->setUriString(rtrim($uri->getUriString(), '/') . '/' .$KEY); // Create an uniq HVC Uri with md5 hash
         //  --------------------------------------------------------------------------
 
         $folder = PUBLIC_DIR;
@@ -565,6 +566,7 @@ echo $this->view->get(
         //----------------------------
 
         ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
+
         //----------------------------
 
         $this->setResponse($content);
@@ -583,13 +585,12 @@ echo $this->view->get(
 
         //------------- Set to Cache -------------//
 
-        if ($expiration > 0) {
+        if (is_numeric($expiration) AND $this->config['memory_caching']) {
             $cache = $this->config['cache']();   // load cache library
             $cache = $cache::$driver;
             $cache->set($KEY, base64_encode($response), (int)$expiration);
         }
-
-        $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $this->getKey(), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+        $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
         return $response;
     }
@@ -698,7 +699,7 @@ echo $this->view->get(
      */
     public function getKey()
     {
-        return hash('md5', trim($this->conn_string));
+        return self::KEY . hash('md5', trim($this->conn_string));
     }
 
     // --------------------------------------------------------------------
@@ -708,12 +709,13 @@ echo $this->view->get(
      * 
      * @return string
      */
-    public function deleteKey($key = '')
+    public function deleteCache($key = '')
     {
         if (empty($key)) {          // if key not provided the get current hvc key
-            $key = $this->geyKey();
+            $key = $this->getKey();
         }
         $cache = $this->config['cache'](); // load cache object
+        $cache = $cache::$driver;
         if ($cache->keyExists($key)) {
             return $cache->delete($key);
         }
