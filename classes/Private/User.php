@@ -23,11 +23,6 @@ Class Private_User
     {   
         global $logger;
 
-        if ( ! isset(getInstance()->private_user)) {
-            getInstance()->private_user = $this;  // Available it in the contoller $this->private_user->method();
-        }
-
-        new Sess;
         new Auth;
 
         $this->init();

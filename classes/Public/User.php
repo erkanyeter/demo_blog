@@ -23,11 +23,6 @@ Class Public_User
     {   
         global $logger;
 
-        if ( ! isset(getInstance()->public_user)) {
-            getInstance()->public_user = $this;      // Available it in the contoller $this->public_user->method();
-        }
-
-        new Sess;
         new Auth;
 
         $this->init();

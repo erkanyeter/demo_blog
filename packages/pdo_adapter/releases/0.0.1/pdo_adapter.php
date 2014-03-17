@@ -635,6 +635,24 @@ Class Pdo_Adapter
     // --------------------------------------------------------------------
 
     /**
+     * Get the statement object
+     * and use native pdo functions
+     *
+     *  $stmt = $this->db->getStatement();
+     *  $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
+     *  
+     *  @see  http://publib.boulder.ibm.com/infocenter/db2luw/v9/index.jsp?topic=%2Fcom.ibm.db2.udb.apdv.php.doc%2Fdoc%2Fr0022486.htm
+     * 
+     * @return [type] [description]
+     */
+    public function getStatement()
+    {
+        return $this->Stmt;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Result row as array
      *
      * @author CJ Lazell
