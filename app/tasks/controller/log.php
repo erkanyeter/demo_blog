@@ -148,7 +148,7 @@ $c->func(
                     }
                     if (strpos($out[1], 'info') !== false) {
                         if ($level == '' OR $level == 'info') {
-                            $line = "\033[1;35m".$line."\033[0m";
+                            $line = "\033[1;33m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
                                 echo $line."\n";
                             }
@@ -188,7 +188,7 @@ $c->func(
                     }
                     if (strpos($out[1], 'warning') !== false) {
                         if ($level == '' OR $level == 'warning') {
-                            $line = "\033[1;33m".$line."\033[0m";
+                            $line = "\033[1;31m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
                                 echo $line."\n";
                             }
