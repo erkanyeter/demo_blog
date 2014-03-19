@@ -80,6 +80,8 @@ Class Sess_Native
         $request = $this->request;
         $this->request = $request();  // Set Request object
 
+        // http://stackoverflow.com/questions/2615554/how-to-encrypt-session-id-in-cookie
+
         if ($this->expire_on_close) {  // Expire on close 
             session_set_cookie_params(0);
         } else {
@@ -264,6 +266,20 @@ Class Sess_Native
         session_start();
 
         $_SESSION = $old_session_data; // restore the old session data into the new session
+
+        $this->userdata = array(
+            'session_id' => session_id(),
+            'ip_address' => $this->request->getIpAddress(),
+            'user_agent' => substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50),
+            'last_activity' => $this->now
+        );
+
+        $_SESSION['session_id']    = $this->userdata['session_id'];
+        $_SESSION['ip_address']    = $this->userdata['ip_address'];
+        $_SESSION['user_agent']    = $this->userdata['user_agent'];
+        $_SESSION['last_activity'] = $this->userdata['last_activity'];
+
+        $this->_setCookie($this->userdata); // Write the cookie 
 
         session_write_close(); // end the current session and store session data.
     }
