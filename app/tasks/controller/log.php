@@ -4,21 +4,11 @@ defined('STDIN') or die('Access Denied');
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // error reporting
 
-/**
- * Catch errors
- * 
- * @param string $errno   number
- * @param string $errstr  str
- * @param string $errfile file
- * @param string $errline line
- * 
- * @return string
- */
-function logErrorHandler($errno, $errstr, $errfile, $errline)
-{
-    echo("\n\033[1;33mError: $errstr . ' - error code: '.$errno.' errorfile : - '.$errfile.' - errorline: '.$errline \033[0m"); // Do something other than output message.
-}
-set_error_handler('logErrorHandler');
+set_error_handler(
+    function ($errno, $errstr, $errfile, $errline) {
+        echo("\n\033[1;31mError: $errstr . ' - error code: '.$errno.' errorfile : - '.$errfile.' - errorline: '.$errline \033[0m"); // Do something other than output message.   
+    }
+);
 
 // ------------------------------------------------------------------------
 
@@ -36,12 +26,17 @@ $c->func(
     function ($level = '') {
 
         include APP .'config'. DS . strtolower(ENV) . DS .'logger'. EXT;  // get configuration of logger file driver
-        $path = str_replace('/', DS, trim($logger['path'], '/'));
 
-        if (strpos($path, 'data') === 0) {  // replace "data" word to application data path
-            $file = str_replace('data', DATA, $path);
+        if ($level == 'tasks') {
+            $path = str_replace('/', DS, trim($logger['path_task'], '/'));
+        } else {
+            $path = str_replace('/', DS, trim($logger['path'], '/'));
         }
-        if ($level == '') {
+        if (strpos($path, 'data') === 0) {  // replace "data" word to application data path
+            $file = str_replace('data', DS . trim(DATA, DS), $path);
+        }
+
+        if ($level == '' || $level == 'tasks') {
             $this->_displayLogo();
             $this->_follow($file); // Display the debugging.
         } else {
@@ -97,7 +92,6 @@ $c->func(
                 exit;
             }
             fseek($fh, $size);
-
             $i = 0;
             while ($line = fgets($fh)) {
                 if ($i == 0) {
@@ -208,7 +202,6 @@ $c->func(
                 $i++;
                 $lines[$line] = $line;
             }
-
             fclose($fh);
             clearstatcache();
             $size = $currentSize;
