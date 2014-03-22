@@ -19,11 +19,13 @@ Class Request {
      */
     public function __construct()
     {
-        global $logger;
+        global $c;
         if ( ! isset(getInstance()->request)) {
             getInstance()->request = $this; // Make available it in the controller $this->get->method();
         }
-        $logger->debug('Request Class Initialized');
+
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Request Class Initialized');
     }
 
     // --------------------------------------------------------------------

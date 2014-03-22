@@ -10,10 +10,14 @@
  */
 Class Exceptions
 {
+    public $logger;
+
     public function __construct()
     {
-        global $logger;
-        $logger->debug('Exceptions Class Initialized');
+        global $c;
+
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Exceptions Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -28,7 +32,7 @@ Class Exceptions
      */
     public function write($e, $type = '')
     {
-        global $packages, $config, $logger;
+        global $packages, $config;
 
         $error = new Error;
         $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
@@ -37,7 +41,7 @@ Class Exceptions
         //-----------------------------------------------------------------------
 
         if ($config['error_reporting'] == '0') {
-            $logger->info('Error reporting is Off, check the config.php file "error_reporting" item to display errors.');
+            $this->logger->info('Error reporting is Off, check the config.php file "error_reporting" item to display errors.');
             return;
         }
         if (strpos($e->getMessage(), 'shmop_open') === 0) { // Ignore Shmop open segment key warnings.
@@ -67,7 +71,7 @@ Class Exceptions
         if (defined('STDIN')) {  // If Command Line Request. 
             echo $type . ': ' . $e->getMessage() . ' File: ' . $error->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
             $cmd_type = (defined('TASK')) ? 'Task' : 'Cmd';
-            $logger->error('(' . $cmd_type . ') ' . $type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+            $this->logger->error('(' . $cmd_type . ') ' . $type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
             return;
         }
 
@@ -87,8 +91,8 @@ Class Exceptions
         // Log Php Errors
         //-----------------------------------------------------------------------
 
-        $logger->error($type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
-        $logger->__destruct(); // continue write all logs to data
+        $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+        $this->logger->__destruct(); // continue write all logs to data
 
         // Displaying Errors
         //-----------------------------------------------------------------------            

@@ -15,7 +15,7 @@ Class Controller
     public static $instance;                        // Controller instance
     public $_controllerAppMethods = array();  // Controller user defined methods. ( @private )
     public $_controllerAppPublicMethods = array();  // Controller user defined methods. ( @private )
-    public $config, $uri, $router, $translator, $response, $logger;  // Default packages
+    public $config, $uri, $router, $translator, $logger;  // Default packages
 
     // ------------------------------------------------------------------------
 
@@ -27,20 +27,19 @@ Class Controller
      */
     public function __construct($closure)
     {
-        global $cfg, $uri, $router, $translator, $response, $logger;
+        global $c;
 
         self::$instance = &$this;
 
         // Assign Default Loaded Packages
-        // ------------------------------------
         // NOTICE:
-        $this->config     = &$cfg;              // If we don't use assign by reference this will cause some errors in Hvc.
-        $this->uri        = &$uri;              // The bug is insteresting, when we work with multiple page not found requests
-        $this->router     = &$router;           // The objects of getInstance() keep the last instances of the last request.
-        $this->translator = &$translator;       // that means the instance don't do the reset. Keep in your mind we need use pass by reference
-        $this->response   = &$response;         // for variables.
-        $this->logger     = &$logger;           // @see http://www.php.net/manual/en/language.references.whatdo.php
+        $this->config     = &$c['Config'];         // If we don't use assign by reference this will cause some errors in Hvc.
+        $this->uri        = &$c['Uri'];            // The bug is insteresting, when we work with multiple page not found requests
+        $this->router     = &$c['Router'];         // The objects of getInstance() keep the last instances of the last request.
 
+        // $this->translator = &$c['Translator'];     // that means the instance don't do the reset. Keep in your mind we need use pass by reference
+        //                                      // for variables.
+        $this->logger     = &$c['Logger'];         // @see http://www.php.net/manual/en/language.references.whatdo.php
         // Run Construct Method
         // ------------------------------------
 
@@ -65,9 +64,8 @@ Class Controller
         if (!is_object($val) AND $key != '_controllerAppMethods' AND $key != '_controllerAppPublicMethods') {
             throw new Exception('Manually storing variables into Controller is not allowed');
         }
-
         $this->{$key} = $val; // store only application classes & packages 
-        // and any variable which type is object
+                              // and any variable which type is object
     }
 
     // ------------------------------------------------------------------------
@@ -79,6 +77,7 @@ Class Controller
      * @param  closure $methodCallable
      * @return void
      */
+    
     public function func($methodName, $methodCallable)
     {
         $method = strtolower($methodName);
@@ -91,7 +90,6 @@ Class Controller
                 new $class;
             }
         }
-
         //-----------------------------------------------------
         // "One Public Method Per Controller" Rule
         //-----------------------------------------------------
@@ -99,16 +97,13 @@ Class Controller
 
         if (strncmp($methodName, '_', 1) !== 0 AND strpos($methodName, 'callback_') !== 0) {
             $this->_controllerAppPublicMethods[$method] = $methodName;
-
             if (sizeof($this->_controllerAppPublicMethods) > 1) {
                 throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
             }
         }
-
         if ( ! is_callable($methodCallable)) {
             throw new InvalidArgumentException('Controller error: Second param must be callable.');
         }
-
         $this->_controllerAppMethods[$method] = Closure::bind($methodCallable, $this, get_class());
     }
 
@@ -126,7 +121,6 @@ Class Controller
         if (isset($this->_controllerAppMethods[$method])) {
             return call_user_func_array($this->_controllerAppMethods[$method], $args);
         }
-
         throw new Exception(get_class() . ' error: There is no method "' . $method . '()" to call.');
     }
 

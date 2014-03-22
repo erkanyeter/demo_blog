@@ -35,7 +35,7 @@
                             <?php echo $this->form->input('post_title', $this->form->setValue('post_title'), " onkeypress='keyPress();' ")  ?>
                             </td>
                             <td>
-                            <?php echo $this->form->dropdown('post_status', '@get(private/posts/getstatuslist)', $this->form->setValue('post_status'), ' onchange="submitPage();" '); ?>
+                            <?php echo $this->form->dropdown('post_status', '@get.private/posts/getstatuslist)', $this->form->setValue('post_status'), ' onchange="submitPage();" '); ?>
                             </td>
                             <td></td>
                             <td></td>

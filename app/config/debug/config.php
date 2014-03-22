@@ -50,7 +50,7 @@ $config = array(
     // ---------------------------------------------------
 
     // Logging
-    'log_enabled'         => true,           // On / Off logging
+    'log_enabled'         => false,           // On / Off logging
     'log_output'          => false,           // On / Off logger html output
     'log_threshold'       => array(0,1,2,3,4,5,6,7),          // array(0,1,2) = emergency,alert,critical
     'log_handler'         => array('file' => 'Logger_File'),  // Handler name & Package name of your driver: Logger_File, Logger_Mongo ...

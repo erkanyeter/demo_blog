@@ -27,7 +27,7 @@ Class Controller
      */
     public function __construct($closure)
     {
-        global $cfg, $uri, $router, $translator, $response, $logger;
+        global $cfg, $uri, $router, $translator, $response;
 
         self::$instance = &$this;
 
@@ -39,7 +39,7 @@ Class Controller
         $this->router     = &$router;           // The objects of getInstance() keep the last instances of the last request.
         $this->translator = &$translator;       // that means the instance don't do the reset. Keep in your mind we need use pass by reference
         $this->response   = &$response;         // for variables.
-        $this->logger     = &$logger;           // @see http://www.php.net/manual/en/language.references.whatdo.php
+                                                // @see http://www.php.net/manual/en/language.references.whatdo.php
 
         // Run Construct Method
         // ------------------------------------

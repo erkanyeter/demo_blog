@@ -79,14 +79,12 @@ Class Hvc
      */
     public function __construct()
     {
-        global $logger;
+        global $c;
 
-        if ( ! isset(getInstance()->hvc)) {          // Like Singleton
-            $this->config = getConfig('hvc');       // Get hvc configuration
-            getInstance()->translator->load('hvc'); // Load translate file
-            getInstance()->hvc = $this;             // Make available it in the controller $this->hvc->method();
-        }
-        $logger->debug('Hvc Class Initialized');
+        $this->config = getConfig('hvc');   // Get hvc configuration
+
+        $c['Translator']->load('hvc');      // Load translate file
+        $c['Logger']->debug('Hvc Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -144,7 +142,10 @@ Class Hvc
 
         if ( ! empty($uriString)) { // empty control
 
-            global $uri, $router;
+            global $c;
+
+            $uri    = $c['Uri'];
+            $router = $c['Router'];
 
             // Clone Objects
             // -----------------------------------------
@@ -434,7 +435,12 @@ echo $this->view->get(
      */
     public function exec($expiration = 0)
     {
-        global $uri, $router, $logger;
+        global $c;
+
+        $uri    = $c['Uri'];
+        $router = $c['Router'];
+        $logger = $c['Logger'];
+
         static $storage = array();      // store "$c " variables ( called controllers )
         // ------------------------------------------------------------------------
 
@@ -497,16 +503,16 @@ echo $this->view->get(
         // --------- Check class is exists in the storage ----------- //
 
         if (isset($storage[$router->fetchClass()])) {    // Check is multiple call to same class.
-            $c = $storage[$router->fetchClass()];       // Get stored class.
+            $o = $storage[$router->fetchClass()];       // Get stored class.
         } else {
             require($controller);        // Call the controller.
         }
 
         // --------- End storage exists ----------- //
-        // $c variable available here !
+        // $o variable available here !
 
-        if (!isset($c->request->global)) { // ** Let's create new request object for globals
-            $c->request = new Request;       // create new request object;
+        if ( ! isset($c['request']->global)) { // ** Let's create new request object for globals
+           // $c['request'] = new Request;       // create new request object;
 
             // create a global variable
             // keep all original objects in it.
@@ -514,9 +520,9 @@ echo $this->view->get(
             // ** Store global "Uri" and "Router" objects to make available them in sub layers
             //---------------------------------------------------------------------------
 
-            $c->request->global = new stdClass;      // Create an empty class called "global"
-            $c->request->global->uri = $this->uri;        // Let's assign the global uri object
-            $c->request->global->router = $this->router;     // Let's assign the global uri object
+            $c['request']->global = new stdClass;      // Create an empty class called "global"
+            $c['request']->global->uri = $this->uri;        // Let's assign the global uri object
+            $c['request']->global->router = $this->router;     // Let's assign the global uri object
         }
 
         // End store global variables
@@ -532,7 +538,7 @@ echo $this->view->get(
         // Get application methods
         //----------------------------
 
-        $storedMethods = array_keys($c->_controllerAppMethods);
+        $storedMethods = array_keys($o->_controllerAppMethods);
 
         //----------------------------
         // Check method exist or not
@@ -559,7 +565,7 @@ echo $this->view->get(
         // Call the requested method. Any URI segments present (besides the directory / class / index / arguments ) 
         // will be passed to the method for convenience
             // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
-        call_user_func_array(array($c, $router->fetchMethod()), $arguments);
+        call_user_func_array(array($o, $router->fetchMethod()), $arguments);
 
         //----------------------------
 
@@ -577,7 +583,7 @@ echo $this->view->get(
         // Store classes to $storage container
         //--------------------------------------
         
-        $storage[$router->fetchClass()] = $c; // Store class names to storage. We fetch it if its available in storage.
+        $storage[$router->fetchClass()] = $o; // Store class names to storage. We fetch it if its available in storage.
 
         //----------------------------
         // End storage

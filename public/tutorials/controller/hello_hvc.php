@@ -5,16 +5,17 @@
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
-        new Url;
-        new Html;
-        new View;
-        new Hvc;
+        global $c;
+        $c['view'];
+        $c['html'];
+        $c['hvc'];
+        $c['url'];
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
 
@@ -34,5 +35,5 @@ $c->func(
     }
 );
 
-/* End of file hello_hmvc.php */
-/* Location: .public/tutorials/controller/hello_hmvc.php */
+/* End of file hello_hvc.php */
+/* Location: .public/tutorials/controller/hello_hvc.php */

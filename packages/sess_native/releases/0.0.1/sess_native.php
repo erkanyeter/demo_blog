@@ -40,9 +40,7 @@ Class Sess_Native
         if (count($config) == 0) {
             return;
         }
-        foreach ($config as $key => $value) {  // set php.ini values
-            ini_set($key, $value);
-        }
+        $this->init($config);
     }
 
     // --------------------------------------------------------------------
@@ -56,7 +54,9 @@ Class Sess_Native
      */
     public function init($sess = array())
     {
-        global $config, $logger;
+        global $c, $config, $logger;
+
+        echo 'sd';
 
         foreach (
             array(
@@ -64,21 +64,20 @@ Class Sess_Native
             'expiration',
             'expire_on_close',
             'encrypt_cookie',
-            'request',
-            'table_name',
             'match_ip',
             'match_useragent',
             'time_to_update'
             ) as $key) {
             $this->$key = $sess[$key];
         }
-
+        foreach ($sess['native'] as $k => $v) {
+            ini_set($k, $v);
+        }
         $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
         $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
         $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
 
-        $request = $this->request;
-        $this->request = $request();  // Set Request object
+        $this->request = $c['request'];  // Set Request object
 
         if ($this->expire_on_close) {  // Expire on close 
             session_set_cookie_params(0);
@@ -97,7 +96,6 @@ Class Sess_Native
         if (session_status() == PHP_SESSION_NONE) { // If another session_start() func is started before ?
             session_start();
         }
-
         if ($this->expiration == 0) { // Set the expiration two years from now.
             $this->expiration = (60 * 60 * 24 * 365 * 2);
         }
@@ -114,7 +112,7 @@ Class Sess_Native
         $this->_flashdataMark();   // mark all new flashdata as old (data will be deleted before next request)
 
         $logger->debug('Session Native Driver Initialized');
-        $logger->debug('Session routines successfully run');
+        $logger->debug('$_SESSION: ', $this->getAllData());
         return true;
     }
 

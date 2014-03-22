@@ -17,10 +17,12 @@ namespace Url\Src {
     */
     function anchor($uri = '', $title = '', $attributes = '', $suffix = true)
     {
+        global $c;
+
         $title = (string) $title;
         $sharp = false;
 
-        $siteUri = getInstance()->uri->getSiteUrl($uri, $suffix);
+        $siteUri = $c['Uri']->getSiteUrl($uri, $suffix);
 
         // ' # ' sharp support
         

@@ -10,6 +10,7 @@
  */
 Class Translator
 {
+    public $logger;
     public $language  = array(); // langCode folder ( e.g. en_US/ )
     public $is_loaded = array(); // Let we know if its loaded
 
@@ -20,9 +21,10 @@ Class Translator
      */
     public function __construct()
     {
-        global $logger;
+        global $c;
 
-        $logger->debug('Translator Class Initialized');
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Translator Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -38,7 +40,7 @@ Class Translator
     */
     public function load($filename = '', $idiom = '', $return = false)
     {
-        global $config, $logger;
+        global $config;
 
         if ($idiom == '' OR $idiom === false) {
             $default = $config['default_translation'];
@@ -56,7 +58,7 @@ Class Translator
         include APP .'translations'. DS .$idiom. DS .$filename. EXT;
 
         if ( ! isset($translate)) {
-            $logger->error('Language file does not contain $translate variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
+            $this->logger->error('Language file does not contain $translate variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
             return;
         }
 
@@ -69,8 +71,7 @@ Class Translator
 
         unset($translate);
 
-        $logger->debug('Language file loaded: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
-        
+        $this->logger->debug('Language file loaded: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
         return true;
     }
 
@@ -120,7 +121,7 @@ function hasTranslate($item)
  */
 function translate()
 {
-    global $config, $translator;
+    global $config, $c;
 
     $args  = func_get_args();
     $item  = $args[0];
@@ -128,20 +129,16 @@ function translate()
     if (strpos($item, 'translate:') === 0) {    // Do we need to translate the message ?
         $item = substr($item, 10);              // Grab the variable
     }
-
-    if ( isset($translator->language[$item])) {
-        $translated = $translator->language[$item];
+    if ( isset($c['Translator']->language[$item])) {
+        $translated = $c['Translator']->language[$item];
 
         if (sizeof($args) > 1) {
             $args[0] = $translated;
             return call_user_func_array('sprintf', $args);
         }
-
         return $translated;
     }
-
     $translate_notice = ($config['translate_notice']) ? 'translate:' : '';
-
     return $translate_notice.$item;  // Let's notice the developers this line has no translate text
 }
 

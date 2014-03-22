@@ -12,7 +12,7 @@ defined('STDIN') or die('Access Denied');
  * $c sync
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
     }
 );
@@ -25,7 +25,7 @@ $c = new Controller(
  * @param string $requestUri  urlencoded string ( current page url )
  * @param string $postData base64 encoded serialized string $_POST data
  */
-$c->func(
+$o->func(
     'index', 
     function ($tablename, $requestUri, $postData = 'false') {
 
@@ -66,7 +66,7 @@ $c->func(
     }
 );
 
-$c->func(
+$o->func(
     '_is_serialized',
     function ($data) {
 

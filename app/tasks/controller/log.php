@@ -26,12 +26,12 @@ set_error_handler('logErrorHandler');
  * $c log
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function ($level = '') {
 
@@ -52,7 +52,7 @@ $c->func(
     
 // ------------------------------------------------------------------------
 
-$c->func(
+$o->func(
     '_displayLogo',
     function () {
         echo "\33[1;36m".'
@@ -74,7 +74,7 @@ Display logs [$php task log], to filter logs [$php task log index $level]'."\n\0
  * Print colorful log messages to your console.
  * @param  $file
  */ 
-$c->func(
+$o->func(
     '_follow',
     function ($file, $level = '') {
 

@@ -117,16 +117,25 @@ require APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT;
 require DATA .'cache'. DS .'packages.cache';
 /*
 |--------------------------------------------------------------------------
+| Build IOC
+|--------------------------------------------------------------------------
+*/
+require PACKAGES .'pimple'. DS .'releases'. DS .$packages['dependencies']['pimple']['version']. DS .'pimple'. EXT;
+$c = new Pimple;
+/*
+|--------------------------------------------------------------------------
 | Load Logger Package
 |--------------------------------------------------------------------------
 */
 if ($config['log_enabled']) {
     include PACKAGES .'logger'. DS .'releases'. DS .$packages['dependencies']['logger']['version']. DS .'logger'. EXT;
-    $logger = new Logger;
+    $c['Logger'] = function () {
+        return new Logger;
+    };
 } else {
     /**
-     * If logging feature closed don't load the real class.
-     * Create a fake logger and load it.
+     * If logging feature closed don't load the class.
+     * Create a fake logger and use it.
      * 
      * @category  Fake_Logger
      * @package   Logger
@@ -152,55 +161,57 @@ if ($config['log_enabled']) {
             return; 
         } 
     }
-    $logger = new Logger; 
+    $c['Logger'] = function () {
+        return new Logger;
+    };
 }
+
 /*
 |--------------------------------------------------------------------------
-| Load Hooks
+| Load Common Functions
 |--------------------------------------------------------------------------
 */
-if ($config['enable_hooks']) {
-    include PACKAGES .'hooks'. DS .'releases'. DS .$packages['dependencies']['hooks']['version']. DS .'hooks'. EXT;
-    $hooks = new Hooks;
-}
+require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'common'. EXT;
+/*
+|--------------------------------------------------------------------------
+| Default Your Components & Services
+|--------------------------------------------------------------------------
+| Notice: You don't need to define all classes in here
+| If a class not defined here framework load it from
+| /packages folder then assign it to Controller instance
+| usign getInstance() method.
+| 
+*/
+$c['Uri'] = function () {
+    return new Uri;
+};
+$c['Router'] = function () { 
+    return new Router;
+};
+$c['Hooks'] = function () { 
+    return new Hooks;
+};
+$c['Security'] = function () { 
+    return new Security;
+};
+$c['Config'] = function () { 
+    return getInstance()->config = new Config;
+};
+$c['Translator'] = function () { 
+    return getInstance()->translator = new Translator;
+};
+$c['Response'] = function () { 
+    return getInstance()->response = new Response;
+};
+$c['Sess'] = function () use ($c) {      // Build Session Driver
+    return getInstance()->sess = new Sess_Native($c['Config']->load('sess'));
+};
+$c['View'] = function () { 
+    return getInstance()->view = new View;
+};
 /*
 |--------------------------------------------------------------------------
 | Load Framework
 |--------------------------------------------------------------------------
 */
 require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'obullo'. EXT;
-/*
-|--------------------------------------------------------------------------
-| Default Packages
-|--------------------------------------------------------------------------
-*/
-
-$cfg        = new Config;
-$translator = new Translator;
-$response   = new Response;
-$uri        = new Uri;
-$router     = new Router;
-/*
-|--------------------------------------------------------------------------
-| Security Package
-|--------------------------------------------------------------------------
-*/
-if ($config['csrf_protection'] OR $config['global_xss_filtering']) { // CSRF Protection check
-    $security = new Security;
-}
-/*
-|--------------------------------------------------------------------------
-| Run Your Application
-|--------------------------------------------------------------------------
-*/
-Framework_Run();
-
-// @todo
-// $app = new Obullo;
-// 
-// global $app;
-// $app->bind('package.view', 'View');
-//  
-// $app->registry('package.view', 'View');
-// $app->registry('package.logger', 'Logger');
-// $app->registry('package.logger', 'Mailer');

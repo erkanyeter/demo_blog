@@ -11,6 +11,7 @@
  */
 Class Router
 {
+    public $logger;
     public $uri;
     public $response = array();
     public $routes = array();
@@ -29,17 +30,20 @@ Class Router
      */
     public function __construct()
     {
-        global $uri, $logger;
+        global $c;
+
+        $this->logger = $c['Logger'];
+        $this->uri    = $c['Uri'];
 
         $routes = getConfig('routes');
-        $this->uri = $uri;                  // Warning : Don't load any library in core level.
+ 
         $this->routes = (!isset($routes) OR !is_array($routes) ) ? array() : $routes;
         unset($routes);
 
         $this->method = $this->routes['index_method'];
         $this->_setRouting();
 
-        $logger->debug('Router Class Initialized');
+        $this->logger->debug('Router Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -51,9 +55,9 @@ Class Router
      */
     public function clear()
     {
-        global $uri;
+        global $c;
 
-        $this->uri = $uri;   // reset cloned URI object.
+        $this->uri = $c['Uri'];   // reset cloned URI object.
         $this->response = array();
         $this->error_routes = array(); // route config dont't reset "$this->routes" there cause some isset errors
         $this->class = '';
@@ -91,7 +95,7 @@ Class Router
      */
     public function _setRouting()
     {
-        global $config, $response, $logger;
+        global $config, $c;
 
         if (!isset($_SERVER['HVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
             // Are query strings enabled in the config file?
@@ -108,11 +112,9 @@ Class Router
                 if (isset($_GET[$mt])) {
                     $this->setMethod(trim($this->uri->_filterUri($_GET[$mt])));
                 }
-
                 return;
             }
         }
-
         // Set the default controller so we can display it in the event
         // the URI doesn't correlated to a valid controller.
 
@@ -127,8 +129,7 @@ Class Router
                 if (isset($_SERVER['HVC_REQUEST'])) { // HMVC Connection
                     return false; // Returns to false if we have hmvc connection error.
                 }
-
-                $response->showError($this->response['404'], 404);
+                $c['Response']->showError($this->response['404'], 404);
             }
 
             // Turn the default route into an array.  We explode it in the event that
@@ -149,8 +150,7 @@ Class Router
             // re-index the routed segments array so it starts with 1 rather than 0
             // $this->uri->_reindex_segments();
 
-            $logger->debug('No URI present. Default controller set.');
-
+            $this->logger->debug('No URI present. Default controller set.');
             return;
         }
 
@@ -189,16 +189,8 @@ Class Router
         }
 
         $this->setClass($segments[1]);
-
-        // if (isset($segments[2])) {
-        //     $this->setMethod($segments[2]);  // A standard method request
-        // } else {
-            // $segments[2] = $this->routes['index_method'];   // This lets the "routed" segment array identify that the default
-            // index method is being used.
-        // }
-        // print_r($segments);
-
         $this->uri->rsegments = $segments;  // Update our "routed" segment array to contain the segments.
+
         // identical to $this->uri->segments
         // Note: If there is no custom routing, this array will be         
     }
@@ -223,7 +215,7 @@ Class Router
      */
     public function _validateRequest($segments)
     {
-        global $response, $logger;
+        global $c;
 
         if ( ! isset($segments[0])) {
             return $segments;
@@ -256,11 +248,6 @@ Class Router
 
         if (file_exists($root . $this->fetchDirectory() . DS . 'controller' . DS . $this->fetchDirectory() . EXT)) {
             array_unshift($segments, $this->fetchDirectory());
-
-            // if (empty($segments[2])) {
-            //     // $segments[2] = $this->routes['index_method'];
-            // }
-
             return $segments;
         }
 
@@ -275,7 +262,6 @@ Class Router
             $this->setDirectory($x[0]);
             $this->setClass($x[1]);
             $this->setMethod(isset($x[2]) ? $x[2] : 'index');
-
             return $x;
         }
 
@@ -290,8 +276,7 @@ Class Router
             $logger->debug('Hvc request not found ( ' . $error_page . ' ).');
             return false;
         }
-
-        $response->show404($error_page);
+        $c['Response']->show404($error_page);
     }
 
     // --------------------------------------------------------------------
@@ -315,14 +300,12 @@ Class Router
             $this->_setRequest($this->uri->segments);
             return;
         }
-
         $uri = implode('/', $this->uri->segments);
 
         if (isset($this->routes[$uri])) {  // Is there a literal match?  If so we're done
             $this->_setRequest(explode('/', $this->routes[$uri]));
             return;
         }
-
         foreach ($this->routes as $key => $val) { // Loop through the route array looking for wild-cards
             $key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key)); // Convert wild-cards to RegEx
 
@@ -335,7 +318,6 @@ Class Router
                 return;
             }
         }
-
         // If we got this far it means we didn't encounter a
         // matching route so we'll set the site default route
 
@@ -393,11 +375,7 @@ Class Router
      */
     public function fetchMethod()
     {
-        // if ($this->method == $this->fetchClass()) {
-            return $this->routes['index_method'];   // method  always must be index.
-        // }
-
-        // return $this->method;
+        return $this->routes['index_method'];   // method  always must be index.
     }
 
     // --------------------------------------------------------------------
@@ -440,7 +418,6 @@ Class Router
         if (count($this->response) > 0) {
             return $this->response;
         }
-
         return false;
     }
 

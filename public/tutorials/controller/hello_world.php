@@ -5,15 +5,22 @@
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
-        new View;
+        global $c;
+        $c['View'];
+        $c['Sess'];
+
+        echo $this->config->get('base_url');
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
+
+        // $this->logger->debug('test', 'sd');
+
         $this->view->get(
             'hello_world', 
             function () {
