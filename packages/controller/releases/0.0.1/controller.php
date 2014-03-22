@@ -23,9 +23,9 @@ Class Controller
      * Closure function for 
      * construction
      * 
-     * @param object $closure
+     * @param null $closure object or null
      */
-    public function __construct($closure)
+    public function __construct($closure = null)
     {
         global $cfg, $uri, $router, $translator, $response, $logger;
 
