@@ -26,8 +26,7 @@ Class Public_User
         global $c;
         
         $c['Sess'];
-       
-        // $c['Auth'];
+        $c['Auth'];
 
         $this->init();
         $this->logger = $c['Logger'];

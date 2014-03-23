@@ -32,9 +32,9 @@ Class Exceptions
      */
     public function write($e, $type = '')
     {
-        global $packages, $config;
+        global $packages, $config, $c;
 
-        $error = new Error;
+        $error = $c['Error'];
         $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
 
         // If user want to close error_reporting in some parts of the application.
@@ -52,11 +52,12 @@ Class Exceptions
 
         $code = $e->getCode();
         $lastQuery = '';
-        if (isset(getInstance()->db)) {
-            $prepare = (isset(getInstance()->db->prepare)) ? getInstance()->db->prepare : false;
+
+        if (isset($c['App']->db)) {
+            $prepare = (isset($c['App']->db)) ? $c['App']->db->prepare : false;
             $lastQuery = '';
-            if (method_exists(getInstance()->db, 'getLastQuery')) {
-                $lastQuery = getInstance()->db->getLastQuery($prepare);
+            if (method_exists(getInstance()->db, 'lastQuery')) {
+                $lastQuery = getInstance()->db->lastQuery($prepare);
             }
         }
         if ( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
@@ -92,7 +93,7 @@ Class Exceptions
         //-----------------------------------------------------------------------
 
         $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
-        $this->logger->__destruct(); // continue write all logs to data
+        $this->logger->__destruct(); // continue write all log data
 
         // Displaying Errors
         //-----------------------------------------------------------------------            

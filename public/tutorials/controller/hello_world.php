@@ -5,17 +5,20 @@
  * 
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
         global $c;
         $c['View'];
-        $c['Sess'];
+        // $c['Cache'];
 
-        echo $this->config->get('base_url');
+        // $this->cache->set('a', 'Wssssssss');
+        // echo $this->cache->get('a');
+
+        // echo $this->config['base_url'];
     }
 );
 
-$o->func(
+$app->func(
     'index',
     function () {
 

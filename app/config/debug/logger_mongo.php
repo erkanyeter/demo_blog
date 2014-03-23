@@ -8,11 +8,11 @@
 |
 | Prototype: 
 |
-|   $logger_mongo['key'] = value;
+|   $config['key'] = value;
 |
 */
-$logger_mongo = array(
-    'batch'      => true,   // multiline process
+$config = array(
+    'batch'      => true,   // multiline process should be true
     'collection' => 'log_mycollection',   // Set your mongo collection 
 );
 /*
@@ -22,7 +22,7 @@ $logger_mongo = array(
 | Formatter function must return to @array.
 | 
 */
-$logger_mongo['extend']['format'] = function ($record) {
+$config['extend']['format'] = function ($record) {
     if (count($record['context']) > 0) {     // context
         $record['context'] = json_encode($record['context'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); 
     }
@@ -36,7 +36,7 @@ $logger_mongo['extend']['format'] = function ($record) {
 | Multiline logging
 | 
 */
-$logger_file['extend']['batch_format'] = function ($handler, $records) {
+$config['extend']['batch_format'] = function ($handler, $records) {
     $formatted = array();
     foreach ($records as $record) {
         $formatted[] = $handler->format($record);
@@ -50,9 +50,8 @@ $logger_file['extend']['batch_format'] = function ($handler, $records) {
 | Write function must return to @boolean.
 | 
 */
-$logger_mongo['extend']['write'] = function ($record) use ($logger_mongo) {
-
-    $connection = $logger_mongo['connection'];
+$config['extend']['write'] = function ($record) use ($config) {
+    $connection = $config['connection'];
     $mongo      = $connection();
 
     $mongo->insert(

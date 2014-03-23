@@ -1,11 +1,11 @@
 <?php
 
 /**
- * $c hello_forms
+ * $o hello_forms
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
         new Url;
         new Html;
@@ -17,9 +17,9 @@ $c = new Controller(
     }
 );
 
-$c->func(
+$o->func(
     'index', 
-    function () use ($c) {
+    function () {
 
         if ($this->post->get('form1_dopost')) {   //--------- Form 1 --------//
 

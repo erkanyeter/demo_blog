@@ -1,11 +1,11 @@
 <?php
 
 /**
- * $c hello_form
+ * $o hello_form
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
         new Url;
         new Html;
@@ -17,7 +17,7 @@ $c = new Controller(
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {  
 

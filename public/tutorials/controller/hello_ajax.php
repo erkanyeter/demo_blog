@@ -1,19 +1,20 @@
 <?php
 
 /**
- * $c hello_ajax
+ * $o hello_ajax
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
-        new Form;
-        new Request;
+        $c['Form'];
+        $c['Request'];
+        
         $this->translator->load('hello_form');
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
         if ($this->request->isXmlHttp()) { // Is request Ajax ?
@@ -37,9 +38,10 @@ $c->func(
             echo json_encode($this->form->getAllOutput());
 
         } else {
-            new Url;
-            new Html;
-            new View;
+
+            $c['Url'];
+            $c['Html'];
+            $c['View'];
 
             $this->view->get(
                 'hello_ajax',

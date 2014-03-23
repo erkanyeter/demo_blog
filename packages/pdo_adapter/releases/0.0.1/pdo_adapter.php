@@ -182,7 +182,7 @@ Class Pdo_Adapter
      */
     public function query($sql = null)
     {
-        global $config, $logger;
+        global $config, $c;
 
         $this->last_sql = $sql;
 
@@ -197,7 +197,7 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries']) {
-            $logger->debug('$_SQL ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $c['logger']->debug('$_SQL ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         ++$this->query_count;
         return ($this);
@@ -368,8 +368,8 @@ Class Pdo_Adapter
     /**
      * Set pdo attribute
      * 
-     * @param type $key
-     * @param type $val 
+     * @param string $key
+     * @param mixed  $val 
      */
     public function setAttribute($key, $val)
     {
@@ -381,8 +381,7 @@ Class Pdo_Adapter
     /**
      * Get pdo attribute
      * 
-     * @param type $key
-     * @param type $val 
+     * @param string $key
      */
     public function getAttribute($key)
     {
@@ -511,7 +510,7 @@ Class Pdo_Adapter
      */
     public function execute($array = null)
     {
-        global $config, $logger;
+        global $config, $c;
 
         if ( ! empty($array) AND ! $this->isAssocArray($array)) {
             throw new Exception('PDO bind data must be associative array');
@@ -528,7 +527,7 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries'] AND isset($this->prep_queries[0])) {
-            $logger->debug('$_SQL ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
+            $c['logger']->debug('$_SQL ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
         }
 
         $this->prepare = false;   // reset prepare variable and prevent collision with next query ..
@@ -565,7 +564,7 @@ Class Pdo_Adapter
      */
     public function exec($sql)
     {
-        global $config, $logger;
+        global $config, $c;
         $this->last_sql = $sql;
 
         //------------------------------------
@@ -579,9 +578,7 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries']) {
-            list($emt, $est) = explode(' ', microtime());
-            $end_time = ($emt + $est);
-            $logger->debug('$_SQL ( Exec ):', array('time' => number_format($end_time - $start_time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $c['logger']->debug('$_SQL ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         return $affected_rows;
     }
@@ -630,6 +627,24 @@ Class Pdo_Adapter
     public function getResult()
     {
         return $this->Stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get the statement object
+     * and use native pdo functions
+     *
+     *  $stmt = $this->db->getStatement();
+     *  $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
+     *  
+     *  @see  http://publib.boulder.ibm.com/infocenter/db2luw/v9/index.jsp?topic=%2Fcom.ibm.db2.udb.apdv.php.doc%2Fdoc%2Fr0022486.htm
+     * 
+     * @return [type] [description]
+     */
+    public function getStatement()
+    {
+        return $this->Stmt;
     }
 
     // --------------------------------------------------------------------

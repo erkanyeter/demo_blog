@@ -121,7 +121,8 @@ require DATA .'cache'. DS .'packages.cache';
 |--------------------------------------------------------------------------
 */
 require PACKAGES .'pimple'. DS .'releases'. DS .$packages['dependencies']['pimple']['version']. DS .'pimple'. EXT;
-$c = new Pimple;
+
+$c = new Pimple;  // Dependency Container
 /*
 |--------------------------------------------------------------------------
 | Load Logger Package
@@ -161,6 +162,8 @@ if ($config['log_enabled']) {
             return; 
         } 
     }
+    // Create logger component
+    //-------------------------------------
     $c['Logger'] = function () {
         return new Logger;
     };
@@ -172,16 +175,15 @@ if ($config['log_enabled']) {
 |--------------------------------------------------------------------------
 */
 require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'common'. EXT;
+
 /*
 |--------------------------------------------------------------------------
-| Default Your Components & Services
+| Core Components
 |--------------------------------------------------------------------------
-| Notice: You don't need to define all classes in here
-| If a class not defined here framework load it from
-| /packages folder then assign it to Controller instance
-| usign getInstance() method.
-| 
 */
+$c['App'] = function () {
+    return new App;
+};
 $c['Uri'] = function () {
     return new Uri;
 };
@@ -195,19 +197,51 @@ $c['Security'] = function () {
     return new Security;
 };
 $c['Config'] = function () { 
-    return getInstance()->config = new Config;
+    return new Config;
 };
-$c['Translator'] = function () { 
-    return getInstance()->translator = new Translator;
+$c['Error'] = function () { 
+    return new Error;
 };
-$c['Response'] = function () { 
-    return getInstance()->response = new Response;
+$c['Exceptions'] = function ($e, $type) { 
+    $exception = new Exceptions;
+    $exception->write($e, $type);
 };
-$c['Sess'] = function () use ($c) {      // Build Session Driver
-    return getInstance()->sess = new Sess_Native($c['Config']->load('sess'));
+/*
+|--------------------------------------------------------------------------
+| Default Components & Your Service Components
+|--------------------------------------------------------------------------
+| Notice: You don't need to define all classes in here
+| If class not defined in $c['App'], We load it from
+| "/packages" folder & assign to Controller instance.
+|
+| Just define your service components here !
+| forexample: 
+|
+| $c['Mailer'] = function () use ($c) {
+|     return $c['App']->mailer = new Mailer;   // your mail handler
+| }
+|
+*/
+$c['Translator'] = function () use ($c) { 
+    return $c['App']->translator = new Translator;
 };
-$c['View'] = function () { 
-    return getInstance()->view = new View;
+$c['Response'] = function () use ($c) { 
+    return $c['App']->response = new Response;
+};
+$c['View'] = function () use ($c) { 
+    return $c['App']->view = new View;
+};
+$c['Sess'] = function () use ($c) {
+    return $c['App']->sess = new Sess_Native($c['Config']->load('sess')); // Build Session Driver
+};
+$c['Db'] = function () use ($c) {
+    return $c['App']->db = new Pdo_Mysql($c['Config']->load('database')); // Build Cache Driver
+};
+$c['Crud'] = function () use ($c) {
+    return $c['App']->db = new Crud($c['Db']);    // Replace database object with crud if it used.
+};
+$c['Cache'] = function () use ($c) {
+    return $c['App']->cache = new Cache_Redis($c['Config']->load('cache'));   // Build Cache Driver
 };
 /*
 |--------------------------------------------------------------------------

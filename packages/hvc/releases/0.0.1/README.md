@@ -35,16 +35,16 @@ Example Output ( Private Controller )
  */
 $c = new Controller(
     function () {
-	   new Get;
-	   new Db;
+       new Get;
+       new Db;
     }
 );
 
 $c->func(
     'index',
     function () {
-    	$this->db->where('id', $this->get->get('user_id'));
-    	$this->db->get('users');
+        $this->db->where('id', $this->get->get('user_id'));
+        $this->db->get('users');
         $r = array(
             'results' => $this->db->getResultArray(),
             'message' => $this->uri->getUriString(),
@@ -143,3 +143,6 @@ Sets the $_SERVER headers for current hvc scope.
 
 Returns to random hvc key using serialized string of the data which are builded your method parameters.
 
+#### $this->hvc->deleteCache($key = null);
+
+If $key not provided hvc will delete the cache using current key.

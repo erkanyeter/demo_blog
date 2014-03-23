@@ -13,6 +13,7 @@ Class Router
 {
     public $logger;
     public $uri;
+    public $config;
     public $response = array();
     public $routes = array();
     public $error_routes = array();
@@ -34,11 +35,10 @@ Class Router
 
         $this->logger = $c['Logger'];
         $this->uri    = $c['Uri'];
+        $this->config = $c['Config'];
 
-        $routes = getConfig('routes');
- 
-        $this->routes = (!isset($routes) OR !is_array($routes) ) ? array() : $routes;
-        unset($routes);
+        $this->config->load('routes');
+        $this->routes = $this->config['routes'];
 
         $this->method = $this->routes['index_method'];
         $this->_setRouting();
@@ -101,16 +101,16 @@ Class Router
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
 
-            $dt = $config['directory_trigger'];
-            $ct = $config['controller_trigger'];
-            $mt = $config['function_trigger'];
+            $d_key = $config['directory_trigger'];
+            $c_key = $config['controller_trigger'];
+            $m_key = $config['function_trigger'];
 
-            if ($config['enable_query_strings'] === true AND isset($_GET[$ct]) AND isset($_GET[$dt])) {
-                $this->setDirectory(trim($this->uri->_filterUri($_GET[$dt])));
-                $this->setClass(trim($this->uri->_filterUri($_GET[$ct])));
+            if ($config['enable_query_strings'] === true AND isset($_GET[$c_key]) AND isset($_GET[$d_key])) {
+                $this->setDirectory(trim($this->uri->_filterUri($_GET[$d_key])));
+                $this->setClass(trim($this->uri->_filterUri($_GET[$c_key])));
 
-                if (isset($_GET[$mt])) {
-                    $this->setMethod(trim($this->uri->_filterUri($_GET[$mt])));
+                if (isset($_GET[$m_key])) {
+                    $this->setMethod(trim($this->uri->_filterUri($_GET[$m_key])));
                 }
                 return;
             }
@@ -144,11 +144,8 @@ Class Router
             }
 
             $this->setClass($segments[1]);
-            // $this->setMethod($this->routes['index_method']);  // index
 
             $this->uri->rsegments = $segments;  // Assign the segments to the URI class
-            // re-index the routed segments array so it starts with 1 rather than 0
-            // $this->uri->_reindex_segments();
 
             $this->logger->debug('No URI present. Default controller set.');
             return;
@@ -160,8 +157,6 @@ Class Router
         $this->uri->_explodeSegments();   // Compile the segments into an array 
 
         $this->_parseRoutes();        // Parse any custom routing that may exist
-        // Re-index the segment array so that it starts with 1 rather than 0
-        // $this->uri->_reindex_segments();
     }
 
     // --------------------------------------------------------------------
@@ -187,7 +182,6 @@ Class Router
         if (count($segments) == 0) {
             return;
         }
-
         $this->setClass($segments[1]);
         $this->uri->rsegments = $segments;  // Update our "routed" segment array to contain the segments.
 
@@ -313,7 +307,6 @@ Class Router
                 if (strpos($val, '$') !== false AND strpos($key, '(') !== false) {  // Do we have a back-reference ?
                     $val = preg_replace('#^' . $key . '$#', $val, $uri);
                 }
-
                 $this->_setRequest(explode('/', $val));
                 return;
             }
@@ -389,7 +382,7 @@ Class Router
      */
     public function setDirectory($dir)
     {
-        $this->directory = (string) $dir;
+        $this->directory = $dir;
     }
 
     // --------------------------------------------------------------------

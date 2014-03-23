@@ -28,7 +28,7 @@ namespace Form\Src {
             $matches = explode('.', $val);
             $method  = trim($matches[0], '@');
             $uri     = $matches[1];
-            $param   = (isset($matches[2])) ? $matches[2] : 0;
+            $param   = (isset($matches[2])) ? $matches[2] : null;
 
             if( ! isset(getInstance()->hvc)) {
                 new \Hvc; // call hvc class

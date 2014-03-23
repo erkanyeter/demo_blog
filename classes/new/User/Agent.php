@@ -10,7 +10,7 @@
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/docs/package/agent
  */
-Class Agent
+Class User_Agent
 {
     public $agent = null;
     public $is_browser = false;

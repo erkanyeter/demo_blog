@@ -5,17 +5,16 @@
  * 
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
         global $c;
-        $c['view'];
-        $c['html'];
-        $c['hvc'];
-        $c['url'];
+        $c['View'];
+        $c['Html'];
+        $c['Hvc'];
+        $c['Url'];
     }
 );
-
-$o->func(
+$app->func(
     'index',
     function () {
 

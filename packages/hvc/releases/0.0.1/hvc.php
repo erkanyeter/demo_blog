@@ -33,6 +33,8 @@ Class Hvc
     protected static $cid  = array();  // Static HVC Connection ids. DO NOT CLEAR IT !!!
     protected $hvc_uri;
 
+    const KEY = 'Hvc:';   // Hvc key prefix
+
     // Benchmark
     public static $start_time = '';     // benchmark start time
 
@@ -60,7 +62,6 @@ Class Hvc
 
         // Cache and Connection
         $this->connection  = true;
-        $this->conn_string = '';
 
         // $GLOBALS['_GET_BACKUP']     = array();    // Reset global variables
         // $GLOBALS['_POST_BACKUP']    = array();
@@ -81,9 +82,9 @@ Class Hvc
     {
         global $c;
 
-        $this->config = getConfig('hvc');   // Get hvc configuration
+        $this->config = $c['Config']->load('hvc');   // Get hvc configuration
+        $c['Translator']->load('hvc');               // Load translate file
 
-        $c['Translator']->load('hvc');      // Load translate file
         $c['Logger']->debug('Hvc Class Initialized');
     }
 
@@ -92,12 +93,12 @@ Class Hvc
     /**
      * Prepare HVC Request (Set the URI String).
      *
-     * @access    private
-     * @param     string $uri
-     * @param     integer $expiration whether to use "Cache" package
+     * @access private
+     * @param string $uri uri
+     * 
      * @return    void
      */
-    public function setRequestUrl($uriString = '', $expiration = 0)
+    public function setRequestUrl($uriString = '')
     {
         // ----------- Visibility -----------------
 
@@ -135,7 +136,7 @@ Class Hvc
         // Don't clone getInstance(), we just do backup.
         //----------------------------------------------
         
-        $this->global = getInstance();     // We need create backup $this object of main controller
+        $this->global = Controller::$instance;     // We need create backup $this object of main controller
 
         // becuse of it will change when HVC process is done.
         //----------------------------------------------
@@ -253,7 +254,7 @@ Class Hvc
      * @param  integer $expiration whether to use cache
      * @return string         
      */
-    public function get($uri, $data = '', $expiration = 0)
+    public function get($uri, $data = '', $expiration = null)
     {
         return $this->request('GET', $uri, $data, $expiration);
     }
@@ -268,7 +269,7 @@ Class Hvc
      * @param  integer $expiration whether to use cache
      * @return string         
      */
-    public function post($uri, $data = '', $expiration = 0)
+    public function post($uri, $data = '', $expiration = null)
     {
         return $this->request('POST', $uri, $data, $expiration);
     }
@@ -323,7 +324,7 @@ Class Hvc
      * @param  integer $ttl
      * @return string
      */
-    public function request($method, $uri, $data = '', $expiration = 0)
+    public function request($method, $uri, $data = '', $expiration = null)
     {
         if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
@@ -415,7 +416,7 @@ echo $this->view->get(
                 return;
             }
 
-            if (isset($rsp['e']) AND (ENV == 'DEBUG' OR ENV == 'TEST')) {  // Show exceptional message to developers if environment not LIVE.
+            if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'DEBUG' OR ENV == 'TEST')) {  // Show exceptional message to developers if environment not LIVE.
                 $rsp['message'] = $rsp['e'];
             }
             return $rsp;
@@ -433,7 +434,7 @@ echo $this->view->get(
      *
      * @return   string
      */
-    public function exec($expiration = 0)
+    public function exec($expiration = null)
     {
         global $c;
 
@@ -444,33 +445,33 @@ echo $this->view->get(
         static $storage = array();      // store "$c " variables ( called controllers )
         // ------------------------------------------------------------------------
 
-        $KEY = $this->getKey();     // Get Hvc Key
+        $KEY = $this->getKey();   // Get Hvc Key
+        $start = microtime(true); // Start the Query Timer 
 
-        // ----------------- Memory Cache Control -------------------//
-
-
-        list($smt, $sst) = explode(' ', microtime());  // Start the Query Timer 
-        $start_time = ($smt + $sst);
-
-
-        if ($expiration > 0) {
-            $cache    = $this->config['cache']();
-            $response = $cache->get($KEY);
-            if ( ! empty($response)) {              // If cache exists return to cached string.
-                $logger->debug('Hvc request: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => $response));
-                return base64_decode($response);    // encoding for specialchars
-            }
-        }
         // ----------------- Static Php Cache -------------------//
 
         if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
-            $this->_clear();                // This cache type not related with Cache package.
+                                            // This cache type not related with Cache package.
             $response = $this->getResponse();
-            $logger->debug('$_HVC: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => $response));
+            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+            $this->_clear();
             return $response;    // This is native system cache !
         }
 
         self::$cid[$KEY] = $KEY;    // store connection id.
+
+        // ----------------- Memory Cache Control -------------------//
+
+        if ($this->config['caching']) {
+            $cache = $this->config['cache'](); 
+            $cache = $cache::$driver;
+            $response = $cache->get($KEY);
+            if ( ! empty($response)) {              // If cache exists return to cached string.
+                $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+                $this->_clear();
+                return base64_decode($response);    // encoding for specialchars
+            }
+        }
 
         // ----------------- Route is Valid -------------------//
 
@@ -489,7 +490,7 @@ echo $this->view->get(
         //  may collission with standart uri, also we need it for caching feature.
         //  --------------------------------------------------------------------------
 
-        $uri->setUriString(rtrim($uri->getUriString(), '/') . '/' . $this->config['unique_key_prefix'] . $KEY); // Create an uniq HVC Uri with md5 hash
+        $uri->setUriString(rtrim($uri->getUriString(), '/') . '/' .$KEY); // Create an uniq HVC Uri with md5 hash
         //  --------------------------------------------------------------------------
 
         $folder = PUBLIC_DIR;
@@ -503,15 +504,15 @@ echo $this->view->get(
         // --------- Check class is exists in the storage ----------- //
 
         if (isset($storage[$router->fetchClass()])) {    // Check is multiple call to same class.
-            $o = $storage[$router->fetchClass()];       // Get stored class.
+            $app = $storage[$router->fetchClass()];       // Get stored class.
         } else {
             require($controller);        // Call the controller.
         }
 
         // --------- End storage exists ----------- //
-        // $o variable available here !
+        // $app variable available here !
 
-        if ( ! isset($c['request']->global)) { // ** Let's create new request object for globals
+        if ( ! isset($c['Request']->global)) { // ** Let's create new request object for globals
            // $c['request'] = new Request;       // create new request object;
 
             // create a global variable
@@ -520,9 +521,9 @@ echo $this->view->get(
             // ** Store global "Uri" and "Router" objects to make available them in sub layers
             //---------------------------------------------------------------------------
 
-            $c['request']->global = new stdClass;      // Create an empty class called "global"
-            $c['request']->global->uri = $this->uri;        // Let's assign the global uri object
-            $c['request']->global->router = $this->router;     // Let's assign the global uri object
+            $c['Request']->global = new stdClass;      // Create an empty class called "global"
+            $c['Request']->global->uri    = $this->uri;        // Let's assign the global uri object
+            $c['Request']->global->router = $this->router;     // Let's assign the global uri object
         }
 
         // End store global variables
@@ -530,23 +531,23 @@ echo $this->view->get(
         if (strncmp($router->fetchMethod(), '_', 1) == 0 
             OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
         ) {
-            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             $this->_clear();
+            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             return $this->getResponse();
         }
 
         // Get application methods
         //----------------------------
 
-        $storedMethods = array_keys($o->_controllerAppMethods);
+        $storedMethods = array_keys($app->controllerMethods);
 
         //----------------------------
         // Check method exist or not
         //----------------------------
 
         if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {
-            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             $this->_clear();
+            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
             return $this->getResponse();
         }
 
@@ -557,15 +558,12 @@ echo $this->view->get(
 
         //----------------------------
 
-        list($smt, $sst) = explode(' ', microtime());  // Start the Query Timer 
-        $start_time = ($smt + $sst);
-
         ob_start(); // Start the output buffer.
 
         // Call the requested method. Any URI segments present (besides the directory / class / index / arguments ) 
         // will be passed to the method for convenience
             // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
-        call_user_func_array(array($o, $router->fetchMethod()), $arguments);
+        call_user_func_array(array($app, $router->fetchMethod()), $arguments);
 
         //----------------------------
 
@@ -574,6 +572,7 @@ echo $this->view->get(
         //----------------------------
 
         ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
+
         //----------------------------
 
         $this->setResponse($content);
@@ -583,7 +582,7 @@ echo $this->view->get(
         // Store classes to $storage container
         //--------------------------------------
         
-        $storage[$router->fetchClass()] = $o; // Store class names to storage. We fetch it if its available in storage.
+        $storage[$router->fetchClass()] = $app; // Store class names to storage. We fetch it if its available in storage.
 
         //----------------------------
         // End storage
@@ -592,27 +591,14 @@ echo $this->view->get(
 
         //------------- Set to Cache -------------//
 
-        if ($expiration > 0) {
+        if (is_numeric($expiration) AND $this->config['caching']) {
             $cache = $this->config['cache']();   // load cache library
+            $cache = $cache::$driver;
             $cache->set($KEY, base64_encode($response), (int)$expiration);
         }
-
-        $logger->debug('$_HVC: '.$this->getUri(), array('time' => $this->_endTime($start_time), 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+        $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
         return $response;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Calculate end time
-     * 
-     * @return float time
-     */
-    private function _endTime($start_time)
-    {
-        list($emt, $est) = explode(' ', microtime());
-        return number_format(($emt + $est) - $start_time, 4);
     }
 
     // --------------------------------------------------------------------
@@ -625,6 +611,7 @@ echo $this->view->get(
      */
     protected function _clear()
     {
+        global $c;
         if ( ! isset($_SERVER['HVC_REQUEST_URI'])) { // if no hvc header return to null;
             return;
         }
@@ -633,20 +620,17 @@ echo $this->view->get(
         // --------------------------------------------------
         $_SERVER = array();  // Just reset server variable other wise  we don't 
                              // use global variables in hvc in hvc.
-
-        // $_SERVER = $_POST = $_GET = $_REQUEST = array(); // reset all globals
-
-        // $_GET = $GLOBALS['_GET_BACKUP'];   // Set back original request variables
-        // $_POST = $GLOBALS['_POST_BACKUP'];
         $_SERVER = $GLOBALS['_SERVER_BACKUP'];
-        // $_REQUEST = $GLOBALS['_REQUEST_BACKUP'];
 
         // Set original $this to controller instance that we backup before.
         // --------------------------------------------------
 
-        getInstance($this->global);
-        getInstance()->uri    = $this->uri;     // restore back original objects
-        getInstance()->router = $this->router;
+        if (is_object($this->global)) {  // fixed HMVC object type of integer bug.
+            Controller::$instance = $this->global;
+        }
+
+        $c['App']->uri    = $this->uri;        // restore back original objects
+        $c['App']->router = $this->router;   
 
         $this->clear();  // reset all HVC variables.
 
@@ -719,7 +703,7 @@ echo $this->view->get(
      */
     public function getKey()
     {
-        return hash('md5', trim($this->conn_string));
+        return self::KEY . hash('md5', trim($this->conn_string));
     }
 
     // --------------------------------------------------------------------
@@ -729,12 +713,13 @@ echo $this->view->get(
      * 
      * @return string
      */
-    public function deleteKey($key = '')
+    public function deleteCache($key = '')
     {
         if (empty($key)) {          // if key not provided the get current hvc key
-            $key = $this->geyKey();
+            $key = $this->getKey();
         }
         $cache = $this->config['cache'](); // load cache object
+        $cache = $cache::$driver;
         if ($cache->keyExists($key)) {
             return $cache->delete($key);
         }

@@ -31,8 +31,9 @@ Class View
     {
         global $c;
         $this->logger   = $c['Logger'];
-        $this->response = $c['Response'];
         $this->router   = $c['Router'];
+        $this->response = $c['Response'];
+
         $this->logger->debug('View Class Initialized');
     }
 
@@ -50,12 +51,14 @@ Class View
      */
     public function fetch($__vPath, $__vFilename, $__vData = null, $__vInclude = true)
     {
+        global $c;
+
         $file_extension = substr($__vFilename, strrpos($__vFilename, '.')); // Detecet the file extension ( e.g. '.tpl' )
         $ext = (strpos($file_extension, '.') === 0) ? '' : EXT;
 
-        if (function_exists('getInstance') AND is_object(getInstance())) {
-            foreach (array_keys(get_object_vars(getInstance())) as $key) { // This allows to using "$this" variable in all views files.
-                $this->{$key} = getInstance()->{$key}; // e.g. $this->config->getItem('myitem')
+        if (class_exists('Controller')) {
+            foreach (array_keys(get_object_vars($c['App']->instance)) as $key) { // This allows to using "$this" variable in all views files.
+                $this->{$key} = $c['App']->instance->{$key}; // e.g. $this->config->getItem('myitem')
             }
         }
 
@@ -102,15 +105,14 @@ Class View
     public function set($key, $val)
     {
         if (is_string($val) AND strpos($val, '@') === 0 ) {
-            
             global $c;
-
             $matches = explode('.', $val);
             $method  = trim($matches[0], '@');
             $uri     = $matches[1];
             $param   = (isset($matches[2])) ? $matches[2] : 0;
-            $val = $c['hvc']->$method($uri, $param);
+            $val     = $c['Hvc']->$method($uri, $param);
         }
+
         $val = $this->_isCallable($val);
 
         if (is_string($val) OR is_int($val)) {

@@ -7,14 +7,14 @@
  * 
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
         global $c;
         $c['Uri'];
     }
 );
 
-$o->func(
+$app->func(
     'index', 
     function ($arg1, $arg2, $arg3) { 
 

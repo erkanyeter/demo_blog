@@ -11,7 +11,7 @@
  * @link      http://obullo.com/package/obullo
  */
 
-$start = microtime(true);  // Run framework
+$start = microtime(true);  // Run Timer
 /*
  * ------------------------------------------------------
  *  Instantiate the hooks class
@@ -104,7 +104,7 @@ if (strncmp($c['Router']->fetchMethod(), '_', 1) == 0
 if ($config['enable_hooks']) {
     $c['Hooks']->call('post_controller_constructor');
 }
-$storedMethods = array_keys($o->_controllerAppMethods);
+$storedMethods = array_keys($app->controllerMethods);
 
 if ( ! in_array(strtolower($c['Router']->fetchMethod()), $storedMethods)) {  // Check method exist or not
     $c['Response']->show404($pageUri);
@@ -112,13 +112,13 @@ if ( ! in_array(strtolower($c['Router']->fetchMethod()), $storedMethods)) {  // 
 
 $arguments = array_slice($c['Uri']->rsegments, 2);
 
-if (method_exists($o, '_remap')) {  // Is there a "remap" function? If so, we call it instead
-    $o->_remap($c['Router']->fetchMethod(), $arguments);
+if (method_exists($app, '_remap')) {  // Is there a "remap" function? If so, we call it instead
+    $app->_remap($c['Router']->fetchMethod(), $arguments);
 } else {
     // Call the requested method. Any URI segments present (besides the directory / class / method) 
     // will be passed to the method for convenience
     // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
-    call_user_func_array(array($o, $c['Router']->fetchMethod()), $arguments);
+    call_user_func_array(array($app, $c['Router']->fetchMethod()), $arguments);
 }
 /*
  * ------------------------------------------------------
@@ -148,7 +148,8 @@ if ($config['enable_hooks']) {
 if ($config['enable_hooks']) {
     $c['Hooks']->call('post_system');
 }
-$time = microtime(true) - $start;
+
+$time = microtime(true) - $start;  // End Timer
 
 $extra = array();
 if ($config['log_benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.

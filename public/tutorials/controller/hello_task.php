@@ -5,16 +5,17 @@
  * 
  * @var Controller
  */
-$c = new Controller(
+$app = new Controller(
     function () {
-        new Url;
-        new Task;
+        global $c;
+        $c['Url'];
+        $c['Task'];
     }
 );
 
-$c->func(
+$app->func(
     'index',
-    function ($mode = '') use ($c) {
+    function ($mode = '') {
 
         echo $this->url->anchor('tutorials/hello_task/index/help', 'Click Here to Help.');
 

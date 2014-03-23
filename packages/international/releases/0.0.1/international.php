@@ -61,17 +61,17 @@ Class International
 
         $logger->debug('International Class Initialized');
 
-        $this->_init(); // Initialize 
+        $this->set(); // Initialize 
     }
 
     // ------------------------------------------------------------------------
 
     /**
-     * Initialize Function
+     * Set translation
      * 
      * @return void
      */
-    public function _init()
+    public function set()
     {
         global $config;
 
@@ -113,7 +113,7 @@ Class International
             return;
         }
 
-        $this->setLanguage($config['default_translation']); // Set from framework config file
+        $this->setLocale($config['default_translation']); // Set from framework config file
     }
 
     // ------------------------------------------------------------------------
@@ -149,7 +149,7 @@ Class International
      * 
      * @param string $langCode
      */
-    public function setLanguage($langCode = 'en_US', $write_cookie = true)
+    public function setLocale($langCode = 'en_US', $write_cookie = true)
     {
         if (!isset($this->langArray[$langCode])) { // If its not in defined languages.
             return; // Good bye ..

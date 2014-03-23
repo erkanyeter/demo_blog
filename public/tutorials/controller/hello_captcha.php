@@ -1,12 +1,11 @@
 <?php
 
 /**
- * $c hell_captcha
+ * $o hell_captcha
  * 
  * @var Controller
  */
-
-$c = new Controller(
+$o = new Controller(
     function () {
         new View;
         new Url;
@@ -16,7 +15,7 @@ $c = new Controller(
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
         if ($this->post->get('dopost')) {
@@ -30,9 +29,9 @@ $c->func(
             $this->form->func(
                 'callback_verify_captcha',
                 function () {
-                    $captcha = new Captcha;
+                    $oaptcha = new Captcha;
                     $answer = $this->post->get('captcha_answer');
-                    if ($captcha->check($answer) == false) {
+                    if ($oaptcha->check($answer) == false) {
                         $this->setMessage('callback_verify_captcha', 'Wrong Captcha Code');
                         return false;
                     }

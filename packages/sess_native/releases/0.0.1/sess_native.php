@@ -10,6 +10,8 @@
  */
 Class Sess_Native
 {
+    public $logger;
+    public $config;
     public $request;
     public $now;
     public $encrypt_cookie = false;
@@ -25,22 +27,26 @@ Class Sess_Native
     public $encryption_key = '';
     public $flashdata_key = 'flash';
     public $time_reference = 'time';
-    public $config = array();  // php ini key => values
 
     // --------------------------------------------------------------------
 
     /**
      * Set php.ini settings and configuration variables
      *
-     * @uses ini_set()
-     * @param array $config
+     * @param array $config session configuration array
+     *
+     * @return void
      */
     public function __construct($config = array())
     {
-        if (count($config) == 0) {
-            return;
+        global $c;
+        $this->config  = $c['Config'];
+        $this->logger  = $c['Logger'];
+        $this->request = $c['Request'];  // Set Request object
+
+        if (count($config) > 0) {
+            $this->init($config);
         }
-        $this->init($config);
     }
 
     // --------------------------------------------------------------------
@@ -54,10 +60,6 @@ Class Sess_Native
      */
     public function init($sess = array())
     {
-        global $c, $config, $logger;
-
-        echo 'sd';
-
         foreach (
             array(
             'cookie_name',
@@ -73,11 +75,12 @@ Class Sess_Native
         foreach ($sess['native'] as $k => $v) {
             ini_set($k, $v);
         }
-        $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $config['cookie_path'];
-        $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $config['cookie_domain'];
-        $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $config['cookie_prefix'];
+        $this->cookie_path   = (isset($sess['cookie_path'])) ? $sess['cookie_path'] : $this->config['cookie_path'];
+        $this->cookie_domain = (isset($sess['cookie_domain'])) ? $sess['cookie_domain'] : $this->config['cookie_domain'];
+        $this->cookie_prefix = (isset($sess['cookie_prefix'])) ? $sess['cookie_prefix'] : $this->config['cookie_prefix'];
 
-        $this->request = $c['request'];  // Set Request object
+
+        // http://stackoverflow.com/questions/2615554/how-to-encrypt-session-id-in-cookie
 
         if ($this->expire_on_close) {  // Expire on close 
             session_set_cookie_params(0);
@@ -86,8 +89,8 @@ Class Sess_Native
         }
 
         $this->now = $this->_getTime();
-        $this->encryption_key = $config['encryption_key'];
-        $this->time_reference = $config['time_reference'];
+        $this->encryption_key = $this->config['encryption_key'];
+        $this->time_reference = $this->config['time_reference'];
 
         session_name($this->cookie_prefix . $this->cookie_name);
 
@@ -111,8 +114,9 @@ Class Sess_Native
         $this->_flashdataSweep();  // delete old flashdata (from last request)
         $this->_flashdataMark();   // mark all new flashdata as old (data will be deleted before next request)
 
-        $logger->debug('Session Native Driver Initialized');
-        $logger->debug('$_SESSION: ', $this->getAllData());
+        $this->logger->debug('Session Native Driver Initialized');
+        $this->logger->debug('$_SESSION: ', $this->getAllData());
+
         return true;
     }
 
@@ -126,12 +130,10 @@ Class Sess_Native
      */
     public function _read()
     {
-        global $logger;
-
         $session = (isset($_COOKIE[$this->cookie_name . '_userdata'])) ? $_COOKIE[$this->cookie_name . '_userdata'] : false; // Fetch the cookie
 
         if ($session === false) {  // No cookie?  Goodbye cruel world!...
-            $logger->debug('A session cookie was not found');
+            $this->logger->debug('A session cookie was not found');
             return false;
         }
 
@@ -143,8 +145,8 @@ Class Sess_Native
             $session = substr($session, 0, strlen($session) - 32); // get last 32 chars
 
             if ($hash !== md5($session . $this->encryption_key)) {  // Does the md5 hash match?                                                        // This is to prevent manipulation of session data in userspace
-                $logger->channel('security');
-                $logger->alert('The session cookie data did not match what was expected. This could be a possible hacking attempt');
+                $this->logger->channel('security');
+                $this->logger->alert('The session cookie data did not match what was expected. This could be a possible hacking attempt');
                 $this->destroy();
                 return false;
             }
@@ -263,6 +265,20 @@ Class Sess_Native
 
         $_SESSION = $old_session_data; // restore the old session data into the new session
 
+        $this->userdata = array(
+            'session_id' => session_id(),
+            'ip_address' => $this->request->getIpAddress(),
+            'user_agent' => substr($this->request->getServer('HTTP_USER_AGENT'), 0, 50),
+            'last_activity' => $this->now
+        );
+
+        $_SESSION['session_id']    = $this->userdata['session_id'];
+        $_SESSION['ip_address']    = $this->userdata['ip_address'];
+        $_SESSION['user_agent']    = $this->userdata['user_agent'];
+        $_SESSION['last_activity'] = $this->userdata['last_activity'];
+
+        $this->_setCookie($this->userdata); // Write the cookie 
+
         session_write_close(); // end the current session and store session data.
     }
 
@@ -270,15 +286,16 @@ Class Sess_Native
 
     /**
      * Write the session cookie
-     *
-     * @access    public
+     * 
+     * @param array $cookie_data cookie
+     * 
      * @return    void
      */
     public function _setCookie($cookie_data = null)
     {
         $cookie_data = $this->_serialize($cookie_data); // Serialize the userdata for the cookie
 
-        if ($this->encrypt_cookie == true) { // Obullo Changes "Encrypt Library Header redirect() Bug Fixed !"
+        if ($this->encrypt_cookie == true) { // "Encrypt Library Header redirect() Bug Fixed !"
             $key = $this->encryption_key;
             $cookie_data = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $cookie_data, MCRYPT_MODE_CBC, md5(md5($key))));
         } else {
@@ -289,9 +306,7 @@ Class Sess_Native
         $expiration = ($this->expire_on_close) ? 0 : $this->expiration + time();
 
         // Set the cookie
-        setcookie(
-                $this->cookie_name . '_userdata', $cookie_data, $expiration, $this->cookie_path, $this->cookie_domain, 0
-        );
+        setcookie($this->cookie_name . '_userdata', $cookie_data, $expiration, $this->cookie_path, $this->cookie_domain, 0);
     }
 
     // --------------------------------------------------------------------
@@ -305,13 +320,10 @@ Class Sess_Native
     public function destroy()
     {
         if (isset($_COOKIE[$this->cookie_name])) {
-
-            if (session_status() == PHP_SESSION_ACTIVE) { // http://stackoverflow.com/questions/13114185/how-can-you-check-if-a-php-session-exists
+            if (session_status() == PHP_SESSION_ACTIVE) {  // http://stackoverflow.com/questions/13114185/how-can-you-check-if-a-php-session-exists
                 session_destroy();
             }
-
-            setcookie($this->cookie_name . '_userdata', '', ($this->now - 42000), $this->cookie_path, $this->cookie_domain
-            );
+            setcookie($this->cookie_name . '_userdata', '', ($this->now - 42000), $this->cookie_path, $this->cookie_domain);
         }
     }
 
@@ -438,14 +450,10 @@ Class Sess_Native
      */
     public function keepFlash($key)
     {
-        // 'old' flashdata gets removed.  Here we mark all 
-        // flashdata as 'new' to preserve it from _flashdataSweep()
-        // Note the function will return false if the $key 
-        // provided cannot be found
-        $old_flashdata_key = $this->flashdata_key . ':old:' . $key;
-        $value = $this->get($old_flashdata_key);
-
-        $new_flashdata_key = $this->flashdata_key . ':new:' . $key;
+        $old_flashdata_key = $this->flashdata_key . ':old:' . $key;   // 'old' flashdata gets removed.  Here we mark all 
+        $value = $this->get($old_flashdata_key);                      // flashdata as 'new' to preserve it from _flashdataSweep()
+                                                                      // Note the function will return false if the $key 
+        $new_flashdata_key = $this->flashdata_key . ':new:' . $key;   // provided cannot be found
         $this->set($new_flashdata_key, $value);
     }
 
@@ -454,13 +462,10 @@ Class Sess_Native
     /**
      * Fetch a specific flashdata item from the session array
      *
-     * @access   public
-     * @param    string  $key you want to fetch
-     * @param    string  $prefix html open tag
-     * @param    string  $suffix html close tag
+     * @param string $key    you want to fetch
+     * @param string $prefix html open tag
+     * @param string $suffix html close tag
      * 
-     * @version  0.1
-     * @version  0.2     added prefix and suffix parameters.
      * @return   string
      */
     public function getFlash($key, $prefix = '', $suffix = '')

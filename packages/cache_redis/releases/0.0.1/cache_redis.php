@@ -13,6 +13,31 @@ Class Cache_Redis
     // ------------------------------------------------------------------------ 
 
     /**
+     * Redis 
+     * 
+     * @param array $config [description]
+     */
+    public function __construct($config = array())
+    {
+        $this->config = $config;
+        $this->isSupported();
+
+        $servers = array_intersect_key($this->config['servers'], array('hostname' => 1, 'port' => 2));
+
+        if ( ! isset($servers['hostname']) OR ! isset($servers['port'])) {
+            throw new Exception('A defined hostname could not be found.');
+        }
+        $this->connectionSet = $this->config;
+        $this->connect();
+
+        if (isset($this->config['servers']['weight'])) {
+            unset($this->config['servers']['weight']);
+        }
+    }
+
+    // ------------------------------------------------------------------------ 
+
+    /**
      * Method to determine if a phpredis object thinks it's connected to a server
      * 
      * @return boolean true or false
@@ -445,24 +470,18 @@ Class Cache_Redis
 
     // ------------------------------------------------------------------------
 
-    public function connect($driver = null)
+    public function connect()
     {
-        if ($driver != null AND (strtolower($driver) === 'redis')) {
-            $className = ucfirst(strtolower($driver));
-            $this->redis = new $className();
+        $this->redis = new Redis;
 
-            if (isset($this->connectionSet['servers']['timeout'])) {
-                $this->redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['timeout']);
-            } else {
-                $this->redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port']);
-            }
-            if (isset($this->connectionSet['auth'])) {
-                $this->auth($this->connectionSet['auth']);
-            }
-            return true;
+        if (isset($this->connectionSet['servers']['timeout'])) {
+            $this->redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port'], $this->connectionSet['servers']['timeout']);
+        } else {
+            $this->redis->connect($this->connectionSet['servers']['hostname'], $this->connectionSet['servers']['port']);
         }
-
-        return false;
+        if (isset($this->connectionSet['auth'])) {
+            $this->auth($this->connectionSet['auth']);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -473,14 +492,12 @@ Class Cache_Redis
      * @param string $key
      * @return object
      */
-    public function isSupported($driver)
+    public function isSupported()
     {
-        if (!extension_loaded($driver)) {
-            throw new Exception(ucfirst($driver) . ' driver is not installed.');
-
+        if ( ! extension_loaded('Redis')) {
+            throw new Exception('Redis driver is not installed.');
             return false;
         }
-
         return true;
     }
 

@@ -5,7 +5,7 @@
  * 
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
         global $c;
         $c['Html'];
@@ -14,12 +14,10 @@ $o = new Controller(
     }
 );
 
-$o->func(
+$app->func(
     'index',
     function () {
-       
-        global $c;
-
+    
         $this->view->get(
             'welcome', 
             function () {

@@ -11,7 +11,7 @@
  * @category      access login
  * @link
  */
-Class Acl
+Class User_Acl
 {
     public $groups = array();
     public $members = array();

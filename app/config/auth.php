@@ -7,7 +7,7 @@
 | Configure auth library options
 |
 */
-$auth = array(
+$config = array(
     'session_prefix'     => 'auth_',   // Set a prefix to prevent collisions with original session object.
     'allow_login'        => true,      // Whether to allow logins to be performed on login form.
     'regenerate_sess_id' => false,     // Set to true to regenerate the session id on every page load
@@ -20,11 +20,8 @@ $auth = array(
 | Configure dependecies
 |
 */
-$auth['session']   = function () {   // Session Dependency
-    return new Sess;                 // Start the sessions
-};
-$auth['algorithm'] = function () {   // Whether to use "bcrypt" or another custom object 
-    return new Bcrypt;               // return null;  if you don't want to use the class.
+$config['algorithm'] = function () {   // Whether to use "bcrypt" or another custom object 
+    return new Bcrypt;                 // return null; or return 'sha1';  if you don't want to use the class.
 };
 
 /*
@@ -34,20 +31,20 @@ $auth['algorithm'] = function () {   // Whether to use "bcrypt" or another custo
 | Configure Methods
 |
 */
-$auth['extend']['hashPassword']   = function ($password) use ($auth) {   //  Whether to use "bcrypt" "sha1","sha256","sha512" type hashes. ( Do not use md5 )
-    $algorithm = $auth['algorithm']();
+$config['extend']['hashPassword']   = function ($password) use ($config) {   //  Whether to use "bcrypt" "sha1","sha256","sha512" type hashes. ( Do not use md5 )
+    $algorithm = $config['algorithm']();
     if (is_object($algorithm)) {
         return $algorithm->hashPassword($password);   // returns to hashed string
     }
     return hash($algorithm, $password);  // Default Native hash
 };
 
-$auth['extend']['verifyPassword'] = function ($password, $hashedPassword) use ($auth) {
-    $algorithm = $auth['algorithm']();                               
+$config['extend']['verifyPassword'] = function ($password, $hashedPassword) use ($config) {
+    $algorithm = $config['algorithm']();                               
     if (is_object($algorithm)) {                                        // Initialize your algorithm class
         return $algorithm->verifyPassword($password, $hashedPassword);  // Returns "true" if password verify success otherwise "false"
     }
-    return ($hashedPassword === hash($algorithm, $password));     // Default Native hash
+    return ($hashedPassword === hash($algorithm, $password));  // Default Native hash
 };
 
 

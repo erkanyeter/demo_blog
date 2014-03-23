@@ -101,7 +101,6 @@ if(isset($sql))
 ?>
 <div class="errorFile errorLine"><?php echo $error->getSecurePath($e->getFile()).'  Line : '.$e->getLine().' ' ?></div>
 <?php 
-$config = getConfig();
 $debug  = $config['debug_backtrace'];
 
 // ------------------------------------------------------------------------

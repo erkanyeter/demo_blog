@@ -25,6 +25,8 @@ Class Pdo_Mssql extends Pdo_Adapter
     public function __construct($param)
     {
         parent::__construct($param);
+
+        $this->connect();
     }
     
     /**

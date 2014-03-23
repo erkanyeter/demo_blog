@@ -10,10 +10,80 @@
  * @category    configuration
  * @link        
  */
-Class Config
+Class Config implements ArrayAccess
 {
     public $config = array();
     public $is_loaded = array();
+
+    /**
+     * Sets a parameter or an object.
+     *
+     * @param string $key   The unique identifier for the parameter
+     * @param mixed  $value The value of the parameter
+     *
+     * @return void
+     */
+    public function offsetSet($key, $value)
+    {        
+        $this->config[$key] = $value;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Gets a parameter or an object.
+     *
+     * @param string $key The unique identifier for the parameter
+     *
+     * @return mixed The value of the parameter or an object
+     */
+    public function offsetGet($key)
+    {
+        if ( ! isset($this->config[$key])) {
+            $this->logger->notice('Config key "' . $key . '" not found, be sure providing the right name');
+            return false;
+        }
+
+        // UNDERSTAN THE "." PARAMETERS USE INDEX
+
+        // if (strpos('.', $key) !== false) {
+        //     $exp   = explode('.', $key);
+        //     $index = $exp[0];
+        // }
+        // return $this->config[$index][$key];
+
+        return $this->config[$key];
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Checks if a parameter or an object is set.
+     *
+     * @param string $key The unique identifier for the parameter
+     *
+     * @return Boolean
+     */
+    public function offsetExists($key)
+    {
+        return isset($this->config[$key]);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Unsets a parameter or an object.
+     *
+     * @param string $key The unique identifier for the parameter
+     *
+     * @return void
+     */
+    public function offsetUnset($key)
+    {
+        unset($this->config[$key]);
+    }
+
+    // --------------------------------------------------------------------
 
     /**
      * Constructor
@@ -26,9 +96,7 @@ Class Config
     public function __construct()
     {
         global $config, $c;
-
         $this->config = $config;
-
         $this->logger = $c['Logger'];
         $this->logger->debug('Config Class Initialized');
     }
@@ -38,88 +106,46 @@ Class Config
     /**
      * Load Config File
      *
-     * @param string  $filename     the config file name
-     * @param boolean $use_sections use folder
+     * @param string $filename the config file name
      * 
      * @return array if the file was loaded correctly
      */
-    public function load($filename = '', $use_sections = false)
+    public function load($filename = '')
     {
         global $config;
+        $_config = $config; // copy config array
 
-        $file = APP . 'config' . DS . $filename . EXT;
+        $folder = APP . 'config' . DS;
 
-        if (in_array($file, $this->is_loaded, true)) {
+        if (in_array($filename, $config['environment_config_files'])) {
+            $folder = APP . 'config' . DS . strtolower(ENV). DS;
+        }
+        unset($config);
+
+        $file = $folder . $filename . EXT;
+        
+        if (in_array($filename, $this->is_loaded, true)) {
             return true;
         }
 
         include $file;
 
-        if (!isset($config) OR !is_array($config)) {
+        if ( ! isset($config) OR ! is_array($config)) {
             throw new Exception('Your ' . $file . ' file does not appear to contain a valid configuration array. Please create $config variables in your ' . $file);
         }
-        if ($use_sections === true) {
-            if (isset($this->config[$file])) {
-                $this->config[$file] = array_merge($this->config[$file], $config);
-            } else {
-                $this->config[$file] = $config;
-            }
+
+        if (isset($this->config[$filename])) {
+            $this->config[$filename] = array_merge($this->config[$filename], $_config);
         } else {
-            $this->config = array_merge($this->config, $config);
+            $this->config[$filename] = $config;
         }
-        $this->is_loaded[] = $file;
+
+        $this->is_loaded[] = $filename;
 
         unset($config);
         $this->logger->debug('Config file loaded: ' . $file);
-        return true;
-    }
 
-    // --------------------------------------------------------------------
-
-    /**
-     * Fetch a config file item
-     *
-     * @param string $item  the config item name
-     * @param string $index the index name
-     * 
-     * @return   string
-     */
-    public function get($item, $index = '')
-    {
-        if ($index == '') {
-            if (!isset($this->config[$item])) {
-                $this->logger->info('Config item "' . $item . '" not found, be sure providing right name');
-                return false;
-            }
-            $pref = $this->config[$item];
-        } else {
-            if (!isset($this->config[$index])) {
-                $this->logger->info('Config index "' . $item . '" not found, be sure providing right name');
-                return false;
-            }
-            if (!isset($this->config[$index][$item])) {
-                $this->logger->info('Config item "' . $item . '" not found, be sure providing right name');
-                return false;
-            }
-            $pref = $this->config[$index][$item];
-        }
-        return $pref;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Set a config file item
-     * alias of config_item we will deprecicate it later.
-     *
-     * @param string $item  the config item key
-     * @param string $value the config item value
-     * 
-     * @return void
-     */
-    public function set($item, $value)
-    {
-        $this->config[$item] = $value;
+        return $this->config[$filename];
     }
 
     // --------------------------------------------------------------------
@@ -136,7 +162,7 @@ Class Config
      */
     public function getSlashItem($item)
     {
-        if (!isset($this->config[$item])) {
+        if ( ! isset($this->config[$item])) {
             return false;
         }
         $pref = $this->config[$item];

@@ -26,11 +26,8 @@ Class Acl
      */
     public function __construct()
     {
-        global $logger;
-        if (!isset(getInstance()->acl)) {
-            getInstance()->acl = $this; // Available it in the contoller $this->auth->method();
-        }
-        $logger->debug('Acl Class Initialized');
+        global $c;
+        $c['Logger']->debug('Acl Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -70,11 +67,9 @@ Class Acl
     public function addGroup($group_name)
     {
         $group_name = mb_strtolower($group_name);
-
         if (strpos($group_name, '@') !== 0) {
             throw new Exception('The group name must have @ prefix e.g. @admin.');
         }
-
         $this->groups[$group_name] = array();
     }
 
@@ -92,7 +87,6 @@ Class Acl
         if (strpos($group_name, '@') !== 0) {
             throw new Exception('The group name must have @ prefix e.g. @admin.');
         }
-
         $this->groups[$group_name][$member] = $member;
         $this->members[$member] = $group_name;
     }
@@ -111,7 +105,6 @@ Class Acl
         if (strpos($group_name, '@') !== 0) {
             throw new Exception('The group name must have @ prefix e.g. @admin.');
         }
-
         unset($this->groups[$group_name][$member]);
         unset($this->members[$member]);
     }
@@ -141,7 +134,6 @@ Class Acl
             } else {
                 throw new Exception('Undefined group name ' . $name . ', please add a group using $acl->addGroup() method.');
             }
-
             return;
         }
     }
@@ -190,13 +182,11 @@ Class Acl
         if (!isset($this->members[$name])) {   // check really is it member ?
             throw new Exception('Undefined member name ' . $name . ', please add a member using $acl->addMember(\'membername\', \'groupname\') method.');
         }
-
         $group = $this->members[$name];
 
         if (isset($this->groups[$group])) {          // check member is a member of the group ? 
             return $this->isAllowed($group, $operation);
         }
-
         return false;
     }
 

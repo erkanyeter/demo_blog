@@ -12,7 +12,7 @@
 | 'expiration' =>7200;  // Two hours
 | 
 */ 
-$sess = array(
+$config = array(
     
     // General settings
     'cookie_name'     => 'frm_session', // The name you want for the cookie
@@ -24,15 +24,18 @@ $sess = array(
     'time_to_update'  => 1,        // How many seconds between Framework refreshing "Session" Information"
 
 );
-$sess['native'] = array(
+
+$config['native'] = array(
+    
     'session.gc_divisor'      => 100,      // Configure garbage collection
-    'session.gc_maxlifetime'  => $sess['expiration'],
+    'session.gc_maxlifetime'  => $config['expiration'],
     'session.cookie_lifetime' => 0,
     // 'session.use_cookies' => 1,
     'session.save_handler'    => 'redis',
     'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
 );
-$sess['container'] = array(
+
+$config['container'] = array(
      // Container Settings
     'db'              => 'Db',          // Db, Cache; // Mongo_Db;   Set any database container   
     'table_name'      => 'frm_sessions',  // The name of the session database table

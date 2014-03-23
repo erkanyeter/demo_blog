@@ -36,6 +36,7 @@ define('FPATH', dirname(__FILE__));
 | APP     	  		- The full server path to the "app" folder
 | DATA        		- The full server path to the "data" folder
 | CLASSES     		- The full server path to the user "classes" folder
+| TEMPLATES    		- The full server path to the user "templates" folder
 | PACKAGES    		- The full server path to the "packages" folder
 | PUBLIC_FOLDER		- The full "static" server path to the "public" folder
 | PRIVATE_FOLDER 	- The full "static" server path to the "private" folder
@@ -48,6 +49,7 @@ define('ASSETS',  ROOT .'assets'. DS);
 define('APP',  ROOT .'app'. DS);
 define('DATA',  ROOT .'data'. DS);
 define('CLASSES',  ROOT .'classes'. DS);
+define('TEMPLATES',  APP . 'templates'. DS);
 define('PACKAGES',  ROOT .'packages'. DS);
 define('PUBLIC_FOLDER', ROOT .'public'. DS);
 define('PRIVATE_FOLDER', ROOT .'private'. DS);
