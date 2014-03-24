@@ -190,7 +190,7 @@ $c->func(
                     }
                     if (strpos($out[1], 'notice') !== false) {
                         if ($level == '' OR $level == 'notice') {
-                            $line = "\033[1;33m".$line."\033[0m";
+                            $line = "\033[1;45m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
                                 echo $line."\n";
                             }
@@ -211,6 +211,9 @@ $c->func(
 
 // Terminal Colour Codes ( TERMINAL SCREEN BASH CODES )
 /*
+
+http://www.if-not-true-then-false.com/2010/php-class-for-coloring-php-command-line-cli-scripts-output-php-output-colorizing-using-bash-shell-colors/
+
 $BLACK="33[0;30m";
 $DARKGRAY="33[1;30m";
 $BLUE="33[0;34m";
