@@ -22,18 +22,19 @@ Class Hooks
      */
     public function __construct()
     {
-        global $config, $logger;
+        global $config, $c;
         if ($config['enable_hooks'] == false) {  // If hooks are not enabled in the config file there is nothing else to do
             return;
         }
-        $hooks = getConfig('hooks');
+        $hooks = $c['Config']->load('hooks');
 
-        if ( ! isset($hooks) OR !is_array($hooks) OR count($hooks) == 0) {
+        if ( ! isset($hooks) OR ! is_array($hooks) OR count($hooks) == 0) {
             return;
         }
-        $this->hooks   = & $hooks;
+        $this->hooks   = &$hooks;
         $this->enabled = true;
-        $logger->debug('Hooks Class Initialized');
+        $this->logger  = $c['Logger'];
+        $this->logger->debug('Hooks Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -70,10 +71,9 @@ Class Hooks
     private function _runHook($closure)
     {
         if ( ! is_callable($closure)) {
-            $logger->debug('Hooks closure isn\'t callable');
+            $this->logger->debug('Hooks closure isn\'t callable');
             return false;
         }
-
         // -----------------------------------
         // Safety - Prevents run-away loops
         // -----------------------------------
@@ -83,7 +83,6 @@ Class Hooks
         if ($this->in_progress == true) {
             return;
         }
-
         // -----------------------------------
         // Set the in_progress flag
         // -----------------------------------
@@ -95,8 +94,7 @@ Class Hooks
         // -----------------------------------
 
         $closure();
-        $logger->debug('Hooks closure called succesfully');
-
+        $this->logger->debug('Hooks closure called succesfully');
         $this->in_progress = false;
         return true;
     }

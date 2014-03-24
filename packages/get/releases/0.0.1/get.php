@@ -17,12 +17,8 @@ Class Get
      */
     public function __construct()
     {
-        global $logger;
-
-        if( ! isset(getInstance()->get)) {
-            getInstance()->get = $this; // Make available it in the controller $this->get->method();
-        }
-        $logger->debug('Get Class Initialized');
+        global $c;
+        $c['Logger']->debug('Get Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -68,11 +64,8 @@ Class Get
             return false;
         }
         if ($xss_clean) {
-            if (isset(getInstance()->security)) {
-                return getInstance()->security->xssClean($array[$index]);
-            }
-            $security = new Security;
-            return $security->xssClean($array[$index]);
+            global $c;
+            return $c['Security']->xssClean($array[$index]);
         }
         return $array[$index];
     }

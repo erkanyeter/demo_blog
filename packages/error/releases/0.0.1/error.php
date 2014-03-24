@@ -14,8 +14,10 @@ Class Error {
 
     public function __construct()
     {
-        global $logger;
-        $logger->debug('Error Class Initialized');
+        global $c;
+
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Error Class Initialized');
     }
     
     // --------------------------------------------------------------------
@@ -35,8 +37,7 @@ Class Error {
         }
         
         if (is_string($file)) {
-            if (strpos($file, ROOT) === 0)
-            {
+            if (strpos($file, ROOT) === 0) {
                 $file = 'ROOT'. DS .substr($file, strlen(ROOT));
             }
 
@@ -59,9 +60,13 @@ Class Error {
             {
                 $file = 'PUBLIC_DIR'. DS .substr($file, strlen(PUBLIC_DIR));
             }
+
+            if (strpos($file, PRIVATE_DIR) === 0)
+            {
+                $file = 'PUBLIC_DIR'. DS .substr($file, strlen(PRIVATE_DIR));
+            }
         }
-        
-        return $file;  
+        return $file;
     }
     
     // --------------------------------------------------------------------

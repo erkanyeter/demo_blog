@@ -13,6 +13,8 @@
  */
 Class Public_User
 {
+    public $logger;
+
     /**
      * Constructor
      *
@@ -21,12 +23,14 @@ Class Public_User
      */
     public function __construct()
     {   
-        global $logger;
-
-        new Auth;
+        global $c;
+        
+        $c['Sess'];
+        $c['Auth'];
 
         $this->init();
-        $logger->debug('Public User Class Initialized');
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Public User Class Initialized');
     }
 
     // ------------------------------------------------------------------------

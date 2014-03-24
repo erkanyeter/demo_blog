@@ -17,12 +17,8 @@ Class Post
      */
     public function __construct()
     {
-        global $logger;
-
-        if ( ! isset(getInstance()->post)) {
-            getInstance()->post = $this; // Make available it in the controller $this->post->method();
-        }
-        $logger->debug('Post Class Initialized');
+        global $c;
+        $c['Logger']->debug('Post Class Initialized');
     }
 
     // --------------------------------------------------------------------

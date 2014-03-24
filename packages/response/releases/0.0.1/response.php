@@ -13,6 +13,7 @@
  */
 Class Response
 {
+    public $logger;
     public $final_output;
     public $headers = array();
 
@@ -20,8 +21,9 @@ Class Response
 
     public function __construct()
     {
-        global $logger;
-        $logger->debug('Response Class Initialized');
+        global $c;
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Response Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -62,7 +64,7 @@ Class Response
      */
     public function _sendOutput($output = '')
     {
-        global $config, $logger;
+        global $config;
 
         if ($output == '') {  // Set the output data
             $output = & $this->final_output;

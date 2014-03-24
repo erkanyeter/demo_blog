@@ -38,23 +38,17 @@ Class Agent
      */
     public function __construct()
     {
-        global $logger;
-
-        if (!isset(getInstance()->agent)) {
-            getInstance()->agent = $this; // Make available it in the controller $this->agent->method();
-        }
+        global $c;
 
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $this->agent = trim($_SERVER['HTTP_USER_AGENT']);
         }
-
-        if (!is_null($this->agent)) {
+        if ( ! is_null($this->agent)) {
             if ($this->_loadAgentFile()) {
                 $this->_compileData();
             }
         }
-
-        $logger->debug('Agent Class Initialized');
+        $c['Logger']->debug('Agent Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -79,7 +73,7 @@ Class Agent
      */
     public function _loadAgentFile()
     {
-        $user_agents = getConfig('agents');  // obullo changes ..
+        $user_agents = $c['Config']['agent'];
 
         $return = false;
 
@@ -213,11 +207,11 @@ Class Agent
      */
     public function _setMobile()
     {
-        global $config;
+        global $c;
 
         if (is_array($this->mobiles) AND count($this->mobiles) > 0) {
             foreach ($this->mobiles as $key => $val) {
-                if (false !== (strpos(mb_strtolower($this->agent, $config['charset']), $key))) {
+                if (false !== (strpos(mb_strtolower($this->agent, $c['Config']['charset']), $key))) {
                     $this->is_mobile = true;
                     $this->mobile['key'] = $key;
                     $this->mobile['val'] = $val;
@@ -263,10 +257,8 @@ Class Agent
     {
         if ((count($this->charsets) == 0) AND isset($_SERVER['HTTP_ACCEPT_CHARSET']) AND $_SERVER['HTTP_ACCEPT_CHARSET'] != '' AND is_string($_SERVER['HTTP_ACCEPT_CHARSET'])) {
             $charsets = preg_replace('/(;q=.+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_CHARSET'])));
-
             $this->charsets = explode(',', $charsets);
         }
-
         if (count($this->charsets) == 0) {
             $this->charsets = array('Undefined');
         }

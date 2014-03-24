@@ -37,11 +37,10 @@ Class Sess_Native
      */
     public function __construct($config = array())
     {
-        if (count($config) == 0) {
-            return;
-        }
-        foreach ($config as $key => $value) {  // set php.ini values
-            ini_set($key, $value);
+        if (count($config) > 0) {
+            foreach ($config as $key => $value) {  // set php.ini values
+                ini_set($key, $value);
+            }
         }
     }
 
@@ -54,7 +53,7 @@ Class Sess_Native
      * 
      * @return boolean
      */
-    public function init($sess = array())
+    public function init($sess = array(), $config = array(), $_logger = null)
     {
         global $config, $logger;
 
@@ -307,11 +306,9 @@ Class Sess_Native
     public function destroy()
     {
         if (isset($_COOKIE[$this->cookie_name])) {
-
             if (session_status() == PHP_SESSION_ACTIVE) { // http://stackoverflow.com/questions/13114185/how-can-you-check-if-a-php-session-exists
                 session_destroy();
             }
-
             setcookie($this->cookie_name . '_userdata', '', ($this->now - 42000), $this->cookie_path, $this->cookie_domain
             );
         }

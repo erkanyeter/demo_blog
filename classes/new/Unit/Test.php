@@ -13,6 +13,8 @@ Class Unit_Test
 
     public function __construct()
     {
+        global $logger;
+
         // These are the default items visible when a test is run.
         $this->_test_items_visible = array(
             'test_name',
@@ -24,7 +26,7 @@ Class Unit_Test
             'notes'
         );
 
-        log_message('debug', "Unit Testing Class Initialized");
+        $logger->debug('Unit Testing Class Initialized');
     }
 
     // --------------------------------------------------------------------

@@ -14,14 +14,8 @@ Class Url {
 
     public function __construct()
     {   
-        global $logger;
-
-        if( ! isset(getInstance()->url))
-        {
-            getInstance()->url = $this; // Make available it in the controller $this->url->method();
-        }
-
-        $logger->debug('Url Class Initialized');
+        global $c;
+        $c['Logger']->debug('Url Class Initialized');
     }
 
     // ------------------------------------------------------------------------

@@ -1,17 +1,17 @@
 <?php
 
 /**
- * $c test
+ * $o test
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
         new Captcha;
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
 

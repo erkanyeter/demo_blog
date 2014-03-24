@@ -5,19 +5,19 @@
  * 
  * @var Controller
  */
-$c = new Controller(
+$app = new Controller(
     function () {
-        new Auth;
-        new Url;
-        new Html;
-        new View;
+        global $c;
+        $c['Html'];
+        $c['Url'];
+        $c['View'];
     }
 );
 
-$c->func(
+$app->func(
     'index',
     function () {
-       
+    
         $this->view->get(
             'welcome', 
             function () {

@@ -5,19 +5,24 @@
  * 
  * @var Controller
  */
-$c = new Controller(
+$app = new Controller(
     function () {
-        new View;
+        global $c;
+        $c['View'];
+        // $c['Cache'];
+
+        // $this->cache->set('a', 'Wssssssss');
+        // echo $this->cache->get('a');
+
+        // echo $this->config['base_url'];
     }
 );
 
-$c->func(
+$app->func(
     'index',
     function () {
 
-        // new Hvc;
-
-        // $r = getInstance()->hvc->post('private/posts/getallhome');
+        // $this->logger->debug('test', 'sd');
 
         $this->view->get(
             'hello_world', 

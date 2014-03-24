@@ -14,166 +14,169 @@
 /**
  * Run framework
  */
-function Framework_Run() {
+Class Obullo {
 
-    $start = microtime(true);
+    public function __invoke()
+    {
+        $start = microtime(true);
 
-    global $config, $uri, $router, $response, $logger;
+        global $config, $uri, $router, $response, $logger;
 
-    /*
-     * ------------------------------------------------------
-     *  Instantiate the hooks class
-     * ------------------------------------------------------
-     */
-    if ($config['enable_hooks']) {
-        global $hooks;
         /*
          * ------------------------------------------------------
-         *  Is there a "pre_system" hook?
+         *  Instantiate the hooks class
          * ------------------------------------------------------
          */
-        $hooks->call('pre_system');
-    }
-    /*
-     * ------------------------------------------------------
-     *  Sanitize Inputs
-     * ------------------------------------------------------
-     */
-    if ($config['enable_query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
-        $_GET = array();
-    }
-    $_GET  = cleanInputData($_GET);
-    $_POST = cleanInputData($_POST);  // Clean $_POST Data
-    $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
-
-    if ($config['csrf_protection']) {  // CSRF Protection check
-        global $security;
-        $security->initCsrf();
-        $security->csrfVerify();
-    }
-    // Clean $_COOKIE Data
-    // Also get rid of specially treated cookies that might be set by a server
-    // or silly application, that are of no use to application anyway
-    // but that when present will trip our 'Disallowed Key Characters' alarm
-    // http://www.ietf.org/rfc/rfc2109.txt
-    // note that the key names below are single quoted strings, and are not PHP variables
-    unset($_COOKIE['$Version']);
-    unset($_COOKIE['$Path']);
-    unset($_COOKIE['$Domain']);
-
-    $_COOKIE = cleanInputData($_COOKIE);
-
-    $logger->debug('Global POST and COOKIE data sanitized');
-    /*
-     * ------------------------------------------------------
-     *  Log requests
-     * ------------------------------------------------------
-     */
-    if ($logger->getProperty('enabled')) {
-        $logger->debug('$_REQUEST_URI: ' .$uri->getRequestUri());
-        if (ENV == 'DEBUG' OR ENV == 'TEST') {
-            $logger->debug('$_COOKIE: ', $_COOKIE);
-            $logger->debug('$_POST: ', $_POST);
-            $logger->debug('$_GET: ', $_GET);
+        if ($config['enable_hooks']) {
+            global $hooks;
+            /*
+             * ------------------------------------------------------
+             *  Is there a "pre_system" hook?
+             * ------------------------------------------------------
+             */
+            $hooks->call('pre_system');
         }
-    }
-    /*
-     * ------------------------------------------------------
-     *  Load core components
-     * ------------------------------------------------------
-     */
-    $pageUri    = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
-    $controller = PUBLIC_DIR . $router->fetchDirectory() . DS . 'controller' . DS . $router->fetchClass() . EXT;
-
-    if ( ! file_exists($controller)) {
-        $response->show404($pageUri);
-    }
-    /*
-     * ------------------------------------------------------
-     *  Is there a "pre_controller" hook?
-     * ------------------------------------------------------
-     */
-    if ($config['enable_hooks']) {
-        $hooks->call('pre_controller');
-    }
-
-    include $controller;  // call the controller.  $c variable now Available in HERE !!
-
-    // Do not run private methods. ( _output, _remap, _getInstance .. )
-
-    if (strncmp($router->fetchMethod(), '_', 1) == 0 
-        OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
-    ) {
-        $response->show404($pageUri);
-    }
-    /*
-     * ------------------------------------------------------
-     *  Is there a "post_controller_constructor" hook?
-     * ------------------------------------------------------
-     */
-    if ($config['enable_hooks']) {
-        $hooks->call('post_controller_constructor');
-    }
-    $storedMethods = array_keys($c->_controllerAppMethods);
-
-    if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {  // Check method exist or not
-        $response->show404($pageUri);
-    }
-
-    $arguments = array_slice($c->uri->rsegments, 2);
-
-    if (method_exists($c, '_remap')) {  // Is there a "remap" function? If so, we call it instead
-        $c->_remap($router->fetchMethod(), $arguments);
-    } else {
-        // Call the requested method. Any URI segments present (besides the directory / class / method) 
-        // will be passed to the method for convenience
-        // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
-        call_user_func_array(array($c, $router->fetchMethod()), $arguments);
-    }
-    /*
-     * ------------------------------------------------------
-     *  Is there a "post_controller" hook?
-     * ------------------------------------------------------
-     */
-    if ($config['enable_hooks']) {
-        $hooks->call('post_controller');
-    }
-    /*
-     * ------------------------------------------------------
-     *  Send the final rendered output to the browser
-     * ------------------------------------------------------
-     */
-    if ($config['enable_hooks']) {
-        if ($hooks->call('display_override') === false) {
-            $response->_sendOutput();  // Send the final rendered output to the browser
+        /*
+         * ------------------------------------------------------
+         *  Sanitize Inputs
+         * ------------------------------------------------------
+         */
+        if ($config['enable_query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
+            $_GET = array();
         }
-    } else {
-        $response->_sendOutput();    // Send the final rendered output to the browser
-    }
-    /*
-     * ------------------------------------------------------
-     *  Is there a "post_system" hook?
-     * ------------------------------------------------------
-     */
-    if ($config['enable_hooks']) {
-        $hooks->call('post_system');
-    }
+        $_GET  = cleanInputData($_GET);
+        $_POST = cleanInputData($_POST);  // Clean $_POST Data
+        $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
 
-    $time = microtime(true) - $start;
-
-    $extra = array();
-    if ($config['log_benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
-        $usage = 'memory_get_usage() function not found on your php configuration.';
-        if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
-            $usage = number_format($usage) . ' bytes';
+        if ($config['csrf_protection']) {  // CSRF Protection check
+            global $security;
+            $security->initCsrf();
+            $security->csrfVerify();
         }
-        $extra = array('time' => number_format($time, 4), 'memory' => $usage);
-    }
+        // Clean $_COOKIE Data
+        // Also get rid of specially treated cookies that might be set by a server
+        // or silly application, that are of no use to application anyway
+        // but that when present will trip our 'Disallowed Key Characters' alarm
+        // http://www.ietf.org/rfc/rfc2109.txt
+        // note that the key names below are single quoted strings, and are not PHP variables
+        unset($_COOKIE['$Version']);
+        unset($_COOKIE['$Path']);
+        unset($_COOKIE['$Domain']);
 
-    $logger->debug('Final output sent to browser', $extra);
-        
+        $_COOKIE = cleanInputData($_COOKIE);
+
+        $logger->debug('Global POST and COOKIE data sanitized');
+        /*
+         * ------------------------------------------------------
+         *  Log requests
+         * ------------------------------------------------------
+         */
+        if ($logger->getProperty('enabled')) {
+            $logger->debug('$_REQUEST_URI: ' .$uri->getRequestUri());
+            if (ENV == 'DEBUG' OR ENV == 'TEST') {
+                $logger->debug('$_COOKIE: ', $_COOKIE);
+                $logger->debug('$_POST: ', $_POST);
+                $logger->debug('$_GET: ', $_GET);
+            }
+        }
+        /*
+         * ------------------------------------------------------
+         *  Load core components
+         * ------------------------------------------------------
+         */
+        $pageUri    = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
+        $controller = PUBLIC_DIR . $router->fetchDirectory() . DS . 'controller' . DS . $router->fetchClass() . EXT;
+
+        if ( ! file_exists($controller)) {
+            $response->show404($pageUri);
+        }
+        /*
+         * ------------------------------------------------------
+         *  Is there a "pre_controller" hook?
+         * ------------------------------------------------------
+         */
+        if ($config['enable_hooks']) {
+            $hooks->call('pre_controller');
+        }
+
+        include $controller;  // call the controller.  $c variable now Available in HERE !!
+
+        // Do not run private methods. ( _output, _remap, _getInstance .. )
+
+        if (strncmp($router->fetchMethod(), '_', 1) == 0 
+            OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
+        ) {
+            $response->show404($pageUri);
+        }
+        /*
+         * ------------------------------------------------------
+         *  Is there a "post_controller_constructor" hook?
+         * ------------------------------------------------------
+         */
+        if ($config['enable_hooks']) {
+            $hooks->call('post_controller_constructor');
+        }
+        $storedMethods = array_keys($c->_controllerAppMethods);
+
+        if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {  // Check method exist or not
+            $response->show404($pageUri);
+        }
+
+        $arguments = array_slice($c->uri->rsegments, 2);
+
+        if (method_exists($c, '_remap')) {  // Is there a "remap" function? If so, we call it instead
+            $c->_remap($router->fetchMethod(), $arguments);
+        } else {
+            // Call the requested method. Any URI segments present (besides the directory / class / method) 
+            // will be passed to the method for convenience
+            // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
+            call_user_func_array(array($c, $router->fetchMethod()), $arguments);
+        }
+        /*
+         * ------------------------------------------------------
+         *  Is there a "post_controller" hook?
+         * ------------------------------------------------------
+         */
+        if ($config['enable_hooks']) {
+            $hooks->call('post_controller');
+        }
+        /*
+         * ------------------------------------------------------
+         *  Send the final rendered output to the browser
+         * ------------------------------------------------------
+         */
+        if ($config['enable_hooks']) {
+            if ($hooks->call('display_override') === false) {
+                $response->_sendOutput();  // Send the final rendered output to the browser
+            }
+        } else {
+            $response->_sendOutput();    // Send the final rendered output to the browser
+        }
+        /*
+         * ------------------------------------------------------
+         *  Is there a "post_system" hook?
+         * ------------------------------------------------------
+         */
+        if ($config['enable_hooks']) {
+            $hooks->call('post_system');
+        }
+
+        $time = microtime(true) - $start;
+
+        $extra = array();
+        if ($config['log_benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
+            $usage = 'memory_get_usage() function not found on your php configuration.';
+            if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
+                $usage = number_format($usage) . ' bytes';
+            }
+            $extra = array('time' => number_format($time, 4), 'memory' => $usage);
+        }
+        $logger->debug('Final output sent to browser', $extra);
+    
+    } // end invoke
+
 }
-// end construct
+// end class
 
 // Common Functions
 // ------------------------------------------------------------------------

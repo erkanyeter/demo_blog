@@ -5,15 +5,15 @@
  * 
  * @var Controller
  */
-$c = new Controller(
+$app = new Controller(
     function () {
-        new Html;
-        new Url;
-        new View;
+        global $c;
+        $c['Html'];
+        $c['View'];
     }
 );
 
-$c->func(
+$app->func(
     'index',
     function () {
 

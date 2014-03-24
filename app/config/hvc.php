@@ -16,7 +16,7 @@
 | random Uri able to do Memory Cache if you provide expiration time as third paramater.
 | 
 */
-$hvc['memory_caching'] = true;
+$config['caching'] = true;
 
 // Each Hvc request uri creates a random connection string (hvc key) as the following steps.
 // 
@@ -37,7 +37,7 @@ $hvc['memory_caching'] = true;
 | Configure dependecies
 |
 */
-$hvc['cache'] = function(){ 
+$config['cache'] = function () { 
     return new Cache;
 };
 

@@ -8,7 +8,7 @@
  * @category      database active record
  * @link            
  */
-Class Pdo_Crud
+Class Crud
 {
     public $ar_select = array();
     public $ar_distinct = false;
@@ -52,13 +52,12 @@ Class Pdo_Crud
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($db)
     {
-        if ( ! class_exists('Db', false)) {
-            throw new Exception('First you need create "new Db;" object before declaring "new Pdo_Crud;" class.');
+        if( ! is_object($db)) {
+            throw new Exception('Crud class requires Database object.');
         }
-        $this->adapter = getInstance()->{Db::$var};  // load adapter class
-        getInstance()->{Db::$var} = $this;  // replace database object with crud
+        $this->adapter = $db;  // load adapter class
     }
 
     // ------------------------------------------------------------------------

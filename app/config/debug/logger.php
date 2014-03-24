@@ -9,7 +9,7 @@
 |   $logger_file['key'] = value;
 |
 */
-$logger = array(
+$config = array(
     'batch'     => true,                   // batch process should be enabled for best performance
     'path'      => 'data/logs/app.log',
     'path_cli'  => 'data/logs/cli/app.log',    
@@ -22,7 +22,7 @@ $logger = array(
 | Formatter function must return to @array.
 | 
 */
-$logger['extend']['format'] = function ($record) {
+$config['extend']['format'] = function ($record) {
     if (sizeof($record['context']) == 0) {
         $record['context'] = '';
     } else {
@@ -38,7 +38,7 @@ $logger['extend']['format'] = function ($record) {
 | Write function must return to @boolean.
 | 
 */
-$logger['extend']['write'] = function ($file, $data) {
+$config['extend']['write'] = function ($file, $data) {
     if ( ! $fop = fopen($file, 'ab')) {
         return false;
     }

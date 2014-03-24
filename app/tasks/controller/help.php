@@ -3,16 +3,16 @@
 defined('STDIN') or die('Access Denied');
 
 /**
- * $c help
+ * $o help
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
         echo "\nGENERAL HELP FOR TASK OPERATIONS\n";

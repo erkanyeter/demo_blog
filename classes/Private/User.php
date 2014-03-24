@@ -13,6 +13,8 @@
  */
 Class Private_User
 {
+    public $logger;
+
     /**
      * Constructor
      *
@@ -21,12 +23,14 @@ Class Private_User
      */
     public function __construct()
     {   
-        global $logger;
-
-        new Auth;
+        global $c;
+        
+        $c['Sess'];
+        $c['Auth'];
 
         $this->init();
-        $logger->debug('Private User Class Initialized');
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Private User Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -51,9 +55,10 @@ Class Private_User
      */
     public function init()
     {
-        if ( ! getInstance()->auth->hasIdentity()) {  // if user has not identity ?
-            $url = new Url;
-            $url->redirect('membership/login');  // redirect user to login page
+        global $c;
+
+        if ( ! $c['Auth']->hasIdentity()) {  // if user has not identity ?    
+            $c['Url']->redirect('membership/login');  // redirect user to login page
         }
     }
 }

@@ -117,16 +117,26 @@ require APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT;
 require DATA .'cache'. DS .'packages.cache';
 /*
 |--------------------------------------------------------------------------
+| Build IOC
+|--------------------------------------------------------------------------
+*/
+require PACKAGES .'pimple'. DS .'releases'. DS .$packages['dependencies']['pimple']['version']. DS .'pimple'. EXT;
+
+$c = new Pimple;  // Dependency Container
+/*
+|--------------------------------------------------------------------------
 | Load Logger Package
 |--------------------------------------------------------------------------
 */
 if ($config['log_enabled']) {
     include PACKAGES .'logger'. DS .'releases'. DS .$packages['dependencies']['logger']['version']. DS .'logger'. EXT;
-    $logger = new Logger;
+    $c['Logger'] = function () {
+        return new Logger;
+    };
 } else {
     /**
-     * If logging feature closed don't load the real class.
-     * Create a fake logger and load it.
+     * If logging feature closed don't load the class.
+     * Create a fake logger and use it.
      * 
      * @category  Fake_Logger
      * @package   Logger
@@ -152,55 +162,90 @@ if ($config['log_enabled']) {
             return; 
         } 
     }
-    $logger = new Logger; 
+    // Create logger component
+    //-------------------------------------
+    $c['Logger'] = function () {
+        return new Logger;
+    };
 }
+
 /*
 |--------------------------------------------------------------------------
-| Load Hooks
+| Load Common Functions
 |--------------------------------------------------------------------------
 */
-if ($config['enable_hooks']) {
-    include PACKAGES .'hooks'. DS .'releases'. DS .$packages['dependencies']['hooks']['version']. DS .'hooks'. EXT;
-    $hooks = new Hooks;
-}
+require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'common'. EXT;
+
+/*
+|--------------------------------------------------------------------------
+| Core Components
+|--------------------------------------------------------------------------
+*/
+$c['App'] = function () {
+    return new App;
+};
+$c['Uri'] = function () {
+    return new Uri;
+};
+$c['Router'] = function () { 
+    return new Router;
+};
+$c['Hooks'] = function () { 
+    return new Hooks;
+};
+$c['Security'] = function () { 
+    return new Security;
+};
+$c['Config'] = function () { 
+    return new Config;
+};
+$c['Error'] = function () { 
+    return new Error;
+};
+$c['Exceptions'] = function ($e, $type) { 
+    $exception = new Exceptions;
+    $exception->write($e, $type);
+};
+/*
+|--------------------------------------------------------------------------
+| Default Components & Your Service Components
+|--------------------------------------------------------------------------
+| Notice: You don't need to define all classes in here
+| If class not defined in $c['App'], We load it from
+| "/packages" folder & assign to Controller instance.
+|
+| Just define your service components here !
+| forexample: 
+|
+| $c['Mailer'] = function () use ($c) {
+|     return $c['App']->mailer = new Mailer;   // your mail handler
+| }
+|
+*/
+$c['Translator'] = function () use ($c) { 
+    return $c['App']->translator = new Translator;
+};
+$c['Response'] = function () use ($c) { 
+    return $c['App']->response = new Response;
+};
+$c['View'] = function () use ($c) { 
+    return $c['App']->view = new View;
+};
+$c['Sess'] = function () use ($c) {
+    return $c['App']->sess = new Sess_Native($c['Config']->load('sess')); // Build Session Driver
+};
+$c['Db'] = function () use ($c) {
+    return $c['App']->db = new Pdo_Mysql($c['Config']->load('database')); // Build Cache Driver
+};
+$c['Crud'] = function () use ($c) {
+    return $c['App']->db = new Crud($c['Db']);    // Replace database object with crud if it used.
+};
+$c['Cache'] = function () use ($c) {
+    return $c['App']->cache = new Cache_Redis($c['Config']->load('cache'));   // Build Cache Driver
+};
 /*
 |--------------------------------------------------------------------------
 | Load Framework
 |--------------------------------------------------------------------------
 */
 require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'obullo'. EXT;
-/*
-|--------------------------------------------------------------------------
-| Default Packages
-|--------------------------------------------------------------------------
-*/
-
-$cfg        = new Config;
-$translator = new Translator;
-$response   = new Response;
-$uri        = new Uri;
-$router     = new Router;
-/*
-|--------------------------------------------------------------------------
-| Security Package
-|--------------------------------------------------------------------------
-*/
-if ($config['csrf_protection'] OR $config['global_xss_filtering']) { // CSRF Protection check
-    $security = new Security;
-}
-/*
-|--------------------------------------------------------------------------
-| Run Your Application
-|--------------------------------------------------------------------------
-*/
-Framework_Run();
-
-// @todo
-// $app = new Obullo;
-// 
-// global $app;
-// $app->bind('package.view', 'View');
-//  
-// $app->registry('package.view', 'View');
-// $app->registry('package.logger', 'Logger');
-// $app->registry('package.logger', 'Mailer');

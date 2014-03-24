@@ -9,7 +9,7 @@
 |   $cache['key'] = value;
 | 
 */
-$cache = array(
+$config = array(
                'driver'  => 'redis',
                'servers' => array(
                                   'hostname' => '127.0.0.1',

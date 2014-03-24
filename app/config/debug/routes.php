@@ -21,7 +21,7 @@
 | Docs / Advanced / URI Routing 
 |
 */
-$routes = array(
+$config = array(
 
     'tag/(:any)'                   => 'tag/$1',
     'post/detail/(:num)'           => 'post/detail/$1',

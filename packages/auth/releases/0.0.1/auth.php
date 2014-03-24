@@ -17,6 +17,7 @@ Class Auth
 {
     public $database;       // Databasse object variable name
     public $sess;           // Session Object
+    public $logger;         // Logger Object
     public $algorithm;      // Password hash / verify object
     public $session_prefix = 'auth_';
     public $allow_login = true;    // Whether to allow logins to be performed on this page.
@@ -33,25 +34,17 @@ Class Auth
 
     public function __construct()
     {
-        global $logger;
-
-        $auth = getConfig('auth');
-        foreach ($auth as $key => $val) {
+        global $c;
+        foreach ($c['Config']['auth'] as $key => $val) {
             $this->{$key} = $val;
         }
-        
-        $session    = $auth['session'];    // call new Sess object
-        $class      = $session();
-        $this->sess = $class::$driver;
+        $this->sess   = $c['Sess'];   // load Session
+        $this->logger = $c['Logger']; // load Logger
 
         if ($this->regenerate_sess_id) {   // regenerate the session id on every page load
             $this->sess->regenerateId();
         }
-
-        if ( ! isset(getInstance()->auth)) {
-            getInstance()->auth = $this;  // Make available it in the controller.
-        }
-        $logger->debug('Auth Class Initialized');
+        $this->logger->debug('Auth Class Initialized');
     }
 
     // --------------------------------------------------------------------

@@ -20,19 +20,21 @@ Class View
     private $_bool   = array(); // Array type view variables
     private $_object = array(); // Object type view variables
 
+    public $logger;
+    public $response;
+
     /**
      * Constructor
      */
 
     public function __construct()
     {
-        global $logger;
+        global $c;
+        $this->logger   = $c['Logger'];
+        $this->router   = $c['Router'];
+        $this->response = $c['Response'];
 
-        if ( ! isset(getInstance()->view)) {
-            getInstance()->view = $this; // Make available it in the controller $this->view->method();
-        }
-
-        $logger->debug('View Class Initialized');
+        $this->logger->debug('View Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -49,14 +51,14 @@ Class View
      */
     public function fetch($__vPath, $__vFilename, $__vData = null, $__vInclude = true)
     {
-        global $response, $logger;
+        global $c;
 
         $file_extension = substr($__vFilename, strrpos($__vFilename, '.')); // Detecet the file extension ( e.g. '.tpl' )
         $ext = (strpos($file_extension, '.') === 0) ? '' : EXT;
 
-        if (function_exists('getInstance') AND is_object(getInstance())) {
-            foreach (array_keys(get_object_vars(getInstance())) as $key) { // This allows to using "$this" variable in all views files.
-                $this->{$key} = getInstance()->{$key}; // e.g. $this->config->item('myitem')
+        if (class_exists('Controller')) {
+            foreach (array_keys(get_object_vars($c['App']->instance)) as $key) { // This allows to using "$this" variable in all views files.
+                $this->{$key} = $c['App']->instance->{$key}; // e.g. $this->config->getItem('myitem')
             }
         }
 
@@ -65,20 +67,17 @@ Class View
         if (count($this->_string) > 0) {  // extract all view variables.
             extract($this->_string, EXTR_SKIP);
         }
-
         if (sizeof($this->_array) > 0) {
             extract($this->_array, EXTR_SKIP);
         }
-
         if (count($this->_object) > 0) {
             extract($this->_object, EXTR_SKIP);
         }
-
         if (count($this->_bool) > 0) {
             extract($this->_bool, EXTR_SKIP);
         }
 
-        $logger->debug('View file loaded: ' . $__vPath . $__vFilename . $ext);
+        $this->logger->debug('View file loaded: ' . $__vPath . $__vFilename . $ext);
 
         ob_start();   // Please open short tags in your php.ini file. ( short_tag = On ).
 
@@ -89,9 +88,7 @@ Class View
         if ($__vData === false || $__vInclude === false) {
             return $output;
         }
-
-        $response->appendOutput($output);
-
+        $this->response->appendOutput($output);
         return;
     }
 
@@ -108,38 +105,40 @@ Class View
     public function set($key, $val)
     {
         if (is_string($val) AND strpos($val, '@') === 0 ) {
-
+            global $c;
             $matches = explode('.', $val);
             $method  = trim($matches[0], '@');
             $uri     = $matches[1];
-            $param   = (isset($matches[2])) ? $matches[2] : null;
-            
-            if ( ! class_exists('Hvc', false)) {
-                new Hvc;
-            }
-            $val = getInstance()->hvc->$method($uri, $param);
+            $param   = (isset($matches[2])) ? $matches[2] : 0;
+            $val     = $c['Hvc']->$method($uri, $param);
         }
 
         $val = $this->_isCallable($val);
 
         if (is_string($val) OR is_int($val)) {
             $this->_string[$key] = $val;
-        } elseif (is_array($val)) {
+            return;
+        }
+        if (is_array($val)) {
             if (count($val) == 0) {
                 $this->_array[$key] = array();
-            } else {
-                foreach ($val as $array_key => $value) {
-                    $this->_array[$key][$array_key] = $value;
-                }
+                return;
             }
-        } elseif (is_object($val)) {
-            $this->_object[$key] = $val;
-        } elseif (is_bool($val)) {
-            $this->_bool[$key] = $val;
-        } else {
-            $this->_string[$key] = (string) $val;
+            foreach ($val as $array_key => $value) {
+                $this->_array[$key][$array_key] = $value;
+            }
+            return;
         }
-        return $this;
+        if (is_object($val)) {
+            $this->_object[$key] = $val;
+            return;
+        }
+        if (is_bool($val)) {
+            $this->_bool[$key] = $val;
+            return;
+        }
+        $this->_string[$key] = (string) $val;
+        return;
     }
 
     // --------------------------------------------------------------------
@@ -153,11 +152,9 @@ Class View
     public function getScheme($schemeName = 'default')
     {
         $schemes = getConfig('scheme');
-
         if (isset($schemes[$schemeName]) AND is_callable($schemes[$schemeName])) {
             call_user_func_array(Closure::bind($schemes[$schemeName], $this, get_class()), array());
         }
-
         return $this;
     }
 
@@ -176,7 +173,6 @@ Class View
             $func = Closure::bind($val, $this, get_class());
             return $func();
         }
-
         return $val;
     }
 
@@ -193,12 +189,10 @@ Class View
     public function get($filename, $data_or_no_include = null, $include = true)
     {
         $folder = PUBLIC_DIR;
-
         if (isset($_SERVER['HVC_REQUEST']) AND $_SERVER['HVC_REQUEST'] == true) {
             $folder = PRIVATE_DIR;
         }
-
-        return $this->fetch($folder . getInstance()->router->fetchDirectory() . DS . 'view' . DS, $filename, $data_or_no_include, $include);
+        return $this->fetch($folder . $this->router->fetchDirectory() . DS . 'view' . DS, $filename, $data_or_no_include, $include);
     }
 
     // ------------------------------------------------------------------------

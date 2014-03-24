@@ -7,12 +7,12 @@ defined('STDIN') or die('Access Denied');
  * 
  * @var Controller
  */
-$c = new Controller(
+$o = new Controller(
     function () {
     }
 );
 
-$c->func(
+$o->func(
     'index',
     function () {
 

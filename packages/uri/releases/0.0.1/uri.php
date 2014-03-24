@@ -11,6 +11,7 @@
  */
 Class Uri
 {
+    public $logger;
     public $keyval = array();
     public $uri_string;
     public $segments = array();
@@ -29,8 +30,9 @@ Class Uri
      */
     public function __construct()
     {
-        global $logger;
-        $logger->debug('Uri Class Initialized'); // Warning : Don't load any library in __construct level you may get a Fatal Error.
+        global $c;
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Uri Class Initialized'); // Warning : Don't load any library in __construct level you may get a Fatal Error.
     }
 
     // --------------------------------------------------------------------
@@ -264,7 +266,6 @@ Class Uri
         if ($filter) { // Filter out control characters
             $str = removeInvisibleCharacters($str, false);
         }
-
         $this->uri_string = ($str == '/') ? '' : $str;  // If the URI contains only a slash we'll kill it
     }
 
@@ -279,8 +280,8 @@ Class Uri
      */
     public function getAssetsUrl($uri = '')
     {
-        global $cfg;
-        return $cfg->getSlashItem('assets_url') . ltrim($uri, '/');
+        global $c;
+        return $c['Config']->getSlashItem('assets_url') . ltrim($uri, '/');
     }
 
     // --------------------------------------------------------------------
@@ -312,7 +313,6 @@ Class Uri
         if (isset($_SERVER[$this->getProtocol()])) {
             return ($urlencode) ? urlencode($_SERVER[$this->getProtocol()]) : $_SERVER[$this->getProtocol()];
         }
-
         return false;
     }
 
@@ -328,8 +328,8 @@ Class Uri
      */
     public function getBaseUrl($uri = '')
     {
-        global $cfg;
-        return $cfg->getSlashItem('base_url') . ltrim($uri, '/');
+        global $c;
+        return $c['Config']->getSlashItem('base_url') . ltrim($uri, '/');
     }
 
     // --------------------------------------------------------------------
@@ -349,12 +349,10 @@ Class Uri
         if (is_array($uri_str)) {
             $uri_str = implode('/', $uri_str);
         }
-
         if ($uri_str == '') {
             return $this->getBaseUrl() . $config['index_page'];
         } else {
             $suffix = ($config['url_suffix'] == false OR $suffix == false) ? '' : $config['url_suffix'];
-
             return $this->getBaseUrl() . $config['index_page'] . trim($uri_str, '/') . $suffix;
         }
     }
@@ -517,7 +515,6 @@ Class Uri
             $temp[] = $key;
             $temp[] = $val;
         }
-
         return implode('/', $temp);
     }
 
@@ -647,12 +644,10 @@ Class Uri
             if (count($default) == 0) {
                 return array();
             }
-
             $retval = array();
             foreach ($default as $val) {
                 $retval[$val] = false;
             }
-
             return $retval;
         }
 
@@ -671,15 +666,13 @@ Class Uri
 
             $i++;
         }
-
         if (count($default) > 0) {
             foreach ($default as $val) {
-                if (!array_key_exists($val, $retval)) {
+                if ( ! array_key_exists($val, $retval)) {
                     $retval[$val] = false;
                 }
             }
         }
-
         $this->keyval[$n] = $retval;  // Cache the array for reuse
 
         return $retval;
@@ -688,7 +681,7 @@ Class Uri
     // --------------------------------------------------------------------
 
     /**
-     * When we use HMVC we need to Clean
+     * When we use Hvc we need to Clean
      * all data.
      *
      * @return  void

@@ -13,12 +13,9 @@ Class Html {
     
     public function __construct()
     {
-        global $logger;
-
-        if( ! isset(getInstance()->html)) {
-            getInstance()->html = $this; // Make available it in the controller $this->html->method();
-        }
-        $logger->debug('Html Class Initialized');
+        global $c;
+        $this->logger = $c['Logger'];
+        $this->logger->debug('Html Class Initialized');
     }
     // --------------------------------------------------------------------
     
@@ -80,6 +77,8 @@ Class Html {
      */
     private function _css($href, $title = '', $media = '', $rel = 'stylesheet', $index_page = false)
     {
+        global $c;
+
         $link = '<link ';           
         $ext  = 'css';
         
@@ -97,7 +96,7 @@ Class Html {
         }
         elseif ($index_page === true)
         {
-            $link .= ' href="'. getInstance()->uri->getSiteUrl($href, false) .'" ';
+            $link .= ' href="'. $c['Uri']->getSiteUrl($href, false) .'" ';
         }
         else
         {
@@ -134,7 +133,9 @@ Class Html {
     * @return   string | false
     */
     public static function _getAssetPath($file, $extra_path = '', $ext = '')
-    {                                      
+    {                       
+        global $c;
+
         $paths = array();
         if( strpos($file, '/') !== false)
         {
@@ -158,7 +159,7 @@ Class Html {
         $assets_url = str_replace(DS, '/', ASSETS);
         $assets_url = str_replace(ROOT, '', ASSETS);
 
-        return getInstance()->uri->getAssetsUrl('', false) .$assets_url. $extra_path . $folder . $sub_path . $file;
+        return $c['Uri']->getAssetsUrl('', false) .$assets_url. $extra_path . $folder . $sub_path . $file;
     }
 
     // ------------------------------------------------------------------------ 
@@ -177,6 +178,8 @@ Class Html {
     */
     public function img($src = '', $attributes = '', $index_page = false)
     {
+        global $c;
+
         if ( ! is_array($src) )
         {
             $src = array('src' => $src);
@@ -190,7 +193,7 @@ Class Html {
             
             if ($k == 'src' AND strpos($v, '://') === false) {
                 if ($index_page === true) {
-                    $img .= ' src="'. getInstance()->uri->getSiteUrl($v, false).'" ';
+                    $img .= ' src="'. $c['Uri']->getSiteUrl($v, false).'" ';
                 }
                 else
                 {
@@ -223,12 +226,14 @@ Class Html {
     */
     public function js($src, $args = '', $type = 'text/javascript', $index_page = false)
     {
+        global $c;
+
         $arguments = is_string($args) ? $args : '';  // is reverse sort true ?
 
         if (strpos($src, '/*') !== false) {  // Is it folder ?
             $files      = '';
             $exp        = explode('/*', $src);
-            $data       = getInstance()->html->_parseRegex($src, $exp);
+            $data       = $c['html']->_parseRegex($src, $exp);
             $source_dir = ASSETS .'js'. DS . str_replace('/', DS, $exp[0]);
 
             foreach (scandir($source_dir, ($args === true) ? 1 : 0) as $filename) {   
@@ -263,6 +268,8 @@ Class Html {
      */
     private function _js($src, $arguments = '', $type = 'text/javascript', $index_page = false)
     {
+        global $c;
+
         $link = '<script type="'.$type.'" ';        
         $src  = ltrim($src, '/');   // remove first slash
 
@@ -272,7 +279,7 @@ Class Html {
         }
         elseif ($index_page === true)  // .js file as PHP
         {
-            $link .= ' src="'. getInstance()->uri->getSiteUrl($src, false) .'" ';
+            $link .= ' src="'. $c['Uri']->getSiteUrl($src, false) .'" ';
         }
         else
         {
