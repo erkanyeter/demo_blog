@@ -24,6 +24,7 @@ $packages['dependencies']['bcrypt']               = array('version' => '0.0.1');
 $packages['dependencies']['cart']                 = array('version' => '0.0.1');
 $packages['dependencies']['captcha']              = array('version' => '0.0.1');
 $packages['dependencies']['cookie']               = array('version' => '0.0.1');
+$packages['dependencies']['container']            = array('version' => '0.0.1');
 $packages['dependencies']['cache']                = array('version' => '0.0.1');
 $packages['dependencies']['cache_apc']            = array('version' => '0.0.1');
 $packages['dependencies']['cache_file']       	  = array('version' => '0.0.1');
