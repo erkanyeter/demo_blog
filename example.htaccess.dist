@@ -10,7 +10,7 @@
     # Removes access to the Core folders by users.
     # previously this would not have been possible.
     
-    RewriteCond %{REQUEST_URI} ^(app|classes|data|packages|public)\b.*
+    RewriteCond %{REQUEST_URI} ^(app|classes|data|obullo|public|private)\b.*
     RewriteRule ^(.*)$ index.php/$1 [L]
 
     # Checks to see if the user is attempting to access a valid file,

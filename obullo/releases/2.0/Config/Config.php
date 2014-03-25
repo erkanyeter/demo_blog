@@ -1,5 +1,8 @@
 <?php
 
+namespace Obullo\Config;
+
+
 /**
  * Config Class
  * 
@@ -95,11 +98,8 @@ Class Config implements ArrayAccess
      */
     public function __construct()
     {
-        global $config, $c;
-
+        require APP .'config'. DS . ENV . DS .'config'. EXT;
         $this->config = $config;
-        $this->logger = $c['Logger'];
-        $this->logger->debug('Config Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -113,11 +113,8 @@ Class Config implements ArrayAccess
      */
     public function load($filename = '')
     {
-        global $config;
-        $_config = $config; // copy config array
-
         $folder = APP . 'config' . DS;
-        if (in_array($filename, $config['environment_config_files'])) {
+        if (in_array($filename, $config['environment']['files'])) {
             $folder = APP . 'config' . DS . ENV. DS;
         }
         unset($config);

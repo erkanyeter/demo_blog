@@ -13,19 +13,19 @@ set_error_handler(
 // ------------------------------------------------------------------------
 
 /**
- * $c log
+ * $app log
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
     }
 );
 
-$o->func(
+$app->func(
     'index',
     function ($level = '') {
 
-        include APP .'config'. DS . strtolower(ENV) . DS .'logger'. EXT;  // get configuration of logger file driver
+        include APP .'config'. DS . ENV . DS .'logger'. EXT;  // get configuration of logger file driver
 
         if ($level == 'tasks') {
             $path = str_replace('/', DS, trim($logger['path_task'], '/'));
@@ -47,7 +47,7 @@ $o->func(
     
 // ------------------------------------------------------------------------
 
-$o->func(
+$app->func(
     '_displayLogo',
     function () {
         echo "\33[1;36m".'
@@ -69,12 +69,11 @@ Display logs [$php task log], to filter logs [$php task log index $level]'."\n\0
  * Print colorful log messages to your console.
  * @param  $file
  */ 
-$o->func(
+$app->func(
     '_follow',
     function ($file, $level = '') {
 
         static $lines = array();
-
         $size = 0;
         while (true) {
 
@@ -212,8 +211,6 @@ $o->func(
 // Terminal Colour Codes ( TERMINAL SCREEN BASH CODES )
 /*
 
-http://www.if-not-true-then-false.com/2010/php-class-for-coloring-php-command-line-cli-scripts-output-php-output-colorizing-using-bash-shell-colors/
-
 $BLACK="33[0;30m";
 $DARKGRAY="33[1;30m";
 $BLUE="33[0;34m";
@@ -231,6 +228,9 @@ $BROWN="33[0;33m";
 $YELLOW="33[1;33m";
 $LIGHTGRAY="33[0;37m";
 $WHITE="33[1;37m";
+
+More Colors :
+http://www.if-not-true-then-false.com/2010/php-class-for-coloring-php-command-line-cli-scripts-output-php-output-colorizing-using-bash-shell-colors/
 */
 
 /* End of file log.php */

@@ -3,16 +3,16 @@
 defined('STDIN') or die('Access Denied');
 
 /**
- * $c start
+ * $app start
  * 
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
     }
 );
 
-$o->func(
+$app->func(
     'index',
     function () {
 

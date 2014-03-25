@@ -20,7 +20,7 @@ server {
         #}
 
         # START THE FRAMEWORK REWRITE RULES
-        # ( URI_PROTOCOL should be REQUEST_URI OR AUTO / app /config / uri_protocol = REQUEST_URI )
+        # ( URI_PROTOCOL should be REQUEST_URI OR AUTO / app /config / uri / protocol = REQUEST_URI )
 
         # enforce NO www
         if ($host ~* ^www\.(.*))
@@ -48,8 +48,8 @@ server {
                 rewrite ^/(.+)/$ /$1 permanent;
         }
 
-        # removes access to "packages" folder
-        if ($request_uri ~* ^/packages)
+        # removes access to "obullo" folder
+        if ($request_uri ~* ^/obullo)
         {
                 rewrite ^/(.*)$ /index.php?/$1 last;
                 break;
