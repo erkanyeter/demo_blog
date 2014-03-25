@@ -53,14 +53,14 @@ $config = array(
     'log_enabled'         => false,           // On / Off logging
     'log_output'          => false,           // On / Off logger html output
     'log_threshold'       => array(0,1,2,3,4,5,6,7),          // array(0,1,2) = emergency,alert,critical
-    'log_handler'         => array('file' => 'Logger_File'),  // Handler name & Package name of your driver: Logger_File, Logger_Mongo ...
+    'log_handler'         => array('file' => 'File'),  // Handler name & Package name of your driver: Logger_File, Logger_Mongo ...
     'log_queries'         => true,           // If true "all" SQL Queries gets logged.
     'log_benchmark'       => true,           // If true "all" application benchmarks gets logged.
     'log_default_channel' => 'system',       // Default channel name should be general.
     'log_line'            => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
     'log_push_handlers'   => array(                                 // Define your available push handlers.
-                                    'email' => 'Logger_Email',  
-                                    'mongo' => 'Logger_Mongo'
+                                    'email' => 'Email',  
+                                    'mongo' => 'Mongo'
                                     ),
     // Push Example
     // ---------------------------------------------------

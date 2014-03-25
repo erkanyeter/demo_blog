@@ -16,7 +16,7 @@
 |     o LIVE  - Production  ( Production mode, all errors disabled )
 |
 */
-define('ENV', 'DEBUG');
+define('ENV', 'debug');
 
 /*
 |--------------------------------------------------------------------------
@@ -113,25 +113,24 @@ if (defined('STDIN')) {
 | Global Config Files
 |--------------------------------------------------------------------------
 */
-require APP .'config'. DS . strtolower(ENV) . DS .'config'. EXT;
-require DATA .'cache'. DS .'packages.cache';
+require APP .'config'. DS . ENV . DS .'config'. EXT;
+require DATA .'cache'. DS .'ovm.cache';
 /*
 |--------------------------------------------------------------------------
 | Build IOC
 |--------------------------------------------------------------------------
 */
-require PACKAGES .'pimple'. DS .'releases'. DS .$packages['dependencies']['pimple']['version']. DS .'pimple'. EXT;
-
-$c = new Pimple;  // Dependency Container
+require OBULLO .$version. DS .'Container'. DS .'Container'. EXT;
+$c = new Container;  // Dependency Container
 /*
 |--------------------------------------------------------------------------
 | Load Logger Package
 |--------------------------------------------------------------------------
 */
 if ($config['log_enabled']) {
-    include PACKAGES .'logger'. DS .'releases'. DS .$packages['dependencies']['logger']['version']. DS .'logger'. EXT;
+    include OBULLO .$version. DS .'Logger'. DS .'Logger'. EXT;
     $c['Logger'] = function () {
-        return new Logger;
+        return new Obullo\Logger;
     };
 } else {
     /**
@@ -145,7 +144,7 @@ if ($config['log_enabled']) {
      * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
      * @link      http://obullo.com/docs/package/logger
      */
-    Class Logger
+    Class Obullo_Logger
     {
         /**
          * Call fake methods
@@ -165,7 +164,7 @@ if ($config['log_enabled']) {
     // Create logger component
     //-------------------------------------
     $c['Logger'] = function () {
-        return new Logger;
+        return new Obullo_Logger;
     };
 }
 
@@ -174,8 +173,7 @@ if ($config['log_enabled']) {
 | Load Common Functions
 |--------------------------------------------------------------------------
 */
-require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'common'. EXT;
-
+require OBULLO .'common'. EXT;
 /*
 |--------------------------------------------------------------------------
 | Core Components
@@ -248,4 +246,4 @@ $c['Cache'] = function () use ($c) {
 | Load Framework
 |--------------------------------------------------------------------------
 */
-require PACKAGES .'obullo'. DS .'releases'. DS .$packages['dependencies']['obullo']['version']. DS .'obullo'. EXT;
+require OBULLO .$version. DS .'obullo'. EXT;

@@ -50,7 +50,7 @@ define('APP',  ROOT .'app'. DS);
 define('DATA',  ROOT .'data'. DS);
 define('CLASSES',  ROOT .'classes'. DS);
 define('TEMPLATES',  APP . 'templates'. DS);
-define('PACKAGES',  ROOT .'packages'. DS);
+define('OBULLO',  ROOT .'obullo'. DS .'releases'. DS);
 define('PUBLIC_FOLDER', ROOT .'public'. DS);
 define('PRIVATE_FOLDER', ROOT .'private'. DS);
 define('PUBLIC_DIR', (defined('STDIN')) ? APP : PUBLIC_FOLDER);

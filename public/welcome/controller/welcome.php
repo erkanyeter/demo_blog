@@ -1,7 +1,7 @@
 <?php
 
 /**
- * $c welcome
+ * $app welcome
  * 
  * @var Controller
  */
