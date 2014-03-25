@@ -74,10 +74,14 @@ $config = array(
     // VERY IMPORTANT: * For a live site you'll usually only enable "Errors (1)" to be logged
     // otherwise your log files will fill up very fast.
     
+    // 
+    // http://www.microsoft.com/resources/msdn/goglobal/default.mspx
+
     // Localization
     'translate_notice'    => false,     // If enabled translate function put 'translate:' word each of texts to help multilingual development.
     'time_reference'      => 'local',   // This pref tells the system whether to use your server's local time as the master "now" reference, or convert it to GMT.
     'default_translation' => 'en_US',   // This determines which set of language files should be used.
+                                        // @see http://www.microsoft.com/resources/msdn/goglobal/default.mspx
     'charset'             => 'UTF-8',   // This determines which character set is used by default.
 
                                         // Note: Make sure there is an available translation if you intend to use something other than "en_US". 

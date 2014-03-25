@@ -1,6 +1,7 @@
 <?php
 
 // http://us.php.net/manual/tr/book.intl.php
+// http://www.microsoft.com/resources/msdn/goglobal/default.mspx
 
 /**
  * International ( Localization ) Class
@@ -11,6 +12,7 @@
  * @subpackage    localization
  * @category      locale
  * @link
+ * @see http://www.microsoft.com/resources/msdn/goglobal/default.mspx
  */
 Class International
 {
