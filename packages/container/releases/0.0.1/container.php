@@ -25,13 +25,13 @@
  */
 
 /**
- * Pimple main class.
+ * Container class.
  *
- * @package pimple
+ * @package Container ( Pimple )
  * @author  Fabien Potencier
  * @author  Ersin Guvenc ( Port to Obullo )
  */
-class Pimple implements ArrayAccess
+class Container implements ArrayAccess
 {
     private $values = array();
     private $factories;

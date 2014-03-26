@@ -44,7 +44,7 @@ Class Config implements ArrayAccess
             return false;
         }
 
-        // UNDERSTAN THE "." PARAMETERS USE INDEX
+        // UNDERSTANd THE "." PARAMETERS USE INDEX
 
         // if (strpos('.', $key) !== false) {
         //     $exp   = explode('.', $key);

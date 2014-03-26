@@ -15,7 +15,6 @@ Class Error {
     public function __construct()
     {
         global $c;
-
         $this->logger = $c['Logger'];
         $this->logger->debug('Error Class Initialized');
     }
