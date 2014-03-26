@@ -326,9 +326,16 @@ Class Hvc
      */
     public function request($method, $uri, $data = '', $expiration = null)
     {
+<<<<<<< HEAD:obullo/PACKAGES/hvc/releases/0.0.1/hvc.php
         if ($expiration === true) {  // delete cache before the request
             $this->deleteCache();
         }
+=======
+        if ($expiration === true) {  // delete cache
+            $this->deleteCache();
+        }
+        
+>>>>>>> a0dcc3aba31be04cbe96a9c8d350ef101f5268fd:packages/hvc/releases/0.0.1/hvc.php
         if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
             $data = array();
