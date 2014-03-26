@@ -138,11 +138,11 @@ Class Request
             foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header) {
                 $spoof = (isset($_SERVER[$header])) ? $_SERVER[$header] : false;
 
-                if ($spoof !== FALSE) {
+                if ($spoof !== false) {
                     // Some proxies typically list the whole chain of IP
                     // addresses through which the client has reached us.
                     // e.g. client_ip, proxy_ip1, proxy_ip2, etc.
-                    if (strpos($spoof, ',') !== FALSE) {
+                    if (strpos($spoof, ',') !== false) {
                         $spoof = explode(',', $spoof, 2);
                         $spoof = $spoof[0];
                     }
@@ -168,7 +168,6 @@ Class Request
     /**
      * Validate IP Address
      *
-     * @access   public
      * @param    string
      * @param    string  ipv4 or ipv6
      * @return   string
@@ -177,15 +176,15 @@ Class Request
     {
         $which = strtolower($which);
         switch ($which) {
-            case 'ipv4':
-                $flag = FILTER_FLAG_IPV4;
-                break;
-            case 'ipv6':
-                $flag = FILTER_FLAG_IPV6;
-                break;
-            default:
-                $flag = '';
-                break;
+        case 'ipv4':
+            $flag = FILTER_FLAG_IPV4;
+            break;
+        case 'ipv6':
+            $flag = FILTER_FLAG_IPV6;
+            break;
+        default:
+            $flag = '';
+            break;
         }
         return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flag);
     }
@@ -200,21 +199,6 @@ Class Request
     public function isXmlHttp()
     {
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            return true;
-        }
-        return false;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Check the request is Hvc
-     * 
-     * @return boolean
-     */
-    public function isHvc()
-    {
-        if (isset($_SERVER['HVC_REQUEST'])) {
             return true;
         }
         return false;

@@ -326,6 +326,9 @@ Class Hvc
      */
     public function request($method, $uri, $data = '', $expiration = null)
     {
+        if ($expiration === true) {  // delete cache before the request
+            $this->deleteCache();
+        }
         if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
             $data = array();
@@ -419,11 +422,13 @@ echo $this->view->get(
             if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'DEBUG' OR ENV == 'TEST')) {  // Show exceptional message to developers if environment not LIVE.
                 $rsp['message'] = $rsp['e'];
             }
-            return $rsp;
         }
 
         //------------ Private Request Header End -------------//
 
+        if ($expiration === false) {  // delete cache after the request
+            $this->deleteCache();
+        }
         return $rsp;
     }
 

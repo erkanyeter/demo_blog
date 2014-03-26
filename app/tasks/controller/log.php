@@ -20,7 +20,6 @@ $app = new Controller(
     function () {
     }
 );
-
 $app->func(
     'index',
     function ($level = '') {
@@ -44,7 +43,7 @@ $app->func(
         }
     }
 );
-    
+
 // ------------------------------------------------------------------------
 
 $app->func(

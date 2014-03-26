@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Obullo Class
+ * Obullo
  * 
  * @category  Core
  * @package   Obullo
@@ -17,29 +17,29 @@ $start = microtime(true);  // Run Timer
  *  Instantiate the hooks class
  * ------------------------------------------------------
  */
-if ($config['enable_hooks']) {
+if ($c['config']['hooks']['enabled']) {
     /*
      * ------------------------------------------------------
      *  Is there a "pre_system" hook?
      * ------------------------------------------------------
      */
-    $c['Hooks']->call('pre_system');
+    $c['hooks']->call('pre_system');
 }
 /*
  * ------------------------------------------------------
  *  Sanitize Inputs
  * ------------------------------------------------------
  */
-if ($config['enable_query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
+if ($c['config']['uri']['query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
     $_GET = array();
 }
 $_GET  = cleanInputData($_GET);
 $_POST = cleanInputData($_POST);  // Clean $_POST Data
 $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
 
-if ($config['csrf_protection']) {  // CSRF Protection check
-    $c['Security']->initCsrf();
-    $c['Security']->csrfVerify();
+if ($c['config']['security']['csrf']['protection']) {  // CSRF Protection check
+    $c['security']->initCsrf();
+    $c['security']->csrfVerify();
 }
 // Clean $_COOKIE Data
 // Also get rid of specially treated cookies that might be set by a server
@@ -53,18 +53,18 @@ unset($_COOKIE['$Domain']);
 
 $_COOKIE = cleanInputData($_COOKIE);
 
-$c['Logger']->debug('Global POST and COOKIE data sanitized');
+$c['logger']->debug('Global POST and COOKIE data sanitized');
 /*
  * ------------------------------------------------------
  *  Log requests
  * ------------------------------------------------------
  */
-if ($c['Logger']->getProperty('enabled')) {
-    $c['Logger']->debug('$_REQUEST_URI: ' .$c['Uri']->getRequestUri());
+if ($c['logger']->getProperty('enabled')) {
+    $c['logger']->debug('$_REQUEST_URI: ' .$c['uri']->getRequestUri());
     if (ENV == 'debug' OR ENV == 'test') {
-        $c['Logger']->debug('$_COOKIE: ', $_COOKIE);
-        $c['Logger']->debug('$_POST: ', $_POST);
-        $c['Logger']->debug('$_GET: ', $_GET);
+        $c['logger']->debug('$_COOKIE: ', $_COOKIE);
+        $c['logger']->debug('$_POST: ', $_POST);
+        $c['logger']->debug('$_GET: ', $_GET);
     }
 }
 /*
@@ -72,11 +72,11 @@ if ($c['Logger']->getProperty('enabled')) {
  *  Load core components
  * ------------------------------------------------------
  */
-$pageUri    = "{$c['Router']->fetchDirectory()} / {$c['Router']->fetchClass()} / {$c['Router']->fetchMethod()}";
-$controller = PUBLIC_DIR . $c['Router']->fetchDirectory() . DS . 'controller' . DS . $c['Router']->fetchClass() . EXT;
+$pageUri    = "{$c['router']->fetchDirectory()} / {$c['router']->fetchClass()} / {$c['router']->fetchMethod()}";
+$controller = PUBLIC_DIR . $c['router']->fetchDirectory() . DS . 'controller' . DS . $c['router']->fetchClass() . EXT;
 
 if ( ! file_exists($controller)) {
-    $c['Response']->show404($pageUri);
+    $c['response']->show404($pageUri);
 }
 /*
  * ------------------------------------------------------
@@ -84,82 +84,82 @@ if ( ! file_exists($controller)) {
  * ------------------------------------------------------
  */
 if ($config['enable_hooks']) {
-    $c['Hooks']->call('pre_controller');
+    $c['hooks']->call('pre_controller');
 }
 
 require $controller;  // call the controller.  $c variable now Available in HERE !!
 
 // Do not run private methods. ( _output, _remap, _getInstance .. )
 
-if (strncmp($c['Router']->fetchMethod(), '_', 1) == 0 
-    OR in_array(strtolower($c['Router']->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
+if (strncmp($c['router']->fetchMethod(), '_', 1) == 0 
+    OR in_array(strtolower($c['router']->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
 ) {
-    $c['Response']->show404($pageUri);
+    $c['response']->show404($pageUri);
 }
 /*
  * ------------------------------------------------------
  *  Is there a "post_controller_constructor" hook?
  * ------------------------------------------------------
  */
-if ($config['enable_hooks']) {
-    $c['Hooks']->call('post_controller_constructor');
+if ($c['config']['hooks']['enabled']) {
+    $c['hooks']->call('post_controller_constructor');
 }
 $storedMethods = array_keys($app->controllerMethods);
 
-if ( ! in_array(strtolower($c['Router']->fetchMethod()), $storedMethods)) {  // Check method exist or not
-    $c['Response']->show404($pageUri);
+if ( ! in_array(strtolower($c['router']->fetchMethod()), $storedMethods)) {  // Check method exist or not
+    $c['response']->show404($pageUri);
 }
 
-$arguments = array_slice($c['Uri']->rsegments, 2);
+$arguments = array_slice($c['uri']->rsegments, 2);
 
 if (method_exists($app, '_remap')) {  // Is there a "remap" function? If so, we call it instead
-    $app->_remap($c['Router']->fetchMethod(), $arguments);
+    $app->_remap($c['router']->fetchMethod(), $arguments);
 } else {
     // Call the requested method. Any URI segments present (besides the directory / class / method) 
     // will be passed to the method for convenience
     // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
-    call_user_func_array(array($app, $c['Router']->fetchMethod()), $arguments);
+    call_user_func_array(array($app, $c['router']->fetchMethod()), $arguments);
 }
 /*
  * ------------------------------------------------------
  *  Is there a "post_controller" hook?
  * ------------------------------------------------------
  */
-if ($config['enable_hooks']) {
-    $c['Hooks']->call('post_controller');
+if ($c['config']['hooks']['enabled']) {
+    $c['hooks']->call('post_controller');
 }
 /*
  * ------------------------------------------------------
  *  Send the final rendered output to the browser
  * ------------------------------------------------------
  */
-if ($config['enable_hooks']) {
-    if ($c['Hooks']->call('display_override') === false) {
-        $c['Response']->_sendOutput();  // Send the final rendered output to the browser
+if ($c['config']['hooks']['enabled']) {
+    if ($c['hooks']->call('display_override') === false) {
+        $c['response']->_sendOutput();  // Send the final rendered output to the browser
     }
 } else {
-    $c['Response']->_sendOutput();    // Send the final rendered output to the browser
+    $c['response']->_sendOutput();    // Send the final rendered output to the browser
 }
 /*
  * ------------------------------------------------------
  *  Is there a "post_system" hook?
  * ------------------------------------------------------
  */
-if ($config['enable_hooks']) {
-    $c['Hooks']->call('post_system');
+if ($c['config']['hooks']['enabled']) {
+    $c['hooks']->call('post_system');
 }
 
 $time = microtime(true) - $start;  // End Timer
 
 $extra = array();
-if ($config['log_benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
+if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
     $usage = 'memory_get_usage() function not found on your php configuration.';
     if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
         $usage = number_format($usage) . ' bytes';
     }
     $extra = array('time' => number_format($time, 4), 'memory' => $usage);
 }
-$c['Logger']->debug('Final output sent to browser', $extra);
+$c['logger']->debug('Final output sent to browser', $extra);
 
 
 // END Obullo.php File

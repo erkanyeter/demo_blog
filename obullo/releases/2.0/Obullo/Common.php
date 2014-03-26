@@ -16,7 +16,7 @@
  */
 function cleanInputData($str)
 {
-    global $config, $c;
+    global $c;
     if (is_array($str)) {
         $new_array = array();
         foreach ($str as $key => $val) {
@@ -25,8 +25,8 @@ function cleanInputData($str)
         return $new_array;
     }
     $str = removeInvisibleCharacters($str); // Remove control characters
-    if ($config['global_xss_filtering']) {  // Should we filter the input data?
-        $str = $c['Security']->xssClean($str);
+    if ($c['config']['security']['xss_filtering']) {  // Should we filter the input data?
+        $str = $c['security']->xssClean($str);
     }
     return $str;
 }
@@ -51,49 +51,6 @@ function cleanInputKeys($str)
     }
     return $str;
 }
-
-// ------------------------------------------------------------------------
-
-/**
- * Autoload php files.
- * 
- * @param string $packageRealname classname 
- * 
- * @return void
- */
-function autoloader($packageRealname)
-{
-    if (class_exists($packageRealname, false)) {  // https://github.com/facebook/hiphop-php/issues/947
-        return;
-    }
-    global $packages;
-
-    $className = ltrim($packageRealname, '\\');  // http://www.php-fig.org/psr/psr-0/
-    $fileName  = '';
-    $namespace = '';
-    if ($lastNsPos = strrpos($className, '\\')) {
-        $namespace = substr($className, 0, $lastNsPos);
-        $className = substr($className, $lastNsPos + 1);
-        $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-    }
-    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . EXT;
-    $packageName = strtolower($className);
-
-    // exit($packageName);
-
-    if (isset($packages['dependencies'][$packageName])) {  // check is it a Package ?
-        $version = $packages['dependencies'][$packageName]['version'];
-        $fileUrl = PACKAGES . $packageName . DIRECTORY_SEPARATOR . 'releases' . DIRECTORY_SEPARATOR . $version . DIRECTORY_SEPARATOR .$packageName . EXT;
-
-        include_once $fileUrl;
-        return;
-    } else {
-        if (file_exists(CLASSES . $fileName)) {  // If its not a package, load User Classes from Classes Directory.
-            include_once CLASSES . $fileName;
-        }
-    }
-}
-spl_autoload_register('autoloader', true);
 
 // --------------------------------------------------------------------
 
@@ -136,7 +93,7 @@ function removeInvisibleCharacters($str, $url_encoded = true)
  */
 function exceptionsHandler($e, $type = '')
 {
-    global $version, $config, $c;
+    global $version, $c;
 
     $shutdownErrors = array(
         'ERROR' => 'ERROR', // E_ERROR 
@@ -146,22 +103,19 @@ function exceptionsHandler($e, $type = '')
     );
     $shutdownError = false;
     if (isset($shutdownErrors[$type])) {  // We couldn't use any object for shutdown errors.
-    
-        $error = $c['Error']; // Load error package.
 
         $shutdownError = true;
         $type          = ucwords(strtolower($type));
         $code          = $e->getCode();
-        $level         = $config['error_reporting'];
+        $level         = $c['config']['error']['reporting'];
 
         if (defined('STDIN')) {  // If Command Line Request.
             echo $type . ': ' . $e->getMessage() . ' File: ' . $error->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
 
             $cmdType = (defined('TASK')) ? 'Task' : 'Cmd';
-            $c['Logger']->error('(' . $cmdType . ') ' . $type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+            $c['logger']->error('(' . $cmdType . ') ' . $type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
             return;
         }
-
         if ($level > 0 OR is_string($level)) {  // If user want to display all errors
             if (is_numeric($level)) {
                 switch ($level) {
@@ -169,28 +123,29 @@ function exceptionsHandler($e, $type = '')
                     return;
                     break;
                 case 1:
-                    include PACKAGES . 'exceptions' . DS . 'releases' . DS . $version . DS . 'src' . DS . 'error' . EXT;
+                    include OBULLO .$version. DS .'Exception'. DS . 'Html' . EXT;
                     return;
                     break;
                 }
             }
-            $rules = $error->parseRegex($level);
+            $rules = $c['error']->parseRegex($level);
             if ($rules == false) {
                 return;
             }
             $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
 
             if (isset($allowedErrors[$code])) {
-                include PACKAGES . 'exceptions' . DS . 'releases' . DS . $version . DS . 'src' . DS . 'error' . EXT;
+                include OBULLO .$version. DS .'Exception'. DS . 'Html' . EXT;
             }
-        } else {  // If error_reporting = 0, we show a blank page template.
-            include APP . 'errors' . DS . 'disabled_error' . EXT;
+        } else {  
+            include APP . 'errors' . DS . 'disabled_error' . EXT;  // If error_reporting = 0, we show a blank page template.
         }
 
-        $c['Logger']->error($type . ': ' . $e->getMessage() . ' ' . $error->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+        $c['logger']->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+
     } else {  // Is It Exception ? Initialize to Exceptions Component.
 
-        $exception = $c->raw('Exceptions');
+        $exception = $c->raw('exception');
         $exception($e, $type);
     }
     return;

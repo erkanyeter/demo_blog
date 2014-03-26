@@ -108,55 +108,57 @@ if (defined('STDIN')) {
     */
     ini_set('memory_limit', '100000M');
 }
+require DATA .'cache'. DS .'system.cache';
+require OBULLO .$version. DS .'Obullo'. DS .'Autoloader'. EXT;
 /*
 |--------------------------------------------------------------------------
-| Load Common Functions
+| Container ( Ioc )
 |--------------------------------------------------------------------------
 */
-require OBULLO .'common'. EXT;
+$c = new Obullo\Container\Pimple;    // Dependency Container
 /*
 |--------------------------------------------------------------------------
-| Build IOC
+| Config
 |--------------------------------------------------------------------------
 */
-require OBULLO .$version. DS .'Container'. DS .'Container'. EXT;
-$c = new Obullo\Container;  // Dependency Container
-
+$c['config'] = function () { 
+    return new Obullo\Config\Config;
+};
 /*
 |--------------------------------------------------------------------------
-| Global Config Files
+| Error
 |--------------------------------------------------------------------------
 */
-require OBULLO .$version. DS .'Config'. DS .'Config'. EXT;
-$config = new Obullo\Config;
-
-require DATA .'cache'. DS .'version.cache';
-
+$c['error'] = function () { 
+    return new Obullo\Error\Handler;
+};
 /*
 |--------------------------------------------------------------------------
-| Load Logger Package
+| Exception
 |--------------------------------------------------------------------------
 */
-if ($config['log']['enabled']) {
+$c['exception'] = function ($e, $type) {
+    $exception = new Obullo\Exception\Error;
+    $exception->display($e, $type);
+};
+/*
+|--------------------------------------------------------------------------
+| Logging
+|--------------------------------------------------------------------------
+*/
+if ($c['config']['log']['enabled']) {
     include OBULLO .$version. DS .'Logger'. DS .'Logger'. EXT;
     $c['logger'] = function () {
-        return new Obullo\Logger;
+        return new Obullo\Logger\Logger;
     };
 } else {
     /**
      * If logging feature closed don't load the class.
      * Create a fake logger and use it.
-     * 
-     * @category  Fake_Logger
-     * @package   Logger
-     * @author    Obullo Framework <obulloframework@gmail.com>
-     * @copyright 2009-2014 Obullo
-     * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
-     * @link      http://obullo.com/docs/package/logger
      */
     Class Obullo_Logger
     {
-        /**
+         /**
          * Call fake methods
          * 
          * @param string $method    method
@@ -171,71 +173,77 @@ if ($config['log']['enabled']) {
             return; 
         } 
     }
-    // Create logger component
-    //-------------------------------------
     $c['logger'] = function () {
         return new Obullo_Logger;
     };
 }
-require OBULLO .$version. DS .'Controller'. DS .'Controller'. EXT;
-
 /*
 |--------------------------------------------------------------------------
-| Core Components
+| Common
+|--------------------------------------------------------------------------
+*/
+require OBULLO .$version. DS .'Obullo'. DS .'Common'. EXT;
+/*
+|--------------------------------------------------------------------------
+| Controller
+|--------------------------------------------------------------------------
+*/
+require OBULLO .$version. DS .'Controller'. DS .'Controller'. EXT;
+/*
+|--------------------------------------------------------------------------
+| Components
 |--------------------------------------------------------------------------
 */
 $c['app'] = function () {
-    return new Obullo\App;
+    return new Obullo\App\Controller;
 };
 $c['uri'] = function () {
-    return new Obullo\Uri;
+    return new Obullo\Uri\Uri;
 };
 $c['router'] = function () { 
-    return new Obullo\Router;
+    return new Obullo\Router\Router;
+};
+$c['translator'] = function () use ($c) { 
+    return new Obullo\I18n\Translator;
 };
 $c['hooks'] = function () { 
-    return new Obullo\Hooks;
+    return new Obullo\Hooks\Hooks;
 };
 $c['security'] = function () { 
-    return new Obullo\Security;
-};
-$c['config'] = function () use ($config) { 
-    return $config;
-};
-$c['error'] = function () { 
-    return new Obullo\Error;
-};
-$c['exception'] = function ($e, $type) { 
-    $exception = new Obullo\Exception;
-    $exception->write($e, $type);
+    return new Obullo\Security\Security;
 };
 /*
 |--------------------------------------------------------------------------
-| Define Your Service Components
+| Services
 |--------------------------------------------------------------------------
 | Notice: You don't need to define all classes in here
-| If class not defined in $c['App'], We load it from
-| "/packages" folder & assign to Controller instance.
+| If class not exists in $c[''] container, We load it from
+| "/obullo" or "/classes" folder then we assign them into the Controller instance.
 |
-| Just define your service components here !
-| forexample: 
+| Just define your application components here ! forexample: 
 |
 | $c['Mailer'] = function () use ($c) {
 |     return $c['App']->mailer = new Mailer;   // your mail handler
 | }
 |
 */
-$c['translator'] = function () use ($c) { 
-    return $c['app']->translator = new Obullo\Translator;
+$c['request'] = function () use ($c) { 
+    return $c['app']->request = new Obullo\Http\Request;
 };
 $c['response'] = function () use ($c) { 
-    return $c['app']->response = new Obullo\Response;
+    return $c['app']->response = new Obullo\Http\Response;
+};
+$c['get'] = function () use ($c) { 
+    return $c['app']->get = new Obullo\Http\Get;
+};
+$c['post'] = function () use ($c) { 
+    return $c['app']->post = new Obullo\Http\Post;
 };
 $c['view'] = function () use ($c) { 
     return $c['app']->view = new Obullo\View;
 };
 $c['sess'] = function () use ($c) {
-    return $c['app']->sess = new Obullo\Sess\Native($c['config']->load('sess')); // Build Session Driver
+    return $c['app']->sess = new Obullo\Http\Session\Native($c['config']->load('sess')); // Build Session Driver
 };
 $c['db'] = function () use ($c) {
     return $c['app']->db = new Obullo\Pdo\Mysql($c['config']->load('database')); // Build Cache Driver
@@ -251,4 +259,4 @@ $c['cache'] = function () use ($c) {
 | Load Framework
 |--------------------------------------------------------------------------
 */
-require OBULLO .$version. DS .'obullo'. EXT;
+require OBULLO .$version. DS .'Obullo'. DS .'Obullo'. EXT;

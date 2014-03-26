@@ -33,7 +33,7 @@ namespace Obullo\Container;
  * @author  Fabien Potencier
  * @author  Ersin Guvenc ( Port to Obullo )
  */
-Class Container implements ArrayAccess
+Class Pimple implements \ArrayAccess
 {
     private $values = array();
     private $factories;
@@ -103,14 +103,14 @@ Class Container implements ArrayAccess
 
                 //----------------------------------//
 
-                Controller::$instance->{$key} = new $id;
+                \Controller::$instance->{$key} = new $id;
 
                 //----------------------------------//
 
                 $this->offsetSet(
                     $id, 
                     function () use ($key) {
-                        return Controller::$instance->{$key};
+                        return \Controller::$instance->{$key};
                     }
                 );
             }
@@ -158,7 +158,6 @@ Class Container implements ArrayAccess
             if (is_object($this->values[$id])) {
                 unset($this->factories[$this->values[$id]], $this->protected[$this->values[$id]]);
             }
-
             unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
         }
     }
@@ -175,10 +174,9 @@ Class Container implements ArrayAccess
     public function factory($callable)
     {
         if ( ! is_object($callable) || ! method_exists($callable, '__invoke')) {
-            throw new InvalidArgumentException('Service definition is not a Closure or invokable object.');
+            throw new \InvalidArgumentException('Service definition is not a Closure or invokable object.');
         }
         $this->factories->attach($callable);
-
         return $callable;
     }
 
@@ -196,10 +194,9 @@ Class Container implements ArrayAccess
     public function protect($callable)
     {
         if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new InvalidArgumentException('Callable is not a Closure or invokable object.');
+            throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
         }
         $this->protected->attach($callable);
-
         return $callable;
     }
 
@@ -215,13 +212,11 @@ Class Container implements ArrayAccess
     public function raw($id)
     {
         if (!isset($this->keys[$id])) {
-            throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
         }
-
         if (isset($this->raw[$id])) {
             return $this->raw[$id];
         }
-
         return $this->values[$id];
     }
 
@@ -241,15 +236,13 @@ Class Container implements ArrayAccess
     public function extend($id, $callable)
     {
         if (!isset($this->keys[$id])) {
-            throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
         }
-
         if (!is_object($this->values[$id]) || !method_exists($this->values[$id], '__invoke')) {
-            throw new InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $id));
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $id));
         }
-
         if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
+            throw new \InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
         }
         $factory = $this->values[$id];
 

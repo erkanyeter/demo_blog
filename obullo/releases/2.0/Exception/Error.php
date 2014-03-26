@@ -3,14 +3,14 @@
 namespace Obullo\Exception;
 
 /**
- * Exceptions Class
+ * Exception Error Class
  *
  * @package       packages
  * @subpackage    exceptions
  * @category      exceptions
  * @link
  */
-Class Exception
+Class Error
 {
     public $logger;
 
@@ -26,12 +26,12 @@ Class Exception
     /**
      * Display all errors
      * 
-     * @param object $e
-     * @param string $type
+     * @param object $e    exception $object
+     * @param string $type error type
      * 
      * @return string
      */
-    public function write($e, $type = '')
+    public function display($e, $type = '')
     {
         global $version, $c;
 
@@ -62,7 +62,6 @@ Class Exception
         if ( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
             $type = 'Database Error';
             $code = 'SQL';
-            $sql = $lastQuery;
         }
 
         // Command Line Errors
@@ -78,13 +77,16 @@ Class Exception
         // Load Error Template
         //-----------------------------------------------------------------------
 
-        $request = new Request;
-        if ($request->isXmlHttp()) {
+        $isAjax = false;
+        if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            $isAjax = true;
+        }
+        if ($isAjax) {  // Is Ajax ?
             $error_msg =  $e->getMessage() . ' File: ' . $c['error']->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
             $error_msg = strip_tags($error_msg);
         } else {
             ob_start();
-            include OBULLO .$version. DS .'Exceptions'. DS .'Html'. EXT;
+            include OBULLO .$version. DS .'Exception'. DS .'Html'. EXT;
             $error_msg = ob_get_clean();
         }
 
@@ -98,20 +100,24 @@ Class Exception
         //-----------------------------------------------------------------------            
 
         $level = $c['config']['error']['reporting'];
+
         if (is_numeric($level)) {
             switch ($level) {
-                case 0: return;
-                    break;
-                case 1:
-                    echo $error_msg;
-                    return;
-                    break;
+            case 0: 
+                return;
+                break;
+            case 1:
+                echo $error_msg;
+                return;
+                break;
             }
         }
+
         $rules = $c['error']->parseRegex($level);
         if ($rules == false) {
             return;
         }
+
         $allowed_errors = $c['error']->getAllowedErrors($rules);  // Check displaying error enabled for current error.
         if (isset($allowed_errors[$code])) {
             echo $error_msg;
@@ -120,7 +126,7 @@ Class Exception
 
 }
 
-// END Exception class
+// END Error class
 
-/* End of file Exception.php */
-/* Location: .Obullo/Exception/Exception.php */
+/* End of file Error.php */
+/* Location: .Obullo/Exception/Error.php */

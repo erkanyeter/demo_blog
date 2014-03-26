@@ -3,14 +3,14 @@
 namespace Obullo\Error;
 
 /**
-* Error Helper ( framework error handler )
+* Error Handler
 *
 * @package       packages
 * @subpackage    error
 * @category      error handling
 */
 
-Class Error {
+Class Handler {
 
     public $config;
     public $logger;
@@ -20,7 +20,8 @@ Class Error {
         global $c;
         $this->config = $c['config'];
         $this->logger = $c['logger'];
-        $this->logger->debug('Error Class Initialized');
+
+        $this->logger->debug('Error Handler Class Initialized');
     }
     
     // --------------------------------------------------------------------
@@ -424,36 +425,31 @@ Class Error {
     /**
     * Parse allowed errors
     * 
-    * @param array $rules
+    * @param array $rules string
+    * 
     * @return  string allowed rule
     */
     public function getAllowedErrors($rules) 
     {
-        if( ! isset($rules['IN'])) {
+        if ( ! isset($rules['IN'])) {
             return array();
         }
         $defined_errors = array_flip($this->getDefinedErrors());
         $all_errors     = array_keys($defined_errors);
 
-        if(count($rules['IN']) > 0)
-        {
+        if (count($rules['IN']) > 0) {
             $allow_errors = array_values($rules['IN']); 
 
-            if(in_array('E_ALL', $rules['IN'], true))
-            {
+            if (in_array('E_ALL', $rules['IN'], true)) {
                 $allow_errors = array_unique(array_merge($all_errors, array_values($rules['IN'])));
             }
-
-            if(count($rules['OUT']) > 0)
-            {
+            if (count($rules['OUT']) > 0) {
                 $allowed_errors = array_diff($allow_errors, $rules['OUT']);
             }
-
             unset($allow_errors);
 
             $error_result = array();     
-            foreach($allowed_errors as $error)
-            {
+            foreach ($allowed_errors as $error) {
                 if (isset($defined_errors[$error])) {
                     $error_result[$defined_errors[$error]] = $error;
                 }

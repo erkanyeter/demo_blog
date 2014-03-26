@@ -12,7 +12,7 @@ namespace Obullo\App;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/docs/package/app
  */
-Class App
+Class Controller
 {
     /**
      * Constructor
@@ -20,7 +20,7 @@ Class App
     public function __construct()
     {
         global $c;
-        $c['Logger']->debug('App Class Initialized');
+        $c['logger']->debug('App Controller Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -37,7 +37,7 @@ Class App
     public function __set($key, $val)
     {
         if (is_object($val)) {  // Just store object type variables to Controller
-            Controller::$instance->{$key} = $val;
+            \Controller::$instance->{$key} = $val;
         }
     }
 
@@ -53,11 +53,13 @@ Class App
     public function __get($key)
     {
         if ($key == 'instance') {
-            return Controller::$instance;
+            return \Controller::$instance;
         }
         return $this->{$key};
     }
 }
 
-/* End of file App.php */
-/* Location: ./packages/app/releases/0.0.1/app.php */
+// END App/Controller class
+
+/* End of file Controller.php */
+/* Location: .Obullo/App/Controller.php */

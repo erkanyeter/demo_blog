@@ -7,19 +7,17 @@ defined('STDIN') or die('Access Denied');
  * 
  * @var Controller
  */
-$o = new Controller(
+$app = new Controller(
     function () {
     }
 );
-
-$o->func(
+$app->func(
     'index',
     function () {
         $this->_clear();  // Start the Clear Task
     }
 );
-
-$o->func(
+$app->func(
     '_clear',
     function () {
 

@@ -2,7 +2,6 @@
 
 namespace Obullo\Config;
 
-
 /**
  * Config Class
  * 
@@ -13,7 +12,7 @@ namespace Obullo\Config;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/config
  */
-Class Config implements ArrayAccess
+Class Config implements \ArrayAccess
 {
     public $config = array();
     public $is_loaded = array();
@@ -42,8 +41,9 @@ Class Config implements ArrayAccess
      */
     public function offsetGet($key)
     {
+        global $c;
         if ( ! isset($this->config[$key])) {
-            $this->logger->notice('Config key "' . $key . '" not found, be sure providing the right name');
+            $c['logger']->notice('Config key "' . $key . '" not found, be sure providing the right name');
             return false;
         }
 
@@ -98,7 +98,7 @@ Class Config implements ArrayAccess
      */
     public function __construct()
     {
-        require APP .'config'. DS . ENV . DS .'config'. EXT;
+        include APP .'config'. DS . ENV . DS .'config'. EXT;
         $this->config = $config;
     }
 
@@ -139,7 +139,7 @@ Class Config implements ArrayAccess
         $this->is_loaded[] = $filename;
 
         unset($config);
-        $this->logger->debug('Config file loaded: ' . $file);
+        $c['logger']->debug('Config file loaded: ' . $file);
 
         return $this->config[$filename];
     }
