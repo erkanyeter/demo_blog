@@ -326,6 +326,10 @@ Class Hvc
      */
     public function request($method, $uri, $data = '', $expiration = null)
     {
+        if ($expiration === true) {  // delete cache
+            $this->deleteCache();
+        }
+        
         if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
             $data = array();
