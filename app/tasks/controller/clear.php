@@ -21,9 +21,9 @@ $app->func(
     '_clear',
     function () {
 
-        include APP .'config'. DS . strtolower(ENV) . DS .'logger'. EXT;  // get configuration of logger file driver
+        global $c;
 
-        $file = trim($logger['path'], '/');
+        $file = trim($c['config']['logger']['path']['app'], '/');
         $file = str_replace('/', DS, $file);
 
         if (strpos($file, 'data') === 0) { 
@@ -46,8 +46,8 @@ $app->func(
 
         PROJECT_DIR=\${PWD}
 
-        if [ ! -d ".PACKAGES." ]; then
-            # Check the PACKAGES directory exists, so we know you are in the project folder.
+        if [ ! -d ".OBULLO." ]; then
+            # Check the OBULLO directory is exists, so we know you are in the project folder.
             echo \"You must be in the project root ! Try cd /your/www/path/projectname\".
             return
         fi

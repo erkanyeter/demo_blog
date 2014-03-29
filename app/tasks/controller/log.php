@@ -24,12 +24,12 @@ $app->func(
     'index',
     function ($level = '') {
 
-        include APP .'config'. DS . ENV . DS .'logger'. EXT;  // get configuration of logger file driver
+        global $c;
 
         if ($level == 'tasks') {
-            $path = str_replace('/', DS, trim($logger['path_task'], '/'));
+            $path = str_replace('/', DS, trim($c['config']['logger']['path']['task'], '/'));
         } else {
-            $path = str_replace('/', DS, trim($logger['path'], '/'));
+            $path = str_replace('/', DS, trim($c['config']['logger']['path']['app'], '/'));
         }
         if (strpos($path, 'data') === 0) {  // replace "data" word to application data path
             $file = str_replace('data', DS . trim(DATA, DS), $path);
