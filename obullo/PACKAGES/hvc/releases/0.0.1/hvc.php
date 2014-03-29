@@ -82,7 +82,7 @@ Class Hvc
     {
         global $c;
 
-        $this->config = $c['Config']->load('hvc');   // Get hvc configuration
+        $this->config = $c['config']->load('hvc');   // Get hvc configuration
         $c['Translator']->load('hvc');               // Load translate file
 
         $c['Logger']->debug('Hvc Class Initialized');
@@ -180,7 +180,7 @@ Class Hvc
 
             //----------------------------------------------
 
-            $this->connection = $router->_setRouting(); // Returns false if we have hvc connection error.
+            $this->connection = $router->setRouting(); // Returns false if we have hvc connection error.
 
             //----------------------------------------------
         }
@@ -326,16 +326,9 @@ Class Hvc
      */
     public function request($method, $uri, $data = '', $expiration = null)
     {
-<<<<<<< HEAD:obullo/PACKAGES/hvc/releases/0.0.1/hvc.php
         if ($expiration === true) {  // delete cache before the request
             $this->deleteCache();
         }
-=======
-        if ($expiration === true) {  // delete cache
-            $this->deleteCache();
-        }
-        
->>>>>>> a0dcc3aba31be04cbe96a9c8d350ef101f5268fd:packages/hvc/releases/0.0.1/hvc.php
         if (is_numeric($data)) { // set expiration as second param if data not provided
             $expiration = $data;
             $data = array();
@@ -430,9 +423,11 @@ echo $this->view->get(
                 $rsp['message'] = $rsp['e'];
             }
         }
-
         //------------ Private Request Header End -------------//
 
+        if (isset($rsp['results']) AND is_array($rsp['results'])) {  // Automatically add count of the results.
+            $rsp['count'] = count($rsp['results']);
+        }
         if ($expiration === false) {  // delete cache after the request
             $this->deleteCache();
         }
@@ -450,9 +445,9 @@ echo $this->view->get(
     {
         global $c;
 
-        $uri    = $c['Uri'];
-        $router = $c['Router'];
-        $logger = $c['Logger'];
+        $uri    = $c['uri'];
+        $router = $c['router'];
+        $logger = $c['logger'];
 
         static $storage = array();      // store "$c " variables ( called controllers )
         // ------------------------------------------------------------------------
@@ -627,7 +622,6 @@ echo $this->view->get(
         if ( ! isset($_SERVER['HVC_REQUEST_URI'])) { // if no hvc header return to null;
             return;
         }
-
         // Assign global variables we copied before ..
         // --------------------------------------------------
         $_SERVER = array();  // Just reset server variable other wise  we don't 
@@ -640,7 +634,6 @@ echo $this->view->get(
         if (is_object($this->global)) {  // fixed HMVC object type of integer bug.
             Controller::$instance = $this->global;
         }
-
         $c['App']->uri    = $this->uri;        // restore back original objects
         $c['App']->router = $this->router;   
 

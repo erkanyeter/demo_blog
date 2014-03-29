@@ -64,7 +64,101 @@ Class Mongo_Db {
             getInstance()->mongo_db = $this; // Available it in the contoller $this->mongo->method();
         }
     }
+
+    // --------------------------------------------------------------------
     
+    /**
+     * Establish a connection to MongoDB using the connection string generated in
+     * the setConnectionString() method.  If 'mongo_persist_key' was set to true in the
+     * config file, establish a persistent connection.
+     * 
+     * We allow for only the 'persist'
+     * option to be set because we want to establish a connection immediately.
+     * 
+     * @return type
+     * @throws Exception 
+     */
+    public function connect($driver = null, $options = null)
+    {
+        if($this->db == null)
+        {
+            $this->connection = new MongoClient($this->connection_string);
+            $this->db         = $this->connection->{$this->dbname};
+        }
+
+        return ($this);
+    }
+
+    // --------------------------------------------------------------------
+    
+    /**
+     * Build the connection string from the config file.
+     * 
+     * @throws Exception 
+     */
+    private function setConnectionString() 
+    {
+        $config = getConfig('mongo_db');
+        
+        if($config['dsn'] != '')
+        {
+            $this->connection_string = $config['dsn'];
+            return;
+        }
+        
+        $this->host           = $config['host'];
+        $this->port           = $config['port'];
+        $this->user           = $config['username'];
+        $this->pass           = $config['password'];
+        $this->dbname         = $config['database'];
+        $this->config_options = $config['options'];
+        
+        if($this->dbname == '')
+        {
+            throw new Exception('Please set a $mongo[\'database\'] from app/config/mongo.php.');
+        }
+        
+        $connection_string = "mongodb://";
+
+        if (empty($this->host))
+        {
+            throw new Exception('You need to specify a hostname connect to MongoDB.');
+        }
+
+        if (empty($this->dbname))
+        {
+            throw new Exception('You need to specify a database name connect to MongoDB.');
+        }
+
+        if ( ! empty($this->user) AND ! empty($this->pass))
+        {
+            $connection_string .= "{$this->user}:{$this->pass}@";
+        }
+
+        if (isset($this->port) AND ! empty($this->port))
+        {
+            $connection_string .= "{$this->host}:{$this->port}";
+        }
+        else
+        {
+            $connection_string .= "{$this->host}";
+        }
+
+        $this->connection_string = trim($connection_string).'/'.$this->dbname;
+    }
+    
+    // --------------------------------------------------------------------
+    
+    /**
+     * Returns to Mongodb instance of object.
+     * 
+     * @return object
+     */
+    public function getInstance()
+    {
+        return $this->db;
+    }
+        
     // --------------------------------------------------------------------
     
     function __call($method, $arguments)
@@ -162,7 +256,6 @@ Class Mongo_Db {
      */
     public function where($wheres, $value = null, $mongo_id = true)
     {
-        
         if(is_string($wheres) AND strpos(ltrim($wheres), ' ') > 0)
         {
             $array    = explode(' ', $wheres);
@@ -1042,100 +1135,6 @@ Class Mongo_Db {
     }
 
     // --------------------------------------------------------------------
-    
-    /**
-     * Establish a connection to MongoDB using the connection string generated in
-     * the setConnectionString() method.  If 'mongo_persist_key' was set to true in the
-     * config file, establish a persistent connection.
-     * 
-     * We allow for only the 'persist'
-     * option to be set because we want to establish a connection immediately.
-     * 
-     * @return type
-     * @throws Exception 
-     */
-    public function connect($driver = null, $options = null)
-    {
-        if($this->db == null)
-        {
-            $this->connection = new MongoClient($this->connection_string);
-            $this->db         = $this->connection->{$this->dbname};
-        }
-
-        return ($this);
-    }
-
-    // --------------------------------------------------------------------
-    
-    /**
-     * Returns to Mongodb instance of object.
-     * 
-     * @return object
-     */
-    public function getInstance()
-    {
-        return $this->db;
-    }
-    
-    // --------------------------------------------------------------------
-    
-    /**
-     * Build the connection string from the config file.
-     * 
-     * @throws Exception 
-     */
-    private function setConnectionString() 
-    {
-        $config = getConfig('mongo_db');
-        
-        if($config['dsn'] != '')
-        {
-            $this->connection_string = $config['dsn'];
-            return;
-        }
-        
-        $this->host           = $config['host'];
-        $this->port           = $config['port'];
-        $this->user           = $config['username'];
-        $this->pass           = $config['password'];
-        $this->dbname         = $config['database'];
-        $this->config_options = $config['options'];
-        
-        if($this->dbname == '')
-        {
-            throw new Exception('Please set a $mongo[\'database\'] from app/config/mongo.php.');
-        }
-        
-        $connection_string = "mongodb://";
-
-        if (empty($this->host))
-        {
-            throw new Exception('You need to specify a hostname connect to MongoDB.');
-        }
-
-        if (empty($this->dbname))
-        {
-            throw new Exception('You need to specify a database name connect to MongoDB.');
-        }
-
-        if ( ! empty($this->user) AND ! empty($this->pass))
-        {
-            $connection_string .= "{$this->user}:{$this->pass}@";
-        }
-
-        if (isset($this->port) AND ! empty($this->port))
-        {
-            $connection_string .= "{$this->host}:{$this->port}";
-        }
-        else
-        {
-            $connection_string .= "{$this->host}";
-        }
-
-        $this->connection_string = trim($connection_string).'/'.$this->dbname;
-    }
-
-    // --------------------------------------------------------------------
 
     /**
      *  Resets the class variables to default settings
@@ -1242,7 +1241,7 @@ Class Mongo_Db {
     
     // --------------------------------------------------------------------
 
-    public function getLastQuery()
+    public function lastQuery()
     { 
         //@todo parse setLastQuery method variables.
     }

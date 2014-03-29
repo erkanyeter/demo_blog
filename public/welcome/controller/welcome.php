@@ -8,9 +8,9 @@
 $app = new Controller(
     function () {
         global $c;
-        $c['Html'];
-        $c['Url'];
-        $c['View'];
+        $c['html'];
+        $c['url'];
+        $c['view'];
     }
 );
 

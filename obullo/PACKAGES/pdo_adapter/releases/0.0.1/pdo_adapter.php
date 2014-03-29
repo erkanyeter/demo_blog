@@ -140,7 +140,6 @@ Class Pdo_Adapter
     /**
      * Connect to PDO
      *
-     * @author   Ersin Guvenc
      * @param    string $dsn  Dsn
      * @param    string $user Db username
      * @param    mixed  $pass Db password
@@ -182,7 +181,7 @@ Class Pdo_Adapter
      */
     public function query($sql = null)
     {
-        global $config, $c;
+        global $config, $logger;
 
         $this->last_sql = $sql;
 
@@ -197,7 +196,7 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries']) {
-            $c['logger']->debug('$_SQL ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $logger->debug('$_SQL ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         ++$this->query_count;
         return ($this);
@@ -368,8 +367,8 @@ Class Pdo_Adapter
     /**
      * Set pdo attribute
      * 
-     * @param string $key
-     * @param mixed  $val 
+     * @param type $key
+     * @param type $val 
      */
     public function setAttribute($key, $val)
     {
@@ -381,7 +380,8 @@ Class Pdo_Adapter
     /**
      * Get pdo attribute
      * 
-     * @param string $key
+     * @param type $key
+     * @param type $val 
      */
     public function getAttribute($key)
     {
@@ -510,7 +510,7 @@ Class Pdo_Adapter
      */
     public function execute($array = null)
     {
-        global $config, $c;
+        global $config, $logger;
 
         if ( ! empty($array) AND ! $this->isAssocArray($array)) {
             throw new Exception('PDO bind data must be associative array');
@@ -527,7 +527,7 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries'] AND isset($this->prep_queries[0])) {
-            $c['logger']->debug('$_SQL ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
+            $logger->debug('$_SQL ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
         }
 
         $this->prepare = false;   // reset prepare variable and prevent collision with next query ..
@@ -564,7 +564,7 @@ Class Pdo_Adapter
      */
     public function exec($sql)
     {
-        global $config, $c;
+        global $config, $logger;
         $this->last_sql = $sql;
 
         //------------------------------------
@@ -578,7 +578,7 @@ Class Pdo_Adapter
         //------------------------------------
 
         if ($config['log_queries']) {
-            $c['logger']->debug('$_SQL ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $logger->debug('$_SQL ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         return $affected_rows;
     }
@@ -588,7 +588,7 @@ Class Pdo_Adapter
     /**
      * Equal to PDO::rowCount();
      *
-     * @return  integer
+     * @return integer
      */
     public function getCount()
     {
@@ -598,21 +598,21 @@ Class Pdo_Adapter
     // --------------------------------------------------------------------
 
     /**
-     * Fetch all results as array
+     * Fetch all results as array & if fail return BOOLEAN
      *
-     * @return  array
+     * @return booelan | array
      */
     public function getResultArray()
     {
-        return $this->Stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->Stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // --------------------------------------------------------------------
 
     /**
-     * Fetch one result as object
+     * Fetch one result as object & if fail return BOOLEAN
      *
-     * @return object
+     * @return boolean | object
      */
     public function getRow()
     {
@@ -620,13 +620,57 @@ Class Pdo_Adapter
     }
 
     /**
-     * Fetch all result as object
+     * Fetch all result as object & if fail return BOOLEAN
      *
-     * @return object
+     * @return boolean | object
      */
     public function getResult()
     {
         return $this->Stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Result row as array & if fail return BOOLEAN
+     * 
+     * @return boolean | array
+     */
+    public function getRowArray()
+    {
+        return $this->Stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Get results as array & if fail return ARRAY
+     * 
+     * @return array
+     */
+    public function resultsArray()
+    {
+        $result = $this->getResultArray();
+        if ($result === false) {
+            return array();
+        }
+        return $result;
+    }
+
+    // --------------------------------------------------------------------
+    
+    /**
+     * Get row as array & if fail return ARRAY
+     * 
+     * @return array
+     */
+    public function rowArray()
+    {
+        $result = $this->getRowArray();
+        if ($result === false) {
+            return array();
+        }
+        return $result;
     }
 
     // --------------------------------------------------------------------
@@ -647,31 +691,6 @@ Class Pdo_Adapter
         return $this->Stmt;
     }
 
-    // --------------------------------------------------------------------
-
-    /**
-     * Result row as array
-     *
-     * @author CJ Lazell
-     * @return  array
-     */
-    public function getRowArray()
-    {
-        return $this->Stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Fetch prepared or none prepared last_query
-     *
-     * @return   string
-     */
-    public function getLastQuery()
-    {
-        return $this->last_sql;
-    }
-    
     // --------------------------------------------------------------------
 
     /**

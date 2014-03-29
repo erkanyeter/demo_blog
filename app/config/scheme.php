@@ -29,7 +29,6 @@ $scheme = array(
         $this->set('header', '@get.private/views/header');
         $this->set('sidebar', '@get.private/views/sidebar');
         $this->set('footer', $this->getTpl('footer', false));
-        $this->set('form_template', $this->getTpl('form_template', false));
     },
     'welcome' => function () {
         $this->set('footer', $this->getTpl('footer', false));

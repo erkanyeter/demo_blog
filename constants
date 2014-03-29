@@ -1,14 +1,12 @@
 <?php
-
 /*
-| -------------------------------------------------------------------
+|-------------------------------------------------------------------
 | APPLICATION CONSTANTS
-| -------------------------------------------------------------------
+|-------------------------------------------------------------------
 | This file specifies which APP constants should be loaded 
 | by default.
-|
 */
-
+define('OBULLO_VERSION', '2.0');
 /*
 |---------------------------------------------------------------
 | UNDERSTANDING ESSENTIAL CONSTANTS
@@ -26,7 +24,6 @@ define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 define('FCPATH', __FILE__);
 define('PHP_PATH', '/usr/bin/php'); 
 define('FPATH', dirname(__FILE__));
-
 /*
 |---------------------------------------------------------------
 | UNDERSTANDING APP CONSTANTS
@@ -48,15 +45,14 @@ define('ROOT',  realpath(dirname(__FILE__)) . DS);
 define('ASSETS',  ROOT .'assets'. DS);
 define('APP',  ROOT .'app'. DS);
 define('DATA',  ROOT .'data'. DS);
-define('CLASSES',  ROOT .'classes'. DS);
+define('CLASSES',  APP .'classes'. DS);
 define('TEMPLATES',  APP . 'templates'. DS);
-define('OBULLO',  ROOT .'obullo'. DS .'releases'. DS);
+define('OBULLO',  ROOT .'obullo'. DS . OBULLO_VERSION . DS);
 define('PUBLIC_FOLDER', ROOT .'public'. DS);
 define('PRIVATE_FOLDER', ROOT .'private'. DS);
 define('PUBLIC_DIR', (defined('STDIN')) ? APP : PUBLIC_FOLDER);
 define('PRIVATE_DIR', PRIVATE_FOLDER);
 define('TASK_FILE', 'task');
-
 /*
 |---------------------------------------------------------------
 | NOTIFICATION CONSTANTS
@@ -65,7 +61,6 @@ define('TASK_FILE', 'task');
 define('ERROR', '0');
 define('SUCCESS', '1');
 define('INFO', '2');
-
 
 /* End of file constants */
 /* Location: .constants */

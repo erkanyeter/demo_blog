@@ -1,5 +1,7 @@
 <?php
 
+namespace Obullo\I18n;
+
 /**
  * Translator Class ( Language )
  *
@@ -27,7 +29,7 @@ Class Translator
     {
         global $c;
 
-        $this->logger = $c['Logger'];
+        $this->logger = $c['logger'];
         $this->logger->debug('Translator Class Initialized');
     }
 
@@ -44,17 +46,15 @@ Class Translator
     */
     public function load($filename = '', $idiom = '', $return = false)
     {
-        global $config;
+        global $c;
 
         if ($idiom == '' OR $idiom === false) {
-            $default = $config['default_translation'];
+            $default = $c['config']['locale']['default_translation'];
             $idiom   = ($default == '') ? 'en_US' : $default;
         }
-        
         if (in_array($filename, $this->is_loaded, true)) {
             return;
         }
-        
         if ( ! is_dir(APP .'translations'. DS .$idiom)) {
             throw new Exception('The language folder '.APP .'translations'. DS .$idiom.' seems not a folder.');
         }
@@ -65,11 +65,9 @@ Class Translator
             $this->logger->error('Language file does not contain $translate variable: '. APP .'translations'. DS .$idiom. DS .$filename. EXT);
             return;
         }
-
         if ($return) {
             return $translate;
         }
-
         $this->is_loaded[] = $filename;
         $this->language    = array_merge($this->language, $translate);
 
@@ -120,12 +118,13 @@ function hasTranslate($item)
  * Fetch the language item using sprintf().
  *
  * @access public
+ * 
  * @param string $item
  * @return string
  */
 function translate()
 {
-    global $config, $c;
+    global $c;
 
     $args  = func_get_args();
     $item  = $args[0];
@@ -133,8 +132,8 @@ function translate()
     if (strpos($item, 'translate:') === 0) {    // Do we need to translate the message ?
         $item = substr($item, 10);              // Grab the variable
     }
-    if ( isset($c['Translator']->language[$item])) {
-        $translated = $c['Translator']->language[$item];
+    if ( isset($c['translator']->language[$item])) {
+        $translated = $c['translator']->language[$item];
 
         if (sizeof($args) > 1) {
             $args[0] = $translated;
@@ -142,9 +141,11 @@ function translate()
         }
         return $translated;
     }
-    $translate_notice = ($config['translate_notice']) ? 'translate:' : '';
+    $translate_notice = ($c['config']['locale']['translate_notice']) ? 'translate:' : '';
     return $translate_notice.$item;  // Let's notice the developers this line has no translate text
 }
 
-/* End of file translator.php */
-/* Location: ./packages/translator/releases/0.0.1/translator.php */
+// END Translator.php File
+/* End of file Translator.php
+
+/* Location: .Obullo/I18n/Translator.php */
