@@ -3,59 +3,54 @@
 namespace Obullo\Html;
 
 /**
-* Html Class
-*
-* @package       packages
-* @subpackage    html
-* @category      html
-* @link
-*/
-
-Class Html {
-    
+ * Html Class
+ *
+ * @package       packages
+ * @subpackage    html
+ * @category      html
+ * @link
+ */
+Class Html
+{
     public function __construct()
     {
         global $c;
         $this->logger = $c['logger'];
         $this->logger->debug('Html Class Initialized');
     }
+
     // --------------------------------------------------------------------
-    
+
     /**
-    * Build css files.
-    *
-    * @param    string $href
-    * @param    string $tit title or $sort of directory list
-    * @param    string $media
-    * @param    string $rel
-    * @param    boolean $index_page
-    * @return   string
-    */
+     * Build css files.
+     *
+     * @param    string $href
+     * @param    string $tit title or $sort of directory list
+     * @param    string $media
+     * @param    string $rel
+     * @param    boolean $index_page
+     * @return   string
+     */
     public function css($href, $tit = '', $media = '', $rel = 'stylesheet', $index_page = false)
     {
         $title = is_string($tit) ? $tit : ''; // is reverse sort true ?
 
         if (strpos($href, '/*') !== false) {   // Is it folder ?
-            $files      = '';
-            $exp        = explode('/*', $href);
-            $data       = $this->_parseRegex($href, $exp);
-            $source_dir = ASSETS.'css'. DS . str_replace('/', DS, $exp[0]);
+            $files = '';
+            $exp = explode('/*', $href);
+            $data = $this->_parseRegex($href, $exp);
+            $source_dir = ASSETS . 'css' . DS . str_replace('/', DS, $exp[0]);
 
-            foreach (scandir($source_dir, ($tit === true) ? 1 : 0) as $filename)
-            {   
-                if(pathinfo($source_dir.$filename, PATHINFO_EXTENSION) == 'css')
-                {
-                    if(count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles']))
-                    {
-                        $files .= $this->_css($exp[0].'/'.$filename, $title, $media, $rel, $index_page = false);
+            foreach (scandir($source_dir, ($tit === true) ? 1 : 0) as $filename) {
+                if (pathinfo($source_dir . $filename, PATHINFO_EXTENSION) == 'css') {
+                    if (count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles'])) {
+                        $files .= $this->_css($exp[0] . '/' . $filename, $title, $media, $rel, $index_page = false);
                     }
-                    if(count($data['excludeFiles']) > 0 AND ! in_array($filename, $data['excludeFiles']))
-                    {
-                        $files .= $this->_css($exp[0].'/'.$filename, $title, $media, $rel, $index_page = false);
+                    if (count($data['excludeFiles']) > 0 AND !in_array($filename, $data['excludeFiles'])) {
+                        $files .= $this->_css($exp[0] . '/' . $filename, $title, $media, $rel, $index_page = false);
                     }
-                    if(count($data['includeFiles']) == 0 AND count($data['excludeFiles']) == 0)
-                    {
-                        $files .= $this->_css($exp[0].'/'.$filename, $title, $media, $rel, $index_page = false);
+                    if (count($data['includeFiles']) == 0 AND count($data['excludeFiles']) == 0) {
+                        $files .= $this->_css($exp[0] . '/' . $filename, $title, $media, $rel, $index_page = false);
                     }
                 }
             }
@@ -80,103 +75,95 @@ Class Html {
     {
         global $c;
 
-        $link = '<link ';           
-        $ext  = 'css';
-        
-        if(strpos($href, 'js/') === 0)
-        {
-            $ext  = 'js';
+        $link = '<link ';
+        $ext = 'css';
+
+        if (strpos($href, 'js/') === 0) {
+            $ext = 'js';
             $href = substr($href, 3);
         }
 
         $href = ltrim($href, '/');  // remove first slash
 
-        if ( strpos($href, '://') !== false)
-        {
-            $link .= ' href="'.$href.'" ';
-        }
-        elseif ($index_page === true)
-        {
-            $link .= ' href="'. $c['uri']->getSiteUrl($href, false) .'" ';
-        }
-        else
-        {
-            $link .= ' href="'. self::_getAssetPath($href, $extra_path = '', $ext) .'" ';
+        if (strpos($href, '://') !== false) {
+            $link .= ' href="' . $href . '" ';
+        } elseif ($index_page === true) {
+            $link .= ' href="' . $c['uri']->getSiteUrl($href, false) . '" ';
+        } else {
+            $link .= ' href="' . self::_getAssetPath($href, $extra_path = '', $ext) . '" ';
         }
 
-        $link .= 'rel="'.$rel.'" type="text/css" ';
+        $link .= 'rel="' . $rel . '" type="text/css" ';
 
-        if ($media    != '')
-        {
-            $link .= 'media="'.$media.'" ';
+        if ($media != '') {
+            $link .= 'media="' . $media . '" ';
         }
 
-        if ($title    != '')
-        {
-            $link .= 'title="'.$title.'" ';
+        if ($title != '') {
+            $link .= 'title="' . $title . '" ';
         }
 
         $link .= "/>\n";
 
         $link = str_replace(DS, '/', $link);
-        
+
         return $link;
     }
 
     // ------------------------------------------------------------------------ 
 
     /**
-    * Get assets directory path
-    *
-    * @access   private
-    * @param    mixed $file_url
-    * @param    mixed $extra_path
-    * @return   string | false
-    */
+     * Get assets directory path
+     *
+     * @access   private
+     * @param    mixed $file_url
+     * @param    mixed $extra_path
+     * @return   string | false
+     */
     public static function _getAssetPath($file, $extra_path = '', $ext = '')
-    {                       
+    {
         global $c;
 
         $paths = array();
-        if ( strpos($file, '/') !== false) {
+        if (strpos($file, '/') !== false) {
             $paths = explode('/', $file);
-            $file  = array_pop($paths);
+            $file = array_pop($paths);
         }
 
-        $sub_path   = '';
-        if ( count($paths) > 0) {
+        $sub_path = '';
+        if (count($paths) > 0) {
             $sub_path = implode('/', $paths) . '/';      // .assets/css/sub/welcome.css  sub dir support
         }
         $folder = $ext . '/';
         if ($extra_path != '') {
-            $extra_path = trim($extra_path, '/').'/';
-            $folder     = '';
+            $extra_path = trim($extra_path, '/') . '/';
+            $folder = '';
         }
         $assets_url = str_replace(DS, '/', ASSETS);
         $assets_url = str_replace(ROOT, '', ASSETS);
 
-        return $c['uri']->getAssetsUrl('', false) .$assets_url. $extra_path . $folder . $sub_path . $file;
+        return $c['uri']->getAssetsUrl('', false) . $assets_url . $extra_path . $folder . $sub_path . $file;
     }
 
     // ------------------------------------------------------------------------ 
 
     /**
-    * Image
-    *
-    * Generates an <img /> element
-    *
-    * @access   public
-    * @param    mixed    $src  sources folder image path via filename
-    * @param    boolean  $index_page
-    * @param    string   $attributes
-    * @version  0.1
-    * @return   string
-    */
+     * Image
+     *
+     * Generates an <img /> element
+     *
+     * @access   public
+     * @param    mixed    $src  sources folder image path via filename
+     * @param    boolean  $index_page
+     * @param    string   $attributes
+     * @version  0.1
+     * @return   string
+     */
     public function img($src = '', $attributes = '', $index_page = false)
     {
         global $c;
 
-        if ( ! is_array($src) ) {
+        if (!is_array($src)) {
             $src = array('src' => $src);
         }
         $img = '<img';
@@ -184,9 +171,9 @@ Class Html {
             $v = ltrim($v, '/');   // remove first slash
             if ($k == 'src' AND strpos($v, '://') === false) {
                 if ($index_page === true) {
-                    $img .= ' src="'. $c['uri']->getSiteUrl($v, false).'" ';
+                    $img .= ' src="' . $c['uri']->getSiteUrl($v, false) . '" ';
                 } else {
-                    $img .= ' src="' . self::_getAssetPath($v, 'images'. $extra_path = '') .'" ';
+                    $img .= ' src="' . self::_getAssetPath($v, 'images' . $extra_path = '') . '" ';
                 }
             } else {
                 $img .= " $k=\"$v\" ";   // for http://
@@ -196,40 +183,38 @@ Class Html {
         return $img;
     }
 
-
     // ------------------------------------------------------------------------
 
     /**
-    * Build js files.
-    *
-    * @param    string $href
-    * @param    mixed $args js arguments or $sort of directory list
-    * @param    string $media
-    * @param    string $rel
-    * @param    boolean $index_page
-    * @return   string
-    */
+     * Build js files.
+     *
+     * @param    string $href
+     * @param    mixed $args js arguments or $sort of directory list
+     * @param    string $media
+     * @param    string $rel
+     * @param    boolean $index_page
+     * @return   string
+     */
     public function js($src, $args = '', $type = 'text/javascript', $index_page = false)
     {
         $arguments = is_string($args) ? $args : '';  // is reverse sort true ?
 
         if (strpos($src, '/*') !== false) {  // Is it folder ?
-            $files      = '';
-            $exp        = explode('/*', $src);
-            $data       = $this->_parseRegex($src, $exp);
-            $source_dir = ASSETS .'js'. DS . str_replace('/', DS, $exp[0]);
+            $files = '';
+            $exp = explode('/*', $src);
+            $data = $this->_parseRegex($src, $exp);
+            $source_dir = ASSETS . 'js' . DS . str_replace('/', DS, $exp[0]);
 
-            foreach (scandir($source_dir, ($args === true) ? 1 : 0) as $filename) {   
-                if(pathinfo($source_dir.$filename, PATHINFO_EXTENSION) == 'js')
-                {
-                    if ( count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles'])) {
-                        $files .= $this->_js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
+            foreach (scandir($source_dir, ($args === true) ? 1 : 0) as $filename) {
+                if (pathinfo($source_dir . $filename, PATHINFO_EXTENSION) == 'js') {
+                    if (count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles'])) {
+                        $files .= $this->_js($exp[0] . '/' . $filename, $arguments, $type, $index_page = false);
                     }
-                    if ( count($data['excludeFiles']) > 0 AND ! in_array($filename, $data['excludeFiles'])) {
-                        $files .= $this->_js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
+                    if (count($data['excludeFiles']) > 0 AND !in_array($filename, $data['excludeFiles'])) {
+                        $files .= $this->_js($exp[0] . '/' . $filename, $arguments, $type, $index_page = false);
                     }
                     if (count($data['includeFiles']) == 0 AND count($data['excludeFiles']) == 0) {
-                        $files .= $this->_js($exp[0].'/'.$filename, $arguments, $type, $index_page = false);
+                        $files .= $this->_js($exp[0] . '/' . $filename, $arguments, $type, $index_page = false);
                     }
                 }
             }
@@ -253,20 +238,19 @@ Class Html {
     {
         global $c;
 
-        $link = '<script type="'.$type.'" ';        
-        $src  = ltrim($src, '/');   // remove first slash
+        $link = '<script type="' . $type . '" ';
+        $src = ltrim($src, '/');   // remove first slash
 
-        if ( strpos($src, '://') !== false) {
-            $link .= ' src="'. $src .'" ';
-        }
-        elseif ($index_page === true) {  // .js file as PHP
-            $link .= ' src="'. $c['uri']->getSiteUrl($src, false) .'" ';
+        if (strpos($src, '://') !== false) {
+            $link .= ' src="' . $src . '" ';
+        } elseif ($index_page === true) {  // .js file as PHP
+            $link .= ' src="' . $c['uri']->getSiteUrl($src, false) . '" ';
         } else {
-            $link .= ' src="'. self::_getAssetPath($src, $extra_path = '', 'js') .'" ';
+            $link .= ' src="' . self::_getAssetPath($src, $extra_path = '', 'js') . '" ';
         }
         $link .= $arguments;
         $link .= "></script>\n";
-       
+
         $link = str_replace(DS, '/', $link);
         return $link;
     }
@@ -291,7 +275,7 @@ Class Html {
             if (preg_match('|\^\((.*)\)|', $src, $matches)) {
                 $data['excludeFiles'] = explode('|', $matches[1]);
             }
-        } elseif(strpos($exp[1], '(') === 0) {
+        } elseif (strpos($exp[1], '(') === 0) {
             $matches = array();
             if (preg_match('|\((.*)\)|', $src, $matches)) {
                 $data['includeFiles'] = explode('|', $matches[1]);

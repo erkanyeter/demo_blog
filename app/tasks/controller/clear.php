@@ -27,17 +27,17 @@ $app->func(
         $file = str_replace('/', DS, $file);
 
         if (strpos($file, 'data') === 0) { 
-            $PATH = DATA .'logs'. DS;
-        } else {
-            $PATH = $file;
-        }
-        if ( ! is_file($file)) {
+            $file = str_replace('data', rtrim(DATA, DS), $file);
+        } 
+
+        $exp      = explode(DS, $file);
+        $filename = array_pop($exp);
+        $path     = implode(DS, $exp). DS;
+
+        if ( ! is_file($path.$filename)) {
             echo "\33[1;31mApplication log file does not exists.\33[0m\n";
             exit;
         }
-
-        $exp = explode(DS, $file);
-        $filename = end($exp);
 
         $clear_sh = "
         ####################
@@ -53,7 +53,7 @@ $app->func(
         fi
 
         # define your paths.
-        APP_LOG_DIR=\"".$PATH."\"
+        APP_LOG_DIR=\"".$path."\"
 
         # delete app directory log files.
         # help https://help.ubuntu.com/community/find

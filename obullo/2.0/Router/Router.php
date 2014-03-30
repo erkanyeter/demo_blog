@@ -39,7 +39,7 @@ Class Router
         global $c;
         $this->routes = $routes;
         $this->logger = $c['logger'];
-        $this->uri    = $c['uri'];
+        $this->uri = $c['uri'];
         $this->config = $c['config'];
         $this->method = $this->routes['index_method'];
 
@@ -96,11 +96,9 @@ Class Router
     public function setRouting()
     {
         global $c;
-        if ( ! isset($_SERVER['HVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
-
+        if (!isset($_SERVER['HVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
-
             $d_key = $c['config']['uri']['directory_trigger'];
             $c_key = $c['config']['uri']['controller_trigger'];
             $m_key = $c['config']['uri']['function_trigger'];
@@ -180,7 +178,6 @@ Class Router
         }
         $this->setClass($segments[1]);
         $this->uri->rsegments = $segments;  // Update our "routed" segment array to contain the segments.
-
         // identical to $this->uri->segments
         // Note: If there is no custom routing, this array will be         
     }
@@ -205,7 +202,7 @@ Class Router
     {
         global $c;
 
-        if ( ! isset($segments[0])) {
+        if (!isset($segments[0])) {
             return $segments;
         }
 
@@ -244,7 +241,7 @@ Class Router
         // If we've gotten this far it means that the URI does not correlate to a valid
         // controller class.  We will now see if there is an override
 
-        if ( ! empty($this->routes['404_override'])) {
+        if (!empty($this->routes['404_override'])) {
             $x = explode('/', $this->routes['404_override']);
 
             $this->setDirectory($x[0]);

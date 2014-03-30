@@ -46,7 +46,7 @@ function cleanInputData($str)
  */
 function cleanInputKeys($str)
 {
-    if ( ! preg_match("/^[a-z0-9:_\/-]+$/i", $str)) {
+    if (!preg_match("/^[a-z0-9:_\/-]+$/i", $str)) {
         die('Malicious Key Characters.');
     }
     return $str;
@@ -103,11 +103,10 @@ function exceptionsHandler($e, $type = '')
     );
     $shutdownError = false;
     if (isset($shutdownErrors[$type])) {  // We couldn't use any object for shutdown errors.
-
         $shutdownError = true;
-        $type          = ucwords(strtolower($type));
-        $code          = $e->getCode();
-        $level         = $c['config']['error']['reporting'];
+        $type = ucwords(strtolower($type));
+        $code = $e->getCode();
+        $level = $c['config']['error']['reporting'];
 
         if (defined('STDIN')) {  // If Command Line Request.
             echo $type . ': ' . $e->getMessage() . ' File: ' . $error->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
@@ -119,13 +118,13 @@ function exceptionsHandler($e, $type = '')
         if ($level > 0 OR is_string($level)) {  // If user want to display all errors
             if (is_numeric($level)) {
                 switch ($level) {
-                case 0:
-                    return;
-                    break;
-                case 1:
-                    include OBULLO .'Exception'. DS . 'Html' . EXT;
-                    return;
-                    break;
+                    case 0:
+                        return;
+                        break;
+                    case 1:
+                        include OBULLO . 'Exception' . DS . 'Html' . EXT;
+                        return;
+                        break;
                 }
             }
             $rules = $c['error']->parseRegex($level);
@@ -135,15 +134,13 @@ function exceptionsHandler($e, $type = '')
             $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
 
             if (isset($allowedErrors[$code])) {
-                include OBULLO .'Exception'. DS . 'Html' . EXT;
+                include OBULLO . 'Exception' . DS . 'Html' . EXT;
             }
-        } else {  
+        } else {
             include APP . 'errors' . DS . 'disabled_error' . EXT;  // If error_reporting = 0, we show a blank page template.
         }
         $c['logger']->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
-
     } else {  // Is It Exception ? Initialize to Exceptions Component.
-
         $exception = $c->raw('exception');
         $exception($e, $type);
     }
@@ -164,47 +161,47 @@ function exceptionsHandler($e, $type = '')
  * @param int $errline
  */
 set_error_handler(
-    function ($errno, $errstr, $errfile, $errline) {
-        if ($errno == 0) {
+        function ($errno, $errstr, $errfile, $errline) {
+            if ($errno == 0) {
+                return;
+            }
+            switch ($errno) {
+                case '1': $type = 'ERROR';
+                    break; // E_WARNING
+                case '2': $type = 'WARNING';
+                    break; // E_WARNING
+                case '4': $type = 'PARSE ERROR';
+                    break; // E_PARSE
+                case '8': $type = 'NOTICE';
+                    break; // E_NOTICE
+                case '16': $type = 'CORE ERROR';
+                    break; // E_CORE_ERROR
+                case '32': $type = "CORE WARNING";
+                    break; // E_CORE_WARNING
+                case '64': $type = 'COMPILE ERROR';
+                    break; // E_COMPILE_ERROR
+                case '128': $type = 'COMPILE WARNING';
+                    break; // E_COMPILE_WARNING
+                case '256': $type = 'USER FATAL ERROR';
+                    break; // E_USER_ERROR
+                case '512': $type = 'USER WARNING';
+                    break; // E_USER_WARNING
+                case '1024': $type = 'USER NOTICE';
+                    break; // E_USER_NOTICE
+                case '2048': $type = 'STRICT ERROR';
+                    break; // E_STRICT
+                case '4096': $type = 'RECOVERABLE ERROR';
+                    break; // E_RECOVERABLE_ERROR
+                case '8192': $type = 'DEPRECATED ERROR';
+                    break; // E_DEPRECATED
+                case '16384': $type = 'USER DEPRECATED ERROR';
+                    break; // E_USER_DEPRECATED
+                case '30719': $type = 'ERROR';
+                    break; // E_ALL
+            }
+            exceptionsHandler(new ErrorException($errstr, $errno, 0, $errfile, $errline), $type);
             return;
         }
-        switch ($errno) {
-        case '1': $type = 'ERROR';
-            break; // E_WARNING
-        case '2': $type = 'WARNING';
-            break; // E_WARNING
-        case '4': $type = 'PARSE ERROR';
-            break; // E_PARSE
-        case '8': $type = 'NOTICE';
-            break; // E_NOTICE
-        case '16': $type = 'CORE ERROR';
-            break; // E_CORE_ERROR
-        case '32': $type = "CORE WARNING";
-            break; // E_CORE_WARNING
-        case '64': $type = 'COMPILE ERROR';
-            break; // E_COMPILE_ERROR
-        case '128': $type = 'COMPILE WARNING';
-            break; // E_COMPILE_WARNING
-        case '256': $type = 'USER FATAL ERROR';
-            break; // E_USER_ERROR
-        case '512': $type = 'USER WARNING';
-            break; // E_USER_WARNING
-        case '1024': $type = 'USER NOTICE';
-            break; // E_USER_NOTICE
-        case '2048': $type = 'STRICT ERROR';
-            break; // E_STRICT
-        case '4096': $type = 'RECOVERABLE ERROR';
-            break; // E_RECOVERABLE_ERROR
-        case '8192': $type = 'DEPRECATED ERROR';
-            break; // E_DEPRECATED
-        case '16384': $type = 'USER DEPRECATED ERROR';
-            break; // E_USER_DEPRECATED
-        case '30719': $type = 'ERROR';
-            break; // E_ALL
-        }
-        exceptionsHandler(new ErrorException($errstr, $errno, 0, $errfile, $errline), $type);
-        return;
-    }
 );
 
 // -------------------------------------------------------------------- 
@@ -218,21 +215,21 @@ set_exception_handler('exceptionsHandler');
  * @return void
  */
 register_shutdown_function(
-    function () {
-        $error = error_get_last();
-        if (!$error) {
-            return;
+        function () {
+            $error = error_get_last();
+            if (!$error) {
+                return;
+            }
+            ob_get_level() AND ob_clean(); // Clean the output buffer
+            $shutdownErrors = array(
+                '1' => 'ERROR', // E_ERROR 
+                '4' => 'PARSE ERROR', // E_PARSE
+                '64' => 'COMPILE ERROR', // E_COMPILE_ERROR
+                '256' => 'USER FATAL ERROR', // E_USER_ERROR
+            );
+            $type = (isset($shutdownErrors[$error['type']])) ? $shutdownErrors[$error['type']] : '';
+            exceptionsHandler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']), $type);
         }
-        ob_get_level() AND ob_clean(); // Clean the output buffer
-        $shutdownErrors = array(
-            '1'   => 'ERROR', // E_ERROR 
-            '4'   => 'PARSE ERROR', // E_PARSE
-            '64'  => 'COMPILE ERROR', // E_COMPILE_ERROR
-            '256' => 'USER FATAL ERROR', // E_USER_ERROR
-        );
-        $type = (isset($shutdownErrors[$error['type']])) ? $shutdownErrors[$error['type']] : '';
-        exceptionsHandler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']), $type);
-    }
 );
 
 // END Common.php File

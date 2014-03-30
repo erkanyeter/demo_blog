@@ -1,5 +1,4 @@
 <?php
-require OBULLO .$version. DS .'Obullo'. DS .'Common'. EXT;
 
 /**
  * Controller Class.
@@ -14,8 +13,8 @@ require OBULLO .$version. DS .'Obullo'. DS .'Common'. EXT;
 Class Controller
 {
     public static $instance;              // Controller instance
-    public $controllerMethods = array();  // Controller user defined methods. ( @private )
-    public $publicMethods     = array();  // Controller user defined methods. ( @private )
+    public $publicMethods     = array();  // Controller user defined methods. ( @public )
+    public $controllerMethods = array();  // Controller user defined methods starts wiht "_" underscore. ( @private )
     public $config, $uri, $router, $translator, $logger;  // Default packages
 
     // ------------------------------------------------------------------------
@@ -129,7 +128,7 @@ Class Controller
 
 }
 
-// END Controller Class
+// END Controller class
 
-/* End of file controller.php */
-/* Location: ./packages/controller/releases/0.1/controller.php */
+/* End of file Controller.php */
+/* Location: .Obullo/Controller/Controller.php */

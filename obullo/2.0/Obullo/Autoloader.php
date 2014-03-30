@@ -24,8 +24,6 @@ function Obullo_autoloader($realname)
     if (class_exists($realname, false)) {  // https://github.com/facebook/hiphop-php/issues/947
         return;
     }
-    global $version;
-
     $className = ltrim($realname, '\\');  // http://www.php-fig.org/psr/psr-0/
     $fileName  = '';
     $namespace = '';
@@ -38,7 +36,7 @@ function Obullo_autoloader($realname)
 
     if (strpos($fileName, 'Obullo') === 0) {     // Check is it Obullo Package ?
         include_once OBULLO .substr($fileName, 7);
-        echo $fileName.'<br />';
+        // echo $filename.'<br>';
         return;
     }
     include_once CLASSES .$fileName; // Otherwise load it from user directory

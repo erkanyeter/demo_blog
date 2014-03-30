@@ -419,7 +419,7 @@ echo $this->view->get(
                 return;
             }
 
-            if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'DEBUG' OR ENV == 'TEST')) {  // Show exceptional message to developers if environment not LIVE.
+            if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'local' OR ENV == 'test')) {  // Show exceptional message to developers if environment not LIVE.
                 $rsp['message'] = $rsp['e'];
             }
         }

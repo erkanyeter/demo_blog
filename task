@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| Framework CLI (TASKS)
+| Framework CLI ( TASKS )
 |--------------------------------------------------------------------------
 | @see Docs:  General Topics / Tasks
 | @author CJ Lazell
@@ -30,8 +30,7 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 | task class and run with $this->task->run(); function internally.
 |--------------------------------------------------------------------------
 */
-if(end($_SERVER['argv']) == 'OB_TASK_REQUEST')
-{
+if (end($_SERVER['argv']) == 'OB_TASK_REQUEST') {
     define('TASK', 1);
 }
 

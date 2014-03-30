@@ -3,12 +3,14 @@
 namespace Obullo\Exception;
 
 /**
- * Exception Error Class
- *
- * @package       packages
- * @subpackage    exceptions
- * @category      exceptions
- * @link
+ * Error Class
+ * 
+ * @category  Exception
+ * @package   Exception
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/router
  */
 Class Error
 {
@@ -58,7 +60,7 @@ Class Error
                 $lastQuery = $c['app']->db->lastQuery($prepare);
             }
         }
-        if ( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
+        if (!empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
             $type = 'Database Error';
             $code = 'SQL';
         }
@@ -77,15 +79,15 @@ Class Error
         //-----------------------------------------------------------------------
 
         $isAjax = false;
-        if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             $isAjax = true;
         }
         if ($isAjax) {  // Is Ajax ?
-            $error_msg =  $e->getMessage() . ' File: ' . $c['error']->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
+            $error_msg = $e->getMessage() . ' File: ' . $c['error']->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
             $error_msg = strip_tags($error_msg);
         } else {
             ob_start();
-            include OBULLO .'Exception'. DS .'Html'. EXT;
+            include OBULLO . 'Exception' . DS . 'Html' . EXT;
             $error_msg = ob_get_clean();
         }
 
@@ -94,7 +96,6 @@ Class Error
 
         $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
         $this->logger->__destruct(); // continue log writing
-
         // Displaying Errors
         //-----------------------------------------------------------------------            
 
@@ -102,13 +103,13 @@ Class Error
 
         if (is_numeric($level)) {
             switch ($level) {
-            case 0: 
-                return;
-                break;
-            case 1:
-                echo $error_msg;
-                return;
-                break;
+                case 0:
+                    return;
+                    break;
+                case 1:
+                    echo $error_msg;
+                    return;
+                    break;
             }
         }
         $rules = $c['error']->parseRegex($level);

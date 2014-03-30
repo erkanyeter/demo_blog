@@ -1,7 +1,9 @@
 <?php
 
 namespace Obullo\Container;
+
 use SplObjectStorage;
+use ArrayAccess;
 use Controller;
 
 /*
@@ -30,19 +32,22 @@ use Controller;
 
 /**
  * Container class.
- *
- * @package Container ( Pimple )
- * @author  Fabien Potencier
- * @author  Ersin Guvenc ( Port to Obullo )
+ * 
+ * @category  Container
+ * @package   Pimple
+ * @author    Ersin Guvenc ( Port to Obullo ) - <eguvenc@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/uri
  */
-Class Pimple implements \ArrayAccess
+Class Pimple implements ArrayAccess
 {
-    private $values = array();
-    private $factories;
-    private $protected;
-    private $frozen = array();
-    private $raw = array();
-    private $keys = array();
+    protected $values = array();
+    protected $factories;
+    protected $protected;
+    protected $frozen = array();
+    protected $raw = array();
+    protected $keys = array();
 
     /**
      * Instantiate the container.
@@ -70,47 +75,47 @@ Class Pimple implements \ArrayAccess
      * as function names (strings) are callable (creating a function with
      * the same name as an existing parameter would break your container).
      *
-     * @param  string           $id    The unique identifier for the parameter or object
-     * @param  mixed            $value The value of the parameter or a closure to define an object
-     * @throws RuntimeException Prevent override of a frozen service
+     * @param string $cid   The unique identifier for the parameter or object
+     * @param mixed  $value The value of the parameter or a closure to define an object
+     * 
+     * @return void
      */
-    public function offsetSet($id, $value)
+    public function offsetSet($cid, $value)
     {        
-        if (isset($this->frozen[$id])) {
-            // throw new RuntimeException(sprintf('Cannot override frozen service "%s".', $id));
+        if (isset($this->frozen[$cid])) {
             return;
         }
-        // echo $id;
-        $this->values[$id] = $value;
-        $this->keys[$id]   = true;
+        $this->values[$cid] = $value;
+        $this->keys[$cid]   = true;
     }
 
     /**
      * Gets a parameter or an object.
      *
-     * @param string $id The unique identifier for the parameter or object
+     * @param string $cid The unique identifier for the parameter or object
      *
      * @return mixed The value of the parameter or an object
      *
      * @throws InvalidArgumentException if the identifier is not defined
      */
-    public function offsetGet($id)
+    public function offsetGet($cid)
     {
-        $key = strtolower($id);
+        $key = strtolower($cid);
 
-        if ( ! isset($this->keys[$id])) {
-            // throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
-        
+        if ( ! isset($this->keys[$cid])) {
             if (class_exists('Controller')) {
 
                 //----------------------------------//
-                echo $id.'<br>'; 
-                Controller::$instance->{$key} = new $id;
+
+                $Class = ucfirst($cid);
+                $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
+
+                Controller::$instance->{$key} = new $ObulloPackage;
 
                 //----------------------------------//
 
                 $this->offsetSet(
-                    $id, 
+                    $cid, 
                     function () use ($key) {
                         return Controller::$instance->{$key};
                     }
@@ -118,49 +123,48 @@ Class Pimple implements \ArrayAccess
             }
         }
 
-        if (
-            isset($this->raw[$id])
-            || !is_object($this->values[$id])
-            || isset($this->protected[$this->values[$id]])
-            || !method_exists($this->values[$id], '__invoke')
+        if (isset($this->raw[$cid])
+            || ! is_object($this->values[$cid])
+            || isset($this->protected[$this->values[$cid]])
+            || ! method_exists($this->values[$cid], '__invoke')
         ) {
-            return $this->values[$id];
+            return $this->values[$cid];
         }
-
-        if (isset($this->factories[$this->values[$id]])) {
-            return $this->values[$id]($this);
+        if (isset($this->factories[$this->values[$cid]])) {
+            return $this->values[$cid]($this);
         }
+        $this->frozen[$cid] = true;
+        $this->raw[$cid] = $this->values[$cid];
 
-        $this->frozen[$id] = true;
-        $this->raw[$id] = $this->values[$id];
-
-        return $this->values[$id] = $this->values[$id]($this);
+        return $this->values[$cid] = $this->values[$cid]($this);
     }
 
     /**
      * Checks if a parameter or an object is set.
      *
-     * @param string $id The unique identifier for the parameter or object
+     * @param string $cid The unique identifier for the parameter or object
      *
      * @return Boolean
      */
-    public function offsetExists($id)
+    public function offsetExists($cid)
     {
-        return isset($this->keys[$id]);
+        return isset($this->keys[$cid]);
     }
 
     /**
      * Unsets a parameter or an object.
      *
-     * @param string $id The unique identifier for the parameter or object
+     * @param string $cid The unique identifier for the parameter or object
+     *
+     * @return void
      */
-    public function offsetUnset($id)
+    public function offsetUnset($cid)
     {
-        if (isset($this->keys[$id])) {
-            if (is_object($this->values[$id])) {
-                unset($this->factories[$this->values[$id]], $this->protected[$this->values[$id]]);
+        if (isset($this->keys[$cid])) {
+            if (is_object($this->values[$cid])) {
+                unset($this->factories[$this->values[$cid]], $this->protected[$this->values[$cid]]);
             }
-            unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
+            unset($this->values[$cid], $this->frozen[$cid], $this->raw[$cid], $this->keys[$cid]);
         }
     }
 
@@ -205,21 +209,21 @@ Class Pimple implements \ArrayAccess
     /**
      * Gets a parameter or the closure defining an object.
      *
-     * @param string $id The unique identifier for the parameter or object
+     * @param string $cid The unique identifier for the parameter or object
      *
      * @return mixed The value of the parameter or the closure defining an object
      *
      * @throws InvalidArgumentException if the identifier is not defined
      */
-    public function raw($id)
+    public function raw($cid)
     {
-        if (!isset($this->keys[$id])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+        if (!isset($this->keys[$cid])) {
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
         }
-        if (isset($this->raw[$id])) {
-            return $this->raw[$id];
+        if (isset($this->raw[$cid])) {
+            return $this->raw[$cid];
         }
-        return $this->values[$id];
+        return $this->values[$cid];
     }
 
     /**
@@ -228,34 +232,34 @@ Class Pimple implements \ArrayAccess
      * Useful when you want to extend an existing object definition,
      * without necessarily loading that object.
      *
-     * @param string   $id       The unique identifier for the object
+     * @param string   $cid      The unique identifier for the object
      * @param callable $callable A service definition to extend the original
      *
      * @return callable The wrapped callable
      *
      * @throws InvalidArgumentException if the identifier is not defined or not a service definition
      */
-    public function extend($id, $callable)
+    public function extend($cid, $callable)
     {
-        if (!isset($this->keys[$id])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $id));
+        if ( ! isset($this->keys[$cid])) {
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
         }
-        if (!is_object($this->values[$id]) || !method_exists($this->values[$id], '__invoke')) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $id));
+        if ( ! is_object($this->values[$cid]) || ! method_exists($this->values[$cid], '__invoke')) {
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $cid));
         }
-        if (!is_object($callable) || !method_exists($callable, '__invoke')) {
+        if ( ! is_object($callable) || !method_exists($callable, '__invoke')) {
             throw new \InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
         }
-        $factory = $this->values[$id];
+        $factory = $this->values[$cid];
 
-        $extended = function ($c) use ($callable, $factory) {
-            return $callable($factory($c), $c);
+        $extended = function ($param) use ($callable, $factory) {
+            return $callable($factory($param), $param);
         };
         if (isset($this->factories[$factory])) {
             $this->factories->detach($factory);
             $this->factories->attach($extended);
         }
-        return $this[$id] = $extended;
+        return $this[$cid] = $extended;
     }
 
     /**

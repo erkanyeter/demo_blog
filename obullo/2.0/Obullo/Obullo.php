@@ -10,33 +10,27 @@
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/obullo
  */
-
 $start = microtime(true);  // Run Timer
 
 $hooks_enabled = $c['config']['hooks']['enabled'];
 
 /*
- * ------------------------------------------------------
- *  Instantiate the hooks class
- * ------------------------------------------------------
- */
+|--------------------------------------------------------------------------
+| Instantiate the hooks class
+|--------------------------------------------------------------------------
+*/
 if ($hooks_enabled) {
-    /*
-     * ------------------------------------------------------
-     *  Is there a "pre_system" hook?
-     * ------------------------------------------------------
-     */
     $c['hooks']->call('pre_system');
 }
 /*
- * ------------------------------------------------------
- *  Sanitize Inputs
- * ------------------------------------------------------
- */
+|--------------------------------------------------------------------------
+| Sanitize Inputs
+|--------------------------------------------------------------------------
+*/
 if ($c['config']['uri']['query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
     $_GET = array();
 }
-$_GET  = cleanInputData($_GET);
+$_GET = cleanInputData($_GET);
 $_POST = cleanInputData($_POST);  // Clean $_POST Data
 $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
 
@@ -62,10 +56,10 @@ $c['logger']->debug('Global POST and COOKIE data sanitized');
  *  Log requests
  * ------------------------------------------------------
  */
-if ($c['logger']->getProperty('enabled')) {
-    
-    $c['logger']->debug('$_REQUEST_URI: ' .$c['uri']->getRequestUri());
-    if (ENV == 'debug' OR ENV == 'test') {
+if ($c['config']['logger']['enabled']) {
+
+    $c['logger']->debug('$_REQUEST_URI: ' . $c['uri']->getRequestUri());
+    if (ENV == 'local' OR ENV == 'test') {
         $c['logger']->debug('$_COOKIE: ', $_COOKIE);
         $c['logger']->debug('$_POST: ', $_POST);
         $c['logger']->debug('$_GET: ', $_GET);
@@ -76,7 +70,7 @@ if ($c['logger']->getProperty('enabled')) {
  *  Load core components
  * ------------------------------------------------------
  */
-$pageUri    = "{$c['router']->fetchDirectory()} / {$c['router']->fetchClass()} / {$c['router']->fetchMethod()}";
+$pageUri = "{$c['router']->fetchDirectory()} / {$c['router']->fetchClass()} / {$c['router']->fetchMethod()}";
 $controller = PUBLIC_DIR . $c['router']->fetchDirectory() . DS . 'controller' . DS . $c['router']->fetchClass() . EXT;
 
 if ( ! file_exists($controller)) {
@@ -95,8 +89,7 @@ require $controller;  // call the controller.  $c variable now Available in HERE
 
 // Do not run private methods. ( _output, _remap, _getInstance .. )
 
-if (strncmp($c['router']->fetchMethod(), '_', 1) == 0 
-    OR in_array(strtolower($c['router']->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
+if (strncmp($c['router']->fetchMethod(), '_', 1) == 0 OR in_array(strtolower($c['router']->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
 ) {
     $c['response']->show404($pageUri);
 }
@@ -163,6 +156,7 @@ if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark 
     }
     $extra = array('time' => number_format($time, 4), 'memory' => $usage);
 }
+
 $c['logger']->debug('Final output sent to browser', $extra);
 
 

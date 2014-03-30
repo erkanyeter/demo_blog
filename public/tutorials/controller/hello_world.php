@@ -8,13 +8,7 @@
 $app = new Controller(
     function () {
         global $c;
-        $c['View'];
-        // $c['Cache'];
-
-        // $this->cache->set('a', 'Wssssssss');
-        // echo $this->cache->get('a');
-
-        // echo $this->config['base_url'];
+        $c['view'];
     }
 );
 
@@ -22,7 +16,7 @@ $app->func(
     'index',
     function () {
 
-        // $this->logger->debug('test', 'sd');
+        echo $a;
 
         $this->view->get(
             'hello_world', 

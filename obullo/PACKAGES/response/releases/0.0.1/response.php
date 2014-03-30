@@ -22,7 +22,7 @@ Class Response
     public function __construct()
     {
         global $c;
-        $this->logger = $c['Logger'];
+        $this->logger = $c['logger'];
         $this->logger->debug('Response Class Initialized');
     }
 
@@ -64,43 +64,28 @@ Class Response
      */
     public function _sendOutput($output = '')
     {
-        global $config;
+        global $c;
 
         if ($output == '') {  // Set the output data
             $output = & $this->final_output;
         }
 
-        // Is compression requested?  
-        // --------------------------------------------------------------------
-
-        if ($config['compress_output']) {
+        if ($c['config']['output']['compress']) {          // Is compression requested ?
             if (extension_loaded('zlib')) {
                 if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
                     ob_start('ob_gzhandler');
                 }
             }
         }
-
-        // Are there any server headers to send ?
-        // --------------------------------------------------------------------
-
-        if (count($this->headers) > 0) {
+        if (count($this->headers) > 0) {          // Are there any server headers to send ?
             if ( ! headers_sent()) {
                 foreach ($this->headers as $header) {
                     header($header[0], $header[1]);
                 }
             }
         }
-
-        // --------------------------------------------------------------------
-
-        if ( ! function_exists('getInstance')) {     // Does the getInstance() function exist ? // If not we know we are dealing with a cache file so we'll
-            echo $output;                            // simply echo out the data and exit. 
-            return true;
-        }
-
-        if (method_exists(getInstance(), '_response')) {  // Does the controller contain a function named _output()?
-            getInstance()->_response($output);          // If so send the output there.  Otherwise, echo it.
+        if (method_exists($c['app'], '_response')) {    // Does the controller contain a function named _output()?
+            $c['app']->_response($output);          // If so send the output there.  Otherwise, echo it.
         } else {
             echo $output;  // Send it to the browser!
         }
@@ -126,33 +111,93 @@ Class Response
     /**
     * Set HTTP Status Header
     * 
-    * @access   public
-    * @param    int     the status code
-    * @param    string    
-    * @return   void
+    * @param int $code the status code
+    * 
+    * @return void
     */    
-    public function setHttpResponse($code = 200, $text = '')
+    public function setHttpResponse($code = 200)
     {
         http_response_code($code);  // Php >= 5.4.0 
     }
         
-    // ------------------------------------------------------------------------
+    // --------------------------------------------------------------------
+
+    /**
+    * Set Header
+    *
+    * Lets you set a server header which will be outputted with the final display.
+    *
+    * Note:  If a file is cached, headers will not be sent.  We need to figure out
+    * how to permit header data to be saved with the cache data...
+    *
+    * @param string $header  header
+    * @param bool   $replace override current header
+    * 
+    * @return void
+    */    
+    public function setHeader($header, $replace = true)
+    {
+        // If zlib.output_compression is enabled it will compress the output,
+        // but it will not modify the content-length header to compensate for
+        // the reduction, causing the browser to hang waiting for more data.
+        // We'll just skip content-length in those cases.
+
+        if (@ini_get('zlib.output_compression') AND strncasecmp($header, 'content-length', 14) == 0) {
+            return;
+        }
+        $this->headers[] = array($header, $replace);
+    }
+
+    // --------------------------------------------------------------------
     
     /**
-     * Call helper functions
-     * 
-     * @param  string $method 
-     * @param  array $arguments
-     * @return mixed
-     */
-    public function __call($method, $arguments)
+    * Set Output
+    *
+    * Sets the output string
+    *
+    * @param string $output output
+    * 
+    * @return void
+    */    
+    public function setOutput($output)
     {
-        global $packages;
+        $this->final_output = $output;
+    }
 
-        if ( ! function_exists('Response\Src\\' . $method)) {
-            include PACKAGES . 'response' . DS . 'releases' . DS . $packages['dependencies']['response']['version'] . DS . 'src' . DS . strtolower($method) . EXT;
-        }
-        return call_user_func_array('Response\Src\\' . $method, $arguments);
+    //----------------------------------------------------------------------- 
+
+    /**
+    * 404 Page Not Found Handler
+    *
+    * @param string $page name
+    * 
+    * @return string
+    */
+    public function show404($page = '')
+    {
+        $this->logger->error('404 Page Not Found --> '.$page);
+        echo $this->showHttpError('404 Page Not Found', $page, '404', 404);
+        exit();
+    }
+
+    // -------------------------------------------------------------------- 
+
+    /**
+    * Manually Set General Http Errors
+    *
+    * @param string $message    string
+    * @param int    $statusCode integer
+    * @param int    $heading    string
+    *
+    * @return void
+    */
+    public function showError($message, $statusCode = 500, $heading = 'An Error Was Encountered')
+    {
+        global $c;
+        header('Content-type: text/html; charset='.$c['config']['locale']['charset']); // Some times we use utf8 chars in errors.
+        $this->logger->error('HTTP Error --> '.$message, false);
+        echo $this->showHttpError($heading, $message, 'general', $statusCode);
+        exit();
     }
 
 }
@@ -160,4 +205,4 @@ Class Response
 // END Response Class
 
 /* End of file Response.php */
-/* Location: ./packages/response/releases/0.0.1/response.php */
+/* Location: .Obullo/Http/Response.php */

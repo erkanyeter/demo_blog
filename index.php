@@ -3,8 +3,6 @@
 |--------------------------------------------------------------------------
 | Constants.
 |--------------------------------------------------------------------------
-| This file specifies which APP constants should be loaded by default.
-|
  */
 if ( ! defined('ROOT')) {
     include 'constants';
@@ -45,28 +43,43 @@ if (defined('STDIN')) {
 | Autoloader
 |--------------------------------------------------------------------------
 */
+require OBULLO .'Obullo'. DS .'Common'. EXT;
 require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
 /*
 |--------------------------------------------------------------------------
-<<<<<<< HEAD
 | Container ( IOC )
 |--------------------------------------------------------------------------
 */
 $c = new Obullo\Container\Pimple;
 /*
 |--------------------------------------------------------------------------
-| Core Components
+| Config
 |--------------------------------------------------------------------------
 */
 $c['config'] = function () { 
     return new Obullo\Config\Config;
 };
+/*
+|--------------------------------------------------------------------------
+| Log Handler
+|--------------------------------------------------------------------------
+*/
 $c['logger'] = function () use ($c) {
-    return new Obullo\Logger\Handler\File($c['config']['logger']);
+    return new Obullo\Logger\Handler\Disabled($c['config']['logger']);
 };
+/*
+|--------------------------------------------------------------------------
+| Error Handler
+|--------------------------------------------------------------------------
+*/
 $c['error'] = function () { 
     return new Obullo\Error\Handler;
 };
+/*
+|--------------------------------------------------------------------------
+| Exceptions
+|--------------------------------------------------------------------------
+*/
 $c['exception'] = function ($e, $type) {
     $exception = new Obullo\Exception\Error;
     $exception->display($e, $type);
@@ -148,7 +161,7 @@ $c['post'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['view'] = function () use ($c) { 
-    return $c['app']->view = new Obullo\View;
+    return $c['app']->view = new Obullo\View\View;
 };
 /*
 |--------------------------------------------------------------------------
@@ -185,9 +198,6 @@ $c['cache'] = function () use ($c) {
 /*
 |--------------------------------------------------------------------------
 | NoSQL Service
-=======
-| Load Your Application & Services
->>>>>>> 7e8be12ecd8dc21ef177d6c1839e7a585d8528ed
 |--------------------------------------------------------------------------
 */
 $c['mongo'] = function () {

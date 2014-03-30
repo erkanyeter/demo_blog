@@ -1,7 +1,7 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| Application "debug" environment
+| Application "local" environment
 |--------------------------------------------------------------------------
 | Configuration file
 |
@@ -18,7 +18,7 @@ $config = array(
     ),
     'error' => array(
         'reporting' => 1,       // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
-        'debug'  => array(
+        'debug'     => array(
                             'enabled' => 'E_ALL',  // Debug backtrace help you to fast development.
                             'padding' => 3
                         ),
@@ -103,8 +103,8 @@ $config = array(
     | ---------------------------------------------------
     */
     'logger' =>   array(
-            'enabled'   => false,       // On / Off logging
-            'output'    => false,       // On / Off logger html output
+            'enabled'   => true,       // On / Off logging
+            'output'    => true,       // On / Off logger html output
             'threshold' => array(0,1,2,3,4,5,6,7),  // array(0,1,2) = emergency,alert,critical
             'queries'   => true,        // If true "all" SQL Queries gets logged.
             'benchmark' => true,        // If true "all" Application Benchmarks gets logged.

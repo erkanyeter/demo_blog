@@ -62,7 +62,7 @@ if (isset($sql)) {
 ?>
 <div class="errorFile errorLine"><?php echo $error->getSecurePath($e->getFile()) . '  Line : ' . $e->getLine() . ' ' ?></div>
 <?php
-$debug = $config['debug_backtrace'];
+$debug = $c['config']['error']['debug'];
 
 // ------------------------------------------------------------------------
 

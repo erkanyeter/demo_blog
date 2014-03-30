@@ -1,9 +1,8 @@
 <?php
 
 namespace Obullo\Logger\Handler;
-
 use Obullo\Logger\Adapter;
-use Obullo\Logger\HandlerInterface;
+
 
 /**
  * File Handler Class
@@ -15,7 +14,7 @@ use Obullo\Logger\HandlerInterface;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class File extends Adapter implements HandlerInterface
+Class File extends Adapter
 {
     public $path;       // current log path for file driver
     public $config;     // logger file configuration

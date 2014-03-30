@@ -103,7 +103,7 @@ Class Uri
      */
     public function detectUri()
     {
-        if ( ! isset($_SERVER['REQUEST_URI']) OR !isset($_SERVER['SCRIPT_NAME'])) {
+        if (!isset($_SERVER['REQUEST_URI']) OR !isset($_SERVER['SCRIPT_NAME'])) {
             return '';
         }
         $uri = $_SERVER['REQUEST_URI'];
@@ -181,12 +181,12 @@ Class Uri
         // we should not prevent "base64encode" characters in CLI mode
         // the "sync" task controller and schema libraries use "base64encode" function
 
-        if ($str != '' AND $this->config['uri']['permitted_chars'] != '' AND $this->config['uri']['enable_query_strings'] == false AND ! defined('STDIN')) {
+        if ($str != '' AND $this->config['uri']['permitted_chars'] != '' AND $this->config['uri']['query_strings'] == false AND !defined('STDIN')) {
 
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
-            
-            if ( ! preg_match('|^[' . str_replace(array('\\-', '\-'), '-', preg_quote($this->config['uri']['permitted_chars'], '-')) . ']+$|i', $str)) {
+
+            if (!preg_match('|^[' . str_replace(array('\\-', '\-'), '-', preg_quote($this->config['uri']['permitted_chars'], '-')) . ']+$|i', $str)) {
                 $c['response']->showError('The URI you submitted has disallowed characters.', 400);
             }
         }
@@ -194,10 +194,10 @@ Class Uri
         // Convert programatic characters to entities and return
         return str_replace(
             array(
-            '$', '(', ')', '%28', '%29'
+        '$', '(', ')', '%28', '%29'
             ), // Bad
             array(
-                '&#36;', '&#40;', '&#41;', '&#40;', '&#41;'
+        '&#36;', '&#40;', '&#41;', '&#40;', '&#41;'
             ), // Good
             $str
         );
@@ -260,8 +260,6 @@ Class Uri
         return rtrim($this->config['assets'], '/') . ltrim($uri, '/');
     }
 
-
-
     /**
      * Get the current server uri
      * protocol.
@@ -272,8 +270,6 @@ Class Uri
     {
         return $this->uri_protocol;
     }
-
-
 
     /**
      * Get the complete request uri like native php
@@ -291,8 +287,6 @@ Class Uri
         return false;
     }
 
-
-
     /**
      * Get Base URL
      * 
@@ -302,10 +296,8 @@ Class Uri
      */
     public function getBaseUrl($uri = '')
     {
-        return rtrim($this->config['url']['base'], '/') .'/'. ltrim($uri, '/');
+        return rtrim($this->config['url']['base'], '/') . '/' . ltrim($uri, '/');
     }
-
-
 
     /**
      * Site URL
@@ -323,12 +315,10 @@ Class Uri
         if ($uri_str == '') {
             return $this->getBaseUrl() . $this->config['rewrite']['index_page'];
         } else {
-            $suffix = ($this->config['url']['suffix'] == false OR $suffix == false) ? '' : $this->config['url']['rewrite']['suffix'];
+            $suffix = ($this->config['url']['rewrite']['suffix'] == false OR $suffix == false) ? '' : $this->config['url']['rewrite']['suffix'];
             return $this->getBaseUrl() . $this->config['url']['rewrite']['index_page'] . trim($uri_str, '/') . $suffix;
         }
     }
-
-
 
     /**
      * Fetch the entire Uri string
@@ -340,8 +330,6 @@ Class Uri
         return $this->uri_string;
     }
 
-
-
     /**
      * Fetch the entire Re-routed URI string
      *
@@ -352,8 +340,6 @@ Class Uri
         return '/' . implode('/', $this->uri->getRoutedSegmentArray()) . '/';
     }
 
-
-
     /**
      * Get current url
      *
@@ -363,8 +349,6 @@ Class Uri
     {
         return $this->getSiteUrl($this->getUriString());
     }
-
-
 
     /**
      * Fetch a URI Segment
@@ -378,10 +362,8 @@ Class Uri
      */
     public function getSegment($number, $no_result = false)
     {
-        return ( ! isset($this->segments[$number])) ? $no_result : $this->segments[$number];
+        return (!isset($this->segments[$number])) ? $no_result : $this->segments[$number];
     }
-
-
 
     /**
      * Total number of segments
@@ -394,8 +376,6 @@ Class Uri
         return sizeof($this->segments);
     }
 
-
-
     /**
      * Total number of routed segments
      *
@@ -406,8 +386,6 @@ Class Uri
     {
         return sizeof($this->rsegments);
     }
-
-
 
     /**
      * Fetch a URI "routed" Segment ( Sub module isn't a rsegment based.)
@@ -423,10 +401,8 @@ Class Uri
      */
     public function getRoutedSegment($number, $no_result = false)
     {
-        return ( ! isset($this->rsegments[$number])) ? $no_result : $this->rsegments[$number];
+        return (!isset($this->rsegments[$number])) ? $no_result : $this->rsegments[$number];
     }
-
-
 
     /**
      * Routed Segment Array
@@ -438,8 +414,6 @@ Class Uri
     {
         return $this->rsegments;
     }
-
-
 
     /**
      * Generate a key value pair from the URI string
@@ -467,8 +441,6 @@ Class Uri
         return $this->_uriToAssoc($number, $default, 'segment');
     }
 
-
-
     /**
      * Generate a URI string from an associative array
      *
@@ -486,8 +458,6 @@ Class Uri
         return implode('/', $temp);
     }
 
-
-
     /**
      * Identical to above only it uses the re-routed segment array
      * 
@@ -500,8 +470,6 @@ Class Uri
     {
         return $this->_uriToAssoc($number, $default, 'routedSegment');
     }
-
-
 
     /**
      * Fetch a URI Segment and add a trailing slash
@@ -516,8 +484,6 @@ Class Uri
         return $this->uri->_slashSegment($number, $where, 'segment');
     }
 
-
-
     /**
      * Segment Array
      *
@@ -528,8 +494,6 @@ Class Uri
     {
         return $this->segments;
     }
-
-
 
     /**
      * Fetch a URI Segment and add a trailing slash
@@ -544,8 +508,6 @@ Class Uri
         return $this->uri->_slashSegment($number, $where, 'rsegment');
     }
 
-
-
     /**
      * Get extension of uri
      *
@@ -555,8 +517,6 @@ Class Uri
     {
         return $this->uri->uri_extension;
     }
-
-
 
     /**
      * Fetch a URI Segment and add a trailing slash - helper function
@@ -582,8 +542,6 @@ Class Uri
         return $leading . $this->$which($number) . $trailing;
     }
 
-
-
     /**
      * Generate a key value pair from the URI string or Re-routed URI string
      *
@@ -602,7 +560,7 @@ Class Uri
             $totalSegments = 'getTotalRoutedSegments';
             $segmentArray = 'getRoutedSegmentArray';
         }
-        if ( ! is_numeric($number)) {
+        if (!is_numeric($number)) {
             return $default;
         }
         if (isset($this->keyval[$number])) {
@@ -633,7 +591,7 @@ Class Uri
         }
         if (count($default) > 0) {
             foreach ($default as $val) {
-                if ( ! array_key_exists($val, $retval)) {
+                if (!array_key_exists($val, $retval)) {
                     $retval[$val] = false;
                 }
             }
@@ -641,8 +599,6 @@ Class Uri
         $this->keyval[$number] = $retval;  // Cache the array for reuse
         return $retval;
     }
-
-
 
     /**
      * When we use Hvc we need to Clean
@@ -662,6 +618,6 @@ Class Uri
 }
 
 // END URI Class
+/* End of file Uri.php
 
-/* End of file Uri.php */
-/* Location: ./packages/uri/releases/0.0.1/uri.php */
+/* Location: .Obullo/Uri/Uri.php */
