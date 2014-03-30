@@ -28,10 +28,10 @@ $scheme = array(
     'default' => function () {
         $this->set('header', '@get.private/views/header');
         $this->set('sidebar', '@get.private/views/sidebar');
-        $this->set('footer', $this->getTpl('footer', false));
+        $this->set('footer', '@get.tpl.footer');
     },
     'welcome' => function () {
-        $this->set('footer', $this->getTpl('footer', false));
+        $this->set('footer', '@get.tpl.footer');
     },
 );
 

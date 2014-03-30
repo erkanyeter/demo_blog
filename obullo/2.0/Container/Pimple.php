@@ -1,6 +1,8 @@
 <?php
 
 namespace Obullo\Container;
+use SplObjectStorage;
+use Controller;
 
 /*
  * This file is part of Pimple.
@@ -51,8 +53,8 @@ Class Pimple implements \ArrayAccess
      */
     public function __construct(array $values = array())
     {
-        $this->factories = new \SplObjectStorage();
-        $this->protected = new \SplObjectStorage();
+        $this->factories = new SplObjectStorage();
+        $this->protected = new SplObjectStorage();
 
         foreach ($values as $key => $value) {
             $this->offsetSet($key, $value);
@@ -102,15 +104,15 @@ Class Pimple implements \ArrayAccess
             if (class_exists('Controller')) {
 
                 //----------------------------------//
-
-                \Controller::$instance->{$key} = new $id;
+                echo $id.'<br>'; 
+                Controller::$instance->{$key} = new $id;
 
                 //----------------------------------//
 
                 $this->offsetSet(
                     $id, 
                     function () use ($key) {
-                        return \Controller::$instance->{$key};
+                        return Controller::$instance->{$key};
                     }
                 );
             }
@@ -270,4 +272,4 @@ Class Pimple implements \ArrayAccess
 // END Container class
 
 /* End of file Container.php */
-/* Location: .Obullo/Container/Container.php */
+/* Location: .Obullo/Container/Pimple.php */

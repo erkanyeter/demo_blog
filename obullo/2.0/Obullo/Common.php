@@ -47,7 +47,7 @@ function cleanInputData($str)
 function cleanInputKeys($str)
 {
     if ( ! preg_match("/^[a-z0-9:_\/-]+$/i", $str)) {
-        die('Disallowed Key Characters.');
+        die('Malicious Key Characters.');
     }
     return $str;
 }
@@ -123,7 +123,7 @@ function exceptionsHandler($e, $type = '')
                     return;
                     break;
                 case 1:
-                    include OBULLO .$version. DS .'Exception'. DS . 'Html' . EXT;
+                    include OBULLO .'Exception'. DS . 'Html' . EXT;
                     return;
                     break;
                 }
@@ -135,12 +135,11 @@ function exceptionsHandler($e, $type = '')
             $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
 
             if (isset($allowedErrors[$code])) {
-                include OBULLO .$version. DS .'Exception'. DS . 'Html' . EXT;
+                include OBULLO .'Exception'. DS . 'Html' . EXT;
             }
         } else {  
             include APP . 'errors' . DS . 'disabled_error' . EXT;  // If error_reporting = 0, we show a blank page template.
         }
-
         $c['logger']->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
 
     } else {  // Is It Exception ? Initialize to Exceptions Component.

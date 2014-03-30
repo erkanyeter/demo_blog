@@ -29,7 +29,7 @@ define('ENV', 'debug');
 require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
 /*
 |--------------------------------------------------------------------------
-| Load Your Application Services
+| Load Your Application & Services
 |--------------------------------------------------------------------------
 */
 require ROOT .'env'. DS . ENV. DS .'app'. EXT;
