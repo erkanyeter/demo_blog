@@ -36,8 +36,9 @@ function Obullo_autoloader($realname)
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . EXT;
 
-    if (strpos($fileName, 'Obullo') === 0) {     // Check is it a Obullo Class ?
-        include_once OBULLO .$version. DS .substr($fileName, 7);
+    if (strpos($fileName, 'Obullo') === 0) {     // Check is it Obullo Package ?
+        include_once OBULLO .substr($fileName, 7);
+        echo $fileName.'<br />';
         return;
     }
     include_once CLASSES .$fileName; // Otherwise load it from user directory

@@ -180,6 +180,5 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
 
         <?php }   // end if isset ?>     
     <?php }   // end if isset ?>
-
 <?php }   // end if debug backtrace ?>
 </div>

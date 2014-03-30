@@ -34,7 +34,6 @@ Class Error
     public function display($e, $type = '')
     {
         global $version, $c;
-
         $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
 
         // If user want to close error_reporting in some parts of the application.
@@ -86,7 +85,7 @@ Class Error
             $error_msg = strip_tags($error_msg);
         } else {
             ob_start();
-            include OBULLO .$version. DS .'Exception'. DS .'Html'. EXT;
+            include OBULLO .'Exception'. DS .'Html'. EXT;
             $error_msg = ob_get_clean();
         }
 
@@ -112,12 +111,10 @@ Class Error
                 break;
             }
         }
-
         $rules = $c['error']->parseRegex($level);
         if ($rules == false) {
             return;
         }
-
         $allowed_errors = $c['error']->getAllowedErrors($rules);  // Check displaying error enabled for current error.
         if (isset($allowed_errors[$code])) {
             echo $error_msg;
