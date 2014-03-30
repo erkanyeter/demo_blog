@@ -72,7 +72,6 @@ $config = array(
     |--------------------------------------------------------------------------
     | Database
     |--------------------------------------------------------------------------
-    |
     */
     'database' => array(
             'hostname' => 'localhost',
@@ -87,8 +86,10 @@ $config = array(
             'options'  => array() // array( PDO::ATTR_PERSISTENT => false ); 
     ),
     /*
-    | Log Severities:
-    | ---------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Logger
+    |--------------------------------------------------------------------------
+    | Severities:
     | emergency (0) : Emergency: system is unusable.
     | alert (1)     : Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
     | critical (2)  : Critical conditions. Example: Application component unavailable, unexpected exception.
@@ -156,10 +157,36 @@ $config = array(
         'default_translation' => 'en_US',   // This determines which set of language files should be used.
         'charset'             => 'UTF-8',   // This determines which character set is used by default.
      ),
+    /*
+    |--------------------------------------------------------------------------
+    | Cache
+    |--------------------------------------------------------------------------
+    */
+    'cache' =>  array(
+           'servers' => array(
+                              'hostname' => '127.0.0.1',
+                              'port'     => '6379',
+                               // 'timeout'  => '2.5'   // 2.5 sec timeout, just for redis cache
+                              'weight'   => '1'         // The weight parameter effects the consistent hashing 
+                                                        // used to determine which server to read/write keys from.
+                              ),
+            'auth' =>  '',                         // Just redis cache for connection password
+            'cache_path' =>  '/data/temp/cache/',  // Just cache file .data/temp/cache
+    ),
+    /*
+    |--------------------------------------------------------------------------
+    | Hooks
+    |--------------------------------------------------------------------------
+    */
     'hooks' => array(
         'enabled' => false,     // If you would like to use the 'hooks' feature you must enable it 
                                 // by etting this variable to "true".
     ),
+    /*
+    |--------------------------------------------------------------------------
+    | Security
+    |--------------------------------------------------------------------------
+    */
     'security' => array(
         'encryption_key'   => 'write-your-secret-key',  // If you use the Encryption class you MUST set an encryption key.
         'xss_filtering'    => false,                    // Whether the XSS filter is always active when GET, POST or COOKIE data is encountered
@@ -170,6 +197,11 @@ $config = array(
             'expire'      => '7200',         // The number in seconds the token should expire.
          ),
     ),
+    /*
+    |--------------------------------------------------------------------------
+    | Cookies
+    |--------------------------------------------------------------------------
+    */
     'cookie' => array( 
         'prefix' => '',                          // Set a prefix if you need to avoid collisions
         'domain' => '',                          // Set to .your-domain.com for site-wide cookies
@@ -177,11 +209,21 @@ $config = array(
         'expire' => (7 * 24 * 60 * 60),          // 1 week - Cookie expire time.
         'secure' => false,                       // Cookies will only be set if a secure HTTPS connection exists.
     ),
+    /*
+    |--------------------------------------------------------------------------
+    | Proxy
+    |--------------------------------------------------------------------------
+    */
     'proxy' => array(
         'ips' => '',      // Reverse Proxy IPs , If your server is behind a reverse proxy, you must whitelist the proxy IP
-    ),                    // addresses from which the Framework should trust the HTTP_X_FORWARDED_FOR
+    ),                    // addresses from which the Application should trust the HTTP_X_FORWARDED_FOR
                           // header in order to properly identify the visitor's IP address.
                           // Comma-delimited, e.g. '10.0.1.200,10.0.1.201'
+    /*
+    |--------------------------------------------------------------------------
+    | Output
+    |--------------------------------------------------------------------------
+    */
     'output' => array(
         'compress' => false,  // Enables Gzip output compression for faster page loads.  When enabled,
     ),                        // the Response class will test whether your server supports Gzip.
@@ -190,4 +232,4 @@ $config = array(
 );
 
 /* End of file config.php */
-/* Location: .app/env/debug/config.php */
+/* Location: .app/env/local/config.php */
