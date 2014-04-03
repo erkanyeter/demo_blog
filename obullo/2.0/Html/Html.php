@@ -3,15 +3,22 @@
 namespace Obullo\Html;
 
 /**
- * Html Class
- *
- * @package       packages
- * @subpackage    html
- * @category      html
- * @link
+ * Html Class.
+ * 
+ * Control static files like css, js & images.
+ * 
+ * @category  Html
+ * @package   Html
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/html
  */
 Class Html
 {
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         global $c;
@@ -24,11 +31,12 @@ Class Html
     /**
      * Build css files.
      *
-     * @param    string $href
-     * @param    string $tit title or $sort of directory list
-     * @param    string $media
-     * @param    string $rel
-     * @param    boolean $index_page
+     * @param string  $href       url
+     * @param string  $tit        title or $sort of directory list
+     * @param string  $media      media
+     * @param string  $rel        rel
+     * @param boolean $index_page php access
+     * 
      * @return   string
      */
     public function css($href, $tit = '', $media = '', $rel = 'stylesheet', $index_page = false)
@@ -64,11 +72,12 @@ Class Html
     /**
      * Build css link
      * 
-     * @param  string  $href       
-     * @param  string  $title      
-     * @param  string  $media     
-     * @param  string  $rel        
-     * @param  boolean $index_page 
+     * @param string  $href       css url
+     * @param string  $title      title     
+     * @param string  $media      media    
+     * @param string  $rel        rel = 'stylesheet'
+     * @param boolean $index_page php access
+     * 
      * @return string             
      */
     private function _css($href, $title = '', $media = '', $rel = 'stylesheet', $index_page = false)
@@ -90,7 +99,7 @@ Class Html
         } elseif ($index_page === true) {
             $link .= ' href="' . $c['uri']->getSiteUrl($href, false) . '" ';
         } else {
-            $link .= ' href="' . self::_getAssetPath($href, $extra_path = '', $ext) . '" ';
+            $link .= ' href="' . self::_getAssetPath($href, '', $ext) . '" ';
         }
 
         $link .= 'rel="' . $rel . '" type="text/css" ';
@@ -98,13 +107,10 @@ Class Html
         if ($media != '') {
             $link .= 'media="' . $media . '" ';
         }
-
         if ($title != '') {
             $link .= 'title="' . $title . '" ';
         }
-
         $link .= "/>\n";
-
         $link = str_replace(DS, '/', $link);
 
         return $link;
@@ -115,9 +121,10 @@ Class Html
     /**
      * Get assets directory path
      *
-     * @access   private
-     * @param    mixed $file_url
-     * @param    mixed $extra_path
+     * @param string $file       url
+     * @param string $extra_path extra path
+     * @param string $ext        extension ( css or js )
+     * 
      * @return   string | false
      */
     public static function _getAssetPath($file, $extra_path = '', $ext = '')
@@ -129,7 +136,6 @@ Class Html
             $paths = explode('/', $file);
             $file = array_pop($paths);
         }
-
         $sub_path = '';
         if (count($paths) > 0) {
             $sub_path = implode('/', $paths) . '/';      // .assets/css/sub/welcome.css  sub dir support
@@ -152,11 +158,10 @@ Class Html
      *
      * Generates an <img /> element
      *
-     * @access   public
-     * @param    mixed    $src  sources folder image path via filename
-     * @param    boolean  $index_page
-     * @param    string   $attributes
-     * @version  0.1
+     * @param mixed   $src        folder image path via filename
+     * @param string  $attributes attributes
+     * @param boolean $index_page index page
+     * 
      * @return   string
      */
     public function img($src = '', $attributes = '', $index_page = false)
@@ -173,7 +178,7 @@ Class Html
                 if ($index_page === true) {
                     $img .= ' src="' . $c['uri']->getSiteUrl($v, false) . '" ';
                 } else {
-                    $img .= ' src="' . self::_getAssetPath($v, 'images' . $extra_path = '') . '" ';
+                    $img .= ' src="' . self::_getAssetPath($v, 'images') . '" ';
                 }
             } else {
                 $img .= " $k=\"$v\" ";   // for http://
@@ -185,15 +190,16 @@ Class Html
 
     // ------------------------------------------------------------------------
 
+
     /**
-     * Build js files.
-     *
-     * @param    string $href
-     * @param    mixed $args js arguments or $sort of directory list
-     * @param    string $media
-     * @param    string $rel
-     * @param    boolean $index_page
-     * @return   string
+     * Build js files
+     * 
+     * @param string  $src        js href
+     * @param string  $args       arguments
+     * @param string  $type       text/javascript
+     * @param boolean $index_page php access
+     * 
+     * @return string
      */
     public function js($src, $args = '', $type = 'text/javascript', $index_page = false)
     {
@@ -201,11 +207,12 @@ Class Html
 
         if (strpos($src, '/*') !== false) {  // Is it folder ?
             $files = '';
-            $exp = explode('/*', $src);
-            $data = $this->_parseRegex($src, $exp);
+            $exp   = explode('/*', $src);
+            $data  = $this->_parseRegex($src, $exp);
             $source_dir = ASSETS . 'js' . DS . str_replace('/', DS, $exp[0]);
 
             foreach (scandir($source_dir, ($args === true) ? 1 : 0) as $filename) {
+
                 if (pathinfo($source_dir . $filename, PATHINFO_EXTENSION) == 'js') {
                     if (count($data['includeFiles']) > 0 AND in_array($filename, $data['includeFiles'])) {
                         $files .= $this->_js($exp[0] . '/' . $filename, $arguments, $type, $index_page = false);
@@ -226,13 +233,14 @@ Class Html
     // ------------------------------------------------------------------------
 
     /**
-     * Build js link
+     * Buil js files.
      * 
-     * @param  string  $src       
-     * @param  string  $arguments 
-     * @param  string  $type       
-     * @param  boolean $index_page
-     * @return string             
+     * @param string  $src        js url
+     * @param string  $arguments  arguments
+     * @param string  $type       text/javscript
+     * @param boolean $index_page php access
+     * 
+     * @return string
      */
     private function _js($src, $arguments = '', $type = 'text/javascript', $index_page = false)
     {
@@ -246,7 +254,7 @@ Class Html
         } elseif ($index_page === true) {  // .js file as PHP
             $link .= ' src="' . $c['uri']->getSiteUrl($src, false) . '" ';
         } else {
-            $link .= ' src="' . self::_getAssetPath($src, $extra_path = '', 'js') . '" ';
+            $link .= ' src="' . self::_getAssetPath($src, '', 'js') . '" ';
         }
         $link .= $arguments;
         $link .= "></script>\n";
@@ -260,8 +268,9 @@ Class Html
     /**
      * Parse Regex Css and Js source.
      * 
-     * @param  string $src regex string
-     * @param  array $exp explode array
+     * @param string $src regex   string
+     * @param array  $exp explode array
+     * 
      * @return array
      */
     private function _parseRegex($src, $exp)

@@ -9,14 +9,18 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
+      
+        $c['translator']->load('email');
+
+        echo $this->translator[i18n_Error_Email::INVALID_ADDRESS];
+
+        // var_dump($this->translator->sprintf(i18n_Errors_Email::INVALID_ADDRESS, 'me@me.com'));
     }
 );
 
 $app->func(
-    'index',
+    'index',  // visitor.guest
     function () {
-
-        echo $a;
 
         $this->view->get(
             'hello_world', 

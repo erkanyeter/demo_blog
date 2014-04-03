@@ -16,6 +16,9 @@ Class Error
 {
     public $logger;
 
+    /**
+     * [__construct description]
+     */
     public function __construct()
     {
         global $c;
@@ -35,7 +38,7 @@ Class Error
      */
     public function display($e, $type = '')
     {
-        global $version, $c;
+        global $c;
         $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
 
         // If user want to close error_reporting in some parts of the application.
@@ -96,6 +99,7 @@ Class Error
 
         $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
         $this->logger->__destruct(); // continue log writing
+        
         // Displaying Errors
         //-----------------------------------------------------------------------            
 
@@ -103,13 +107,13 @@ Class Error
 
         if (is_numeric($level)) {
             switch ($level) {
-                case 0:
-                    return;
-                    break;
-                case 1:
-                    echo $error_msg;
-                    return;
-                    break;
+            case 0:
+                return;
+                break;
+            case 1:
+                echo $error_msg;
+                return;
+                break;
             }
         }
         $rules = $c['error']->parseRegex($level);

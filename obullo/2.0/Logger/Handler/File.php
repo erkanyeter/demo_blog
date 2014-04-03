@@ -3,7 +3,6 @@
 namespace Obullo\Logger\Handler;
 use Obullo\Logger\Adapter;
 
-
 /**
  * File Handler Class
  * 

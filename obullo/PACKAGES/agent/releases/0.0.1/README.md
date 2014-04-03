@@ -26,6 +26,7 @@ The user agent name definitions are located in a config file on the directory <d
 When the User Agent class is initialized, it will attempt to determine whether the user agent browsing your site is a web browser, a mobile device, or a robot. It will also gather the platform information if available.
 
 ```php
+<?php
 new Agent();
 
 if ($this->agent->isBrowser())

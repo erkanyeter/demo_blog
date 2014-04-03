@@ -12,18 +12,17 @@
 | Prototype
 | -------------------------------------------------------------------
 |
-| $scheme = array(
+| $config = array(
 |
-|    'default' => function($file)
+|    'default' => function()
 |    {
-|        $this->set('header', $this->tpl('header',false))
-|        $this->set('content', $file);
-|        $this->set('footer', $this->tpl('footer',false));
+|        $this->set('header', $this->getTpl('header',false))
+|        $this->set('footer', $this->getTpl('footer',false));
 |    },
 | );
 |
 */
-$scheme = array(
+$config = array(
 
     'default' => function () {
         $this->set('header', '@get.private/views/header');

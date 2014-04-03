@@ -8,10 +8,10 @@
 $app = new Controller(
     function () {
         global $c;
-        $c['View'];
-        $c['Html'];
-        $c['Hvc'];
-        $c['Url'];
+        $c['view'];
+        $c['html'];
+        $c['hvc'];
+        $c['url'];
     }
 );
 $app->func(

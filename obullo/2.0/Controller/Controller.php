@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Controller Class.
- *
- * Main Controller class.
- *
- * @package       packages
- * @subpackage    controller     
- * @category      controllers
- * @link
+ * Controller class.
+ * 
+ * @category  Controller
+ * @package   Controller
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/controller
  */
 Class Controller
 {
@@ -41,8 +41,9 @@ Class Controller
         // Run Construct Method
         // ------------------------------------
 
-        if (is_callable($closure)) {
-            call_user_func_array(Closure::bind($closure, $this, get_class()), array());
+        if ($closure != null) {
+            $closure = Closure::bind($closure, $this, get_class());
+            $closure();
         }
     }
 
@@ -82,14 +83,17 @@ Class Controller
     public function func($methodName, $methodCallable)
     {
         $method = strtolower($methodName);
-        $hooks  = explode('.', $methodName);
+        $hook   = explode('.', $methodName);
 
-        $method = $hooks[0];
-        if (isset($hooks[1])) {  // Run Controler Hooks
-            unset($hooks[0]);
-            foreach ($hooks as $class) {
-                new $class;
+        $method = $hook[0];
+        if (isset($hook[1])) {  // Run Controler Hooks
+            unset($hook[0]);
+            $className = '';
+            foreach ($hook as $class) {
+                $className.= ucfirst($class).'_';
             }
+            $Class = substr($className, 0, -1);
+            new $Class;
         }
         //-----------------------------------------------------
         // "One Public Method Per Controller" Rule
@@ -123,7 +127,7 @@ Class Controller
         if (isset($this->controllerMethods[$method])) {
             return call_user_func_array($this->controllerMethods[$method], $args);
         }
-        throw new Exception(get_class() . ' error: There is no method "' . $method . '()" to call.');
+        throw new Exception(get_class() . ' error: There is no method "' . $method . '()" to call in the Controller.');
     }
 
 }

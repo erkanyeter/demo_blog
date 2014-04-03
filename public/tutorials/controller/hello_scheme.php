@@ -8,8 +8,9 @@
 $app = new Controller(
     function () {
         global $c;
-        $c['Html'];
-        $c['View'];
+        $c['html'];
+        $c['view'];
+        $c['url'];
     }
 );
 
@@ -27,7 +28,6 @@ $app->func(
         );
     }
 );
-
 
 /* End of file hello_scheme.php */
 /* Location: .public/tutorials/controller/hello_scheme.php */

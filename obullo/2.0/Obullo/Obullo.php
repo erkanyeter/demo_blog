@@ -132,10 +132,10 @@ if ($hooks_enabled) {
  */
 if ($hooks_enabled) {
     if ($c['hooks']->call('display_override') === false) {
-        $c['response']->_sendOutput();  // Send the final rendered output to the browser
+        $c['response']->sendOutput();  // Send the final rendered output to the browser
     }
 } else {
-    $c['response']->_sendOutput();    // Send the final rendered output to the browser
+    $c['response']->sendOutput();    // Send the final rendered output to the browser
 }
 /*
  * ------------------------------------------------------

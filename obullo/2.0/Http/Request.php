@@ -1,19 +1,22 @@
 <?php
 
 namespace Obullo\Http;
+use Get;
 
 /**
  * Request Class
  * Get Http Request Headers
  * 
- * @package       packages
- * @subpackage    request
- * @category      http request
- * @link
+ * @category  Http
+ * @package   Request
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/request
  */
 Class Request
 {
-    protected $headers;       // Request Headers
+    protected $headers;    // Request Headers
 
     /**
      * Constructor
@@ -24,36 +27,35 @@ Class Request
         $this->logger = $c['logger'];
         $this->logger->debug('Request Class Initialized');
     }
-
-    // --------------------------------------------------------------------
-
+    
     /**
      * Fetch an item from the $_REQUEST array
-     *
-     * @access   public
-     * @param    string
-     * @param    bool
-     * @param    bool    Use global post values instead of HMVC scope.
-     * @return   string
+     * 
+     * @param string  $index     key
+     * @param boolean $xss_clean enable xss clean
+     * 
+     * @return string
      */
-    public function get($index = NULL, $xss_clean = FALSE)
+    public function get($index = null, $xss_clean = false)
     {
-        if ($index === NULL AND ! empty($VAR)) {  // Check if a field has been provided
+        if ($index === null AND ! empty($VAR)) {  // Check if a field has been provided
             $request = array();
             foreach (array_keys($VAR) as $key) {  // loop through the full _REQUEST array
-                $request[$key] = \Get::fetchFromArray($_REQUEST, $key, $xss_clean);
+                $request[$key] = Get::fetchFromArray($_REQUEST, $key, $xss_clean);
             }
             return $request;
         }
-        return \Get::fetchFromArray($_REQUEST, $index, $xss_clean);
+        return Get::fetchFromArray($_REQUEST, $index, $xss_clean);
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Get data from $_SERVER variable
      * 
-     * @return string | bool
+     * @param string  $index      key
+     * @param boolean $xss_clean  enable xss clean
+     * @param boolean $global_var use global request variables not Hvc
+     * 
+     * @return void
      */
     public function getServer($index = null, $xss_clean = false, $global_var = false)
     {
@@ -68,8 +70,6 @@ Class Request
         }
         return Get::fetchFromArray($VAR, $index, $xss_clean);
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Get server request method 
@@ -86,12 +86,13 @@ Class Request
 
     /**
      * Get Header
-    *  e.g. echo $this->request->getHeader('Host');  // demo_blog
+     * e.g. echo $this->request->getHeader('Host');  // demo_blog
+     *
+     * @param string $key header key
+     *
+     * @link http://tr1.php.net/manual/en/function.getallheaders.php
      * 
-     * http://tr1.php.net/manual/en/function.getallheaders.php
-     * 
-     * @param  string $key key of header
-     * @return string
+     * @return string | boolean
      */
     public function getHeader($key = 'Host')
     {
@@ -102,7 +103,7 @@ Class Request
             foreach ($_SERVER as $name => $value) {
                 if (substr($name, 0, 5) == 'HTTP_') {
                     $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
-                    $headers[$lowercaseName] = $value;
+                    $headers[$name] = $value;
                 }
             }
         }
@@ -113,16 +114,13 @@ Class Request
         if (isset($headers[$key])) { // get selected header
             return $headers[$key];
         }
-        return;
+        return false;
     }
-
-    // --------------------------------------------------------------------
-
+    
     /**
-     * Fetch the IP Address
-     *
-     * @access    public
-     * @return    string
+     * Get ip address
+     * 
+     * @return string
      */
     public function getIpAddress()
     {
@@ -157,22 +155,21 @@ Class Request
             }
             $ipAddress = ($spoof !== false AND in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, true)) ? $spoof : $_SERVER['REMOTE_ADDR'];
         } else {
-            $ipAddress = $_SERVER['REMOTE_ADDR'];
+            $ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
         }
         if ( ! $this->isValidIp($ipAddress)) {
             $ipAddress = '0.0.0.0';
         }
         return $ipAddress;
     }
-
-    // ------------------------------------------------------------------------
-
+    
     /**
-     * Validate IP Address
-     *
-     * @param    string
-     * @param    string  ipv4 or ipv6
-     * @return   string
+     * Validate IP adresss
+     * 
+     * @param string $ip    ip address
+     * @param string $which flag
+     * 
+     * @return boolean
      */
     public function isValidIp($ip, $which = '')
     {
@@ -191,8 +188,6 @@ Class Request
         return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flag);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Detect the request is xmlHttp ( Ajax )
      * 
@@ -205,8 +200,6 @@ Class Request
         }
         return false;
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Detect the connection is secure ( Https )
@@ -223,20 +216,7 @@ Class Request
 
 }
 
-// echo $this->request->getHeader('Host');  // demo_blog
-// --------------------------------------------------------------------
-// 
-// EXAMPLE HEADER OUTPUT
-// Host: demo_blog 
-// User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/\*;q=0.8 
-// Accept-Language: en-US,en;q=0.5 
-// Accept-Encoding: gzip, deflate 
-// 
-// Cookie: frm_session=uqdp8hvjsfhen759eucgp31h74; frm_session_userdata=a%3A4%3A%7Bs%3A10%3A%22session_id%22%3Bs%3A26%3A%22uqdp8hvjsfhen759eucgp31h74%22%3Bs%3A10%3A%22ip_address%22%3Bs%3A9%3A%22127.0.0.1%22%3Bs%3A10%3A%22user_agent%22%3Bs%3A50%3A%22Mozilla%2F5.0+%28X11%3B+Ubuntu%3B+Linux+x86_64%3B+rv%3A26.0%29+G%22%3Bs%3A13%3A%22last_activity%22%3Bi%3A1389947182%3B%7D75f0224d5214efb875c685a30eda7f06
-// 
-// Connection: keep-alive 
+// END Request class
 
-// END Request Class
-
-/* End of file request.php */
-/* Location: ./packages/request/releases/0.0.1/request.php */
+/* End of file Request.php */
+/* Location: .Obullo/Http/Request.php */

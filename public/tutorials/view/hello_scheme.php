@@ -21,9 +21,8 @@
 	<p>This page use the scheme function located in your <kbd>app/config/scheme.php</kbd> file.</p>
 
 <pre>$scheme = array(
-    'welcome' => function()
-    {
-        $this->set('footer', $this->getTpl('footer',false));
+    'welcome' => function () {
+        $this->set('footer', '@get.tpl.footer');
     },
 );
 </pre>

@@ -23,9 +23,9 @@ Class Handler
     public function __construct()
     {
         global $c;
+
         $this->config = $c['config'];
         $this->logger = $c['logger'];
-
         $this->logger->debug('Error Handler Class Initialized');
     }
 

@@ -13,7 +13,7 @@ use ArrayAccess;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/config
  */
-Class Config implements ArrayAccess
+Class Config implements \ArrayAccess
 {
     public $config = array();
     public $is_loaded = array();
@@ -106,7 +106,7 @@ Class Config implements ArrayAccess
         $file = APP . 'config' . DS . str_replace('/', DS, $filename) . EXT;
         
         if (in_array($filename, $this->is_loaded, true)) {
-            return true;
+            return $this->config[$filename];
         }
         include $file;
 

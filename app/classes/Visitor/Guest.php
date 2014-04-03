@@ -1,17 +1,17 @@
 <?php
 
 /**
- * Public User Class
+ * Visitor Guest Class
  * Control visibility of your users
  * 
- * @category  User
- * @package   Obullo
+ * @category  Hooks
+ * @package   Visitor
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/docs/hooks
  */
-Class Public_User
+Class Visitor_Guest
 {
     public $logger;
 
@@ -24,13 +24,13 @@ Class Public_User
     public function __construct()
     {   
         global $c;
-        
-        $c['Sess'];
-        $c['Auth'];
+
+        $c['sess'];
+        $c['auth'];
 
         $this->init();
         $this->logger = $c['Logger'];
-        $this->logger->debug('Public User Class Initialized');
+        $this->logger->debug('Visitor_Guest Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -42,7 +42,7 @@ Class Public_User
      * In order to keep the framework as light-weight as possible only the
      * absolute minimal resources are run by default. This file lets
      * you globally define the controller action that you like to run
-     * by $c->func('index.public_user')
+     * by $c->func('index.visitor.guest')
      */
 
     // ------------------------------------------------------------------------
@@ -59,7 +59,8 @@ Class Public_User
     }
 }
 
-// END Public_User Class
 
-/* End of file public_user.php */
-/* Location: ./packages/controller/releases/0.1/public_user.php */
+// END Call_Guest.php File
+/* End of file Guest.php
+
+/* Location: .app/classes/Call/Call_Guest.php */

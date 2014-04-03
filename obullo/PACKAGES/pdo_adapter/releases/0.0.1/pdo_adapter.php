@@ -604,7 +604,7 @@ Class Pdo_Adapter
      */
     public function getResultArray()
     {
-        $this->Stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->Stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // --------------------------------------------------------------------

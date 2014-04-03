@@ -1,17 +1,17 @@
 <?php
 
 /**
- * Private User Class
+ * Visitor User Class
  * Control visibility of your users
  * 
- * @category  User
- * @package   Obullo
+ * @category  Hooks
+ * @package   Visitor
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/docs/hooks
  */
-Class Private_User
+Class Visitor_User
 {
     public $logger;
 
@@ -30,7 +30,7 @@ Class Private_User
 
         $this->init();
         $this->logger = $c['Logger'];
-        $this->logger->debug('Private User Class Initialized');
+        $this->logger->debug('Visitor User Class Initialized');
     }
 
     // ------------------------------------------------------------------------
@@ -42,7 +42,7 @@ Class Private_User
      * In order to keep the framework as light-weight as possible only the
      * absolute minimal resources are run by default. This file lets
      * you globally define the controller action that you like to run
-     * by $c->func('index.private_user')
+     * by $c->func('index.visitor.user')
      */
 
     // ------------------------------------------------------------------------

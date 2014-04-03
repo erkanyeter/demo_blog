@@ -257,7 +257,7 @@ Class Uri
      */
     public function getAssetsUrl($uri = '')
     {
-        return rtrim($this->config['assets'], '/') . ltrim($uri, '/');
+        return rtrim($this->config['url']['assets'], '/') .'/'. ltrim($uri, '/');
     }
 
     /**
@@ -296,7 +296,7 @@ Class Uri
      */
     public function getBaseUrl($uri = '')
     {
-        return rtrim($this->config['url']['base'], '/') . '/' . ltrim($uri, '/');
+        return rtrim($this->config['url']['base'], '/') .'/'. ltrim($uri, '/');
     }
 
     /**
@@ -555,10 +555,10 @@ Class Uri
     {
         if ($which == 'getSegment') {
             $totalSegments = 'getTotalSegments';
-            $segmentArray = 'getSegmentArray';
+            $segmentArray  = 'getSegmentArray';
         } else {
             $totalSegments = 'getTotalRoutedSegments';
-            $segmentArray = 'getRoutedSegmentArray';
+            $segmentArray  = 'getRoutedSegmentArray';
         }
         if (!is_numeric($number)) {
             return $default;
@@ -591,7 +591,7 @@ Class Uri
         }
         if (count($default) > 0) {
             foreach ($default as $val) {
-                if (!array_key_exists($val, $retval)) {
+                if ( ! array_key_exists($val, $retval)) {
                     $retval[$val] = false;
                 }
             }

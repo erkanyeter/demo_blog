@@ -3,18 +3,6 @@
 namespace Obullo\Http;
 
 /**
- * 
- * 
- * Set Http Response, Set Output Errors
- * Get Final Output
- *
- * @package       packages
- * @subpackage    response
- * @category      output
- * @link
- */
-
-/**
  * Response Class.
  * 
  * Set Http Response, Set Output Errors
@@ -72,21 +60,19 @@ Class Response
      * 
      * @return void
      */
-    public function _sendOutput($output = '')
+    public function sendOutput($output = '')
     {
         global $c;
 
         if ($output == '') {                       // Set the output data
             $output = & $this->final_output;
         }
-        if ($c['config']['output']['compress']) {   // Is compression requested ?
-
-            if (extension_loaded('zlib') 
-                AND isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
-                AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false
-            ) {
-                ob_start('ob_gzhandler');
-            }
+        if ($c['config']['output']['compress']  // Is compression requested ?
+            AND extension_loaded('zlib') 
+            AND isset($_SERVER['HTTP_ACCEPT_ENCODING']) 
+            AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false
+        ) {
+            ob_start('ob_gzhandler');
         }
         if (count($this->headers) > 0 AND ! headers_sent()) {          // Are there any server headers to send ?
             foreach ($this->headers as $header) {
@@ -95,9 +81,9 @@ Class Response
         }
         if (method_exists($c['app'], '_output')) {    // Does the controller contain a function named _output()?
             $c['app']->_output($output);              // If so send the output there.  Otherwise, echo it.
-        } else {
-            echo $output;  // Send it to the browser!
-        }
+            return;
+        } 
+        echo $output;  // Send it to the browser!
     }
 
     // ------------------------------------------------------------------------

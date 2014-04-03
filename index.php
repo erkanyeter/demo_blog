@@ -201,7 +201,8 @@ $c['cache'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['mongo'] = function () {
-    return new MongoClient('connection:string');
+    $mongo = new MongoClient('mongodb://root:mbry8992@localhost:27017/rulet');
+    return $mongo->rulet;
 };
 /*
 |--------------------------------------------------------------------------
@@ -209,3 +210,7 @@ $c['mongo'] = function () {
 |--------------------------------------------------------------------------
 */
 require OBULLO .'Obullo'. DS .'Obullo'. EXT;
+
+
+/* End of file index.php */
+/* Location: .index.php */

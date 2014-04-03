@@ -163,8 +163,6 @@ Class Adapter
      */
     public function push($handler = 'email')
     {
-        return;  // passive for now
-
         if ( ! isset($this->record['level']) OR ! $this->isAllowed($this->record['level'])) {  // check allowed
             return;
         }
@@ -205,7 +203,8 @@ Class Adapter
             $record_unformatted['message'] = $message;
             $record_unformatted['context'] = $context;
 
-            $this->sendToQueue($record_unformatted);  // Send to Job queue
+            $this->sendToQueue($record_unformatted); // Send to Job queue
+            $this->channel($this->channel);          // reset channel to default
         }
     }
     
@@ -251,7 +250,10 @@ Class Adapter
     }
 
     /**
-     * End of the logs, start batch process
+     * End of the logs and beginning of 
+     * the handler process.
+     *
+     * @return void
      */
     public function __destruct()
     {

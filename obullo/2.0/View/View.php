@@ -95,25 +95,31 @@ Class View
      */
     public function set($key, $val)
     {
-        if (is_string($val) AND strpos($val, '@') === 0 ) {
-            global $c;
-            $matches = explode('.', $val);
-            $method  = trim($matches[0], '@');
-            $uri     = $matches[1];
-            $param   = (isset($matches[2])) ? $matches[2] : 0;
-            $val     = $c['hvc']->$method($uri, $param);
-        }
-        $val = $this->_isCallable($val);
-
-        if (is_string($val) OR is_int($val)) {
+        if (is_int($val)) {
             $this->_string[$key] = $val;
             return;
         }
-        if (is_array($val)) {
-            if (count($val) == 0) {
-                $this->_array[$key] = array();
-                return;
+        if (is_string($val)) {
+            if (strpos($val, '@') === 0 ) {
+                global $c;
+                $matches = explode('.', $val);
+                $method  = trim($matches[0], '@');
+                $uri     = $matches[1];
+
+                if ($uri == 'tpl') {
+                    $val = $this->getTpl($matches[2], false);
+                } else {
+                    $param = (isset($matches[2])) ? $matches[2] : 0;
+                    $val   = $c['hvc']->$method($uri, $param);
+                }
             }
+            $this->_string[$key] = $val;
+            return;
+        }
+
+        $this->_array[$key] = array();
+
+        if (is_array($val) AND count($val) > 0) {
             foreach ($val as $array_key => $value) {
                 $this->_array[$key][$array_key] = $value;
             }
@@ -121,13 +127,16 @@ Class View
         }
         if (is_object($val)) {
             $this->_object[$key] = $val;
+            $this->_array = array();
             return;
         }
         if (is_bool($val)) {
             $this->_bool[$key] = $val;
+            $this->_array = array();
             return;
         }
-        $this->_string[$key] = (string) $val;
+        $this->_string[$key] = $val;
+        $this->_array = array();
         return;
     }
 
