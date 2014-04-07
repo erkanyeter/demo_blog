@@ -61,18 +61,6 @@ $c['config'] = function () {
 };
 /*
 |--------------------------------------------------------------------------
-| Log Handler
-|--------------------------------------------------------------------------
-| Define push handlers and set your Log Queue priorities
-*/
-$c['logger'] = function () use ($c) {
-    $logger = new Obullo\Logger\Handler\File($c['config']['logger']);
-    $logger->addWriter('file', $priority = 0);  
-    $logger->addWriter('mongo', $priority = 1);
-    return $logger;
-};
-/*
-|--------------------------------------------------------------------------
 | Error Handler
 |--------------------------------------------------------------------------
 */
@@ -87,6 +75,15 @@ $c['error'] = function () {
 $c['exception'] = function ($e, $type) {
     $exception = new Obullo\Exception\Error;
     $exception->display($e, $type);
+};
+/*
+|--------------------------------------------------------------------------
+| Log Handler
+|--------------------------------------------------------------------------
+| Define push handlers and set your Log Queue priorities
+*/
+$c['logger'] = function () use ($c) {
+    return new Obullo\Logger\Handler\File($c['config']['logger']);
 };
 /*
 |--------------------------------------------------------------------------

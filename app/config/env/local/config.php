@@ -128,6 +128,10 @@ $config = array(
                 'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
                 'task' => 'data/logs/tasks/app.log', // file handler tasks log path
             ),
+            'writers' => array(
+                'file'  => array('handler' => 'File', 'priority' => 0),
+                'mongo' => array('handler' => 'Mongo', 'priority' => 1),
+            ) 
     ),
     /*
     |--------------------------------------------------------------------------

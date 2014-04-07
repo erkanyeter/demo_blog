@@ -17,13 +17,13 @@ Class Error
     public $logger;
 
     /**
-     * [__construct description]
+     * Constructor
      */
     public function __construct()
     {
         global $c;
-        $this->logger = $c['logger'];
-        $this->logger->debug('Exceptions Class Initialized');
+        // $this->logger = $c['logger'];
+        // $this->logger->debug('Exceptions Class Initialized');
     }
 
     // --------------------------------------------------------------------
@@ -97,8 +97,8 @@ Class Error
         // Log Php Errors
         //-----------------------------------------------------------------------
 
-        $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
-        $this->logger->__destruct(); // continue log writing
+        // $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+        // $this->logger->__destruct(); // continue log writing
         
         // Displaying Errors
         //-----------------------------------------------------------------------            

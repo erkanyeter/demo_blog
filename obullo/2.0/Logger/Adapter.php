@@ -110,7 +110,6 @@ Class Adapter
         $this->queries         = $this->config['queries'];
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
-        $this->writers         = $this->config['writers'];
 
         $this->processor = new PriorityQueue;  // Load SplPriorityQueue
     }

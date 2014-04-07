@@ -1,7 +1,7 @@
 <?php
 
 namespace Obullo\I18n;
-use ArrayAccess;
+use ArrayAccess, Exception;
 
 /**
  * Translator Class

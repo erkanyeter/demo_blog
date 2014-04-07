@@ -35,9 +35,8 @@ Class Controller
         $this->config     = &$c['config'];         // If we don't use assign by reference this will cause some errors in Hvc.
         $this->uri        = &$c['uri'];            // The bug is insteresting, when we work with multiple page not found requests
         $this->router     = &$c['router'];         // The objects of getInstance() keep the last instances of the last request.
-        $this->translator = &$c['translator'];     // that means the instance don't do the reset. Keep in your mind we need use pass by reference for variables.
-        $this->logger     = &$c['logger'];         // @see http://www.php.net/manual/en/language.references.whatdo.php
-        
+        $this->logger     = &$c['logger'];         // that means the instance don't do the reset. Keep in your mind we need use pass by reference for variables.
+                                                  // @see http://www.php.net/manual/en/language.references.whatdo.php
         // Run Construct Method
         // ------------------------------------
 
