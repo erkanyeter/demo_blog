@@ -1,6 +1,7 @@
 <?php
 
 namespace Obullo\Logger;
+use Obullo\Logger\Handler;
 
 /**
  * Logger Adapter Class
@@ -44,6 +45,11 @@ Class Adapter
     );
 
     /**
+     * Config object
+     * @var object
+     */
+    public $config;
+    /**
      * Write all outputs to end of the page
      * @var boolean
      */
@@ -53,11 +59,6 @@ Class Adapter
      * @var boolean
      */
     public $enabled       = true;
-    /**
-     * Batch On / Off
-     * @var boolean
-     */
-    public $batch         = false;
     /**
      * Threshold array
      * @var array
@@ -101,15 +102,29 @@ Class Adapter
     {
         global $c;
 
-        $this->output          = $c['config']['log']['output'];
-        $this->channel         = $c['config']['log']['channel'];
-        $this->threshold_array = $c['config']['log']['threshold'];
-        $this->queries         = $c['config']['log']['queries'];
-        $this->benchmark       = $c['config']['log']['benchmark'];
-        $this->line            = $c['config']['log']['line'];
-        $this->writers         = $c['config']['log']['writers'];
+        $this->config = $c['config']['logger'];
+
+        $this->output          = $this->config['output'];
+        $this->channel         = $this->config['channel'];
+        $this->threshold_array = $this->config['threshold'];
+        $this->queries         = $this->config['queries'];
+        $this->benchmark       = $this->config['benchmark'];
+        $this->line            = $this->config['line'];
+        $this->writers         = $this->config['writers'];
 
         $this->processor = new PriorityQueue;  // Load SplPriorityQueue
+    }
+
+    /**
+     * Check logging whether to enabled
+     * if log handler is "Disabled" class it returns to false
+     * otherswise true.
+     * 
+     * @return boolean 
+     */
+    public function isEnabled()
+    {
+        return true;
     }
 
     /**
@@ -157,32 +172,33 @@ Class Adapter
      * $logger->push('email');  // send log data using email handler
      * $logger->push('mongo');  // send log data to mongo db
      * 
-     * @param string $handler set channel handler
+     * @param string $handlerName set channel handler
      * 
      * @return void
      */
-    public function push($handler = 'email')
+    public function push($handlerName = 'email')
     {
         if ( ! isset($this->record['level']) OR ! $this->isAllowed($this->record['level'])) {  // check allowed
             return;
         }
-        if ( ! isset($this->writers[$handler])) {
-
-            $this->addWriter($handler);  // store writer
+        if ( ! isset($this->writers[$handlerName])) {
+            $handlerObject = ucfirst($handlerName);
+            $this->addWriter($handlerName, new $handlerObject);  // store writer
         }
     }
 
     /**
      * Add writer
      * 
-     * @param string  $handlerName log handler
+     * @param string  $handlerName string
      * @param integer $priority    priority of handler
      *
      * @return void
      */
     public function addWriter($handlerName, $priority = 1)
     {
-        $this->writers[$handlerName] = array('handler' => new $handlerName, 'priority' => $priority);
+        $handlerObject = ucfirst($handlerName);
+        $this->writers[$handlerName] = array('handler' => new $handlerObject, 'priority' => $priority);
     }
 
     /**
@@ -265,6 +281,7 @@ Class Adapter
             echo $output;
         }
         foreach ($this->writers as $handler) {
+            echo 'asdasd';
             $handler->write();
         }
     }

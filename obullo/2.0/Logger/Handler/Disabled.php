@@ -27,7 +27,7 @@ Class Disabled
     {
         $method    = null;
         $arguments = array();
-        return null;
+        return false;  // isEnabled function returns to "false".
     }
 }
 

@@ -117,7 +117,6 @@ $config = array(
     | ---------------------------------------------------
     */
     'logger' =>   array(
-            'enabled'   => true,       // On / Off logging
             'output'    => true,       // On / Off logger html output
             'threshold' => array(0,1,2,3,4,5,6,7),  // array(0,1,2) = emergency,alert,critical
             'queries'   => true,        // If true "all" SQL Queries gets logged.
@@ -129,10 +128,6 @@ $config = array(
                 'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
                 'task' => 'data/logs/tasks/app.log', // file handler tasks log path
             ),
-            'writers' => array(                           
-                                'file' => array('handler' => 'File', 'priority' => 0),  // Define your available push handlers.
-                                'null' => array('handler' => 'Null', 'priority' => 2),  // and set your Log Queue priorities
-                            ),
     ),
     /*
     |--------------------------------------------------------------------------

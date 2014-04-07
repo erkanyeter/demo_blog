@@ -63,9 +63,13 @@ $c['config'] = function () {
 |--------------------------------------------------------------------------
 | Log Handler
 |--------------------------------------------------------------------------
+| Define push handlers and set your Log Queue priorities
 */
 $c['logger'] = function () use ($c) {
-    return new Obullo\Logger\Handler\Disabled($c['config']['logger']);
+    $logger = new Obullo\Logger\Handler\File($c['config']['logger']);
+    $logger->addWriter('file', $priority = 0);  
+    $logger->addWriter('mongo', $priority = 1);
+    return $logger;
 };
 /*
 |--------------------------------------------------------------------------
@@ -201,7 +205,7 @@ $c['cache'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['mongo'] = function () {
-    $mongo = new MongoClient('mongodb://root:mbry8992@localhost:27017/rulet');
+    $mongo = new MongoClient('mongodb://root:mbry8992@localhost:27017/test');
     return $mongo->rulet;
 };
 /*

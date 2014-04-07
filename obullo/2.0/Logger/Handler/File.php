@@ -25,6 +25,8 @@ Class File extends Adapter
      */
     public function __construct($params = array())
     {        
+        parent::__construct();
+
         $this->path = self::replacePath($params['path']['app']);   // Application request path
 
         if (defined('STDIN') AND defined('TASK')) {     // Task request

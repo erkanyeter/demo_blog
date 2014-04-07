@@ -127,9 +127,13 @@ Class Request
         global $c;
         static $ipAddress = '';
 
+        $REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+
         if ($ipAddress != '') {
             return $ipAddress;
         }
+        
+        $ipAddress = $REMOTE_ADDR;
         $proxy_ips = $c['config']['proxy']['ips'];
         
         if ( ! empty($proxy_ips)) {
@@ -153,9 +157,7 @@ Class Request
                     }
                 }
             }
-            $ipAddress = ($spoof !== false AND in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, true)) ? $spoof : $_SERVER['REMOTE_ADDR'];
-        } else {
-            $ipAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+            $ipAddress = ($spoof !== false AND in_array($REMOTE_ADDR, $proxy_ips, true)) ? $spoof : $REMOTE_ADDR;
         }
         if ( ! $this->isValidIp($ipAddress)) {
             $ipAddress = '0.0.0.0';
