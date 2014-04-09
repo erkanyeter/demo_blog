@@ -3,26 +3,32 @@
 |--------------------------------------------------------------------------
 | Framework CLI ( TASKS )
 |--------------------------------------------------------------------------
-| @see Docs:  General Topics / Tasks
-| @author CJ Lazell
+| Run this command from your project root
+|
+| $ php task
 |
 */ 
 if (isset($_SERVER['REMOTE_ADDR'])) die('Access denied');
- 
 /*
 |--------------------------------------------------------------------------
 | Get Command Line Arguments
 |--------------------------------------------------------------------------
 */
 unset($_SERVER['argv'][0]);
-
 /*
 |--------------------------------------------------------------------------
 | Define Local Ip Address
 |--------------------------------------------------------------------------
 */
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-
+/*
+|--------------------------------------------------------------------------
+| Set Default Command "Help" if command not provided
+|--------------------------------------------------------------------------
+*/
+if ( ! isset($_SERVER['argv'][1]) ) {
+	$_SERVER['argv'][1] = 'help';
+}
 /*
 |--------------------------------------------------------------------------
 | We need to make sure is it Task or Cli Request
@@ -33,7 +39,6 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 if (end($_SERVER['argv']) == 'OB_TASK_REQUEST') {
     define('TASK', 1);
 }
-
 /*
 |--------------------------------------------------------------------------
 | Set Command Line Arguments as Obullo Segments
@@ -45,7 +50,6 @@ $_SERVER['PATH_INFO']      = '/'. implode('/', $_SERVER['argv']) .'/';
 $_SERVER['REQUEST_URI']    = $_SERVER['PATH_INFO'];
 $_SERVER['QUERY_STRING']   = $_SERVER['PATH_INFO'];
 $_SERVER['ORIG_PATH_INFO'] = $_SERVER['PATH_INFO'];
-
 /*
 |--------------------------------------------------------------------------
 | Application Constants.
@@ -54,7 +58,6 @@ $_SERVER['ORIG_PATH_INFO'] = $_SERVER['PATH_INFO'];
 |
  */
 require ('constants');
-
 /*
 |--------------------------------------------------------------------------
 | Index.php file.

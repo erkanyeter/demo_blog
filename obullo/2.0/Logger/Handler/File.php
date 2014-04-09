@@ -20,22 +20,22 @@ Class File extends Adapter
 
     /**
      * Config Constructor
-     * 
-     * @param array $params file handler configuration array
      */
-    public function __construct($params = array())
+    public function __construct()
     {        
         parent::__construct();
 
-        $this->path = self::replacePath($params['path']['app']);   // Application request path
+        global $c;
+
+        $this->path = self::replacePath($c['config']['logger']['path']['app']);   // Application request path
 
         if (defined('STDIN') AND defined('TASK')) {     // Task request
-            $this->path = self::replacePath($params['path']['cli']);
+            $this->path = self::replacePath($c['config']['logger']['path']['cli']);
         } elseif (defined('STDIN')) {                   // Cli request
             if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
                 $this->setProperty('enabled', false);
             }
-            $this->path = self::replacePath($params['path']['task']);
+            $this->path = self::replacePath($c['config']['logger']['path']['task']);
         }
     }
 
@@ -157,13 +157,15 @@ Class File extends Adapter
             'channel'  => $this->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
-            'context'  => $unformatted_record['context'],
-            'extra'    => (isset($unformatted_record['context']['extra'])) ? $unformatted_record['context']['extra'] : '',
+            'context'  => null,
+            'extra'    => null,
         );
-
-        if (sizeof($record['context']) > 0) {
-            $record['context'] = preg_replace('/[\r\n]+/', '', var_export($record['context'], true));
-        } 
+        if (count($unformatted_record['context']) > 0) {
+            $record['context'] = preg_replace('/[\r\n]+/', '', var_export($unformatted_record['context'], true));
+        }
+        if (isset($unformatted_record['context']['extra']) AND count($unformatted_record['context']['extra']) > 0) {
+            $record['extra'] = var_export($unformatted_record['context']['extra'], true);
+        }
         return $this->lineFormat($record); // formatted record
     }
 
@@ -192,7 +194,8 @@ Class File extends Adapter
             $record['channel'],
             $record['level'],
             $record['message'],
-            $record['context'],
+            (empty($record['context'])) ? '' : $record['context'],
+            (empty($record['extra'])) ? '' : $record['extra'],
             $record['extra'],
             ),
             str_replace('\n', "\n", $this->getProperty('line'))
@@ -207,11 +210,11 @@ Class File extends Adapter
     public function write()
     {
         // Queue
-        $this->processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
+        $this->processor->setExtractFlags(\Obullo\Logger\PriorityQueue::EXTR_BOTH); // mode of extraction 
 
-        // Go to Top
-        $this->processor->top(); 
-
+        if ($this->processor->count() > 0) {
+            $this->processor->top();  // Go to Top
+        }
         /**
          * Using SplPriorityQueue Class we add log
          * messages to Queue like below : 
@@ -246,7 +249,7 @@ Class File extends Adapter
      * 
      * @param string $path log path
      * 
-     * @return string       current path
+     * @return string current path
      */
     public static function replacePath($path)
     {

@@ -4,6 +4,7 @@ namespace Obullo\Logger\Handler;
 
 use Obullo\Logger\Adapter;
 use Obullo\Logger\HandlerInterface;
+use Exception;
 
 /**
  * Mongo Handler Class
@@ -17,24 +18,29 @@ use Obullo\Logger\HandlerInterface;
  */
 Class Mongo extends Adapter implements HandlerInterface
 {
-    public $path;       // current log path for file driver
+    public $mongo;      // mongo database instance
     public $config;     // logger file configuration
 
     /**
      * Constructor
+     *
+     * @param array $params file handler configuration array
      */
-    public function __construct()
+    public function __construct($params = array())
     {        
         global $c;
 
-        $this->mongo = $c['mongo']->database;
+        parent::__construct();
 
-        $this->collection = $c['config']['log']['database']['table'];
-
-        //  $this->db = 
-
-        // connect to mongo database.
-
+        if ( ! isset($params['collection'])) {
+            throw new Exception(
+                'Mongo log handler requires collection parameter: <pre>$c[\'logger\'] = function () {
+    return new Obullo\Logger\Handler\Mongo(array(\'collection\' => \'test\'));
+};</pre>'
+            );
+        }
+        $this->mongo      = $c['mongo'];
+        $this->collection = $params['collection'];
     }
 
     /**
@@ -151,18 +157,19 @@ Class Mongo extends Adapter implements HandlerInterface
     public function format($unformatted_record)
     {
         $record = array(
-            'datetime' => date('Y-m-d H:i:s'),
+            'datetime' => new MongoDate(),
             'channel'  => $this->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
-            'context'  => $unformatted_record['context'],
-            'extra'    => (isset($unformatted_record['context']['extra'])) ? $unformatted_record['context']['extra'] : '',
+            'context'  => null,
+            'extra'    => null,
         );
-
-        if (sizeof($record['context']) > 0) {     // context
-            $record['context'] = json_encode($record['context'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); 
+        if (count($unformatted_record['context']) > 0) {
+            $record['context'] = json_encode($unformatted_record['context'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); 
         }
-        $record['datetime'] = new MongoDate();   // datetime
+        if (isset($unformatted_record['context']['extra']) AND count($unformatted_record['context']['extra']) > 0) {
+            $record['extra'] = json_encode($unformatted_record['context']['extra'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); 
+        }
         return $record;  // formatted record
     }
 
@@ -173,11 +180,14 @@ Class Mongo extends Adapter implements HandlerInterface
      */
     public function write()
     {
-        // Queue
-        $this->processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
+        global $c;
 
-        // Go to Top
-        $this->processor->top(); 
+        // Queue
+        $this->processor->setExtractFlags(\Obullo\Logger\PriorityQueue::EXTR_BOTH); // mode of extraction 
+
+        if ($this->processor->count() > 0) {
+            $this->processor->top();  // Go to Top
+        }
 
         /**
          * Using SplPriorityQueue Class we add log
@@ -188,7 +198,10 @@ Class Mongo extends Adapter implements HandlerInterface
          * $processor->insert(array('mongo' => $record), $priority = 2); 
          * $processor->insert(array('email' => $record), $priority = 3); 
          */
-        $lines = '';
+        
+        $collection = new MongoCollection($c['mongo'], 'users');
+        $cursor = $collection->find(array('username' => 'guest_3941574'));
+
         while ($this->processor->valid()) {         // Prepare Lines
             $output = $this->processor->current(); 
             $lines.= $output['data']['file'];       // Get file handler data from queue
@@ -196,6 +209,10 @@ Class Mongo extends Adapter implements HandlerInterface
         } 
 
         // INSERT TO MONGO TABLE
+
+        foreach ($cursor as $doc) {
+            var_dump($doc);
+        }
 
         return true;
     }

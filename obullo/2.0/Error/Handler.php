@@ -25,8 +25,11 @@ Class Handler
         global $c;
 
         $this->config = $c['config'];
-        // $this->logger = $c['logger'];
-        // $this->logger->debug('Error Handler Class Initialized');
+        $this->logger = $c['logger'];
+
+        if ($this->logger instanceof \Obullo\Logger\Adapter) {
+            $this->logger->debug('Error Handler Class Initialized');
+        }
     }
 
     /**
@@ -199,7 +202,6 @@ Class Handler
             return '<small>' . gettype($var) . '</small> ' . htmlspecialchars(print_r($var, true), ENT_NOQUOTES, $this->config['locale']['charset']);
         }
     }
-
 
     /**
      * Write File Source

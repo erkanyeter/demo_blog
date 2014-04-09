@@ -20,7 +20,10 @@ Class Controller
     public function __construct()
     {
         global $c;
-        $c['logger']->debug('App Controller Class Initialized');
+
+        if ($c['logger'] instanceof \Obullo\Logger\Adapter) {
+            $c['logger']->debug('App Controller Class Initialized');
+        }
     }
 
     // --------------------------------------------------------------------

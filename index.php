@@ -61,6 +61,15 @@ $c['config'] = function () {
 };
 /*
 |--------------------------------------------------------------------------
+| Log Handler
+|--------------------------------------------------------------------------
+| Define push handlers and set your Log Queue priorities
+*/
+$c['logger'] = function () use ($c) {
+    return $c['config']['logger']['handlers']['file']();
+};
+/*
+|--------------------------------------------------------------------------
 | Error Handler
 |--------------------------------------------------------------------------
 */
@@ -75,15 +84,6 @@ $c['error'] = function () {
 $c['exception'] = function ($e, $type) {
     $exception = new Obullo\Exception\Error;
     $exception->display($e, $type);
-};
-/*
-|--------------------------------------------------------------------------
-| Log Handler
-|--------------------------------------------------------------------------
-| Define push handlers and set your Log Queue priorities
-*/
-$c['logger'] = function () use ($c) {
-    return new Obullo\Logger\Handler\File($c['config']['logger']);
 };
 /*
 |--------------------------------------------------------------------------
@@ -121,7 +121,7 @@ $c['router'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['translator'] = function () use ($c) { 
-    return new Obullo\I18n\Translator($c['config']->load('translator'));
+    return $c['app']->translator = new Obullo\I18n\Translator($c['config']->load('translator'));
 };
 /*
 |--------------------------------------------------------------------------
@@ -137,7 +137,7 @@ $c['hooks'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['security'] = function () { 
-    return new Obullo\Security\Security;
+    return $c['app']->security = new Obullo\Security\Security;
 };
 /*
 |--------------------------------------------------------------------------
@@ -202,8 +202,8 @@ $c['cache'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['mongo'] = function () {
-    $mongo = new MongoClient('mongodb://root:mbry8992@localhost:27017/test');
-    return $mongo->rulet;
+    $mongo = new MongoClient('mongodb://root:12345@localhost:27017/test');
+    return $mongo->test;
 };
 /*
 |--------------------------------------------------------------------------

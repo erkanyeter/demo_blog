@@ -57,8 +57,8 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
 ```
 #### Explanation of Settings:
 
+* debug - On / Off html output, logger gives html output bottom of the current page.
 * enabled - On / Off logging
-* output - On / Off html output, logger gives html output bottom of the current page.
 * threshold - The threshold determines what gets logged.
 * queries - If this option set to true all Database SQL Queries gets logged.
 * benchmark - If this option set to true all framework benchmarks gets logged.
@@ -143,7 +143,22 @@ $this->logger->push('mongo');  // send log data to mongo db handler
 
 * VERY IMPORTANT: For a live site you'll usually only enable 0 - 4 to be logged otherwise your log files will fill up very fast.
 
-### Mongo Driver
+### Using Mongo Handler
+
+To switch mongo handler just replace File handler class and provide your collection as a parameter.
+
+```php
+<?php
+/*
+|--------------------------------------------------------------------------
+| Log Handler
+|--------------------------------------------------------------------------
+| Define push handlers and set your Log Queue priorities
+*/
+$c['logger'] = function () {
+    return new Obullo\Logger\Handler\Mongo(array('collection' => 'test'));
+};
+```
 
 
 #### Displaying Logs

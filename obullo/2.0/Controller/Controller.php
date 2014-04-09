@@ -36,7 +36,10 @@ Class Controller
         $this->uri        = &$c['uri'];            // The bug is insteresting, when we work with multiple page not found requests
         $this->router     = &$c['router'];         // The objects of getInstance() keep the last instances of the last request.
         $this->logger     = &$c['logger'];         // that means the instance don't do the reset. Keep in your mind we need use pass by reference for variables.
-                                                  // @see http://www.php.net/manual/en/language.references.whatdo.php
+                                                   // @see http://www.php.net/manual/en/language.references.whatdo.php
+                                                   // 
+        // $this->translator = $c['translator'];   Translator always defined in index.php
+
         // Run Construct Method
         // ------------------------------------
 

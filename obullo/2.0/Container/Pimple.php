@@ -103,16 +103,13 @@ Class Pimple implements ArrayAccess
         $key = strtolower($cid);
 
         if ( ! isset($this->keys[$cid])) {
-            if (class_exists('Controller')) {
 
-                //----------------------------------//
+            if (class_exists('Controller')) {
 
                 $Class = ucfirst($cid);
                 $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
 
                 Controller::$instance->{$key} = new $ObulloPackage;
-
-                //----------------------------------//
 
                 $this->offsetSet(
                     $cid, 
@@ -133,6 +130,7 @@ Class Pimple implements ArrayAccess
         if (isset($this->factories[$this->values[$cid]])) {
             return $this->values[$cid]($this);
         }
+
         $this->frozen[$cid] = true;
         $this->raw[$cid] = $this->values[$cid];
 

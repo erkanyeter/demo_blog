@@ -9,12 +9,14 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
-      
-        $c['translator']->load('email');
 
-        echo $this->translator[i18n_Error_Email::INVALID_ADDRESS];
+        $collection = new MongoCollection($c['mongo'], 'users');
+        $cursor = $collection->find(array('user_email' => 'eguvenc@gmail.com'));
 
-        // var_dump($this->translator->sprintf(i18n_Errors_Email::INVALID_ADDRESS, 'me@me.com'));
+        foreach ($cursor as $docs) {
+            echo $docs['user_email'];
+        }
+
     }
 );
 

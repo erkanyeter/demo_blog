@@ -142,6 +142,18 @@ if ( ! $this->translator['language_key'])) {
 }
 ```
 
+Checking none exist key.
+
+```php
+var_dump($this->translator['adssadasdsa']);  //  gives false ( boolean )
+```
+
+Printing none exist key.
+
+```php
+echo $this->translator['adssadasdsa'];      //  gives 'adssadasdsa' ( string )
+```
+
 ### Using $this->translator->sprintf($key, $arguments , , , ... );
 
 Translator class has a <b>sprintf</b> which has provide the same functionality of php sprintf.
@@ -152,7 +164,7 @@ echo $this->translator->sprintf('There are %d monkeys in the %s.', 5, 'tree');
 // Gives There are *5* monkeys in the *tree*.
 ```
 
-### Setting Default Locale
+### Setting Browser Locale
 
 Translator class construct method set default locale of user using these methods: 
 

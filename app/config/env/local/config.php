@@ -117,7 +117,7 @@ $config = array(
     | ---------------------------------------------------
     */
     'logger' =>   array(
-            'output'    => true,       // On / Off logger html output
+            'debug'     => false,       // On / Off logger html output
             'threshold' => array(0,1,2,3,4,5,6,7),  // array(0,1,2) = emergency,alert,critical
             'queries'   => true,        // If true "all" SQL Queries gets logged.
             'benchmark' => true,        // If true "all" Application Benchmarks gets logged.
@@ -128,10 +128,18 @@ $config = array(
                 'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
                 'task' => 'data/logs/tasks/app.log', // file handler tasks log path
             ),
-            'writers' => array(
-                'file'  => array('handler' => 'File', 'priority' => 0),
-                'mongo' => array('handler' => 'Mongo', 'priority' => 1),
-            ) 
+            'handlers' => array(
+                'disabled' => function () { 
+                    return new Obullo\Logger\Handler\Disabled; // If you want to disable logger, set logger component as disabled from index.php
+                },
+                'file' => function () {    
+                    return new Obullo\Logger\Handler\File;     // priority = 0
+                },
+                'mongo' => function () {
+                    return new Obullo\Logger\Handler\Mongo(array('collection' => null)); // priority = 1
+                }, 
+            ),
+            // Note : to change log priorities change the order of the handlers.
     ),
     /*
     |--------------------------------------------------------------------------
@@ -139,7 +147,7 @@ $config = array(
     |--------------------------------------------------------------------------
     */
     'session' => array(
-            'cookie_name'     => 'session', // The name you want for the cookie
+            'cookie_name'     => 'session',     // The name you want for the cookie
             'expiration'      => 7200,          // The number of SECONDS you want the session to last. By default two hours. "0" is no expiration.
             'expire_on_close' => true,          // Whether to cause the session to expire automatically when the browser window is closed
             'encrypt_cookie'  => false,         // Whether to encrypt the cookie

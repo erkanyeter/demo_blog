@@ -86,6 +86,7 @@ Class Translator implements ArrayAccess
      */
     public function offsetGet($key)
     {
+        echo $key;
         if ( ! isset($this->translate[$key])) {
             return false;
         }
@@ -147,7 +148,6 @@ Class Translator implements ArrayAccess
         }
         $this->is_loaded[] = $filename;
         $this->translate = array_merge($this->translate, $translate);
-
         unset($translate);
 
         $this->logger->debug('Translation file loaded: ' . APP . 'translations' . DS . $code . DS . $filename . EXT);
@@ -168,12 +168,12 @@ Class Translator implements ArrayAccess
         if (strpos($item, 'translate:') === 0) {    // Do we need to translate the message ?
             $item = substr($item, 10);              // Grab the variable
         }
-        if ($c['translator'][$item]) {
+        if (isset($this->translate[$item])) {
             if (sizeof($args) > 1) {
-                $args[0] = $c['translator'][$item];
+                $args[0] = $this->translate[$item];
                 return call_user_func_array('sprintf', $args);
             }
-            return $c['translator'][$item];
+            return $this->translate[$item];
         }
         $translate_notice = ($c['config']['locale']['translate_notice']) ? 'translate:' : '';
         return $translate_notice . $item;  // Let's notice the developers this line has no translate text
@@ -191,26 +191,27 @@ Class Translator implements ArrayAccess
         if (defined('STDIN')) { // Disable console & task errors
             return;
         }
-        //----------- SET FROM HTTP GET METHOD ------------//
-
+        
+        // Set via Http Get method
+        
         if ($this->config['query_string']['enabled'] AND isset($_GET[$this->langKey])) { // check $_GET
             $this->setLocale($_GET[$this->langKey]);
             return;
         }
 
-        //----------- SET FROM URI SEGMENT ------------//
+        // Set via URI Segment
 
         if ($this->config['uri_segment']['enabled'] AND is_numeric($this->config['uri_segment']['segment_number'])) { // check uri segment
 
             $segment = $c['uri']->getSegment($this->config['uri_segment']['segment_number']);
 
-            if ( ! empty($segment)) { // empty control
+            if ( ! empty($segment)) {           // empty control
                 $this->setLocale($segment);
                 return;
             }
         }
 
-        //----------- IF WE HAVE THE COOKIE RETURN FALSE ------------//
+        // We have a cookie ? then set using cookie.
 
         $cookie_name = $this->getCookieKey();
 
@@ -219,7 +220,7 @@ Class Translator implements ArrayAccess
             return;
         }
 
-        //----------- SET FROM BROWSER DEFAULT VALUE ------------// 
+        // Set via browser default value
 
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $this->setLocale(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));

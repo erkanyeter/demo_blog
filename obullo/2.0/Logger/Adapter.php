@@ -53,7 +53,7 @@ Class Adapter
      * Write all outputs to end of the page
      * @var boolean
      */
-    public $output        = false;    // Write all outputs to end of the page
+    public $debug         = false;    // Write all outputs to end of the page
     /**
      * On / Off Logging
      * @var boolean
@@ -104,14 +104,33 @@ Class Adapter
 
         $this->config = $c['config']['logger'];
 
-        $this->output          = $this->config['output'];
+        $this->debug           = $this->config['debug'];
         $this->channel         = $this->config['channel'];
         $this->threshold_array = $this->config['threshold'];
         $this->queries         = $this->config['queries'];
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
 
+        unset($this->config['handlers']['disabled']);  // remove disabled handler we need to get right priority.
+
+        $name = key($this->config['handlers']);        // name of the primary handler.
+
+        $this->addWriter($name, $this, $this->getPriority($name));
+
         $this->processor = new PriorityQueue;  // Load SplPriorityQueue
+    }
+
+    /**
+     * Get priority of the selected handler
+     * 
+     * @param string $handler name
+     * 
+     * @return integer
+     */
+    public function getPriority($handler = 'file')
+    {
+        $key = array_search($handler, $this->config['handlers']);
+        return $key;
     }
 
     /**
@@ -171,33 +190,34 @@ Class Adapter
      * $logger->push('email');  // send log data using email handler
      * $logger->push('mongo');  // send log data to mongo db
      * 
-     * @param string $handlerName set channel handler
+     * @param string $name set log handler
      * 
      * @return void
      */
-    public function push($handlerName = 'email')
+    public function push($name = 'email')
     {
         if ( ! isset($this->record['level']) OR ! $this->isAllowed($this->record['level'])) {  // check allowed
             return;
         }
-        if ( ! isset($this->writers[$handlerName])) {
-            $handlerObject = ucfirst($handlerName);
-            $this->addWriter($handlerName, new $handlerObject);  // store writer
+        if ( ! isset($this->writers[$name])) {
+            $this->addWriter($name, $this->config['handlers'][$name], $this->getPriority($name));  // store writer
         }
     }
 
     /**
      * Add writer
      * 
-     * @param string  $handlerName string
-     * @param integer $priority    priority of handler
+     * @param string  $name     handler key
+     * @param mixed   $handler  handler class name
+     * @param integer $priority priority of handler
      *
      * @return void
      */
-    public function addWriter($handlerName, $priority = 1)
+    public function addWriter($name, $handler, $priority = 1)
     {
-        $handlerObject = ucfirst($handlerName);
-        $this->writers[$handlerName] = array('handler' => new $handlerObject, 'priority' => $priority);
+        if ( ! isset($this->writers[$name])) {
+            $this->writers[$name] = array('handler' => (is_object($handler)) ? $handler : new $handler, 'priority' => $priority);
+        }
     }
 
     /**
@@ -243,9 +263,9 @@ Class Adapter
         /**
          * Insert record to queue for each log handlers
          */
-        foreach ($this->writers as $handler => $priority) {
-            $record_formatted[$handler] = $handler->format($record_unformatted);  // create log data
-            $this->processor->insert($record_formatted, $priority);
+        foreach ($this->writers as $name => $array) {
+            $record_formatted[$name] = $array['handler']->format($record_unformatted);  // create log data
+            $this->processor->insert($record_formatted, $array['priority']);
         }
     }
 
@@ -275,13 +295,12 @@ Class Adapter
         if ($this->enabled == false) {
             return;
         }
-        if ($this->output) {
+        if ($this->debug) {                    // debug log data if debu
             $output = new DebugOutput($this);
-            echo $output;
+            echo $output->printDebugger();
         }
-        foreach ($this->writers as $handler) {
-            echo 'asdasd';
-            $handler->write();
+        foreach ($this->writers as $array) {    // write log data
+            $array['handler']->write();
         }
     }
 

@@ -9,7 +9,6 @@ set_error_handler(
         echo("\n\033[1;31mError: $errstr . ' - error code: '.$errno.' errorfile : - '.$errfile.' - errorline: '.$errline \033[0m"); // Do something other than output message.   
     }
 );
-
 // ------------------------------------------------------------------------
 
 /**
@@ -24,6 +23,21 @@ $app->func(
     'index',
     function ($level = '') {
 
+        if ( ! empty($level) AND ! in_array($level, array('emergency','alert','critical','error','warning','notice','info','debug'))) {
+        
+            $this->_displayLogo();
+            echo "\33[1;31m\nThe log level: '".$level."' not supported.\33[0m\n\n";
+            echo "\33[1;36mAvailable log severities:\33[0m\n\33[0;36m
+emergency  : Emergency: system is unusable.
+alert      : Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
+critical   : Critical conditions. Example: Application component unavailable, unexpected exception.
+error      : Runtime errors that do not require immediate action but should typically be logged and monitored.
+warning    : Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
+notice     : Normal but significant events.
+info       : Interesting events. Examples: User logs in, SQL logs, Application Benchmarks.
+debug      : Detailed debug information.\33[0m\n";
+            exit;
+        }
         global $c;
 
         if ($level == 'tasks') {
@@ -34,17 +48,15 @@ $app->func(
         if (strpos($path, 'data') === 0) {  // replace "data" word to application data path
             $file = str_replace('data', DS . trim(DATA, DS), $path);
         }
-
         if ($level == '' || $level == 'tasks') {
             $this->_displayLogo();
             $this->_follow($file); // Display the debugging.
         } else {
+            $this->_displayLogo();
             $this->_follow($file, $level);
         }
     }
 );
-
-// ------------------------------------------------------------------------
 
 $app->func(
     '_displayLogo',
@@ -57,11 +69,9 @@ $app->func(
        |______||____||_____||_||_||____|
 
         Welcome to Log Manager v2.0 (c) 2014
-Display logs [$php task log], to filter logs [$php task log index $level]'."\n\033[0m";
+Display logs [$php task log], to filter logs [$php task log $level]'."\n\033[0m";
     }
 );
-
-// ------------------------------------------------------------------------
 
 /**
  * Console log 
@@ -71,6 +81,8 @@ Display logs [$php task log], to filter logs [$php task log index $level]'."\n\0
 $app->func(
     '_follow',
     function ($file, $level = '') {
+
+        echo "\33[0;36mFollowing log data ...\33[0m\n";
 
         static $lines = array();
         $size = 0;
@@ -102,7 +114,7 @@ $app->func(
                 // $line = str_replace('[@]', "\n", $line); // new line
                 $out  = explode('.', $line);  // echo print_r($out, true)."\n\n";
 
-                if (($level == '' OR $level == 'debug') AND isset($out[1])) {
+                if (isset($out[1])) {
 
                     if (strpos($out[1], '$_SQL') !== false) {   // remove unnecessary spaces from sql output
                         $line = "\033[1;32m".preg_replace('/[\s]+/', ' ', $line)."\033[0m";
@@ -188,7 +200,7 @@ $app->func(
                     }
                     if (strpos($out[1], 'notice') !== false) {
                         if ($level == '' OR $level == 'notice') {
-                            $line = "\033[1;45m".$line."\033[0m";
+                            $line = "\033[1;35m".$line."\033[0m";   // 1;44
                             if ( ! isset($lines[$line])) {
                                 echo $line."\n";
                             }
