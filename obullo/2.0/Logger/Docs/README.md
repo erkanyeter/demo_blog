@@ -37,8 +37,7 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
 | ---------------------------------------------------
 */
 'logger' =>   array(
-        'enabled'   => true,       // On / Off logging
-        'output'    => true,       // On / Off logger html output
+        'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
         'threshold' => array(0,1,2,3,4,5,6,7),  // array(0,1,2) = emergency,alert,critical
         'queries'   => true,        // If true "all" SQL Queries gets logged.
         'benchmark' => true,        // If true "all" Application Benchmarks gets logged.
@@ -49,10 +48,18 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
             'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
             'task' => 'data/logs/tasks/app.log', // file handler tasks log path
         ),
-        'writers' => array(                           
-                            'file' => array('handler' => 'File', 'priority' => 0),  // Define your available push handlers
-                            'null' => array('handler' => 'Null', 'priority' => 2),  // and set your Log Queue priorities
-                        ),
+        'handlers' => array(
+            'disabled' => function () { 
+                return new Obullo\Logger\Handler\Disabled; // If you want to disable logger, set logger component as disabled from index.php
+            },
+            'file' => function () {    
+                return new Obullo\Logger\Handler\File;     // priority = 0
+            },
+            'mongo' => function () {
+                return new Obullo\Logger\Handler\Mongo(array('collection' => null)); // priority = 1
+            }, 
+        ),
+        // Note : to change log priorities change the order of the handlers.
 ),
 ```
 #### Explanation of Settings:
@@ -143,9 +150,9 @@ $this->logger->push('mongo');  // send log data to mongo db handler
 
 * VERY IMPORTANT: For a live site you'll usually only enable 0 - 4 to be logged otherwise your log files will fill up very fast.
 
-### Using Mongo Handler
+### Primary Handler
 
-To switch mongo handler just replace File handler class and provide your collection as a parameter.
+Forexample to switch mongo database as a primary handler just replace "file" as "mongo".
 
 ```php
 <?php
@@ -153,13 +160,12 @@ To switch mongo handler just replace File handler class and provide your collect
 |--------------------------------------------------------------------------
 | Log Handler
 |--------------------------------------------------------------------------
-| Define push handlers and set your Log Queue priorities
+| Set your primary handler
 */
-$c['logger'] = function () {
-    return new Obullo\Logger\Handler\Mongo(array('collection' => 'test'));
+$c['logger'] = function () use ($c) {
+    return $c['config']['logger']['handlers']['mongo']();
 };
 ```
-
 
 #### Displaying Logs
 
@@ -185,3 +191,7 @@ php task log level debug
 ```php
 php task clear
 ```
+
+#### $this->logger->debug = true
+
+On / Off debug html output. When it is enabled all handlers will be disabled.

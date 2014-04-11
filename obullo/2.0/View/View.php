@@ -1,6 +1,7 @@
 <?php
 
 namespace Obullo\View;
+use Closure;
 
 /**
  * View Class
@@ -35,6 +36,7 @@ Class View
     public function __construct()
     {
         global $c;
+
         $this->logger   = $c['logger'];
         $this->router   = $c['router'];
         $this->response = $c['response'];
@@ -149,10 +151,10 @@ Class View
      */
     public function getScheme($name = 'default')
     {
-    	global $c;
+        global $c;
         $schemes = $c['config']->load('scheme');
         if (isset($schemes[$name]) AND is_callable($schemes[$name])) {
-            call_user_func_array(\Closure::bind($schemes[$name], $this, get_class()), array());
+            call_user_func_array(Closure::bind($schemes[$name], $this, get_class()), array());
         }
         return $this;
     }
@@ -167,7 +169,7 @@ Class View
     private function _isCallable($val)
     {
         if (is_callable($val)) { 	// Is callable function ?
-            $func = \Closure::bind($val, $this, get_class());
+            $func = Closure::bind($val, $this, get_class());
             return $func();
         }
         return $val;

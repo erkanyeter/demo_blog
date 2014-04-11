@@ -57,7 +57,7 @@ $c['logger']->debug('Global POST and COOKIE data sanitized');
  * ------------------------------------------------------
  */
 
-if ($c['logger']->isEnabled()) {
+if ($c['config']['logger']['enabled']) {
 
     $c['logger']->debug('$_REQUEST_URI: ' . $c['uri']->getRequestUri());
     if (ENV == 'local' OR ENV == 'test') {

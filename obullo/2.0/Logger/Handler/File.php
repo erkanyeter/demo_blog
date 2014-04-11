@@ -1,7 +1,6 @@
 <?php
 
 namespace Obullo\Logger\Handler;
-use Obullo\Logger\Adapter;
 
 /**
  * File Handler Class
@@ -13,20 +12,24 @@ use Obullo\Logger\Adapter;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class File extends Adapter
+Class File
 {
-    public $path;       // current log path for file driver
-    public $config;     // logger file configuration
+    public $logger;     // logger object
+    public $path;       // log path for file driver
+    public $config;     // logger config
 
     /**
      * Config Constructor
+     *
+     * @param object $logger class
      */
-    public function __construct()
-    {        
-        parent::__construct();
-
+    public function __construct($logger)
+    {
         global $c;
 
+        $this->logger    = $logger;             // logger object
+        $this->processor = $logger->processor;  // processor object
+        
         $this->path = self::replacePath($c['config']['logger']['path']['app']);   // Application request path
 
         if (defined('STDIN') AND defined('TASK')) {     // Task request
@@ -40,110 +43,6 @@ Class File extends Adapter
     }
 
     /**
-     * Emergency
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function emergency($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Alert
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function alert($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Critical
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function critical($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Error
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function error($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-    
-    /**
-     * Warning
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function warning($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-    
-    /**
-     * Notice
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function notice($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-    
-    /**
-     * Info
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function info($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Info
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function debug($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
     * Format log records and build lines
     *
     * @param array $unformatted_record log data
@@ -154,7 +53,7 @@ Class File extends Adapter
     {
         $record = array(
             'datetime' => date('Y-m-d H:i:s'),
-            'channel'  => $this->getProperty('channel'),
+            'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
             'context'  => null,
@@ -198,7 +97,7 @@ Class File extends Adapter
             (empty($record['extra'])) ? '' : $record['extra'],
             $record['extra'],
             ),
-            str_replace('\n', "\n", $this->getProperty('line'))
+            str_replace('\n', "\n", $this->logger->getProperty('line'))
         );
     }
 

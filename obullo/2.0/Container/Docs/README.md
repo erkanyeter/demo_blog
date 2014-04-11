@@ -17,7 +17,7 @@ The Container ( Pimple ) assist you to you assign your services to <kbd>$c</kbd>
 $c = new Obullo\Container\Pimple;
 ```
 
-### Building your services
+## Services
 
 ------
 
@@ -48,7 +48,6 @@ Then $this->mailer object available in your Controller and you can use it like t
 <?php
 /**
  * $c hello_world
- * 
  * @var Controller
  */
 $app = new Controller(
@@ -67,18 +66,8 @@ $app->func(
     	$this->mailer->subject('test');
     	$this->mailer->message('Hello World !');
     	$this->mailer->send();
-
-        $this->view->get(
-            'hello_scheme',
-            function () {
-                $this->set('name', 'Obullo');
-                $this->set('title', 'Hello Scheme World !');
-                $this->getScheme('welcome');
-            }
-        );
     }
 );
-
 
 /* End of file hello_world.php */
 /* Location: .public/tutorials/controller/hello_world.php */
@@ -86,42 +75,62 @@ $app->func(
 
 ### Extending to Services
 
-Below the example sets default sender to "John <john@example.com>";
+Below the example override default sender to "John <john@example.com>";
 
 ```php
 <?php
 
-$c->extend('mailer', function($mailer) {
-    $mailer->from('Web Site Mail Service <admin@example.com>');
-    return $mailer;
-});
+/**
+ * $c hello_world
+ * @var Controller
+ */
+$app = new Controller(
+    function () {
+        global $c;
 
-$c['mailer']->to('me@me.com');
-$c['mailer']->subject('Test Subject');
-$c['mailer']->send();
+        $c->extend(
+            'mailer',
+            function($mailer) {
+                $mailer->from('Web Site Mail Service <admin@example.com>');
+                return $mailer;
+            }
+        );
+    }
+);
+$app->func(
+    'index',
+    function () {
+
+        $this->mailer->to('me@me.com');
+        $this->mailer->subject('test');
+        $this->mailer->message('Hello World !');
+        $this->mailer->send();
+    }
+);
 ```
 
-### Creating Mongo NoSQL Service
+## Providers
+
+### Creating NoSQL Provider
 
 ```php
 <?php
 /*
 |--------------------------------------------------------------------------
-| NoSQL Service
+| NoSQL Provider
 |--------------------------------------------------------------------------
 */
-$c['mongo'] = function () {
-    $mongo = new MongoClient('mongodb://root:123456@localhost:27017/my_database');
-    return $mongo->my_database;
+$c['mongo'] = function ($params) use ($c) {
+    $mongoClient = new MongoClient('mongodb://root:12345@localhost:27017/'.$params['db.name']);
+    return new MongoCollection($mongoClient->{$params['db.name']}, $params['db.collection']);
 };
 ```
-Using mongo Container and Querying results
+### Querying results using NoSQL Provider
 
 ```php
 <?php
 /**
  * $app hello_world
- * 
  * @var Controller
  */
 $app = new Controller(
@@ -131,22 +140,42 @@ $app = new Controller(
         $c['view'];
         $c['url'];
 
-        $collection = new MongoCollection($c['mongo'], 'users');
-        $cursor = $collection->find(array('username' => 'guest_3941574'));
+        $c->bind('mongo', array('db.name' => 'test', 'db.collection' => 'users'));
 
-        foreach ($cursor as $doc) {
-            var_dump($doc);
+        $cursor = $this->mongo->find();
+
+        foreach ($cursor as $docs) {
+            echo $docs['user_email'].'<br />';
         }
  
+        // gives
         /*
-        array (size=8)
-          'active' => string '1' (length=1)
-          'user_id' => string '3941574' (length=7)
-          'username' => string 'guest_3941574' (length=13)
+        me@me.com
+        test@test.com
         */
     }
 );
 
-/* End of file index.php */
-/* Location: .index.php */
+/* End of file hello_world.php */
+/* Location: .public/tutorials/controller/hello_world.php */
 ```
+
+### Function Reference
+
+------
+
+#### $c->extend(string $class, closure $callable);
+
+Extends your class and override methods or variables using current instance of the object.
+
+#### $c->bind(string $class, array $params);
+
+Send parameters to closure and create new instance of the object.
+
+#### $c->raw(string $class);
+
+Returns closure data of the class.
+
+#### $c->keys();
+
+Returns to all stored keys ( class names ) in the container.

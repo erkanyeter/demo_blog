@@ -24,7 +24,7 @@ $translate['You must submit a URL']  = "You must submit a URL";
 $translate['You must submit a username'] = "You must submit a username";
 ```
 
-### Define Translation Constants
+### Defining Translation Constants
 
 We define the constants to control the translate keys.
 
@@ -164,7 +164,7 @@ echo $this->translator->sprintf('There are %d monkeys in the %s.', 5, 'tree');
 // Gives There are *5* monkeys in the *tree*.
 ```
 
-### Setting Browser Locale
+### Setting Locale
 
 Translator class construct method set default locale of user using these methods: 
 

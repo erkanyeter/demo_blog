@@ -205,6 +205,26 @@ Class Pimple implements ArrayAccess
     }
 
     /**
+     * Run to provider with parameters and return to closure value
+     *
+     * @param string $cid    service provider id
+     * @param array  $params service provider parameters
+     *
+     * @return mixed the closure object
+     * 
+     * @throws InvalidArgumentException if the identifier is not defined
+     */
+    public function bind($cid, $params = array())
+    {
+        if ( ! isset($this->keys[$cid])) {
+            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
+        }
+        if (isset($this->values[$cid])) {
+            return $this->values['app']->{$cid} = (count($params) > 0) ? $this->values[$cid]($params) : $this->values[$cid];  // register service to App/Controller.
+        }
+    }
+
+    /**
      * Gets a parameter or the closure defining an object.
      *
      * @param string $cid The unique identifier for the parameter or object
@@ -245,7 +265,7 @@ Class Pimple implements ArrayAccess
         if ( ! is_object($this->values[$cid]) || ! method_exists($this->values[$cid], '__invoke')) {
             throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $cid));
         }
-        if ( ! is_object($callable) || !method_exists($callable, '__invoke')) {
+        if ( ! is_object($callable) || ! method_exists($callable, '__invoke')) {
             throw new \InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
         }
         $factory = $this->values[$cid];

@@ -40,6 +40,24 @@ if (defined('STDIN')) {
 }
 /*
 |--------------------------------------------------------------------------
+| Container ( IOC )
+|--------------------------------------------------------------------------
+*/
+require OBULLO .'Container'. DS .'Pimple'. EXT;
+
+$c = new Obullo\Container\Pimple;
+/*
+|--------------------------------------------------------------------------
+| Config
+|--------------------------------------------------------------------------
+*/
+require OBULLO .'Config'. DS .'Config'. EXT;
+
+$c['config'] = function () { 
+    return new Obullo\Config\Config;
+};
+/*
+|--------------------------------------------------------------------------
 | Autoloader
 |--------------------------------------------------------------------------
 */
@@ -47,27 +65,39 @@ require OBULLO .'Obullo'. DS .'Common'. EXT;
 require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
 /*
 |--------------------------------------------------------------------------
-| Container ( IOC )
+| Logger
 |--------------------------------------------------------------------------
+| Define your handlers the "last parameter" is "priority" of the handler.
+|
 */
-$c = new Obullo\Container\Pimple;
-/*
-|--------------------------------------------------------------------------
-| Config
-|--------------------------------------------------------------------------
-*/
-$c['config'] = function () { 
-    return new Obullo\Config\Config;
+$c['logger'] = function () {
+    $logger = new Obullo\Logger\Logger;
+    $logger->addHandler(
+        'file',
+        function () use ($logger) { 
+            return new Obullo\Logger\Handler\File($logger);  // primary
+        },
+        2
+    );
+    $logger->addHandler(
+        'mongo', 
+        function () use ($logger) { 
+            return new Obullo\Logger\Handler\Mongo($logger, array('collection' => null));
+        },
+        1
+    );
+    return $logger;
 };
 /*
 |--------------------------------------------------------------------------
-| Log Handler
+| Disabled Logger
 |--------------------------------------------------------------------------
-| Define push handlers and set your Log Queue priorities
 */
-$c['logger'] = function () use ($c) {
-    return $c['config']['logger']['handlers']['file']();
-};
+if ($c['config']['logger']['enabled'] == false) {
+    $c['logger'] = function () {
+        return new Obullo\Logger\Disabled;
+    };
+}
 /*
 |--------------------------------------------------------------------------
 | Error Handler
@@ -92,6 +122,9 @@ $c['exception'] = function ($e, $type) {
 */
 require OBULLO .'Controller'. DS .'Controller'. EXT;
 /*
+|--------------------------------------------------------------------------
+| SERVICES
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 | App Controller
 |--------------------------------------------------------------------------
@@ -190,6 +223,9 @@ $c['sess'] = function () use ($c) {
 };
 /*
 |--------------------------------------------------------------------------
+| SERVICES
+|--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | Cache Service
 |--------------------------------------------------------------------------
 */
@@ -198,12 +234,15 @@ $c['cache'] = function () use ($c) {
 };
 /*
 |--------------------------------------------------------------------------
-| NoSQL Service
+| PROVIDERS
+|--------------------------------------------------------------------------
+|--------------------------------------------------------------------------
+| NoSQL Provider
 |--------------------------------------------------------------------------
 */
-$c['mongo'] = function () {
-    $mongo = new MongoClient('mongodb://root:12345@localhost:27017/test');
-    return $mongo->test;
+$c['mongo'] = function ($params) use ($c) {
+    $mongoClient = new MongoClient('mongodb://root:12345@localhost:27017/'.$params['db.name']);
+    return new MongoCollection($mongoClient->{$params['db.name']}, $params['db.collection']);
 };
 /*
 |--------------------------------------------------------------------------

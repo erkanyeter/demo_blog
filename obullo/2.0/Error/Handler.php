@@ -26,8 +26,8 @@ Class Handler
 
         $this->config = $c['config'];
         $this->logger = $c['logger'];
-
-        if ($this->logger instanceof \Obullo\Logger\Adapter) {
+        
+        if ($this->logger instanceof Obullo\Logger\Logger) {
             $this->logger->debug('Error Handler Class Initialized');
         }
     }

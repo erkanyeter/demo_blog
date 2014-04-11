@@ -1,4 +1,5 @@
 <?php
+
 /*
 |--------------------------------------------------------------------------
 | Application "local" environment
@@ -28,7 +29,7 @@ $config = array(
     'error' => array(
         'reporting' => 1,       // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
         'debug'     => array(
-                            'enabled' => 'E_ALL',  // Debug backtrace help you to fast development.
+                            'enabled' => 'E_ALL',  // Debug backtrace assist to you for code debugging.
                             'padding' => 3
                         ),
     ),
@@ -84,23 +85,6 @@ $config = array(
     ),
     /*
     |--------------------------------------------------------------------------
-    | Database
-    |--------------------------------------------------------------------------
-    */
-    'database' => array(
-            'hostname' => 'localhost',
-            'username' => 'root',
-            'password' => '123456',
-            'database' => 'demo_blog',
-            'driver'   => '',   // optional
-            'prefix'   => '',
-            'dbh_port' => '',
-            'char_set' => 'utf8',
-            'dsn'      => '',
-            'options'  => array() // array( PDO::ATTR_PERSISTENT => false ); 
-    ),
-    /*
-    |--------------------------------------------------------------------------
     | Logger
     |--------------------------------------------------------------------------
     | Severities:
@@ -117,7 +101,8 @@ $config = array(
     | ---------------------------------------------------
     */
     'logger' =>   array(
-            'debug'     => false,       // On / Off logger html output
+            'enabled'   => true,        // On / Off logging.
+            'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
             'threshold' => array(0,1,2,3,4,5,6,7),  // array(0,1,2) = emergency,alert,critical
             'queries'   => true,        // If true "all" SQL Queries gets logged.
             'benchmark' => true,        // If true "all" Application Benchmarks gets logged.
@@ -128,18 +113,23 @@ $config = array(
                 'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
                 'task' => 'data/logs/tasks/app.log', // file handler tasks log path
             ),
-            'handlers' => array(
-                'disabled' => function () { 
-                    return new Obullo\Logger\Handler\Disabled; // If you want to disable logger, set logger component as disabled from index.php
-                },
-                'file' => function () {    
-                    return new Obullo\Logger\Handler\File;     // priority = 0
-                },
-                'mongo' => function () {
-                    return new Obullo\Logger\Handler\Mongo(array('collection' => null)); // priority = 1
-                }, 
-            ),
-            // Note : to change log priorities change the order of the handlers.
+    ),
+    /*
+    |--------------------------------------------------------------------------
+    | Database
+    |--------------------------------------------------------------------------
+    */
+    'database' => array(
+            'hostname' => 'localhost',
+            'username' => 'root',
+            'password' => '123456',
+            'database' => 'demo_blog',
+            'driver'   => '',   // optional
+            'prefix'   => '',
+            'dbh_port' => '',
+            'char_set' => 'utf8',
+            'dsn'      => '',
+            'options'  => array() // array( PDO::ATTR_PERSISTENT => false ); 
     ),
     /*
     |--------------------------------------------------------------------------

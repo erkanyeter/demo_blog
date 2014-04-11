@@ -1,12 +1,12 @@
 <?php
 
-namespace Obullo\Logger\Handler;
+namespace Obullo\Logger;
 
 /**
- * Disabled Log Handler Class
+ * Disable Logger Class
  * 
  * @category  Logger
- * @package   File
+ * @package   Logger
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
@@ -27,11 +27,12 @@ Class Disabled
     {
         $method    = null;
         $arguments = array();
-        return false;  // isEnabled function returns to "false".
+
+        return false;
     }
 }
 
 // END Disabled Class
 
 /* End of file Disabled.php */
-/* Location: .Obullo/Logger/Handler/Disabled.php */
+/* Location: .Obullo/Logger/Disabled.php */

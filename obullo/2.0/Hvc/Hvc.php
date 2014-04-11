@@ -138,8 +138,8 @@ Class Hvc
 
             global $c;
 
-            $uri    = $c['Uri'];
-            $router = $c['Router'];
+            $uri    = $c['uri'];
+            $router = $c['router'];
 
             // Clone Objects
             // -----------------------------------------
@@ -625,7 +625,7 @@ echo $this->view->get(
         // Set original $this to controller instance that we backup before.
         // --------------------------------------------------
 
-        if (is_object($this->global)) {  // fixed HMVC object type of integer bug.
+        if (is_object($this->global)) {  // fixed HVC object type of integer bug.
             Controller::$instance = $this->global;
         }
         $c['app']->uri    = $this->uri;        // restore back original objects
@@ -696,7 +696,7 @@ echo $this->view->get(
     // --------------------------------------------------------------------
 
     /**
-     * Returns Hvc key.
+     * Returns to Hvc key.
      *
      * @return   string
      */

@@ -2,9 +2,10 @@
 
 namespace Obullo\Logger\Handler;
 
-use Obullo\Logger\Adapter;
+use Obullo\Logger\Logger;
 use Obullo\Logger\HandlerInterface;
 use Exception;
+use MongoDate;
 
 /**
  * Mongo Handler Class
@@ -16,30 +17,37 @@ use Exception;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class Mongo extends Adapter implements HandlerInterface
+Class Mongo implements HandlerInterface
 {
+    public $logger;     // logger instance
     public $mongo;      // mongo database instance
     public $config;     // logger file configuration
 
     /**
      * Constructor
      *
-     * @param array $params file handler configuration array
+     * @param object $logger logger class
+     * @param array  $params file handler configuration
      */
-    public function __construct($params = array())
+    public function __construct($logger, $params = array())
     {        
         global $c;
 
-        parent::__construct();
-
+        $this->logger    = $logger;             // logger object
+        $this->processor = $logger->processor;  // processor object
+        
         if ( ! isset($params['collection'])) {
             throw new Exception(
-                'Mongo log handler requires collection parameter: <pre>$c[\'logger\'] = function () {
-    return new Obullo\Logger\Handler\Mongo(array(\'collection\' => \'test\'));
-};</pre>'
+                'The log handler "mongo" requires collection parameter: <pre>\$logger->addHandler(
+        \'mongo\', 
+        function () use ($logger) { 
+            return new Obullo\Logger\Handler\Mongo($logger, array(\'collection\' => \'name\'));
+        },
+        1
+    );</pre>'
             );
         }
-        $this->mongo      = $c['mongo'];
+        $this->mongo      = $c['mongo'];    // mongo instance
         $this->collection = $params['collection'];
     }
 
@@ -157,7 +165,7 @@ Class Mongo extends Adapter implements HandlerInterface
     public function format($unformatted_record)
     {
         $record = array(
-            'datetime' => new MongoDate(),
+            'datetime' => new MongoDate,
             'channel'  => $this->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
@@ -199,20 +207,22 @@ Class Mongo extends Adapter implements HandlerInterface
          * $processor->insert(array('email' => $record), $priority = 3); 
          */
         
-        $collection = new MongoCollection($c['mongo'], 'users');
-        $cursor = $collection->find(array('username' => 'guest_3941574'));
+        // $collection = new MongoCollection($c['mongo'], 'users');
+        // $cursor = $collection->find(array('username' => 'guest_3941574'));
 
         while ($this->processor->valid()) {         // Prepare Lines
             $output = $this->processor->current(); 
-            $lines.= $output['data']['file'];       // Get file handler data from queue
+            $lines.= $output['data']['mongo'];       // Get mongo handler data from queue
             $this->processor->next(); 
         } 
 
+        echo $lines;
+
         // INSERT TO MONGO TABLE
 
-        foreach ($cursor as $doc) {
-            var_dump($doc);
-        }
+        // foreach ($cursor as $doc) {
+        //     var_dump($doc);
+        // }
 
         return true;
     }

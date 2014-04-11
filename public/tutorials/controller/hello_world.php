@@ -9,14 +9,6 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
-
-        $collection = new MongoCollection($c['mongo'], 'users');
-        $cursor = $collection->find(array('user_email' => 'eguvenc@gmail.com'));
-
-        foreach ($cursor as $docs) {
-            echo $docs['user_email'];
-        }
-
     }
 );
 

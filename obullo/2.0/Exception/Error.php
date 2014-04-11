@@ -23,8 +23,8 @@ Class Error
     {
         global $c;
         $this->logger = $c['logger'];
-        
-        if ($this->logger instanceof \Obullo\Logger\Adapter) {      // If logger object not available do not use it !
+
+        if ($this->logger instanceof Obullo\Logger\Logger) {
             $this->logger->debug('Exceptions Class Initialized');
         }
     }
@@ -66,7 +66,7 @@ Class Error
                 $lastQuery = $c['app']->db->lastQuery($prepare);
             }
         }
-        if (!empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
+        if ( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
             $type = 'Database Error';
             $code = 'SQL';
         }
@@ -85,7 +85,7 @@ Class Error
         //-----------------------------------------------------------------------
 
         $isAjax = false;
-        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             $isAjax = true;
         }
         if ($isAjax) {  // Is Ajax ?
@@ -100,11 +100,11 @@ Class Error
         // Log Php Errors
         //-----------------------------------------------------------------------
 
-        if ($this->logger instanceof \Obullo\Logger\Adapter) {      // If logger object not available do not use it !
+        if ($this->logger instanceof Obullo\Logger\Logger) {
             $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
             $this->logger->__destruct(); // continue log writing
         }
-        
+    
         // Displaying Errors
         //-----------------------------------------------------------------------            
 

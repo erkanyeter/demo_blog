@@ -1,7 +1,6 @@
 <?php
 
 namespace Obullo\Logger;
-use Obullo\Logger\Handler;
 
 /**
  * Logger Adapter Class
@@ -15,7 +14,7 @@ use Obullo\Logger\Handler;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class Adapter
+Class Logger
 {
     /**
      * Log priority contants
@@ -90,7 +89,7 @@ Class Adapter
      */
     public $channel       = 'system'; // default log channel
     /**
-     * Push Handler Object Storage
+     * Defined handlers in the container
      * @var array
      */
     protected $handlers  = array();
@@ -102,8 +101,7 @@ Class Adapter
     {
         global $c;
 
-        $this->config = $c['config']['logger'];
-
+        $this->config          = $c['config']['logger'];
         $this->debug           = $this->config['debug'];
         $this->channel         = $this->config['channel'];
         $this->threshold_array = $this->config['threshold'];
@@ -111,38 +109,36 @@ Class Adapter
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
 
-        unset($this->config['handlers']['disabled']);  // remove disabled handler we need to get right priority.
-
-        $name = key($this->config['handlers']);        // name of the primary handler.
-
-        $this->addWriter($name, $this, $this->getPriority($name));
-
         $this->processor = new PriorityQueue;  // Load SplPriorityQueue
+    }
+
+    /**
+     * Add Handler
+     * 
+     * @param string  $name     handler name
+     * @param object  $handler  closure object
+     * @param integer $priority log queue level
+     *
+     * @return void
+     */
+    public function addHandler($name, \Closure $handler, $priority = 0)
+    {
+        if (count($this->handlers) == 0) {  // find the primary handler
+            $this->addWriter($name, $handler(), $priority);
+        }
+        $this->handlers[$name] = array('handler' => $handler, 'priority' => $priority);
     }
 
     /**
      * Get priority of the selected handler
      * 
-     * @param string $handler name
+     * @param string $name handler
      * 
      * @return integer
      */
-    public function getPriority($handler = 'file')
+    public function getPriority($name = 'file')
     {
-        $key = array_search($handler, $this->config['handlers']);
-        return $key;
-    }
-
-    /**
-     * Check logging whether to enabled
-     * if log handler is "Disabled" class it returns to false
-     * otherswise true.
-     * 
-     * @return boolean 
-     */
-    public function isEnabled()
-    {
-        return true;
+        return $this->handlers[$name]['priority'];
     }
 
     /**
@@ -183,6 +179,110 @@ Class Adapter
     }
 
     /**
+     * Emergency
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function emergency($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+
+    /**
+     * Alert
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function alert($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+
+    /**
+     * Critical
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function critical($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+
+    /**
+     * Error
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function error($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+    
+    /**
+     * Warning
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function warning($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+    
+    /**
+     * Notice
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function notice($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+    
+    /**
+     * Info
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function info($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+
+    /**
+     * Info
+     * 
+     * @param string $message log message
+     * @param array  $context data
+     * 
+     * @return void
+     */
+    public function debug($message = '', $context = array()) 
+    {
+        $this->log(__FUNCTION__, $message, $context);
+    }
+
+    /**
      * Push to another handler
      * 
      * $logger->channel('security');
@@ -195,12 +295,12 @@ Class Adapter
      * @return void
      */
     public function push($name = 'email')
-    {
-        if ( ! isset($this->record['level']) OR ! $this->isAllowed($this->record['level'])) {  // check allowed
-            return;
+    {   
+        if ( ! isset($this->handlers[$name])) {
+            throw new \Exception('The handler '.$name.' not defined in application index.php');
         }
         if ( ! isset($this->writers[$name])) {
-            $this->addWriter($name, $this->config['handlers'][$name], $this->getPriority($name));  // store writer
+            $this->addWriter($name, $this->handlers[$name](), $this->getPriority($name));  // store writer
         }
     }
 
@@ -208,7 +308,7 @@ Class Adapter
      * Add writer
      * 
      * @param string  $name     handler key
-     * @param mixed   $handler  handler class name
+     * @param object  $handler  handler object
      * @param integer $priority priority of handler
      *
      * @return void
@@ -216,7 +316,7 @@ Class Adapter
     public function addWriter($name, $handler, $priority = 1)
     {
         if ( ! isset($this->writers[$name])) {
-            $this->writers[$name] = array('handler' => (is_object($handler)) ? $handler : new $handler, 'priority' => $priority);
+            $this->writers[$name] = array('handler' => $handler, 'priority' => $priority);
         }
     }
 
@@ -232,6 +332,7 @@ Class Adapter
     public function log($level, $message, $context = array())
     {
         $record_unformatted = array();
+
         if ($this->isAllowed($level)) {
 
             $record_unformatted['level']   = $level;
@@ -263,9 +364,15 @@ Class Adapter
         /**
          * Insert record to queue for each log handlers
          */
-        foreach ($this->writers as $name => $array) {
-            $record_formatted[$name] = $array['handler']->format($record_unformatted);  // create log data
-            $this->processor->insert($record_formatted, $array['priority']);
+        foreach ($this->writers as $name => $val) {
+            $record_formatted[$name] = $val['handler']->format($record_unformatted);  // create log data
+            // print_r($record_formatted[$name]);
+            // 
+            
+            if($name == 'mongo')
+            print_r($record_unformatted);
+
+            $this->processor->insert($record_formatted, $val['priority']);
         }
     }
 

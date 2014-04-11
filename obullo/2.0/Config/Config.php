@@ -13,7 +13,7 @@ use ArrayAccess;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/config
  */
-Class Config implements \ArrayAccess
+Class Config implements ArrayAccess
 {
     public $config = array();
     public $is_loaded = array();
