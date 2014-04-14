@@ -37,7 +37,7 @@ __________________________________________________________________________
        | |__| || |_||| |_| || || || |_||
        |______||____||_____||_||_||____|
 
-        Welcome to Log Manager (c) 2013
+        Welcome to Log Manager (c) 2014
 Display logs [$php task log], to filter logs [$php task log $level]
 ```
 

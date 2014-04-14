@@ -4,8 +4,9 @@ namespace Obullo\Logger\Handler;
 
 use Obullo\Logger\Logger;
 use Obullo\Logger\HandlerInterface;
-use Exception;
-use MongoDate;
+use Obullo\Logger\PriorityQueue;
+
+use Exception, MongoDate, MongoCollection, MongoClient;
 
 /**
  * Mongo Handler Class
@@ -17,11 +18,10 @@ use MongoDate;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class Mongo implements HandlerInterface
+Class Mongo
 {
     public $logger;     // logger instance
     public $mongo;      // mongo database instance
-    public $config;     // logger file configuration
 
     /**
      * Constructor
@@ -30,15 +30,12 @@ Class Mongo implements HandlerInterface
      * @param array  $params file handler configuration
      */
     public function __construct($logger, $params = array())
-    {        
-        global $c;
+    {
+        $this->logger = $logger;             // logger object
 
-        $this->logger    = $logger;             // logger object
-        $this->processor = $logger->processor;  // processor object
-        
-        if ( ! isset($params['collection'])) {
+        if ( ! isset($params['db.collection']) OR empty($params['db.collection'])) {
             throw new Exception(
-                'The log handler "mongo" requires collection parameter: <pre>\$logger->addHandler(
+                'The log handler "mongo" requires collection name: <pre>\$logger->addHandler(
         \'mongo\', 
         function () use ($logger) { 
             return new Obullo\Logger\Handler\Mongo($logger, array(\'collection\' => \'name\'));
@@ -47,112 +44,13 @@ Class Mongo implements HandlerInterface
     );</pre>'
             );
         }
-        $this->mongo      = $c['mongo'];    // mongo instance
-        $this->collection = $params['collection'];
-    }
+        // create mongo connection
+        
+        $dsn    = explode('/', $params['db.dsn']);
+        $dbName = end($dsn);
 
-    /**
-     * Emergency
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function emergency($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Alert
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function alert($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Critical
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function critical($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Error
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function error($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-    
-    /**
-     * Warning
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function warning($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-    
-    /**
-     * Notice
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function notice($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-    
-    /**
-     * Info
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function info($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
-    }
-
-    /**
-     * Info
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function debug($message = '', $context = array()) 
-    {
-        $this->log(__FUNCTION__, $message, $context);
+        $mongoClient = new MongoClient($params['db.dsn']);
+        $this->mongo = new MongoCollection($mongoClient->{$dbName}, $params['db.collection']);
     }
 
     /**
@@ -166,7 +64,7 @@ Class Mongo implements HandlerInterface
     {
         $record = array(
             'datetime' => new MongoDate,
-            'channel'  => $this->getProperty('channel'),
+            'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
             'context'  => null,
@@ -188,15 +86,14 @@ Class Mongo implements HandlerInterface
      */
     public function write()
     {
-        global $c;
+        $processor = $this->logger->getProcessorInstance('mongo');
 
         // Queue
-        $this->processor->setExtractFlags(\Obullo\Logger\PriorityQueue::EXTR_BOTH); // mode of extraction 
+        $processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
 
-        if ($this->processor->count() > 0) {
-            $this->processor->top();  // Go to Top
+        if ($processor->count() > 0) {
+            $processor->top();  // Go to Top
         }
-
         /**
          * Using SplPriorityQueue Class we add log
          * messages to Queue like below : 
@@ -206,18 +103,13 @@ Class Mongo implements HandlerInterface
          * $processor->insert(array('mongo' => $record), $priority = 2); 
          * $processor->insert(array('email' => $record), $priority = 3); 
          */
-        
-        // $collection = new MongoCollection($c['mongo'], 'users');
-        // $cursor = $collection->find(array('username' => 'guest_3941574'));
-
-        while ($this->processor->valid()) {         // Prepare Lines
-            $output = $this->processor->current(); 
-            $lines.= $output['data']['mongo'];       // Get mongo handler data from queue
-            $this->processor->next(); 
-        } 
-
-        echo $lines;
-
+     
+        $lines = '';
+        while ($processor->valid()) {         // Prepare Lines
+            $record = $processor->current(); 
+            $processor->next(); 
+            // var_dump($record['data']);
+        }
         // INSERT TO MONGO TABLE
 
         // foreach ($cursor as $doc) {

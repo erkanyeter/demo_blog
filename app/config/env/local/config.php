@@ -111,7 +111,6 @@ $config = array(
             'path'      => array(
                 'app'  => 'data/logs/app.log',       // file handler application log path
                 'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
-                'task' => 'data/logs/tasks/app.log', // file handler tasks log path
             ),
     ),
     /*

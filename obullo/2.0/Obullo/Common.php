@@ -103,18 +103,22 @@ function exceptionsHandler($e, $type = '')
     );
     $shutdownError = false;
     if (isset($shutdownErrors[$type])) {  // We couldn't use any object for shutdown errors.
+
         $shutdownError = true;
         $type = ucwords(strtolower($type));
         $code = $e->getCode();
         $level = $c['config']['error']['reporting'];
 
         if (defined('STDIN')) {  // If Command Line Request.
-            echo $type . ': ' . $e->getMessage() . ' File: ' . $error->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
-
+            echo $type . ': ' . $e->getMessage() . ' File: ' . $c['error']->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
             $cmdType = (defined('TASK')) ? 'Task' : 'Cmd';
-            $c['logger']->error('(' . $cmdType . ') ' . $type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+
+            if ($c['error']->log_enabled) {
+                $c['logger']->error('(' . $cmdType . ') ' . $type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+            }
             return;
         }
+
         if ($level > 0 OR is_string($level)) {  // If user want to display all errors
             if (is_numeric($level)) {
                 switch ($level) {
@@ -127,20 +131,26 @@ function exceptionsHandler($e, $type = '')
                     break;
                 }
             }
+
             $rules = $c['error']->parseRegex($level);
             if ($rules == false) {
                 return;
             }
-            $allowedErrors = $error->getAllowedErrors($rules);  // Check displaying error enabled for current error.
+
+            $allowedErrors = $c['error']->getAllowedErrors($rules);  // Check displaying error enabled for current error.
 
             if (isset($allowedErrors[$code])) {
                 include OBULLO . 'Exception' . DS . 'Html' . EXT;
             }
+
         } else {
             include APP . 'errors' . DS . 'disabled_error' . EXT;  // If error_reporting = 0, we show a blank page template.
         }
-        $c['logger']->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
 
+        if ($c['error']->log_enabled) {
+            $c['logger']->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+        }
+        
     } else {  // Is It Exception ? Initialize to Exceptions Component.
 
         if (is_object($c)) {

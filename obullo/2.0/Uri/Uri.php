@@ -5,7 +5,7 @@ namespace Obullo\Uri;
 /**
  * Uri Class
  * 
- * @category  Uri
+ * @category  Http
  * @package   Uri
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
@@ -47,7 +47,6 @@ Class Uri
      */
     public function fetchUriString()
     {
-        global $c;
         if ($this->uri_string != '') {
             return;
         }
@@ -103,7 +102,7 @@ Class Uri
      */
     public function detectUri()
     {
-        if (!isset($_SERVER['REQUEST_URI']) OR !isset($_SERVER['SCRIPT_NAME'])) {
+        if ( ! isset($_SERVER['REQUEST_URI']) OR ! isset($_SERVER['SCRIPT_NAME'])) {
             return '';
         }
         $uri = $_SERVER['REQUEST_URI'];
@@ -134,8 +133,7 @@ Class Uri
         }
         $uri = parse_url($uri, PHP_URL_PATH);
 
-        // Do some final cleaning of the URI and return it
-        return str_replace(array('//', '../'), '/', trim($uri, '/'));
+        return str_replace(array('//', '../'), '/', trim($uri, '/'));  // Do some final cleaning of the URI and return it
     }
 
     /**

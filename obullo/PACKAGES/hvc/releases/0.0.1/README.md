@@ -109,6 +109,13 @@ $c->func(
 
 **Note:**  Use <b>"{ }"</b> braces to remove the <b>"/index"</b> method. Otherwise you have to write full uri e.g. <b>private/posts/delete/index/$id</b>.
 
+### $r functions
+
+```php
+$r['count'];  // gives count of the results
+```
+
+
 ### Function Reference
 
 ------

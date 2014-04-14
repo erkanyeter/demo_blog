@@ -15,6 +15,7 @@ namespace Obullo\Exception;
 Class Error
 {
     public $logger;
+    public $log_enabled = false;
 
     /**
      * Constructor
@@ -24,7 +25,8 @@ Class Error
         global $c;
         $this->logger = $c['logger'];
 
-        if ($this->logger instanceof Obullo\Logger\Logger) {
+        if ($this->logger instanceof \Obullo\Logger\Logger) {
+            $this->log_enabled = true;
             $this->logger->debug('Exceptions Class Initialized');
         }
     }
@@ -66,6 +68,7 @@ Class Error
                 $lastQuery = $c['app']->db->lastQuery($prepare);
             }
         }
+
         if ( ! empty($lastQuery) AND strpos($e->getMessage(), 'SQL') !== false) { // Yes this is a db error.
             $type = 'Database Error';
             $code = 'SQL';
@@ -77,7 +80,10 @@ Class Error
         if (defined('STDIN')) {  // If Command Line Request. 
             echo $type . ': ' . $e->getMessage() . ' File: ' . $c['error']->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
             $request_type = (defined('TASK')) ? 'Task' : 'Cli';
-            $this->logger->error('(' . $request_type . ') ' . $type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+
+            if ($this->log_enabled) {
+                $this->logger->error('(' . $request_type . ') ' . $type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
+            }
             return;
         }
 
@@ -100,7 +106,7 @@ Class Error
         // Log Php Errors
         //-----------------------------------------------------------------------
 
-        if ($this->logger instanceof Obullo\Logger\Logger) {
+        if ($this->log_enabled) {
             $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
             $this->logger->__destruct(); // continue log writing
         }

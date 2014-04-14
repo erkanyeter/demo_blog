@@ -42,6 +42,9 @@ Translation <b>constants</b> located in your <b>app/i18n/</b> folder.
     - i18n
         - Form
             Error.php
+            Notice.php
+        - Body
+        - Head
 ```
 
 An Example Constant class
@@ -171,7 +174,7 @@ Translator class construct method set default locale of user using these methods
 1 - It sets locale using Http GET : 
 
 ```php
-http://example.com/home?lang=es_ES
+http://example.com/home?locale=es_ES
 ```
 
 Translator file config should be like this
@@ -179,7 +182,7 @@ Translator file config should be like this
 ```php
 <?php
 // Http Settings
-'query_string' => array('enabled' => true, 'key' => 'lang'),
+'query_string' => array('enabled' => true, 'key' => 'locale'),
 ```
 
 2 - It sets locale using http URI Segment :
@@ -192,8 +195,8 @@ Translator file config should be like this
 
 ```php
 <?php
-'query_string' => array('enabled' => false, 'key' => 'lang'),
-'uri_segment'  => array('enabled' => true, 'key' => 'lang', 'segment_number' => 1),
+'query_string' => array('enabled' => false, 'key' => 'locale'),
+'uri_segment'  => array('enabled' => true, 'key' => 'locale', 'segment_number' => 1),
 ```
 
 3 - It sets locale using http COOKIE if URI Segment and Http GET not provided : 
@@ -203,7 +206,7 @@ Translator file config should be like this
 ```php
 <?php
 // Cookies
-'cookie_prefix' => 'translator_',
+'cookie_prefix' => 'locale_',
 'cookie_domain' => '',         // Set to .your-domain.com for site-wide cookies
 'cookie_path'   => '',         // Typically will be a forward slash
 'cookie_expire' => (365 * 24 * 60 * 60), // 365 day; //  @see  Cookie expire time.   http://us.php.net/strtotime

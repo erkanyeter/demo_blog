@@ -31,7 +31,7 @@ php task [command] [arguments]\n\33[0m\n";
         echo "\33[1;36mAvailable commands:\33[0m\33[0;36m
 log        : Follows the application log file.
 clear      : Clear application log data. It is currently located in data folder.
-update     : Update your obullo version.
+update     : Update your Obullo version.
 help       : See list all of available commands.\33[0m\n";
     }
 );

@@ -15,7 +15,7 @@ Class Controller
     public static $instance;              // Controller instance
     public $publicMethods     = array();  // Controller user defined methods. ( @public )
     public $controllerMethods = array();  // Controller user defined methods starts wiht "_" underscore. ( @private )
-    public $config, $uri, $router, $translator, $logger;  // Default packages
+    public $config, $uri, $router, $logger;  // Default packages
 
     // ------------------------------------------------------------------------
 
@@ -35,11 +35,9 @@ Class Controller
         $this->config     = &$c['config'];         // If we don't use assign by reference this will cause some errors in Hvc.
         $this->uri        = &$c['uri'];            // The bug is insteresting, when we work with multiple page not found requests
         $this->router     = &$c['router'];         // The objects of getInstance() keep the last instances of the last request.
-        $this->logger     = &$c['logger'];         // that means the instance don't do the reset. Keep in your mind we need use pass by reference for variables.
+        $this->logger     = &$c['logger'];         // that means the instance don't do the clear.
+                                                   // Keep in your mind we need use pass by reference in some situations.
                                                    // @see http://www.php.net/manual/en/language.references.whatdo.php
-                                                   // 
-        // $this->translator = $c['translator'];   Translator always defined in index.php
-
         // Run Construct Method
         // ------------------------------------
 

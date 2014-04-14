@@ -20,6 +20,7 @@ Class Url
     public function __construct()
     {
         global $c;
+        
         $this->uri = $c['uri'];
         $c['logger']->debug('Url Class Initialized');
     }

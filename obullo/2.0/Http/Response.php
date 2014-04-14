@@ -13,12 +13,13 @@ namespace Obullo\Http;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/uri
+ * @link      http://obullo.com/package/http/response
  */
 Class Response
 {
     public $logger;
     public $final_output;
+    public $error;
     public $headers = array();
 
     /**
@@ -160,13 +161,20 @@ Class Response
     /**
     * 404 Page Not Found Handler
     *
-    * @param string $page page name
+    * @param string  $page     page name
+    * @param boolean $http_404 http 404 or hvc 404
     * 
     * @return string
     */
-    public function show404($page = '')
+    public function show404($page = '', $http_404 = true)
     {
-        $this->logger->error('404 Page Not Found --> '.$page);
+        $message = '404 Page Not Found --> '.$page;
+        $this->logger->error($message);
+
+        if ($http_404 == false) {
+            $this->error = $message;
+            return $message;
+        }
         echo $this->showHttpError('404 Page Not Found', $page, '404', 404);
         exit();
     }
@@ -183,8 +191,16 @@ Class Response
     public function showError($message, $statusCode = 500, $heading = 'An Error Was Encountered')
     {
         global $c;
+        
+        $this->logger->error($heading.' --> '.$message, false);
+
+        if ($statusCode === false) {
+            $this->error = $message;
+            return $message;
+        }
+
         header('Content-type: text/html; charset='.$c['config']['locale']['charset']); // Some times we use utf8 chars in errors.
-        $this->logger->error('HTTP Error --> '.$message, false);
+
         echo $this->showHttpError($heading, $message, 'general', $statusCode);
         exit();
     }
@@ -213,6 +229,26 @@ Class Response
 
         $buffer = ob_get_clean();
         return $buffer;
+    }
+
+    /**
+     * Get last response error
+     * 
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
+     * Clear variables.
+     * 
+     * @return void
+     */
+    public function clear()
+    {
+        $this->error = null;
     }
 
 }

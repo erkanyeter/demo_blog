@@ -77,12 +77,18 @@ $c['logger'] = function () {
         function () use ($logger) { 
             return new Obullo\Logger\Handler\File($logger);  // primary
         },
-        2
+        2  // priority
     );
     $logger->addHandler(
         'mongo', 
         function () use ($logger) { 
-            return new Obullo\Logger\Handler\Mongo($logger, array('collection' => null));
+            return new Obullo\Logger\Handler\Mongo(
+                $logger, 
+                array(
+                'db.dsn' => 'mongodb://root:12345@localhost:27017/test', 
+                'db.collection' => 'test_logs'
+                )
+            );
         },
         1
     );
@@ -122,9 +128,6 @@ $c['exception'] = function ($e, $type) {
 */
 require OBULLO .'Controller'. DS .'Controller'. EXT;
 /*
-|--------------------------------------------------------------------------
-| SERVICES
-|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 | App Controller
 |--------------------------------------------------------------------------
@@ -211,7 +214,7 @@ $c['db'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['crud'] = function () use ($c) {
-    return $c['app']->db = new Obullo\Crud($c['db']);  // We replace database object with crud.
+    return $c['app']->db = new Obullo\Crud($c['db']);  // Replace database object with crud.
 };
 /*
 |--------------------------------------------------------------------------
@@ -221,10 +224,10 @@ $c['crud'] = function () use ($c) {
 $c['sess'] = function () use ($c) {
     return $c['app']->sess = new Obullo\Http\Session\Native($c['config']['session']);
 };
+
+// SERVICES
+
 /*
-|--------------------------------------------------------------------------
-| SERVICES
-|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 | Cache Service
 |--------------------------------------------------------------------------
@@ -232,10 +235,10 @@ $c['sess'] = function () use ($c) {
 $c['cache'] = function () use ($c) {
     return $c['app']->cache = new Obullo\Cache\Redis($c['config']['cache']);
 };
+
+// PROVIDERS
+
 /*
-|--------------------------------------------------------------------------
-| PROVIDERS
-|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 | NoSQL Provider
 |--------------------------------------------------------------------------

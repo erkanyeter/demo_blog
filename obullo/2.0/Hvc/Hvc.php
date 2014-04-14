@@ -19,7 +19,8 @@ Class Hvc
 
     // Request, Response, Reset
     public $query_string = '';
-    public $response = '';
+    public $response;   // response object
+    public $responseData = '';
     public $request_method = 'GET';
     public $process_done = false;
 
@@ -48,20 +49,14 @@ Class Hvc
      */
     public function clear()
     {
-        // Controller Object
         $this->global = null;     // Global instance of the controller object
-
-        // Request, Response, Reset
-        $this->reponse        = '';
         $this->request_method = 'GET';
         $this->process_done   = false;
-
-        // Clone objects
         $this->uri    = null;
         $this->router = null;
 
-        // Cache and Connection
         $this->connection  = true;
+        $this->response->clear();
 
         $GLOBALS['_SERVER_BACKUP']  = array();
     }
@@ -77,6 +72,8 @@ Class Hvc
 
         $this->config = $c['config']->load('hvc');   // Get hvc configuration
         $c['translator']->load('hvc');               // Load translate file
+
+        $this->response = $c['response'];
 
         $c['logger']->debug('Hvc Class Initialized');
     }
@@ -110,10 +107,10 @@ Class Hvc
 
         //-------- BACKUP GLOBALS ( We need them in Get Class ) ---------//
 
-        $GLOBALS['_GET_BACKUP']     = $_GET;    // Original request variables
-        $GLOBALS['_POST_BACKUP']    = $_POST;
+        // $GLOBALS['_GET_BACKUP']     = $_GET;    // Original request variables
+        // $GLOBALS['_POST_BACKUP']    = $_POST;
         $GLOBALS['_SERVER_BACKUP']  = $_SERVER;
-        $GLOBALS['_REQUEST_BACKUP'] = $_REQUEST;
+        // $GLOBALS['_REQUEST_BACKUP'] = $_REQUEST;
 
         //--------- 
 
@@ -184,8 +181,9 @@ Class Hvc
     /**
      * Set Hvc Request Method
      *
-     * @param    string $method
-     * @param    mixed  $data   params or data
+     * @param string $method
+     * @param mixed  $data  params or data
+     * 
      * @return   void
      */
     public function setMethod($method = 'GET', $data = '')
@@ -225,7 +223,8 @@ Class Hvc
      *
      * $this->hvc->get('welcome/test/index?foo=im_foo&bar=im_bar');
      *
-     * @param  string $query_string
+     * @param string $query_string string
+     * 
      * @return array  $segments
      */
     public function parseQuery($query_string = '')
@@ -453,7 +452,8 @@ echo $this->view->get(
 
         if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
                                             // This cache type not related with Cache package.
-            $response = $this->getResponse();
+            $response = $this->getResponseData();
+
             $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
             $this->_clear();
             return $response;    // This is native system cache !
@@ -466,7 +466,9 @@ echo $this->view->get(
         if ($this->config['caching']) {
             $cache = $this->config['cache'](); 
             $cache = $cache::$driver;
+            
             $response = $cache->get($KEY);
+
             if ( ! empty($response)) {              // If cache exists return to cached string.
                 $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
                 $this->_clear();
@@ -476,13 +478,9 @@ echo $this->view->get(
 
         // ----------------- Route is Valid -------------------//
 
-        $response = $router->getResponse();
-
-        if ($this->connection === false OR $response != false) {  // If router dispatch fail ?
-            $rsp_k = key($response);
+        if ($this->response->getError() != '') {  // If router dispatch fail ?
             $this->_clear();
-            $this->setResponse($rsp_k . ' ' . $response[$rsp_k]);
-            return $this->getResponse();
+            return $this->response->getError();
         }
 
         //----------------------------------------------------------------------------
@@ -507,14 +505,13 @@ echo $this->view->get(
         if (isset($storage[$router->fetchClass()])) {    // Check is multiple call to same class.
             $app = $storage[$router->fetchClass()];       // Get stored class.
         } else {
-            require($controller);        // Call the controller.
+            include $controller;        // Call the controller.
         }
 
         // --------- End storage exists ----------- //
         // $app variable available here !
 
         if ( ! isset($c['request']->global)) { // ** Let's create new request object for globals
-           // $c['request'] = new Request;       // create new request object;
 
             // create a global variable
             // keep all original objects in it.
@@ -533,8 +530,7 @@ echo $this->view->get(
             OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
         ) {
             $this->_clear();
-            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
-            return $this->getResponse();
+            return $this->response->show404($this->hvc_uri, false);
         }
 
         // Get application methods
@@ -548,8 +544,7 @@ echo $this->view->get(
 
         if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {
             $this->_clear();
-            $this->setResponse('404 - Hvc request not found: ' . $this->hvc_uri);
-            return $this->getResponse();
+            return $this->response->show404($this->hvc_uri, false);
         }
 
         // Slice Arguments
@@ -568,7 +563,7 @@ echo $this->view->get(
 
         //----------------------------
 
-        $content = ob_get_contents(); // Get the contents of the output buffer
+        $response = ob_get_contents(); // Get the contents of the output buffer
 
         //----------------------------
 
@@ -576,7 +571,6 @@ echo $this->view->get(
 
         //----------------------------
 
-        $this->setResponse($content);
         $this->_clear();
 
         //--------------------------------------
@@ -587,8 +581,6 @@ echo $this->view->get(
 
         //----------------------------
         // End storage
-
-        $response = $this->getResponse();
 
         //------------- Set to Cache -------------//
 
@@ -662,9 +654,9 @@ echo $this->view->get(
      * @param    mixed $data
      * @return   void
      */
-    public function setResponse($data = '')
+    public function setResponseData($data = '')
     {
-        $this->response = $data;
+        $this->responseData = $data;
     }
 
     // --------------------------------------------------------------------
@@ -675,9 +667,9 @@ echo $this->view->get(
      * 
      * @return string
      */
-    public function getResponse()
+    public function getResponseData()
     {
-        return $this->response;
+        return $this->responseData;
     }
 
     // --------------------------------------------------------------------

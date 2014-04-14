@@ -2,6 +2,8 @@
 
 namespace Obullo\Logger\Handler;
 
+use Obullo\Logger\PriorityQueue;
+
 /**
  * File Handler Class
  * 
@@ -27,18 +29,15 @@ Class File
     {
         global $c;
 
-        $this->logger    = $logger;             // logger object
-        $this->processor = $logger->processor;  // processor object
+        $this->logger = $logger;
         
         $this->path = self::replacePath($c['config']['logger']['path']['app']);   // Application request path
 
-        if (defined('STDIN') AND defined('TASK')) {     // Task request
-            $this->path = self::replacePath($c['config']['logger']['path']['cli']);
-        } elseif (defined('STDIN')) {                   // Cli request
+        if (defined('STDIN')) {                   // Cli request
             if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
-                $this->setProperty('enabled', false);
+                $this->logger->setProperty('enabled', false);
             }
-            $this->path = self::replacePath($c['config']['logger']['path']['task']);
+            $this->path = self::replacePath($c['config']['logger']['path']['cli']);
         }
     }
 
@@ -108,27 +107,33 @@ Class File
      */
     public function write()
     {
-        // Queue
-        $this->processor->setExtractFlags(\Obullo\Logger\PriorityQueue::EXTR_BOTH); // mode of extraction 
+        $processor = $this->logger->getProcessorInstance('file');
 
-        if ($this->processor->count() > 0) {
-            $this->processor->top();  // Go to Top
+        // Queue
+        $processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
+
+        if ($processor->count() > 0) {
+            $processor->top();  // Go to Top
         }
         /**
          * Using SplPriorityQueue Class we add log
          * messages to Queue like below : 
          *
          * $processor = new SplPriorityQueue();
-         * $processor->insert(array('file' => $record), $priority = 0); 
+         * $processor->insert(array('' => $record), $priority = 0); 
          * $processor->insert(array('mongo' => $record), $priority = 2); 
          * $processor->insert(array('email' => $record), $priority = 3); 
          */
+     
         $lines = '';
-        while ($this->processor->valid()) {         // Prepare Lines
-            $output = $this->processor->current(); 
-            $lines.= $output['data']['file'];       // Get file handler data from queue
-            $this->processor->next(); 
-        } 
+        while ($processor->valid()) {         // Prepare Lines
+            $record = $processor->current(); 
+            $lines.= $record['data'];
+            $processor->next(); 
+        }
+
+        // echo $lines;
+        
         if ( ! $fop = fopen($this->path, 'ab')) {
             return false;
         }

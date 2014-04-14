@@ -6,7 +6,7 @@ namespace Obullo\Logger;
  * Logger Handler Interface
  * 
  * @category  Logger
- * @package   File
+ * @package   Logger
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence

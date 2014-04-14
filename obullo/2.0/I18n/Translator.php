@@ -23,9 +23,9 @@ Class Translator implements ArrayAccess
     public $langCode;
     public $langName;
     public $langArray;
-    public $langKey = 'lang'; // Language key of the lang code default is = "langCode"
+    public $langKey = 'locale'; // Default lang code is = "locale"
 
-    // Uri query string based example:  http://example.com/home?langCode=en
+    // Uri query string based example:  http://example.com/home?locale=en
     // Uri segment based example :      http://example.com/home/en
     
     protected $cookie_prefix = '';

@@ -2,11 +2,13 @@
 
 namespace Obullo\Router;
 
+use Obullo\Http\Response;
+
 /**
- * Router Class
+ * Request Class
  * 
  * @category  Router
- * @package   Router
+ * @package   Request
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
@@ -17,14 +19,12 @@ Class Router
     public $logger;
     public $uri;
     public $config;
-    public $response = array();
+    public $response;
     public $routes = array();
-    public $error_routes = array();
     public $class = '';
     public $method = 'index';
     public $directory = '';
     public $uri_protocol = 'auto';
-    public $default_controller;
 
     /**
      * Constructor
@@ -37,38 +37,34 @@ Class Router
     public function __construct($routes = array())
     {
         global $c;
-        $this->routes = $routes;
-        $this->logger = $c['logger'];
-        $this->uri = $c['uri'];
-        $this->config = $c['config'];
-        $this->method = $this->routes['index_method'];
+
+        $this->routes   = $routes;
+        $this->method   = $this->routes['index_method'];
+
+        $this->logger   = $c['logger'];
+        $this->uri      = $c['uri'];
+        $this->config   = $c['config'];
 
         $this->setRouting();
-        $this->logger->debug('Router Class Initialized');
+        $this->logger->debug('Router Request Class Initialized');
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     * Clean all data for Hmvc.
+     * Clean all data for Hvc.
      *
      * @return  void
      */
     public function clear()
     {
         global $c;
+
         $this->uri = $c['uri'];   // reset cloned URI object.
-        $this->response = array();
-        $this->error_routes = array(); // route config dont't reset "$this->routes" there cause some isset errors
+        $this->response = null;
         $this->class = '';
         $this->method = 'index';
         $this->directory = '';
         $this->uri_protocol = 'auto';
-        $this->controller_directory = 'controller';
-        $this->default_controller = '';
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Clone URI object for HVC Requests,
@@ -83,10 +79,8 @@ Class Router
         $this->uri = clone $this->uri;
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     * Set the route mapping ( Access must be public for HMVC Class. )
+     * Set the route mapping ( Access must be public for HVC Class. )
      *
      * This function determines what should be served based on the URI request,
      * as well as any "routes" that have been set in the routing config file.
@@ -96,9 +90,12 @@ Class Router
     public function setRouting()
     {
         global $c;
-        if (!isset($_SERVER['HVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
+
+        if ( ! isset($_SERVER['HVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
+
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
+            
             $d_key = $c['config']['uri']['directory_trigger'];
             $c_key = $c['config']['uri']['controller_trigger'];
             $m_key = $c['config']['uri']['function_trigger'];
@@ -114,32 +111,27 @@ Class Router
                 return;
             }
         }
-        // Set the default controller so we can display it in the event
-        // the URI doesn't correlated to a valid controller.
 
-        $this->default_controller = (!isset($this->routes['default_controller']) OR $this->routes['default_controller'] == '') ? false : strtolower($this->routes['default_controller']);
+        $this->uri->fetchUriString();  // Detect the complete URI string
 
-        $this->uri->fetchUriString(); // Detect the complete URI string
+        if ($this->uri->getUriString() == '') {       // Is there a URI string ? // If not, the default controller specified in the "routes" file will be shown.
 
-        if ($this->uri->getUriString() == '') {       // Is there a URI string?                                            // If not, the default controller specified in the "routes" file will be shown.
-            if ($this->default_controller === false) {
-                $this->response['404'] = 'Unable to determine what should be displayed. A default route has not been specified in the routing file.';
+            if ($this->routes['default_controller'] == '') {   // Set the default controller so we can display it in the event the URI doesn't correlated to a valid controller.
 
-                if (isset($_SERVER['HVC_REQUEST'])) { // HMVC Connection
-                    return false; // Returns to false if we have hmvc connection error.
+                $message = 'Unable to determine what should be displayed. A default route has not been specified in the routing file.';
+                $this->response = new Response;
+
+                if (isset($_SERVER['HVC_REQUEST'])) {  // Returns to false if we have Hvc connection error.
+                    $this->response->showError($message, false);
+                    return false;
                 }
-                $c['response']->showError($this->response['404'], 404);
+                $this->response->showError($message, 404);
             }
 
-            // Turn the default route into an array.  We explode it in the event that
-            // the controller is located in a subfolder
+            $segments = $this->validateRequest(explode('/', $this->routes['default_controller']));  // Turn the default route into an array.
 
-            $segments = $this->_validateRequest(explode('/', $this->default_controller));
-
-            if (isset($_SERVER['HVC_REQUEST'])) {
-                if ($segments === false) { // HVC Connection
-                    return false; // Returns to false if we have hmvc connection error.
-                }
+            if (isset($_SERVER['HVC_REQUEST']) AND $segments === false) {   // Returns to false if we have hvc connection error.
+                return false;  
             }
 
             $this->setClass($segments[1]);
@@ -149,15 +141,11 @@ Class Router
             return;
         }
 
-        // unset($this->routes['default_controller']); WHY WE UNSET DEFAULT CONTROLLER IS IT FOR HMVC ?????
-
         $this->uri->removeUrlSuffix();   // Do we need to remove the URL suffix?
         $this->uri->explodeSegments();   // Compile the segments into an array 
 
-        $this->_parseRoutes();        // Parse any custom routing that may exist
+        $this->parseRoutes();        // Parse any custom routing that may exist
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Set the Route
@@ -169,47 +157,33 @@ Class Router
      * 
      * @return void
      */
-    private function _setRequest($segments = array())
+    public function setRequest($segments = array())
     {
-        $segments = $this->_validateRequest($segments);
-
+        $segments = $this->validateRequest($segments);
         if (count($segments) == 0) {
             return;
         }
         $this->setClass($segments[1]);
-        $this->uri->rsegments = $segments;  // Update our "routed" segment array to contain the segments.
-        // identical to $this->uri->segments
-        // Note: If there is no custom routing, this array will be         
+        $this->uri->rsegments = $segments;  // Update our "routed" segment array to contain the segments.    
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     * Validates the supplied segments.  Attempts to determine the path to
+     * Validates the supplied segments. Attempts to determine the path to
      * the controller.
      *
-     * $segments[0] = module
-     * $segments[1] = controller
+     * Segments:  0 = directory, 1 = controller, 2 = method
      *
-     *       0      1           2
-     * module / controller /  method  /
-     *
-     * @param  array $segments uri segments
+     * @param array $segments uri segments
      * 
      * @return array
      */
-    public function _validateRequest($segments)
+    public function validateRequest($segments)
     {
-        global $c;
-
-        if (!isset($segments[0])) {
+        if ( ! isset($segments[0])) {
             return $segments;
         }
 
-        // TASK OPERATIONS
-        //----------------------------
-
-        if (defined('STDIN') AND !isset($_SERVER['HVC_REQUEST'])) {  // Command Line Request
+        if (defined('STDIN') AND ! isset($_SERVER['HVC_REQUEST'])) {  // Command Line Requests
             array_unshift($segments, 'tasks');
         }
 
@@ -221,15 +195,16 @@ Class Router
         // SET DIRECTORY
         //----------------------------
 
-        $this->setDirectory($segments[0]); // Set first segment as a module
+        $this->setDirectory($segments[0]);      // Set first segment as a directory
 
-        if (!empty($segments[1])) {
-            if (file_exists($root . $this->fetchDirectory() . DS . 'controller' . DS . $segments[1] . EXT)) {
-                return $segments;
-            }
+        if ( ! is_dir($root . $this->fetchDirectory() . DS . 'controller' . DS)) {
+            $this->response = new Response;
+            $this->response->showError('The folder "' . $this->fetchDirectory() . DS . 'controller' . '" not found.');
         }
 
-        //----------------------------
+        if ( ! empty($segments[1]) AND file_exists($root . $this->fetchDirectory() . DS . 'controller' . DS . $segments[1] . EXT)) {
+            return $segments;
+        }
 
         if (file_exists($root . $this->fetchDirectory() . DS . 'controller' . DS . $this->fetchDirectory() . EXT)) {
             array_unshift($segments, $this->fetchDirectory());
@@ -241,9 +216,9 @@ Class Router
         // If we've gotten this far it means that the URI does not correlate to a valid
         // controller class.  We will now see if there is an override
 
-        if (!empty($this->routes['404_override'])) {
-            $x = explode('/', $this->routes['404_override']);
+        if ( ! empty($this->routes['404_override'])) {
 
+            $x = explode('/', $this->routes['404_override']);
             $this->setDirectory($x[0]);
             $this->setClass($x[1]);
             $this->setMethod(isset($x[2]) ? $x[2] : 'index');
@@ -251,20 +226,18 @@ Class Router
         }
 
         $error_page = (isset($segments[1])) ? $segments[0] . '/' . $segments[1] : $segments[0];
+        $error_page = filter_var($error_page, FILTER_SANITIZE_SPECIAL_CHARS);
 
         // HVC 404
         //----------------------------
+        $this->response = new Response;
 
         if (isset($_SERVER['HVC_REQUEST'])) {
-            global $logger;
-            $this->response['404'] = 'The page "' . $error_page . '" not found.';
-            $logger->debug('Hvc request not found ( ' . $error_page . ' ).');
+            $this->response->show404($error_page, false);
             return false;
         }
-        $c['response']->show404($error_page);
+        $this->response->show404($error_page);
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Parse Routes
@@ -273,61 +246,49 @@ Class Router
      * the config/routes.php file against the URI to
      * determine if the class/method need to be remapped.
      *
-     * @access    public
      * @return    void
      */
-    public function _parseRoutes()
+    public function parseRoutes()
     {
-        // Do we even have any custom routing to deal with?
-        // There is a default scaffolding trigger, so we'll look just for 1
-
-        if (count($this->routes) == 1) {
-            $this->_setRequest($this->uri->segments);
+        if (count($this->routes) == 1) {                 // Do we even have any custom routing to deal with ?
+            $this->setRequest($this->uri->segments);     // There is a default scaffolding trigger, so we'll look just for 1
             return;
         }
         $uri = implode('/', $this->uri->segments);
 
-        if (isset($this->routes[$uri])) {  // Is there a literal match?  If so we're done
-            $this->_setRequest(explode('/', $this->routes[$uri]));
+        if (isset($this->routes[$uri])) {               // Is there a literal match?  If so we're done
+            $this->setRequest(explode('/', $this->routes[$uri]));
             return;
         }
-        foreach ($this->routes as $key => $val) { // Loop through the route array looking for wild-cards
+        foreach ($this->routes as $key => $val) {       // Loop through the route array looking for wild-cards
             $key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key)); // Convert wild-cards to RegEx
 
             if (preg_match('#^' . $key . '$#', $uri)) {  // Does the RegEx match?
                 if (strpos($val, '$') !== false AND strpos($key, '(') !== false) {  // Do we have a back-reference ?
                     $val = preg_replace('#^' . $key . '$#', $val, $uri);
                 }
-                $this->_setRequest(explode('/', $val));
+                $this->setRequest(explode('/', $val));
                 return;
             }
         }
-        // If we got this far it means we didn't encounter a
-        // matching route so we'll set the site default route
-
-        $this->_setRequest($this->uri->segments);
+        $this->setRequest($this->uri->segments);  // If we got this far it means we didn't encounter a matching route so we'll set the site default route
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Set the class name
+     * 
+     * @param string $class classname segment 1
      *
-     * @access    public
-     * @param     string
-     * @return    void
+     * @return void
      */
     public function setClass($class)
     {
         $this->class = $class;
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Fetch the current class
      *
-     * @access    public
      * @return    string
      */
     public function fetchClass()
@@ -335,26 +296,21 @@ Class Router
         return $this->class;
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     *  Set the method name
+     * Set the method name
      *
-     * @access    public
-     * @param     string
-     * @return    void
+     * @param string $method function name
+     * 
+     * @return void
      */
     public function setMethod($method)
     {
         $this->method = $method;
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     *  Fetch the current method
+     * Fetch the current method
      *
-     * @access    public
      * @return    string
      */
     public function fetchMethod()
@@ -362,47 +318,26 @@ Class Router
         return $this->routes['index_method'];   // method  always must be index.
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     *  Set the directory name
+     * Set the directory name
      *
-     * @access   public
-     * @param    string
-     * @return   void
+     * @param string $directory directory
+     * 
+     * @return void
      */
-    public function setDirectory($dir)
+    public function setDirectory($directory)
     {
-        $this->directory = $dir;
+        $this->directory = $directory;
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Fetch the directory (if any) that contains the requested controller class
      *
-     * @access    public
      * @return    string
      */
     public function fetchDirectory()
     {
-        return $this->directory;
-    }
-
-    // --------------------------------------------------------------------
-
-    /**
-     * Fetch hmvc response.
-     *
-     * @access public
-     * @return array
-     */
-    public function getResponse()
-    {
-        if (count($this->response) > 0) {
-            return $this->response;
-        }
-        return false;
+        return filter_var($this->directory, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
 }

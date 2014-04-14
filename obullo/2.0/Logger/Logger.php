@@ -1,6 +1,7 @@
 <?php
 
 namespace Obullo\Logger;
+use Closure, Exception;
 
 /**
  * Logger Adapter Class
@@ -17,32 +18,24 @@ namespace Obullo\Logger;
 Class Logger
 {
     /**
-     * Log priority contants
-     */
-    const EMERGENCY = 0;
-    const ALERT     = 1;
-    const CRITICAL  = 2;
-    const ERROR     = 3;
-    const WARNING   = 4;
-    const NOTICE    = 5;
-    const INFO      = 6;
-    const DEBUG     = 7;
-
-    /**
      * Log priorities
      * @var array
      */
     protected static $priorities = array(
-        'emergency' => self::EMERGENCY,
-        'alert'     => self::ALERT,
-        'critical'  => self::CRITICAL,
-        'error'     => self::ERROR,
-        'warning'   => self::WARNING,
-        'notice'    => self::NOTICE,
-        'info'      => self::INFO,
-        'debug'     => self::DEBUG,
+        'emergency' => LOGGER_EMERGENCY,
+        'alert'     => LOGGER_ALERT,
+        'critical'  => LOGGER_CRITICAL,
+        'error'     => LOGGER_ERROR,
+        'warning'   => LOGGER_WARNING,
+        'notice'    => LOGGER_NOTICE,
+        'info'      => LOGGER_INFO,
+        'debug'     => LOGGER_DEBUG,
     );
-
+    /**
+     * Priority values
+     * @var array
+     */
+    public $priority_values = array();
     /**
      * Config object
      * @var object
@@ -52,12 +45,12 @@ Class Logger
      * Write all outputs to end of the page
      * @var boolean
      */
-    public $debug         = false;    // Write all outputs to end of the page
+    public $debug = false;    // Write all outputs to end of the page
     /**
      * On / Off Logging
      * @var boolean
      */
-    public $enabled       = true;
+    public $enabled = true;
     /**
      * Threshold array
      * @var array
@@ -67,17 +60,17 @@ Class Logger
      * Sql Queries
      * @var boolean
      */
-    public $queries       = false;    // log sql queries
+    public $queries = false;    // log sql queries
     /**
      * Benchmark Data, Memory usage, Cpu info
      * @var boolean
      */
-    public $benchmark     = false;    // log bechmark data, memory usage etc.
+    public $benchmark = false;    // log bechmark data, memory usage etc.
     /**
      * Output format for line based handlers
      * @var string
      */
-    public $line          = '';       // line output format
+    public $line = '';       // line output format
     /**
      * Available  writers: file, email, mongo
      * @var array
@@ -87,12 +80,22 @@ Class Logger
      * Default channel
      * @var string
      */
-    public $channel       = 'system'; // default log channel
+    public $channel = 'system'; // default log channel
     /**
      * Defined handlers in the container
      * @var array
      */
     protected $handlers  = array();
+    /**
+     * Log queue object
+     * @var array
+     */
+    protected $processor = array();
+    /**
+     * Push data
+     * @var array
+     */
+    protected $push = array();
 
     /**
     * Constructor
@@ -108,8 +111,9 @@ Class Logger
         $this->queries         = $this->config['queries'];
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
+        $this->priority_values = array_values(self::$priorities);
 
-        $this->processor = new PriorityQueue;  // Load SplPriorityQueue
+        $this->processor = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
     }
 
     /**
@@ -121,24 +125,10 @@ Class Logger
      *
      * @return void
      */
-    public function addHandler($name, \Closure $handler, $priority = 0)
+    public function addHandler($name, Closure $handler, $priority = 0)
     {
-        if (count($this->handlers) == 0) {  // find the primary handler
-            $this->addWriter($name, $handler(), $priority);
-        }
-        $this->handlers[$name] = array('handler' => $handler, 'priority' => $priority);
-    }
-
-    /**
-     * Get priority of the selected handler
-     * 
-     * @param string $name handler
-     * 
-     * @return integer
-     */
-    public function getPriority($name = 'file')
-    {
-        return $this->handlers[$name]['priority'];
+        $this->addWriter($name, $handler(), $priority);
+        $this->handlers[$name] = $name;
     }
 
     /**
@@ -290,17 +280,18 @@ Class Logger
      * $logger->push('email');  // send log data using email handler
      * $logger->push('mongo');  // send log data to mongo db
      * 
-     * @param string $name set log handler
+     * @param string  $name     set log handler
+     * @param integer $priority set level of priority
      * 
      * @return void
      */
-    public function push($name = 'email')
+    public function push($name = 'email', $priority = null)
     {   
         if ( ! isset($this->handlers[$name])) {
-            throw new \Exception('The handler '.$name.' not defined in application index.php');
+            throw new Exception('The handler '.$name.' not defined in your application index.php');
         }
-        if ( ! isset($this->writers[$name])) {
-            $this->addWriter($name, $this->handlers[$name](), $this->getPriority($name));  // store writer
+        if (in_array($priority, $this->priority_values)) {  // Just push for this priority
+            $this->push[$name] = $priority;
         }
     }
 
@@ -316,7 +307,8 @@ Class Logger
     public function addWriter($name, $handler, $priority = 1)
     {
         if ( ! isset($this->writers[$name])) {
-            $this->writers[$name] = array('handler' => $handler, 'priority' => $priority);
+            $this->processor[$name] = new PriorityQueue;    // add processor
+            $this->writers[$name]   = array('handler' => $handler, 'priority' => $priority);
         }
     }
 
@@ -345,15 +337,25 @@ Class Logger
     }
     
     /**
+     * Get processor object of valid handler
+     * 
+     * @param string $handler name
+     * 
+     * @return object of handler
+     */
+    public function getProcessorInstance($handler = 'file')
+    {
+        return $this->processor[$handler];
+    }
+
+    /**
      * Send logs to Queue
      *
      * Using SplPriorityQueue Class we send
      * messages to Queue like below : 
      *
-     * $processor = new SplPriorityQueue();
-     * $processor->insert(array('file' => $record), $priority = 0); 
-     * $processor->insert(array('mongo' => $record), $priority = 2); 
-     * $processor->insert(array('email' => $record), $priority = 3); 
+     * $processor = new SplPriorityQueue;
+     * $processor->insert($record, $priority = 0); 
      * 
      * @param array $record_unformatted unformated log data
      * 
@@ -365,14 +367,8 @@ Class Logger
          * Insert record to queue for each log handlers
          */
         foreach ($this->writers as $name => $val) {
-            $record_formatted[$name] = $val['handler']->format($record_unformatted);  // create log data
-            // print_r($record_formatted[$name]);
-            // 
-            
-            if($name == 'mongo')
-            print_r($record_unformatted);
-
-            $this->processor->insert($record_formatted, $val['priority']);
+            $record_formatted = $val['handler']->format($record_unformatted);  // create log data
+            $this->processor[$name]->insert($record_formatted, $val['priority']);
         }
     }
 

@@ -6,7 +6,7 @@ namespace Obullo\Logger;
  * PriorityQueue Class
  * 
  * @category  Logger
- * @package   Logger_Output
+ * @package   PriorityQueue
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
@@ -30,7 +30,7 @@ Class PriorityQueue extends \SplPriorityQueue
 
 }
 
-// END Output class
-/* End of file Output.php */
+// END PriorityQueue class
+/* End of file PriorityQueue.php */
 
-/* Location: .Obullo/Logger/Output.php */
+/* Location: .Obullo/Logger/PriorityQueue.php */

@@ -9,6 +9,9 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
+
+        $this->logger->notice('test');
+        $this->logger->push('mongo', LOGGER_NOTICE);
     }
 );
 

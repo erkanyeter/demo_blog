@@ -11,11 +11,11 @@
 $config =  array(
       
       // Http Settings
-      'query_string' => array('enabled' => true, 'key' => 'lang'), // Uri query string name e.g. http://example.com/home?lang=en_US
-      'uri_segment'  => array('enabled' => false,'key' => 'lang', 'segment_number' => 1), // Uri segment number e.g. http://example.com/home/en_US
+      'query_string' => array('enabled' => true, 'key' => 'locale'), // Uri query string name e.g. http://example.com/home?locale=en_US
+      'uri_segment'  => array('enabled' => false,'key' => 'locale', 'segment_number' => 1), // Uri segment number e.g. http://example.com/home/en_US
 
       // Cookies
-      'cookie_prefix' => 'translator_',
+      'cookie_prefix' => 'locale_',
       'cookie_domain' => '',         // Set to .your-domain.com for site-wide cookies
       'cookie_path'   => '',         // Typically will be a forward slash
       'cookie_expire' => (365 * 24 * 60 * 60), // 365 day; //  @see  Cookie expire time.   http://us.php.net/strtotime
