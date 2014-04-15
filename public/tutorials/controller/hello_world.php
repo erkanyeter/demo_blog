@@ -13,6 +13,8 @@ $app = new Controller(
         $this->logger->notice('test');
         $this->logger->push('mongo', LOG_NOTICE);
         $this->logger->notice('ehhhehe');
+
+        // $this->hvc->get('private/comments/getuser', array('user_id' => 5), $expiration = 7200);
     }
 );
 
