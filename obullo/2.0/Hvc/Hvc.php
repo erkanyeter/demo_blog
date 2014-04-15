@@ -1,15 +1,16 @@
 <?php
 
+namespace Hvc;
+
 /**
- * Hvc Class
- * "Hierarcial View Controller" Library
- * 2009 -2014
+ * Hvc Class - ( Hierarcial View Controller )
  * 
- * @author        Obullo - obulloframework@gmail.com
- * @package       packages
- * @subpackage    hvc
- * @category      hvc
- * 
+ * @category  Hvc
+ * @package   Hvc
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/hvc
  */
 Class Hvc
 {
@@ -34,12 +35,8 @@ Class Hvc
     protected static $cid  = array();  // Static HVC Connection ids. DO NOT CLEAR IT !!!
     protected $hvc_uri;
 
-    const KEY = 'Hvc:';   // Hvc key prefix
-
-    // Benchmark
-    public static $start_time = '';     // benchmark start time
-
-    // --------------------------------------------------------------------
+    const KEY = 'Hvc:';                // Hvc key prefix
+    public static $start_time = '';    // benchmark start time
 
     /**
      * Reset all variables for multiple
@@ -61,8 +58,6 @@ Class Hvc
         $GLOBALS['_SERVER_BACKUP']  = array();
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Constructor
      */
@@ -78,18 +73,17 @@ Class Hvc
         $c['logger']->debug('Hvc Class Initialized');
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Prepare HVC Request (Set the URI String).
-     *
-     * @access private
-     * @param string $uri uri
+     * 
+     * @param string $uriString uri
      * 
      * @return    void
      */
     public function setRequestUrl($uriString = '')
     {
+        global $c;
+
         // ----------- Visibility -----------------
 
         $type = 'public';
@@ -105,12 +99,9 @@ Class Hvc
             $uriString = substr($uriString, 6);
         }
 
-        //-------- BACKUP GLOBALS ( We need them in Get Class ) ---------//
+        //-------- Backup $_SERVER ( We need it in Get Class ) ---------//
 
-        // $GLOBALS['_GET_BACKUP']     = $_GET;    // Original request variables
-        // $GLOBALS['_POST_BACKUP']    = $_POST;
         $GLOBALS['_SERVER_BACKUP']  = $_SERVER;
-        // $GLOBALS['_REQUEST_BACKUP'] = $_REQUEST;
 
         //--------- 
 
@@ -121,9 +112,9 @@ Class Hvc
         $_SERVER['HVC_REQUEST_TYPE'] = $type;  // "public" or "private"
         //--------------------------
 
-        $this->_setConnString($uriString);
+        $this->setConnString($uriString);
 
-        // Don't clone getInstance(), we just do backup.
+        // don't clone Controller::$instance, we just do backup.
         //----------------------------------------------
         
         $this->global = Controller::$instance;     // We need create backup $this object of main controller
@@ -131,62 +122,50 @@ Class Hvc
         // becuse of it will change when HVC process is done.
         //----------------------------------------------
 
-        if ( ! empty($uriString)) { // empty control
+        $uri    = $c['uri'];
+        $router = $c['router'];
 
-            global $c;
+        // Clone Objects
+        // -----------------------------------------
 
-            $uri    = $c['uri'];
-            $router = $c['router'];
+        $this->uri    = clone $uri;         // Create copy of original Uri class.
+        $this->router = clone $router;      // Create copy of original Router class.
 
-            // Clone Objects
-            // -----------------------------------------
+        // Clear
+        // -----------------------------------------
 
-            $this->uri    = clone $uri;         // Create copy of original Uri class.
-            $this->router = clone $router;      // Create copy of original Router class.
+        $uri->clear();           // Reset uri objects we will reuse it for hvc
+        $router->clear();        // Reset router objects we will reuse it for hvc.
 
-            // Clear
-            // -----------------------------------------
+        // Set Uri String to Uri Object
+        //----------------------------------------------
 
-            $uri->clear();           // Reset uri objects we will reuse it for hvc
-            $router->clear();        // Reset router objects we will reuse it for hvc.
-            // -----------------------------------------
-            //----------------------------------------------
-            // Set Uri String to Uri Object
-            //----------------------------------------------
+        if (strpos($uriString, '?') > 0) {
+            $uri_part = explode('?', urldecode($uriString));  // support any possible url encode operation
+            $this->query_string = $uri_part[1];     // .json?id=2
 
-            if (strpos($uriString, '?') > 0) {
-                $uri_part = explode('?', urldecode($uriString));  // support any possible url encode operation
-                $this->query_string = $uri_part[1];     // .json?id=2
-
-                $uri->setUriString($uri_part[0], false); // false = null filter
-            } else {
-                $uri->setUriString($uriString);
-            }
-
-            // Set uri string to $_SERVER GLOBAL
-            //----------------------------------------------
-
-            $_SERVER['HVC_REQUEST_URI'] = $uriString;
-
-            //----------------------------------------------
-
-            $this->connection = $router->setRouting(); // Returns false if we have hvc connection error.
-
-            //----------------------------------------------
+            $uri->setUriString($uri_part[0], false); // false = null filter
+        } else {
+            $uri->setUriString($uriString);
         }
-    }
 
-    // --------------------------------------------------------------------
+        // Set uri string to $_SERVER GLOBAL
+        //----------------------------------------------
+
+        $_SERVER['HVC_REQUEST_URI'] = $uriString;
+
+        $this->connection = $router->setRouting(); // Returns false if we have hvc connection error.
+    }
 
     /**
      * Set Hvc Request Method
      *
-     * @param string $method
-     * @param mixed  $data  params or data
+     * @param string $method hvc method
+     * @param array  $data   params
      * 
      * @return   void
      */
-    public function setMethod($method = 'GET', $data = '')
+    public function setMethod($method = 'GET', $data = array())
     {
         if (empty($data)) {
             $data = array();
@@ -216,8 +195,6 @@ Class Hvc
         $_SERVER['REQUEST_METHOD'] = $method;  // Set request method ..
     }
 
-    // --------------------------------------------------------------------
-    
     /**
      * Parse Url if there is any possible query string like this
      *
@@ -236,66 +213,72 @@ Class Hvc
         return $segments;
     }
 
-    // ------------------------------------------------------------------------
-
     /**
-     * Hvc Get Request
+     * Hvc GET Request
      * 
-     * @param  string  $uri    
-     * @param  array   $data       request data ( $_POST or $_GET )
-     * @param  integer $expiration whether to use cache
-     * @return string         
+     * @param string  $uri        uri string
+     * @param array   $data       get data
+     * @param integer $expiration cache ttl
+     * 
+     * @return string
      */
-    public function get($uri, $data = '', $expiration = null)
+    public function get($uri, $data = array(), $expiration = null)
     {
         return $this->request('GET', $uri, $data, $expiration);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
-     * Hvc Post Request
+     * Hvc POST Request
      * 
-     * @param string  $uri    
-     * @param mixed   $data       request data ( $_POST or $_GET )
-     * @param integer $expiration whether to use cache
+     * @param string  $uri        uri string
+     * @param array   $data       post data
+     * @param integer $expiration cache ttl
      * 
-     * @return string         
+     * @return string
      */
-    public function post($uri, $data = '', $expiration = null)
+    public function post($uri, $data = array(), $expiration = null)
     {
         return $this->request('POST', $uri, $data, $expiration);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
-     * Hvc Put Request
+     * Hvc PUT ( Update ) Request
      * 
-     * @param  string $uri    
-     * @param  array  $data request data ( $_POST or $_GET )
-     * @return string         
+     * @param string $uri  uri string
+     * @param array  $data post data
+     * 
+     * @return string
      */
-    public function put($uri, $data = '')
+    public function put($uri, $data = array())
     {
         return $this->request('PUT', $uri, $data);
     }
 
-    // ------------------------------------------------------------------------
+    /**
+     * Alias of PUT
+     * 
+     * @param string $uri  uri string
+     * @param array  $data post data
+     * 
+     * @return string
+     */
+    public function update($uri, $data = array())
+    {
+        return $this->put($uri, $data);
+    }   
 
     /**
      * Hvc Delete Request
      * 
-     * @param  string $uri    
-     * @param  array  $data request data ( $_POST or $_GET )
+     * @param string $uri  uri string
+     * @param array  $data post data
+     * 
      * @return string
      */
-    public function delete($uri, $data = '')
+    public function delete($uri, $data = array())
     {
         return $this->request('DELETE', $uri, $data);
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Get visibility of request Private / Public
@@ -307,17 +290,17 @@ Class Hvc
         return (isset($_SERVER['HVC_REQUEST_TYPE'])) ? $_SERVER['HVC_REQUEST_TYPE'] : 'public';
     }
 
-    // ------------------------------------------------------------------------
-
     /**
-     * Do request 
+     * Send Request
      * 
-     * @param  string  $uri
-     * @param  array   $data request data ( $_POST or $_GET )
-     * @param  integer $ttl
+     * @param string  $method     request method
+     * @param string  $uri        uri string
+     * @param array   $data       request data
+     * @param integer $expiration cache ttl
+     * 
      * @return string
      */
-    public function request($method, $uri, $data = '', $expiration = null)
+    public function request($method, $uri, $data = array(), $expiration = null)
     {
         if ($expiration === true) {  // delete cache before the request
             $this->deleteCache();
@@ -326,7 +309,8 @@ Class Hvc
             $expiration = $data;
             $data = array();
         }
-        $this->clear();
+
+        $this->clear(); // clear hvc variables
         $this->setRequestUrl($uri, $expiration);
         $this->setMethod($method, $data);
 
@@ -412,7 +396,9 @@ echo $this->view->get(
                 return;
             }
 
-            if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'local' OR ENV == 'test')) {  // Show exceptional message to developers if environment not LIVE.
+            // Show exceptional message to developers if environment not LIVE.
+            
+            if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'local' OR ENV == 'test')) { 
                 $rsp['message'] = $rsp['e'];
             }
         }
@@ -427,12 +413,12 @@ echo $this->view->get(
         return $rsp;
     }
 
-    // ------------------------------------------------------------------------
-
     /**
-     * Execute Hvc Request
-     *
-     * @return   string
+     * Exec Hvc Request
+     * 
+     * @param integer $expiration cache ttl
+     * 
+     * @return string
      */
     public function exec($expiration = null)
     {
@@ -443,7 +429,6 @@ echo $this->view->get(
         $logger = $c['logger'];
 
         static $storage = array();      // store "$c " variables ( called controllers )
-        // ------------------------------------------------------------------------
 
         $KEY = $this->getKey();   // Get Hvc Key
         $start = microtime(true); // Start the Query Timer 
@@ -453,15 +438,15 @@ echo $this->view->get(
         if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
                                             // This cache type not related with Cache package.
             $response = $this->getResponseData();
-
             $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
-            $this->_clear();
+
+            $this->reset();
             return $response;    // This is native system cache !
         }
 
         self::$cid[$KEY] = $KEY;    // store connection id.
 
-        // ----------------- Memory Cache Control -------------------//
+        // ----------------- Memory Cache -------------------//
 
         if ($this->config['caching']) {
             $cache = $this->config['cache'](); 
@@ -471,7 +456,7 @@ echo $this->view->get(
 
             if ( ! empty($response)) {              // If cache exists return to cached string.
                 $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
-                $this->_clear();
+                $this->reset();
                 return base64_decode($response);    // encoding for specialchars
             }
         }
@@ -479,7 +464,7 @@ echo $this->view->get(
         // ----------------- Route is Valid -------------------//
 
         if ($this->response->getError() != '') {  // If router dispatch fail ?
-            $this->_clear();
+            $this->reset();
             return $this->response->getError();
         }
 
@@ -502,8 +487,8 @@ echo $this->view->get(
 
         // --------- Check class is exists in the storage ----------- //
 
-        if (isset($storage[$router->fetchClass()])) {    // Check is multiple call to same class.
-            $app = $storage[$router->fetchClass()];       // Get stored class.
+        if (isset($storage[$this->hvc_uri])) {    // Check is multiple call to same class.
+            $app = $storage[$this->hvc_uri];       // Get stored class.
         } else {
             include $controller;        // Call the controller.
         }
@@ -529,7 +514,7 @@ echo $this->view->get(
         if (strncmp($router->fetchMethod(), '_', 1) == 0 
             OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
         ) {
-            $this->_clear();
+            $this->reset();
             return $this->response->show404($this->hvc_uri, false);
         }
 
@@ -543,7 +528,7 @@ echo $this->view->get(
         //----------------------------
 
         if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {
-            $this->_clear();
+            $this->reset();
             return $this->response->show404($this->hvc_uri, false);
         }
 
@@ -556,33 +541,21 @@ echo $this->view->get(
 
         ob_start(); // Start the output buffer.
 
-        // Call the requested method. Any URI segments present (besides the directory / class / index / arguments ) 
-        // will be passed to the method for convenience
-            // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
         call_user_func_array(array($app, $router->fetchMethod()), $arguments);
-
-        //----------------------------
 
         $response = ob_get_contents(); // Get the contents of the output buffer
 
-        //----------------------------
-
         ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
 
-        //----------------------------
+        $this->reset();
 
-        $this->_clear();
-
-        //--------------------------------------
         // Store classes to $storage container
         //--------------------------------------
         
-        $storage[$router->fetchClass()] = $app; // Store class names to storage. We fetch it if its available in storage.
+        $storage[$this->hvc_uri] = $app; // Store class names to storage. We fetch it if its available in storage.
 
-        //----------------------------
-        // End storage
-
-        //------------- Set to Cache -------------//
+        // Write to Cache
+        //--------------------------------------
 
         if (is_numeric($expiration) AND $this->config['caching']) {
             $cache = $this->config['cache']();   // load cache library
@@ -594,24 +567,23 @@ echo $this->view->get(
         return $response;
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Reset router for mutiple hvc requests
      * or who want to close the hvc connection.
      *
      * @return   void
      */
-    protected function _clear()
+    protected function reset()
     {
         global $c;
+        
         if ( ! isset($_SERVER['HVC_REQUEST_URI'])) { // if no hvc header return to null;
             return;
         }
         // Assign global variables we copied before ..
         // --------------------------------------------------
-        $_SERVER = array();  // Just reset server variable other wise  we don't 
-                             // use global variables in hvc in hvc.
+        
+        $_SERVER = array();     // Just reset server variable other wise  we don't use global variables in hvc in hvc.
         $_SERVER = $GLOBALS['_SERVER_BACKUP'];
 
         // Set original $this to controller instance that we backup before.
@@ -625,41 +597,40 @@ echo $this->view->get(
 
         $this->clear();  // reset all HVC variables.
 
-        $this->process_done = true;  // This means hvc process done without any errors.
+        $this->process_done = true;  
+
+        // This means hvc process done without any errors.
         // If process_done == false we say to destruct method "reset the router" variables 
         // and return to original variables of the Framework's before we clone them.
     }
 
-    // --------------------------------------------------------------------
 
     /**
      * Set $_SERVER vars foreach hvc
      * requests.
+     * 
+     * @param string $key key
+     * @param string $val val
      *
-     * @param string $key
-     * @param mixed  $val
+     * @return void
      */
     public function setServer($key, $val)
     {
         $_SERVER[$key] = $val;
-        $this->_setConnString($key . $val);
-        return $this;
+        $this->setConnString($key .'-'. $val);
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     * Set hvc response.
+     * Set response data
+     * 
+     * @param string $data string
      *
-     * @param    mixed $data
-     * @return   void
+     * @return void
      */
-    public function setResponseData($data = '')
+    public function setResponseData($data)
     {
         $this->responseData = $data;
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Get none-decoded original Hvc
@@ -672,37 +643,35 @@ echo $this->view->get(
         return $this->responseData;
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Create HVC connection string next
      * we will convert it to connection id.
      *
-     * @param mixed $id
+     * @param mixed $id string
+     *
+     * @return void
      */
-    protected function _setConnString($id)
+    protected function setConnString($id)
     {
         $this->conn_string .= $id;
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Returns to Hvc key.
      *
-     * @return   string
+     * @return string
      */
     public function getKey()
     {
         return self::KEY . hash('md5', trim($this->conn_string));
     }
 
-    // --------------------------------------------------------------------
-
     /**
-     * Delete the cache manually
+     * Delete cache for current uri.
      * 
-     * @return string
+     * @param string $key hvc id
+     * 
+     * @return boolean
      */
     public function deleteCache($key = '')
     {
@@ -717,8 +686,6 @@ echo $this->view->get(
         return false;
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Get last hvc uri
      * 
@@ -728,8 +695,6 @@ echo $this->view->get(
     {
         return $this->hvc_uri;
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Close Hvc Connection
@@ -754,4 +719,4 @@ echo $this->view->get(
 // END Hvc class
 
 /* End of file Hvc.php */
-/* Location: .Obullo/Http/Request.php */
+/* Location: .Obullo/Hvc/Hvc.php */

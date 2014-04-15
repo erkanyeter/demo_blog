@@ -88,29 +88,39 @@ $config = array(
     | Logger
     |--------------------------------------------------------------------------
     | Severities:
-    | emergency (0) : Emergency: system is unusable.
-    | alert (1)     : Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
-    | critical (2)  : Critical conditions. Example: Application component unavailable, unexpected exception.
-    | error (3)     : Runtime errors that do not require immediate action but should typically be logged and monitored.
-    | warning (4)   : Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
-    | notice (5)    : Normal but significant events.
-    | info (6)      : Interesting events. Examples: User logs in, SQL logs, Application Benchmarks.
-    | debug (7)     : Detailed debug information.
+    | LOG_EMERG (0)    : Emergency: system is unusable.
+    | LOG_ALERT (1)    : Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
+    | LOG_CRIT (2)     : Critical conditions. Example: Application component unavailable, unexpected exception.
+    | LOG_ERR (3)      : Runtime errors that do not require immediate action but should typically be logged and monitored.
+    | LOG_WARNING (4)  : Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
+    | LOG_NOTICE (5)   : Normal but significant events.
+    | LOG_INFO (6)     : Interesting events. Examples: User logs in, SQL logs, Application Benchmarks.
+    | LOG_DEBUG (7)    : Detailed debug information.
     | ---------------------------------------------------
     | @see Syslog Protocol http://tools.ietf.org/html/rfc5424
+    | @link http://www.php.net/manual/en/function.syslog.php
     | ---------------------------------------------------
     */
     'logger' =>   array(
             'enabled'   => true,        // On / Off logging.
             'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
-            'threshold' => array(0,1,2,3,4,5,6,7),  // array(0,1,2) = emergency,alert,critical
+            'threshold' => array(       // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
+                LOG_EMERG,
+                LOG_ALERT,
+                LOG_CRIT,
+                LOG_ERR,
+                LOG_WARNING,
+                LOG_NOTICE,
+                LOG_INFO,
+                LOG_DEBUG
+            ),
             'queries'   => true,        // If true "all" SQL Queries gets logged.
             'benchmark' => true,        // If true "all" Application Benchmarks gets logged.
             'channel'   => 'system',    // Default channel name should be general.
             'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
             'path'      => array(
-                'app'  => 'data/logs/app.log',       // file handler application log path
-                'cli'  => 'data/logs/cli/app.log',   // file handler cli log path  
+                'app'   => 'data/logs/app.log',       // file handler application log path
+                'cli'   => 'data/logs/cli/app.log',   // file handler cli log path  
             ),
     ),
     /*
@@ -143,15 +153,15 @@ $config = array(
             'match_ip'        => false,         // Whether to match the user's IP address when reading the session data
             'match_useragent' => true,          // Whether to match the User Agent when reading the session data
             'time_to_update'  => 1,             // How many seconds between Framework refreshing "Session" Information"
-            'params' => array(
+            'db_container'    => 'Db',         // Container Settings, Db, Cache; Mongo;
+            'db_tablename'    => 'sessions',   // The name of the session database table
+
+            'php.ini' => array(
                 'session.gc_divisor'      => 100,   // Configure garbage collection
                 'session.gc_maxlifetime'  => 7200,  // REMOVE THIS AND USE "expiration"
                 'session.cookie_lifetime' => 0,
                 'session.save_handler'    => 'redis',
                 'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
-                // Database container
-                // 'session.db'         => 'Db',         // Container Settings, Db, Cache; Mongo;
-                // 'session.tablename'  => 'sessions',   // The name of the session database table
             ),
     ),
     /*

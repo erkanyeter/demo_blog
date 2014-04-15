@@ -1,18 +1,20 @@
 <?php
 
-namespace Obullo\Logger;
+namespace Obullo\Log;
+
+use SplPriorityQueue;
 
 /**
  * PriorityQueue Class
  * 
- * @category  Logger
+ * @category  Log
  * @package   PriorityQueue
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/logger
  */
-Class PriorityQueue extends \SplPriorityQueue 
+Class PriorityQueue extends SplPriorityQueue 
 {
     /**
      * Priority fix
@@ -33,4 +35,4 @@ Class PriorityQueue extends \SplPriorityQueue
 // END PriorityQueue class
 /* End of file PriorityQueue.php */
 
-/* Location: .Obullo/Logger/PriorityQueue.php */
+/* Location: .Obullo/Log/PriorityQueue.php */

@@ -71,18 +71,18 @@ require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
 |
 */
 $c['logger'] = function () {
-    $logger = new Obullo\Logger\Logger;
+    $logger = new Obullo\Log\Logger;
     $logger->addHandler(
         'file',
         function () use ($logger) { 
-            return new Obullo\Logger\Handler\File($logger);  // primary
+            return new Obullo\Log\Handler\File($logger);  // primary
         },
         2  // priority
     );
     $logger->addHandler(
         'mongo', 
         function () use ($logger) { 
-            return new Obullo\Logger\Handler\Mongo(
+            return new Obullo\Log\Handler\Mongo(
                 $logger, 
                 array(
                 'db.dsn' => 'mongodb://root:12345@localhost:27017/test', 

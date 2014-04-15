@@ -1,5 +1,7 @@
 <?php
 
+namespace Obullo\Cli;
+
 /**
  * Task Class
  * 
@@ -35,11 +37,11 @@ Class Task
      */
     public function run($uri, $debug = false)
     {
-        $uri    = explode('/', trim($uri));
+        $uri = explode('/', trim($uri));
         $module = array_shift($uri);
 
         foreach ($uri as $i => $section) {
-            if ( ! $section) {
+            if (!$section) {
                 $uri[$i] = 'false';
             }
         }
@@ -47,19 +49,15 @@ Class Task
         $shell = PHP_PATH . ' ' . FPATH . '/' . TASK_FILE . ' ' . $module . ' ' . implode('/', $uri) . ' OB_TASK_REQUEST';
 
         if ($debug) { // Enable debug output to log folder.
-
             // @todo escapeshellcmd();
             // clear console colors
             // $output = trim(preg_replace('/\n/', '#', $output), "\n");
-            
             // clean cli color codes
             $output = preg_replace(array('/\033\[36m/', '/\033\[31m/', '/\033\[0m/'), array('', '', ''), shell_exec($shell));
             $this->logger->debug('$_TASK request: ' . $shell, array('output' => $output));
 
             return $output;
-
         } else {   // continious task
-
             shell_exec($shell . ' > /dev/null &');
         }
 

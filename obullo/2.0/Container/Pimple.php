@@ -2,9 +2,7 @@
 
 namespace Obullo\Container;
 
-use SplObjectStorage;
-use ArrayAccess;
-use Controller;
+use SplObjectStorage, ArrayAccess, InvalidArgumentException, Controller;  //  we use this classes in this class ;)
 
 /*
  * This file is part of Pimple.
@@ -58,8 +56,8 @@ Class Pimple implements ArrayAccess
      */
     public function __construct(array $values = array())
     {
-        $this->factories = new SplObjectStorage();
-        $this->protected = new SplObjectStorage();
+        $this->factories = new SplObjectStorage;
+        $this->protected = new SplObjectStorage;
 
         foreach ($values as $key => $value) {
             $this->offsetSet($key, $value);
@@ -102,22 +100,27 @@ Class Pimple implements ArrayAccess
     {
         $key = strtolower($cid);
 
-        if ( ! isset($this->keys[$cid])) {
+        if ( ! isset($this->keys[$cid]) AND class_exists('Controller')) {
 
-            if (class_exists('Controller')) {
+            $Class = ucfirst($cid);
+            $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
 
-                $Class = ucfirst($cid);
-                $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
-
-                Controller::$instance->{$key} = new $ObulloPackage;
-
-                $this->offsetSet(
-                    $cid, 
-                    function () use ($key) {
-                        return Controller::$instance->{$key};
-                    }
-                );
+            if (strpos($Class, '/') > 0) {      // If we have a folder "/" request.
+                $exp       = explode('/', $Class);
+                $ClassName = end($exp);
+                array_pop($exp);
+                $key = $ClassName;
+                $ObulloPackage = 'Obullo\\'. implode('\\', $exp).'\\'. ucfirst($ClassName);
             }
+
+            Controller::$instance->{$key} = new $ObulloPackage;
+
+            $this->offsetSet(
+                $cid, 
+                function () use ($key) {
+                    return Controller::$instance->{$key};
+                }
+            );
         }
 
         if (isset($this->raw[$cid])
@@ -178,7 +181,7 @@ Class Pimple implements ArrayAccess
     public function factory($callable)
     {
         if ( ! is_object($callable) || ! method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('Service definition is not a Closure or invokable object.');
+            throw new InvalidArgumentException('Service definition is not a Closure or invokable object.');
         }
         $this->factories->attach($callable);
         return $callable;
@@ -198,7 +201,7 @@ Class Pimple implements ArrayAccess
     public function protect($callable)
     {
         if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
+            throw new InvalidArgumentException('Callable is not a Closure or invokable object.');
         }
         $this->protected->attach($callable);
         return $callable;
@@ -217,7 +220,7 @@ Class Pimple implements ArrayAccess
     public function bind($cid, $params = array())
     {
         if ( ! isset($this->keys[$cid])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
+            throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
         }
         if (isset($this->values[$cid])) {
             return $this->values['app']->{$cid} = (count($params) > 0) ? $this->values[$cid]($params) : $this->values[$cid];  // register service to App/Controller.
@@ -236,7 +239,7 @@ Class Pimple implements ArrayAccess
     public function raw($cid)
     {
         if (!isset($this->keys[$cid])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
+            throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
         }
         if (isset($this->raw[$cid])) {
             return $this->raw[$cid];
@@ -260,13 +263,13 @@ Class Pimple implements ArrayAccess
     public function extend($cid, $callable)
     {
         if ( ! isset($this->keys[$cid])) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
+            throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $cid));
         }
         if ( ! is_object($this->values[$cid]) || ! method_exists($this->values[$cid], '__invoke')) {
-            throw new \InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $cid));
+            throw new InvalidArgumentException(sprintf('Identifier "%s" does not contain an object definition.', $cid));
         }
         if ( ! is_object($callable) || ! method_exists($callable, '__invoke')) {
-            throw new \InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
+            throw new InvalidArgumentException('Extension service definition is not a Closure or invokable object.');
         }
         $factory = $this->values[$cid];
 

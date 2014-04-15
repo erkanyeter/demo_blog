@@ -1,13 +1,13 @@
 <?php
 
-namespace Obullo\Logger\Handler;
+namespace Obullo\Log\Handler;
 
-use Obullo\Logger\PriorityQueue;
+use Obullo\Log\PriorityQueue;
 
 /**
  * File Handler Class
  * 
- * @category  Logger
+ * @category  Log
  * @package   File
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
@@ -168,4 +168,4 @@ Class File
 // END File class
 
 /* End of file File.php */
-/* Location: .Obullo/Logger/Handler/File.php */
+/* Location: .Obullo/Log/Handler/File.php */

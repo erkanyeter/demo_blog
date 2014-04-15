@@ -51,7 +51,7 @@ define('FPATH', dirname(__FILE__));
 | PRIVATE_FOLDER 	- The full "static" server path to the "private" folder
 | PUBLIC_DIR  		- The full "dynamic" server path to the "public" folder
 | PRIVATE_DIR 		- The full "dynamic" server path to the "private" folder
-| TASK_FILE   		- Set your task (CLI) file name you will use it in command line $php task.
+| TASK_FILE   		- The file name for $php task operations.
 */
 define('ROOT',  realpath(dirname(__FILE__)) . DS);
 define('ASSETS',  ROOT .'assets'. DS);
@@ -68,26 +68,13 @@ define('TASK_FILE', 'task');
 
 /*
 |---------------------------------------------------------------
-| LOGGER CONSTANTS
-|---------------------------------------------------------------
-*/
-define('LOGGER_EMERGENCY', 0);
-define('LOGGER_ALERT', 1);
-define('LOGGER_CRITICAL', 2);
-define('LOGGER_ERROR', 3);
-define('LOGGER_WARNING', 4);
-define('LOGGER_NOTICE', 5);
-define('LOGGER_INFO', 6);
-define('LOGGER_DEBUG', 7);
-
-/*
-|---------------------------------------------------------------
 | NOTIFICATION CONSTANTS
 |---------------------------------------------------------------
 */
-define('FORM_ERROR', '0');
-define('FORM_SUCCESS', '1');
-define('FORM_INFO', '2');
+define('ERROR', 0);
+define('SUCCESS', 1);
+define('INFO', 2);
+define('ALERT', 3);
 
 
 /* End of file constants */

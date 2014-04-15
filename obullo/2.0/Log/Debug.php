@@ -1,18 +1,18 @@
 <?php
 
-namespace Obullo\Logger;
+namespace Obullo\Log;
 
 /**
  * Logger Output Class
  * 
- * @category  Logger
- * @package   Logger_Output
+ * @category  Log
+ * @package   Debug
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/logger
+ * @link      http://obullo.com/package/log/debug
  */
-Class DebugOutput
+Class Debug
 {
     public $logger;
 
@@ -40,7 +40,7 @@ Class DebugOutput
         if ( ! $isXmlHttp AND ! defined('STDIN')) {      // disable html output for ajax and task requests
 
             // Queue
-            $this->logger->processor->setExtractFlags(\Obullo\Logger\PriorityQueue::EXTR_BOTH); // mode of extraction 
+            $this->logger->processor->setExtractFlags(\Obullo\Log\PriorityQueue::EXTR_BOTH); // mode of extraction 
 
             // Go to Top
             $this->logger->processor->top(); 
@@ -62,7 +62,7 @@ Class DebugOutput
             }
             return str_replace(
                 array('{output}','{title}'), 
-                array($lines,'LOGGER OUTPUT'), 
+                array($lines,'LOGGER DEBUG'), 
                 '<div style="
                 overflow-y:scroll;
                 background:#fff;
@@ -99,7 +99,7 @@ Class DebugOutput
     }
 }
 
-// END DebugOutput class
-/* End of file DebugOutput.php */
+// END Debug class
+/* End of file Debug.php */
 
-/* Location: .Obullo/Logger/DebugOutput.php */
+/* Location: .Obullo/Log/Debug.php */

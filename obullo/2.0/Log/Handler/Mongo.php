@@ -1,10 +1,10 @@
 <?php
 
-namespace Obullo\Logger\Handler;
+namespace Obullo\Log\Handler;
 
-use Obullo\Logger\Logger;
-use Obullo\Logger\HandlerInterface;
-use Obullo\Logger\PriorityQueue;
+use Obullo\Log\Logger;
+use Obullo\Log\HandlerInterface;
+use Obullo\Log\PriorityQueue;
 
 use Exception, MongoDate, MongoCollection, MongoClient;
 
@@ -16,7 +16,7 @@ use Exception, MongoDate, MongoCollection, MongoClient;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/logger
+ * @link      http://obullo.com/package/log/handler/mongo
  */
 Class Mongo
 {
@@ -92,31 +92,37 @@ Class Mongo
         $processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
 
         if ($processor->count() > 0) {
+
             $processor->top();  // Go to Top
-        }
-        /**
-         * Using SplPriorityQueue Class we add log
-         * messages to Queue like below : 
-         *
-         * $processor = new SplPriorityQueue();
-         * $processor->insert(array('file' => $record), $priority = 0); 
-         * $processor->insert(array('mongo' => $record), $priority = 2); 
-         * $processor->insert(array('email' => $record), $priority = 3); 
-         */
-     
-        $lines = '';
-        while ($processor->valid()) {         // Prepare Lines
-            $record = $processor->current(); 
-            $processor->next(); 
-            // var_dump($record['data']);
-        }
-        // INSERT TO MONGO TABLE
+        
+            /**
+             * Using SplPriorityQueue Class we add log
+             * messages to Queue like below : 
+             *
+             * $processor = new SplPriorityQueue();
+             * $processor->insert(array('file' => $record), $priority = 0); 
+             * $processor->insert(array('mongo' => $record), $priority = 2); 
+             * $processor->insert(array('email' => $record), $priority = 3); 
+             */
+            
+            $threshold = $this->logger->getHandlerThreshold('mongo');
+      
+            $data = array();
+            $i = 0;
+            while ($processor->valid()) {         // Prepare Lines
+                $record = $processor->current(); 
+                $processor->next();
+                $data[$i] = $record['data'];
+                if (is_string($threshold) AND $record['data']['level'] != $threshold) { // threshold filter
+                    unset($data[$i]);   // remove unnecessary log records.
+                }
+                $i++;
+            }
 
-        // foreach ($cursor as $doc) {
-        //     var_dump($doc);
-        // }
-
-        return true;
+            //$collection->batchInsert($data);
+           
+        }
+        var_dump($data);
     }
 
 }
@@ -124,4 +130,4 @@ Class Mongo
 // END Mongo class
 
 /* End of file Mongo.php */
-/* Location: .Obullo/Logger/Handler/Mongo.php */
+/* Location: .Obullo/Log/Handler/Mongo.php */

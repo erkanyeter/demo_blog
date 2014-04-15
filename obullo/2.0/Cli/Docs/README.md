@@ -8,7 +8,7 @@ The task class helps you use CLI operations ( running shell scripts etc..) using
 ------
 
 ```php
-new Task;
+$c['cli/task'];
 $this->task->method();
 ```
 
@@ -17,7 +17,7 @@ $this->task->method();
 The task uri works like framework uri it calls the <kbd>controller/method/arguments</kbd>
 
 ```php
-$this->task->run('help/index');
+echo $this->task->run('help/index', true);
 ```
 
 ### Function Reference

@@ -1,6 +1,7 @@
 <?php
 
-namespace Obullo\Logger;
+namespace Obullo\Log;
+
 use Closure, Exception;
 
 /**
@@ -17,19 +18,30 @@ use Closure, Exception;
  */
 Class Logger
 {
+    // @ Syslog constants
+    // ----------------------------------------------
+    // LOG_EMERG   system is unusable
+    // LOG_ALERT   action must be taken immediately
+    // LOG_CRIT    critical conditions
+    // LOG_ERR error conditions
+    // LOG_WARNING warning conditions
+    // LOG_NOTICE  normal, but significant, condition
+    // LOG_INFO    informational message
+    // LOG_DEBUG   debug-level message
+
     /**
      * Log priorities
      * @var array
      */
     protected static $priorities = array(
-        'emergency' => LOGGER_EMERGENCY,
-        'alert'     => LOGGER_ALERT,
-        'critical'  => LOGGER_CRITICAL,
-        'error'     => LOGGER_ERROR,
-        'warning'   => LOGGER_WARNING,
-        'notice'    => LOGGER_NOTICE,
-        'info'      => LOGGER_INFO,
-        'debug'     => LOGGER_DEBUG,
+        'emergency' => LOG_EMERG,
+        'alert'     => LOG_ALERT,
+        'critical'  => LOG_CRIT,
+        'error'     => LOG_ERR,
+        'warning'   => LOG_WARNING,
+        'notice'    => LOG_NOTICE,
+        'info'      => LOG_INFO,
+        'debug'     => LOG_DEBUG,
     );
     /**
      * Priority values
@@ -111,7 +123,7 @@ Class Logger
         $this->queries         = $this->config['queries'];
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
-        $this->priority_values = array_values(self::$priorities);
+        $this->priority_values = array_flip(self::$priorities);
 
         $this->processor = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
     }
@@ -278,21 +290,36 @@ Class Logger
      * $logger->channel('security');
      * $logger->alert('Possible hacking attempt !', array('username' => $username));
      * $logger->push('email');  // send log data using email handler
-     * $logger->push('mongo');  // send log data to mongo db
+     * $logger->push('mongo', LOG_ALERT);  // send log data to mongo db
      * 
-     * @param string  $name     set log handler
-     * @param integer $priority set level of priority
+     * @param string  $handler   set log handler
+     * @param integer $threshold set threshold of log message
      * 
      * @return void
      */
-    public function push($name = 'email', $priority = null)
+    public function push($handler = 'mongo', $threshold = null)
     {   
-        if ( ! isset($this->handlers[$name])) {
-            throw new Exception('The handler '.$name.' not defined in your application index.php');
+        if ( ! isset($this->handlers[$handler])) {
+            throw new Exception('The handler '.$handler.' not defined in your application index.php');
         }
-        if (in_array($priority, $this->priority_values)) {  // Just push for this priority
-            $this->push[$name] = $priority;
+        if (isset($this->priority_values[$threshold])) {  // Just push for this priority
+            $this->push[$handler] = $this->priority_values[$threshold];
         }
+    }
+
+    /**
+     * Get push handler threshold
+     * 
+     * @param string $handler name
+     * 
+     * @return integer | boolean
+     */
+    public function getHandlerThreshold($handler = '')
+    {
+        if (isset($this->push[$handler])) {
+            return $this->push[$handler];
+        }
+        return false;
     }
 
     /**
@@ -325,8 +352,10 @@ Class Logger
     {
         $record_unformatted = array();
 
-        if ($this->isAllowed($level)) {
-
+        // is Allowed level ?
+        
+        if (isset(self::$priorities[$level]) AND in_array(self::$priorities[$level], $this->threshold_array)) {
+            
             $record_unformatted['level']   = $level;
             $record_unformatted['message'] = $message;
             $record_unformatted['context'] = $context;
@@ -373,21 +402,6 @@ Class Logger
     }
 
     /**
-     * Is it allowed level ?
-     *
-     * @param string $level current level ( debug, alert .. )
-     * 
-     * @return boolean 
-     */
-    public function isAllowed($level)
-    {
-        if (isset(self::$priorities[$level]) AND in_array(self::$priorities[$level], $this->threshold_array)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * End of the logs and beginning of 
      * the handler process.
      *
@@ -399,8 +413,8 @@ Class Logger
             return;
         }
         if ($this->debug) {                    // debug log data if debu
-            $output = new DebugOutput($this);
-            echo $output->printDebugger();
+            $debug = new Debug($this);
+            echo $debug->printDebugger();
         }
         foreach ($this->writers as $array) {    // write log data
             $array['handler']->write();
@@ -411,5 +425,5 @@ Class Logger
 
 // END Logger class
 
-/* End of file Adapter.php */
-/* Location: .Obullo/Logger/Adapter.php */
+/* End of file Logger.php */
+/* Location: .Obullo/Log/Logger.php */

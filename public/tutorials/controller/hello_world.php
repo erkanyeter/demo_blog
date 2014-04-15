@@ -11,7 +11,8 @@ $app = new Controller(
         $c['view'];
 
         $this->logger->notice('test');
-        $this->logger->push('mongo', LOGGER_NOTICE);
+        $this->logger->push('mongo', LOG_NOTICE);
+        $this->logger->notice('ehhhehe');
     }
 );
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace Obullo\Logger;
+namespace Obullo\Log;
 
 /**
  * Disable Logger Class
  * 
- * @category  Logger
- * @package   Logger
+ * @category  Log
+ * @package   Log
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
@@ -35,4 +35,4 @@ Class Disabled
 // END Disabled Class
 
 /* End of file Disabled.php */
-/* Location: .Obullo/Logger/Disabled.php */
+/* Location: .Obullo/Log/Disabled.php */
