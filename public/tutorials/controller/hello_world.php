@@ -13,6 +13,9 @@ $app = new Controller(
         $this->logger->notice('test');
         $this->logger->push('mongo', LOG_NOTICE);
         $this->logger->notice('ehhhehe');
+        
+        syslog(LOG_NOTICE, 'test');
+        syslog(LOG_EMERG, 'site down !!');
     }
 );
 
