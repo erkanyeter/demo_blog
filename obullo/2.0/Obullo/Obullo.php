@@ -143,7 +143,7 @@ if ($hooks_enabled) {
 $time = microtime(true) - $start;  // End Timer
 
 $extra = array();
-if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
+if ($c['config']['logger']['benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
     $usage = 'memory_get_usage() function not found on your php configuration.';
     if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
         $usage = number_format($usage) . ' bytes';

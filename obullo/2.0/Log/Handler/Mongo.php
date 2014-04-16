@@ -104,6 +104,7 @@ Class Mongo implements HandlerInterface
 
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top
+
             $threshold = $this->logger->getHandlerThreshold('mongo');
       
             $data = array();
@@ -112,7 +113,7 @@ Class Mongo implements HandlerInterface
                 $record = $processor->current(); 
                 $processor->next();
                 $data[$i] = $record;
-                if (is_string($threshold) AND $record['level'] != $threshold) { // threshold filter
+                if (is_string($threshold) AND $record['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
                     unset($data[$i]);   // remove not matched log records with selected filter.
                 }
                 $i++;

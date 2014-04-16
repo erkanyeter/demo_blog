@@ -2,43 +2,41 @@
 
 namespace Obullo\Log\Handler;
 
+use Obullo\Log\Logger;
+use Obullo\Log\HandlerInterface;
 use Obullo\Log\PriorityQueue;
 
+use Exception;
+
 /**
- * File Handler Class
+ * Syslog Handler Class
  * 
- * @category  Log
+ * @category  Logger
  * @package   File
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/logger
+ * @link      http://obullo.com/package/log/handler/mongo
  */
-Class File
+Class Syslog implements HandlerInterface
 {
-    public $logger;     // logger object
-    public $path;       // log path for file driver
-    public $config;     // logger config
+    public $logger;     // logger instance
+    protected $facility = LOG_USER; // Facility used by this syslog instance
 
     /**
-     * Config Constructor
+     * Constructor
      *
-     * @param object $logger class
+     * @param object $logger logger class
+     * @param array  $params init params
      */
-    public function __construct($logger)
+    public function __construct($logger, $params = array())
     {
-        global $c;
+        $this->logger = $logger;   // logger object
 
-        $this->logger = $logger;
-        
-        $this->path = self::replacePath($c['config']['logger']['path']['app']);   // Application request path
-
-        if (defined('STDIN')) {                   // Cli request
-            if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
-                $this->logger->setProperty('enabled', false);
-            }
-            $this->path = self::replacePath($c['config']['logger']['path']['cli']);
+        if (isset($params['facility'])) {
+            $this->facility = $params['facility'];
         }
+        openlog('Log/Handler/Syslog', LOG_PID, $this->facility);
     }
 
     /**
@@ -116,53 +114,40 @@ Class File
          * $processor = new SplPriorityQueue();
          * $processor->insert(array('' => $record), $priority = 0); 
          *
-         * $this->logger->getProcessorInstance('file'); 
+         * $this->logger->getProcessor('mongo'); 
          */
-        $processor = $this->logger->getProcessor('file');
+        $processor = $this->logger->getProcessor('syslog');
 
         $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
 
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top
 
-            $lines = '';
             while ($processor->valid()) {         // Prepare Lines
-                $lines.= $this->lineFormat($processor->current());
-                $processor->next(); 
+                $record = $processor->current();
+                $processor->next();
+                // echo $this->lineFormat($record).'<br>';
             }
-            if ( ! $fop = fopen($this->path, 'ab')) {
-                return false;
-            }
-            echo $lines.'</br>';
-            flock($fop, LOCK_EX);
-            fwrite($fop, $lines);
-            flock($fop, LOCK_UN);
-            fclose($fop);
-            if ( ! defined('STDIN')) {   // Do not do ( chmod ) in CLI mode, it cause write errors
-                chmod($this->path, 0666);
-            }
+
+            // foreach ($data as $record) {
+            //     var_dump($record); exit;
+            //     var_dump($this->logger->getPriorities($record['level']));
+            //     syslog($this->logger->getPriorities($record['level']), $record['message']);
+            // }
         }
     }
 
     /**
-     * If you keep logs in data/logs folder, we replace /data
-     * keyword with directory seperator.
-     * 
-     * @param string $path log path
-     * 
-     * @return string current path
+     * Close connections
      */
-    public static function replacePath($path)
+    public function __destruct()
     {
-        if (strpos($path, 'data') === 0) {
-            $path = str_replace('/', DS, trim($path, '/'));
-            $path = DATA .substr($path, 5);
-        }
-        return $path;
+        closelog();
     }
+
 }
 
-// END File class
+// END Syslog class
 
-/* End of file File.php */
-/* Location: .Obullo/Log/Handler/File.php */
+/* End of file Syslog.php */
+/* Location: .Obullo/Log/Handler/Syslog.php */
