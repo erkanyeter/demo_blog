@@ -15,92 +15,6 @@ namespace Obullo\Log;
 interface HandlerInterface
 {
     /**
-     * Constructor
-     * Build log config properties
-     */
-    public function __construct();
-
-    /**
-     * Emergency
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function emergency($message = '', $context = array());
-
-    /**
-     * Alert
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function alert($message = '', $context = array());
-
-    /**
-     * Critical
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function critical($message = '', $context = array());
-
-    /**
-     * Error
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function error($message = '', $context = array());
-    
-    /**
-     * Warning
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function warning($message = '', $context = array());
-    
-    /**
-     * Notice
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function notice($message = '', $context = array());
-    
-    /**
-     * Info
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function info($message = '', $context = array());
-
-    /**
-     * Info
-     * 
-     * @param string $message log message
-     * @param array  $context data
-     * 
-     * @return void
-     */
-    public function debug($message = '', $context = array());
-
-    /**
     * Format log records and build lines
     *
     * @param array $unformatted log record
@@ -115,7 +29,6 @@ interface HandlerInterface
      * @return boolean
      */
     public function write();
-
 }
 
 // END HandlerInterface class

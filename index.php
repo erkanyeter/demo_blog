@@ -73,9 +73,9 @@ require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
 $c['logger'] = function () {
     $logger = new Obullo\Log\Logger;
     $logger->addHandler(
-        'file',
+        'syslog',
         function () use ($logger) { 
-            return new Obullo\Log\Handler\File($logger);  // primary
+            return new Obullo\Log\Handler\Syslog($logger);  // primary
         },
         2  // priority
     );

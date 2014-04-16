@@ -18,10 +18,12 @@ use Exception, MongoDate, MongoCollection, MongoClient;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/log/handler/mongo
  */
-Class Mongo
+Class Mongo implements HandlerInterface
 {
     public $logger;     // logger instance
-    public $mongo;      // mongo database instance
+
+    public $mongoClient;      // mongo database client
+    public $mongoCollection;  // mongo database collection
 
     /**
      * Constructor
@@ -44,13 +46,12 @@ Class Mongo
     );</pre>'
             );
         }
-        // create mongo connection
-        
         $dsn    = explode('/', $params['db.dsn']);
         $dbName = end($dsn);
-
-        $mongoClient = new MongoClient($params['db.dsn']);
-        $this->mongo = new MongoCollection($mongoClient->{$dbName}, $params['db.collection']);
+        
+        // create mongo connection
+        $this->mongoClient     = new MongoClient($params['db.dsn']);
+        $this->mongoCollection = new MongoCollection($this->mongoClient->{$dbName}, $params['db.collection']);
     }
 
     /**
@@ -62,8 +63,10 @@ Class Mongo
     */
     public function format($unformatted_record)
     {
+        $date_format = $this->logger->getProperty('date_format');
+
         $record = array(
-            'datetime' => new MongoDate,
+            'datetime' => new MongoDate(strtotime(date($date_format))),
             'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
@@ -86,25 +89,21 @@ Class Mongo
      */
     public function write()
     {
-        $processor = $this->logger->getProcessorInstance('mongo');
+        /**
+         * Using SplPriorityQueue Class we add log
+         * messages to Queue like below : 
+         *
+         * $processor = new SplPriorityQueue();
+         * $processor->insert(array('' => $record), $priority = 0); 
+         *
+         * $this->logger->getProcessor('mongo');  // get processor instance
+         */
+        $processor = $this->logger->getProcessor('mongo');
 
-        // Queue
-        $processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
+        $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
 
         if ($processor->count() > 0) {
-
             $processor->top();  // Go to Top
-        
-            /**
-             * Using SplPriorityQueue Class we add log
-             * messages to Queue like below : 
-             *
-             * $processor = new SplPriorityQueue();
-             * $processor->insert(array('file' => $record), $priority = 0); 
-             * $processor->insert(array('mongo' => $record), $priority = 2); 
-             * $processor->insert(array('email' => $record), $priority = 3); 
-             */
-            
             $threshold = $this->logger->getHandlerThreshold('mongo');
       
             $data = array();
@@ -112,17 +111,22 @@ Class Mongo
             while ($processor->valid()) {         // Prepare Lines
                 $record = $processor->current(); 
                 $processor->next();
-                $data[$i] = $record['data'];
-                if (is_string($threshold) AND $record['data']['level'] != $threshold) { // threshold filter
-                    unset($data[$i]);   // remove unnecessary log records.
+                $data[$i] = $record;
+                if (is_string($threshold) AND $record['level'] != $threshold) { // threshold filter
+                    unset($data[$i]);   // remove not matched log records with selected filter.
                 }
                 $i++;
             }
-
-            //$collection->batchInsert($data);
-           
+            $this->mongoCollection->batchInsert($data);
         }
-        var_dump($data);
+    }
+
+    /**
+     * Close connections
+     */
+    public function __destruct()
+    {
+        $this->mongoClient->close();
     }
 
 }

@@ -50,8 +50,10 @@ Class File
     */
     public function format($unformatted_record)
     {
+        $date_format = $this->logger->getProperty('date_format');
+        
         $record = array(
-            'datetime' => date('Y-m-d H:i:s'),
+            'datetime' => date($date_format),
             'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
@@ -107,44 +109,40 @@ Class File
      */
     public function write()
     {
-        $processor = $this->logger->getProcessorInstance('file');
-
-        // Queue
-        $processor->setExtractFlags(PriorityQueue::EXTR_BOTH); // mode of extraction 
-
-        if ($processor->count() > 0) {
-            $processor->top();  // Go to Top
-        }
         /**
          * Using SplPriorityQueue Class we add log
          * messages to Queue like below : 
          *
          * $processor = new SplPriorityQueue();
          * $processor->insert(array('' => $record), $priority = 0); 
-         * $processor->insert(array('mongo' => $record), $priority = 2); 
-         * $processor->insert(array('email' => $record), $priority = 3); 
+         *
+         * $this->logger->getProcessorInstance('file'); 
          */
-     
-        $lines = '';
-        while ($processor->valid()) {         // Prepare Lines
-            $record = $processor->current(); 
-            $lines.= $record['data'];
-            $processor->next(); 
-        }
+        $processor = $this->logger->getProcessor('file');
 
-        // echo $lines;
-        
-        if ( ! $fop = fopen($this->path, 'ab')) {
-            return false;
+        $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
+
+        if ($processor->count() > 0) {
+            $processor->top();  // Go to Top
+
+            $lines = '';
+            while ($processor->valid()) {         // Prepare Lines
+                $lines.= $processor->current();
+                $processor->next(); 
+            }
+            if ( ! $fop = fopen($this->path, 'ab')) {
+                return false;
+            }
+            flock($fop, LOCK_EX);
+            fwrite($fop, $lines);
+            flock($fop, LOCK_UN);
+            fclose($fop);
+            
+            if ( ! defined('STDIN')) {   // Do not do ( chmod ) in CLI mode, it cause write errors
+                chmod($this->path, 0666);
+            }
+
         }
-        flock($fop, LOCK_EX);
-        fwrite($fop, $lines);
-        flock($fop, LOCK_UN);
-        fclose($fop);
-        if ( ! defined('STDIN')) {   // Do not do ( chmod ) in CLI mode, it cause write errors
-            chmod($this->path, 0666);
-        }
-        return true;
     }
 
     /**

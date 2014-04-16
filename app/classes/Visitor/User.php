@@ -29,7 +29,7 @@ Class Visitor_User
         $c['Auth'];
 
         $this->init();
-        $this->logger = $c['Logger'];
+        $this->logger = $c['logger'];
         $this->logger->debug('Visitor User Class Initialized');
     }
 
@@ -57,8 +57,8 @@ Class Visitor_User
     {
         global $c;
 
-        if ( ! $c['Auth']->hasIdentity()) {  // if user has not identity ?    
-            $c['Url']->redirect('membership/login');  // redirect user to login page
+        if ( ! $c['auth']->hasIdentity()) {  // if user has not identity ?    
+            $c['url']->redirect('membership/login');  // redirect user to login page
         }
     }
 }

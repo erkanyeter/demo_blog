@@ -26,7 +26,7 @@ $config = array(
 
     'default' => function () {
         $this->set('header', '@get.private/views/header');
-        $this->set('sidebar', '@get.private/views/sidebar');
+        $this->set('sidebar','@get.private/views/sidebar');
         $this->set('footer', '@get.tpl.footer');
     },
     'welcome' => function () {

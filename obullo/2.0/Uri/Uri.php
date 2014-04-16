@@ -36,7 +36,8 @@ Class Uri
         global $c;
         $this->config = $c['config'];
         $this->logger = $c['logger'];
-        $this->logger->debug('Uri Class Initialized'); // Warning : Don't load any library in __construct level you may get a Fatal Error.
+        
+        $this->logger->debug('Uri Class Initialized', array(), 9); // Warning : Don't load any library in __construct level you may get a Fatal Error.
     }
 
     /**

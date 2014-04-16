@@ -22,7 +22,7 @@ Class Controller
         global $c;
 
         if ($c['logger'] instanceof \Obullo\Logger\Logger) {
-            $c['logger']->debug('App Controller Class Initialized');
+            $c['logger']->debug('App Controller Class Initialized', array(), 9);
         }
     }
 

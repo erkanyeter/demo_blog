@@ -10,12 +10,15 @@ $app = new Controller(
         global $c;
         $c['view'];
 
-        $this->logger->notice('test');
-        $this->logger->push('mongo', LOG_NOTICE);
-        $this->logger->notice('ehhhehe');
-        
-        syslog(LOG_NOTICE, 'test');
-        syslog(LOG_EMERG, 'site down !!');
+        $this->logger->notice('test', array('username' => 'test'));
+        $this->logger->push('mongo');
+        $this->logger->notice('ehhhehe', array('username' => 'ersiasdasşd_ A_SP*,2.işeç.çöö,şm, ğo ld*-qlçşçdğçdi çşsçd.ç. ğğşğoöçö'));
+
+        // syslog(LOG_NOTICE, 'test');
+        // syslog(LOG_EMERG, 'site down !!');
+
+        // $this->hvc->get('private/comments/getuser', array('user_id' => 5), $expiration = 7200);
+
     }
 );
 

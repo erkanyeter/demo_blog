@@ -29,7 +29,7 @@ Class Visitor_Guest
         $c['auth'];
 
         $this->init();
-        $this->logger = $c['Logger'];
+        $this->logger = $c['logger'];
         $this->logger->debug('Visitor_Guest Class Initialized');
     }
 

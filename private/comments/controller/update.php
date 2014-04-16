@@ -19,10 +19,12 @@ $c->func(
         try
         {
             $value = ($status == 'approve') ? 1 : 0;
+
             $this->db->transaction();
             $this->db->where('comment_id', $id);
             $this->db->update('comments', array('comment_status' => $value));
             $this->db->commit();
+            
             $r = array(
                 'success' => 1,
                 'results' => array(),

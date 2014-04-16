@@ -58,6 +58,7 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
             'app'   => 'data/logs/app.log',       // file handler application log path
             'cli'   => 'data/logs/cli/app.log',   // file handler cli log path  
         ),
+        'date_format' => 'Y-m-d H:i:s',
 ),
 ```
 #### Explanation of Settings:
@@ -70,7 +71,7 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
 * channel - Default channel name should be general.
 * line - Logging line format for line based handlers.
 * path - File handler paths
-* writers - Available log handlers priority settings for log queue.
+* date_format - Date format for each records.
 
 #### Explanation of Severities:
 
@@ -154,6 +155,13 @@ $this->logger->alert('Possible hacking attempt !', array('username' => $username
 $this->logger->push('email');  // send all log data using email handler
 $this->logger->push('mongo', LOG_ALERT);  // send just alert data to mongo db handler.
 ```
+### Example Logging Using Queue Priority:
+
+```php
+$this->logger->alert('Hello Alert', array('username' => $username), 3);
+$this->logger->notice('Hello Notice', array('username' => $username), 2);
+$this->logger->notice('Hello Another Notice', array('username' => $username), 1);
+```
 
 * VERY IMPORTANT: For a live site you'll usually only enable 0 - 4 to be logged otherwise your log files will fill up very fast.
 
@@ -233,38 +241,38 @@ On / Off debug html output. When it is enabled all handlers will be disabled.
 
 Sets log channel.
 
-#### $this->logger->emergency(string $message = '', $context = array());
+#### $this->logger->emergency(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_EMERG</b> level log message.
 
-#### $this->logger->alert(string $message = '', $context = array());
+#### $this->logger->alert(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_ALERT</b> level log message.
 
-#### $this->logger->critical(string $message = '', $context = array());
+#### $this->logger->critical(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_CRIT</b> level log message.
 
-#### $this->logger->error(string $message = '', $context = array());
+#### $this->logger->error(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_ERROR</b> level log message.
 
-#### $this->logger->warning(string $message = '', $context = array());
+#### $this->logger->warning(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_WARNING</b> level log message.
 
-#### $this->logger->notice(string $message = '', $context = array());
+#### $this->logger->notice(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_NOTICE</b> level log message.
 
-#### $this->logger->info(string $message = '', $context = array());
+#### $this->logger->info(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_INFO</b> level log message.
     
-#### $this->logger->debug(string $message = '', $context = array());
+#### $this->logger->debug(string $message = '', $context = array(), integer $priority = 0);
 
 Create <b>LOG_DEBUG</b> level log message.
 
-#### $this->logger->push(string $handler = 'mongo', $threshold = null);
+#### $this->logger->push(string $handler = 'mongo', $threshold = null, integer $priority = 0);
 
 Push current page log data to log handlers.

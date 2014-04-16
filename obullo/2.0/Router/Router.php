@@ -46,7 +46,7 @@ Class Router
         $this->config   = $c['config'];
 
         $this->setRouting();
-        $this->logger->debug('Router Request Class Initialized');
+        $this->logger->debug('Router Class Initialized');
     }
 
     /**
@@ -111,7 +111,6 @@ Class Router
                 return;
             }
         }
-
         $this->uri->fetchUriString();  // Detect the complete URI string
 
         if ($this->uri->getUriString() == '') {       // Is there a URI string ? // If not, the default controller specified in the "routes" file will be shown.
@@ -217,7 +216,6 @@ Class Router
         // controller class.  We will now see if there is an override
 
         if ( ! empty($this->routes['404_override'])) {
-
             $x = explode('/', $this->routes['404_override']);
             $this->setDirectory($x[0]);
             $this->setClass($x[1]);

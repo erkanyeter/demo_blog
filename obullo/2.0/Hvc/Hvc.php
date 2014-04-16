@@ -25,9 +25,10 @@ Class Hvc
     public $request_method = 'GET';
     public $process_done = false;
 
-    // Clone objects
+    // Objects
     public $uri    = null;
     public $router = null;
+    public $logger = null;
 
     // Cache and Connection
     public $connection = true;
@@ -65,12 +66,14 @@ Class Hvc
     {
         global $c;
 
-        $this->config = $c['config']->load('hvc');   // Get hvc configuration
-        $c['translator']->load('hvc');               // Load translate file
+        $this->config = $c['config']['hvc'];   // Get hvc configuration
+
+        $c['translator']->load('hvc');         // Load translate file
 
         $this->response = $c['response'];
+        $this->logger   = $c['logger'];
 
-        $c['logger']->debug('Hvc Class Initialized');
+        $this->logger->debug('Hvc Class Initialized');
     }
 
     /**
@@ -83,6 +86,8 @@ Class Hvc
     public function setRequestUrl($uriString = '')
     {
         global $c;
+
+        $uriString = trim($uriString, '/');
 
         // ----------- Visibility -----------------
 
@@ -99,18 +104,15 @@ Class Hvc
             $uriString = substr($uriString, 6);
         }
 
-        //-------- Backup $_SERVER ( We need it in Get Class ) ---------//
+        //-------- Backup $_SERVER ---------//
 
-        $GLOBALS['_SERVER_BACKUP']  = $_SERVER;
-
-        //--------- 
+        $GLOBALS['_SERVER_BACKUP']  = $_SERVER; // Used in Http/Get class
 
         unset($_SERVER['HTTP_ACCEPT']);    // Don't touch global server items 
         unset($_SERVER['REQUEST_METHOD']);
 
         $_SERVER['HVC_REQUEST']      = true;   // Set Hvc Headers
-        $_SERVER['HVC_REQUEST_TYPE'] = $type;  // "public" or "private"
-        //--------------------------
+        $_SERVER['HVC_REQUEST_TYPE'] = $type;  // "public" or "private
 
         $this->setConnString($uriString);
 
@@ -281,7 +283,7 @@ Class Hvc
     }
 
     /**
-     * Get visibility of request Private / Public
+     * Get visibility of request ( Private / Public / Private_View )
      * 
      * @return string
      */
@@ -293,6 +295,7 @@ Class Hvc
     /**
      * Send Request
      * 
+     * @param string  $type_constant hvc type  public / private
      * @param string  $method     request method
      * @param string  $uri        uri string
      * @param array   $data       request data
@@ -300,7 +303,7 @@ Class Hvc
      * 
      * @return string
      */
-    public function request($method, $uri, $data = array(), $expiration = null)
+    public function request($type_constant, $method, $uri, $data = array(), $expiration = null)
     {
         if ($expiration === true) {  // delete cache before the request
             $this->deleteCache();
@@ -309,9 +312,8 @@ Class Hvc
             $expiration = $data;
             $data = array();
         }
-
         $this->clear(); // clear hvc variables
-        $this->setRequestUrl($uri, $expiration);
+        $this->setRequestUrl($type_constant, $uri, $expiration);
         $this->setMethod($method, $data);
 
         $vsb = $this->getVisibility();
@@ -357,6 +359,7 @@ echo $this->view->get(
         //------------ Private Request Header -------------//
 
         if ($vsb == 'private') {  // Private Request
+            
             if (strpos(trim($uri, '/'), 'private/views') === 0) { // if request goes to view folder don't check the format
                 if ( ! is_string($rsp) OR empty($rsp)) {
                     echo $hvc_view_error;
@@ -364,6 +367,7 @@ echo $this->view->get(
                 }
                 return $rsp;
             }
+
             $rsp = json_decode($rsp, true); // Decode json to array
 
             if ( ! is_array($rsp)) { // If success not exists !
@@ -395,13 +399,13 @@ echo $this->view->get(
                 echo ($hvc_error);
                 return;
             }
-
             // Show exceptional message to developers if environment not LIVE.
             
             if (isset($rsp['success']) AND $rsp['success'] == false AND (isset($rsp['e']) AND ! empty($rsp['e'])) AND (ENV == 'local' OR ENV == 'test')) { 
                 $rsp['message'] = $rsp['e'];
             }
         }
+
         //------------ Private Request Header End -------------//
 
         if (isset($rsp['results']) AND is_array($rsp['results'])) {  // Automatically add count of the results.
@@ -439,7 +443,6 @@ echo $this->view->get(
                                             // This cache type not related with Cache package.
             $response = $this->getResponseData();
             $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
-
             $this->reset();
             return $response;    // This is native system cache !
         }
@@ -449,11 +452,7 @@ echo $this->view->get(
         // ----------------- Memory Cache -------------------//
 
         if ($this->config['caching']) {
-            $cache = $this->config['cache'](); 
-            $cache = $cache::$driver;
-            
-            $response = $cache->get($KEY);
-
+            $response = $c['cache']->get($KEY);
             if ( ! empty($response)) {              // If cache exists return to cached string.
                 $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
                 $this->reset();
@@ -494,6 +493,7 @@ echo $this->view->get(
         }
 
         // --------- End storage exists ----------- //
+        
         // $app variable available here !
 
         if ( ! isset($c['request']->global)) { // ** Let's create new request object for globals
@@ -558,9 +558,7 @@ echo $this->view->get(
         //--------------------------------------
 
         if (is_numeric($expiration) AND $this->config['caching']) {
-            $cache = $this->config['cache']();   // load cache library
-            $cache = $cache::$driver;
-            $cache->set($KEY, base64_encode($response), (int)$expiration);
+            $c['cache']->set($KEY, base64_encode($response), (int)$expiration);
         }
         $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
@@ -675,13 +673,12 @@ echo $this->view->get(
      */
     public function deleteCache($key = '')
     {
+        global $c;
         if (empty($key)) {          // if key not provided the get current hvc key
             $key = $this->getKey();
         }
-        $cache = $this->config['cache'](); // load cache object
-        $cache = $cache::$driver;
-        if ($cache->keyExists($key)) {
-            return $cache->delete($key);
+        if ($c['cache']->keyExists($key)) {
+            return $c['cache']->delete($key);
         }
         return false;
     }
@@ -708,7 +705,7 @@ echo $this->view->get(
     public function __destruct()
     {
         if ($this->process_done == false) {
-            $this->_clear();
+            $this->reset();
             return;
         }
         $this->process_done = false;

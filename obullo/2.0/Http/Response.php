@@ -29,6 +29,7 @@ Class Response
     {
         global $c;
         $this->logger = $c['logger'];
+        
         $this->logger->debug('Response Class Initialized');
     }
 
@@ -191,16 +192,13 @@ Class Response
     public function showError($message, $statusCode = 500, $heading = 'An Error Was Encountered')
     {
         global $c;
-        
         $this->logger->error($heading.' --> '.$message, false);
 
         if ($statusCode === false) {
             $this->error = $message;
             return $message;
         }
-
         header('Content-type: text/html; charset='.$c['config']['locale']['charset']); // Some times we use utf8 chars in errors.
-
         echo $this->showHttpError($heading, $message, 'general', $statusCode);
         exit();
     }
@@ -224,9 +222,7 @@ Class Response
             return '['.$heading.']: The url ' .$message. ' you requested was not found.'."\n";
         }
         ob_start();
-        
         include APP .'errors'. DS .$template. EXT;
-
         $buffer = ob_get_clean();
         return $buffer;
     }

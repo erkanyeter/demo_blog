@@ -30,7 +30,7 @@ if ($hooks_enabled) {
 if ($c['config']['uri']['query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
     $_GET = array();
 }
-$_GET = cleanInputData($_GET);
+$_GET  = cleanInputData($_GET);
 $_POST = cleanInputData($_POST);  // Clean $_POST Data
 $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']); // Sanitize PHP_SELF
 
@@ -49,23 +49,16 @@ unset($_COOKIE['$Path']);
 unset($_COOKIE['$Domain']);
 
 $_COOKIE = cleanInputData($_COOKIE);
-
-$c['logger']->debug('Global POST and COOKIE data sanitized');
 /*
  * ------------------------------------------------------
  *  Log requests
  * ------------------------------------------------------
  */
-
-if ($c['config']['logger']['enabled']) {
-
-    $c['logger']->debug('$_REQUEST_URI: ' . $c['uri']->getRequestUri());
-    if (ENV == 'local' OR ENV == 'test') {
-        $c['logger']->debug('$_COOKIE: ', $_COOKIE);
-        $c['logger']->debug('$_POST: ', $_POST);
-        $c['logger']->debug('$_GET: ', $_GET);
-    }
-}
+$c['logger']->debug('$_REQUEST_URI: ' . $c['uri']->getRequestUri(), array(), 10);
+$c['logger']->debug('$_COOKIE: ', $_COOKIE, 9);
+$c['logger']->debug('$_POST: ', $_POST, 9);
+$c['logger']->debug('$_GET: ', $_GET, 9);
+$c['logger']->debug('Global POST and COOKIE data sanitized', array(), 10);
 /*
  * ------------------------------------------------------
  *  Load core components
@@ -158,7 +151,7 @@ if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark 
     $extra = array('time' => number_format($time, 4), 'memory' => $usage);
 }
 
-$c['logger']->debug('Final output sent to browser', $extra);
+$c['logger']->debug('Final output sent to browser', $extra, -1);
 
 
 // END Obullo.php File
