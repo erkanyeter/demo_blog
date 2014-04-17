@@ -85,7 +85,7 @@ $config = array(
     ),
     /*
     |--------------------------------------------------------------------------
-    | Logger
+    | Log
     |--------------------------------------------------------------------------
     | Severities:
     | LOG_EMERG (0)    : Emergency: system is unusable.
@@ -101,7 +101,7 @@ $config = array(
     | @link http://www.php.net/manual/en/function.syslog.php
     | ---------------------------------------------------
     */
-    'logger' =>   array(
+    'log' =>   array(
             'enabled'   => true,        // On / Off logging.
             'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
             'threshold' => array(       // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )

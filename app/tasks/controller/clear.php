@@ -23,7 +23,7 @@ $app->func(
 
         global $c;
 
-        $file = trim($c['config']['logger']['path']['app'], '/');
+        $file = trim($c['config']['log']['path']['app'], '/');
         $file = str_replace('/', DS, $file);
 
         if (strpos($file, 'data') === 0) { 

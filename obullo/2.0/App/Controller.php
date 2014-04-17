@@ -2,6 +2,8 @@
 
 namespace Obullo\App;
 
+use Obullo\Logger\Logger;
+
 /**
  * Control the application variables
  *
@@ -21,7 +23,7 @@ Class Controller
     {
         global $c;
 
-        if ($c['logger'] instanceof \Obullo\Logger\Logger) {
+        if ($c['logger'] instanceof Logger) {
             $c['logger']->debug('App Controller Class Initialized', array(), 9);
         }
     }

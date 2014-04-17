@@ -1,5 +1,7 @@
 <?php
 
+namespace Obullo\Auth;
+
 /**
  * Auth Class
  *

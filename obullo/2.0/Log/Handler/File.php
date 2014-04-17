@@ -31,13 +31,13 @@ Class File
 
         $this->logger = $logger;
         
-        $this->path = self::replacePath($c['config']['logger']['path']['app']);   // Application request path
+        $this->path = self::replacePath($c['config']['log']['path']['app']);   // Application request path
 
         if (defined('STDIN')) {                   // Cli request
             if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
                 $this->logger->setProperty('enabled', false);
             }
-            $this->path = self::replacePath($c['config']['logger']['path']['cli']);
+            $this->path = self::replacePath($c['config']['log']['path']['cli']);
         }
     }
 
@@ -73,7 +73,7 @@ Class File
      * Format the line which is defined in app/config/$env/config.php
      * This feature just for line based loggers.
      * 
-     * 'log_line' => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',
+     * 'line' => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',
      * 
      * @param array $record array of log data
      * 
@@ -81,6 +81,9 @@ Class File
      */
     public function lineFormat($record)
     {
+        if ( ! is_array($record)) {
+            return;
+        }
         return str_replace(
             array(
             '%datetime%',
@@ -115,10 +118,8 @@ Class File
          *
          * $processor = new SplPriorityQueue();
          * $processor->insert(array('' => $record), $priority = 0); 
-         *
-         * $this->logger->getProcessorInstance('file'); 
          */
-        $processor = $this->logger->getProcessor('file');
+        $processor = $this->logger->getProcessor(LOGGER_FILE); // Get file queue
 
         $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
 
@@ -133,7 +134,6 @@ Class File
             if ( ! $fop = fopen($this->path, 'ab')) {
                 return false;
             }
-            echo $lines.'</br>';
             flock($fop, LOCK_EX);
             fwrite($fop, $lines);
             flock($fop, LOCK_UN);

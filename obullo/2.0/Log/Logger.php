@@ -33,7 +33,7 @@ Class Logger
      * Log priorities
      * @var array
      */
-    protected static $priorities = array(
+    public static $priorities = array(
         'emergency' => LOG_EMERG,
         'alert'     => LOG_ALERT,
         'critical'  => LOG_CRIT,
@@ -114,6 +114,8 @@ Class Logger
      */
     protected $push = array();
 
+    public $task;
+
     /**
     * Constructor
     */
@@ -121,7 +123,13 @@ Class Logger
     {
         global $c;
 
-        $this->config          = $c['config']['logger'];
+        $this->task = $c['cli/task'];
+
+        var_dump($this->task);
+
+        // echo $this->task->run('logger/index/1', true); exit;
+
+        $this->config          = $c['config']['log'];
         $this->enabled         = $this->config['enabled'];
         $this->debug           = $this->config['debug'];
         $this->channel         = $this->config['channel'];
@@ -132,7 +140,6 @@ Class Logger
         $this->date_format     = $this->config['date_format'];
 
         $this->priority_values = array_flip(self::$priorities);
-
         $this->processor = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
     }
 
@@ -147,8 +154,21 @@ Class Logger
      */
     public function addHandler($name, Closure $handler, $priority = 0)
     {
-        $this->addWriter($name, $handler(), $priority);
-        $this->handlers[$name] = $name;
+        $this->addWriter($name, $handler, $priority);
+        $this->handlers[$name] = $handler;
+    }
+
+    /**
+     * Remove Handler
+     * 
+     * @param string $name handler name
+     * 
+     * @return void
+     */
+    public function removeHandler($name)
+    {
+        $this->removeWriter($name);
+        unset($this->handlers[$name]);
     }
 
     /**
@@ -318,11 +338,25 @@ Class Logger
         if ( ! isset($this->handlers[$handler])) {
             throw new Exception(sprintf('The log handler %s is not defined in your index.php file.', $handler));
         }
-        $this->push[$handler] = 1; // push all log data to current push handler.
+
+        $this->push[$handler] = 1; // allow push all log data for current push handler.
 
         if (isset($this->priority_values[$threshold])) {  // Just push for this priority
             $this->push[$handler] = $this->priority_values[$threshold];
         }
+    }
+
+    /**
+     * Check push handler has threshold
+     * 
+     * @return boolean [description]
+     */
+    public function hasThreshold()
+    {
+        if (isset($this->push[$handler]) AND is_string($this->push[$handler])) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -332,12 +366,9 @@ Class Logger
      * 
      * @return integer | boolean
      */
-    public function getHandlerThreshold($handler = '')
+    public function getThreshold($handler = '')
     {
-        if (isset($this->push[$handler])) {
-            return $this->push[$handler];
-        }
-        return false;
+        return $this->push[$handler];
     }
 
     /**
@@ -349,12 +380,26 @@ Class Logger
      *
      * @return void
      */
-    public function addWriter($name, $handler, $priority = 1)
+    public function addWriter($name, Closure $handler, $priority = 1)
     {
         if ( ! isset($this->writers[$name])) {
             $this->processor[$name] = new PriorityQueue;    // add processor
             $this->writers[$name]   = array('handler' => $handler, 'priority' => $priority);
         }
+    }
+
+    /**
+     * Remove Writer
+     * removers handler from processors and writers
+     * 
+     * @param string $name handler name
+     * 
+     * @return void
+     */
+    public function removeWriter($name)
+    {
+        unset($this->writers[$name]);
+        unset($this->processor[$name]);
     }
 
     /**
@@ -398,21 +443,6 @@ Class Logger
     }
 
     /**
-     * Returns to defined log priporities
-     *
-     * @param string $priority emergency, alert, notice, debug ..
-     * 
-     * @return mixed
-     */
-    public function getPriorities($priority = null)
-    {
-        if ( ! empty($priority) AND isset(self::$priorities[$priority])) {
-             return self::$priorities[$priority];
-        }
-        return self::$priorities;
-    }
-
-    /**
      * Send logs to Queue for each log handler.
      *
      * Using SplPriorityQueue Class we send
@@ -429,7 +459,10 @@ Class Logger
     public function sendToQueue($record_unformatted, $message_priority = null)
     {
         foreach ($this->writers as $name => $val) {
-            $record_formatted = $val['handler']->format($record_unformatted);  // create log data
+
+            $this->handlers[$name] = $val['handler'](); // call handler class closure
+
+            $record_formatted = $this->handlers[$name]->format($record_unformatted);  // create log data
             $priority = (empty($message_priority)) ? $val['priority'] : $message_priority;
 
             $this->processor[$name]->insert($record_formatted, $priority);
@@ -444,17 +477,21 @@ Class Logger
      */
     public function __destruct()
     {
-        if ($this->enabled == false) {
+
+        if ($this->enabled == false) {  // check logger is disabled.
             return;
         }
-        if ($this->debug) {                    // debug log data if debu
+        if ($this->debug) {             // debug log data if debug
             $debug = new Debug($this);
             echo $debug->printDebugger();
-        }
-        foreach ($this->writers as $handler => $array) {    // write log data
+            return;
+        } 
+        foreach ($this->writers as $handler => $val) {    // write log data
             if (isset($this->push[$handler]) OR key($this->handlers) == $handler) { // if handler is primary writer or push data available !
-                $array['handler']->write();
+                
+                $this->handlers[$handler]->write(); // do write process in task mode.
             }
+            unset($val);
         }
         $this->push = array(); // reset push data
     }

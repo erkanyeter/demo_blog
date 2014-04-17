@@ -95,17 +95,16 @@ Class Mongo implements HandlerInterface
          *
          * $processor = new SplPriorityQueue();
          * $processor->insert(array('' => $record), $priority = 0); 
-         *
-         * $this->logger->getProcessor('mongo');  // get processor instance
          */
-        $processor = $this->logger->getProcessor('mongo');
+        $processor = $this->logger->getProcessor(LOGGER_MONGO);
 
         $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
 
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top
 
-            $threshold = $this->logger->getHandlerThreshold('mongo');
+            $hasThreshold = $this->logger->hasThreshold(LOGGER_MONGO);
+            $threshold    = $this->logger->getThreshold(LOGGER_MONGO);
       
             $data = array();
             $i = 0;
@@ -113,7 +112,7 @@ Class Mongo implements HandlerInterface
                 $record = $processor->current(); 
                 $processor->next();
                 $data[$i] = $record;
-                if (is_string($threshold) AND $record['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
+                if ($hasThreshold AND $record['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
                     unset($data[$i]);   // remove not matched log records with selected filter.
                 }
                 $i++;

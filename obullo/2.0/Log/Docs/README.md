@@ -11,6 +11,7 @@ The Logger class assists you to <kbd>write messages</kbd> to your log handlers. 
 * Disabled
 * File
 * Mongo
+* Syslog
 
 ### Enable / Disable Logger
 
@@ -181,25 +182,35 @@ Forexample to switch mongo database as a primary handler just replace "file" as 
 $c['logger'] = function () {
     $logger = new Obullo\Log\Logger;
     $logger->addHandler(
-        'file',
+        LOGGER_FILE,
         function () use ($logger) { 
             return new Obullo\Log\Handler\File($logger);  // primary
+        },
+        3  // priority
+    );
+    $logger->addHandler(
+        LOGGER_SYSLOG,
+        function () use ($logger) { 
+            return new Obullo\Log\Handler\Syslog($logger);
         },
         2  // priority
     );
     $logger->addHandler(
-        'mongo', 
+        LOGGER_MONGO, 
         function () use ($logger) { 
             return new Obullo\Log\Handler\Mongo(
                 $logger, 
                 array(
                 'db.dsn' => 'mongodb://root:12345@localhost:27017/test', 
-                'db.collection' => 'logs'
+                'db.collection' => 'test_logs'
                 )
             );
         },
         1
     );
+    if (ENV == 'live') {
+        $logger->removeHandler(LOGGER_FILE); // Remove file handler and use syslog handler as primary in "production" mode.
+    }
     return $logger;
 };
 ```

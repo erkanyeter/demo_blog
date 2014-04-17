@@ -113,12 +113,13 @@ Class Pimple implements ArrayAccess
                 $ObulloPackage = 'Obullo\\'. implode('\\', $exp).'\\'. ucfirst($ClassName);
             }
 
-            Controller::$instance->{$key} = new $ObulloPackage;
-
+            if (Controller::$instance != null) {  // let's sure controller instance available and is not null
+                Controller::$instance->{$key} = new $ObulloPackage;
+            }
             $this->offsetSet(
                 $cid, 
-                function () use ($key) {
-                    return Controller::$instance->{$key};
+                function () use ($key, $ObulloPackage) {
+                    return (Controller::$instance == null) ? new $ObulloPackage : Controller::$instance->{$key};
                 }
             );
         }

@@ -2,6 +2,8 @@
 
 namespace Obullo\Cli;
 
+use Obullo\Logger\Logger;
+
 /**
  * Task Class
  * 
@@ -22,7 +24,10 @@ Class Task
         global $c;
 
         $this->logger = $c['logger'];
-        $this->logger->debug('Task Class Initialized');
+
+        if ($this->logger instanceof Logger) {  // we need to sure logger object is available
+            $this->logger->debug('Task Class Initialized');
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -41,7 +46,7 @@ Class Task
         $module = array_shift($uri);
 
         foreach ($uri as $i => $section) {
-            if (!$section) {
+            if ( ! $section) {
                 $uri[$i] = 'false';
             }
         }
@@ -54,14 +59,20 @@ Class Task
             // $output = trim(preg_replace('/\n/', '#', $output), "\n");
             // clean cli color codes
             $output = preg_replace(array('/\033\[36m/', '/\033\[31m/', '/\033\[0m/'), array('', '', ''), shell_exec($shell));
-            $this->logger->debug('$_TASK request: ' . $shell, array('output' => $output));
+
+            if ($this->logger instanceof Logger) {
+                $this->logger->debug('$_TASK request: ' . $shell, array('output' => $output));
+            }
 
             return $output;
+
         } else {   // continious task
             shell_exec($shell . ' > /dev/null &');
         }
 
-        $this->logger->debug('$_TASK command: ' . $shell);
+        if ($this->logger instanceof Logger) {
+            $this->logger->debug('$_TASK command: ' . $shell);
+        }
     }
 
 }

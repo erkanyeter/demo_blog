@@ -2,6 +2,8 @@
 
 namespace Obullo\Exception;
 
+use Obullo\Logger\Logger;
+
 /**
  * Error Class
  * 
@@ -25,13 +27,11 @@ Class Error
         global $c;
         $this->logger = $c['logger'];
 
-        if ($this->logger instanceof \Obullo\Logger\Logger) {
+        if ($this->logger instanceof Logger) {
             $this->log_enabled = true;
             $this->logger->debug('Exceptions Class Initialized');
         }
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Display all errors
@@ -60,6 +60,7 @@ Class Error
         //-----------------------------------------------------------------------
 
         $code = $e->getCode();
+        
         $lastQuery = '';
         if (isset($c['app']->db)) {
             $prepare = (isset($c['app']->db)) ? $c['app']->db->prepare : false;

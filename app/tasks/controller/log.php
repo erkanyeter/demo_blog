@@ -41,9 +41,9 @@ debug      : Detailed debug information.\33[0m\n";
         global $c;
 
         if ($level == 'tasks') {
-            $path = str_replace('/', DS, trim($c['config']['logger']['path']['task'], '/'));
+            $path = str_replace('/', DS, trim($c['config']['log']['path']['task'], '/'));
         } else {
-            $path = str_replace('/', DS, trim($c['config']['logger']['path']['app'], '/'));
+            $path = str_replace('/', DS, trim($c['config']['log']['path']['app'], '/'));
         }
         if (strpos($path, 'data') === 0) {  // replace "data" word to application data path
             $file = str_replace('data', DS . trim(DATA, DS), $path);

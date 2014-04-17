@@ -71,7 +71,7 @@ Class Syslog implements HandlerInterface
      * Format the line which is defined in app/config/$env/config.php
      * This feature just for line based loggers.
      * 
-     * 'log_line' => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',
+     * 'line' => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',
      * 
      * @param array $record array of log data
      * 
@@ -79,6 +79,9 @@ Class Syslog implements HandlerInterface
      */
     public function lineFormat($record)
     {
+        if ( ! is_array($record)) {
+            return;
+        }
         return str_replace(
             array(
             '%datetime%',
@@ -101,7 +104,7 @@ Class Syslog implements HandlerInterface
     }
 
     /**
-     * Write processor output to file
+     * Write processor output
      * 
      * @return boolean
      */
@@ -112,28 +115,28 @@ Class Syslog implements HandlerInterface
          * messages to Queue like below : 
          *
          * $processor = new SplPriorityQueue();
-         * $processor->insert(array('' => $record), $priority = 0); 
-         *
-         * $this->logger->getProcessor('mongo'); 
+         * $processor->insert($record, $priority = 0); 
          */
-        $processor = $this->logger->getProcessor('syslog');
+        $processor = $this->logger->getProcessor(LOGGER_SYSLOG); // Get syslog queue
 
         $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
 
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top
 
+            $threshold = $this->logger->getThreshold(LOGGER_SYSLOG);
+      
+            $i = 0;
+            $data = array();
             while ($processor->valid()) {         // Prepare Lines
-                $record = $processor->current();
+                $data[$i] = $processor->current(); 
                 $processor->next();
-                // echo $this->lineFormat($record).'<br>';
+                if (is_string($threshold) AND $data[$i]['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
+                    unset($data[$i]);   // remove not matched log records with selected filter.
+                }
+                syslog(Logger::$priorities[$data[$i]['level']], $this->lineFormat($data[$i]));
+                $i++;
             }
-
-            // foreach ($data as $record) {
-            //     var_dump($record); exit;
-            //     var_dump($this->logger->getPriorities($record['level']));
-            //     syslog($this->logger->getPriorities($record['level']), $record['message']);
-            // }
         }
     }
 

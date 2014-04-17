@@ -9,10 +9,15 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
+        
+        // $this->logger->debug = true;
 
-        $this->logger->notice('test', array('username' => 'test'));
-        $this->logger->push('mongo', LOG_NOTICE);
-        $this->logger->notice('ehhhehe', array('username' => 'ersiasdasşd_ A_SP*,2.işeç.çöö,şm, ğo ld*-qlçşçdğçdi çşsçd.ç. ğğşğoöçö'));
+        $this->logger->notice('test', array('username' => 'testssssssssssssssssssssssss'));
+
+        $this->logger->push(LOGGER_MONGO, LOG_NOTICE);
+        $this->logger->push(LOGGER_SYSLOG);
+
+        $this->logger->info('ehhhehe', array('username' => 'ersiasdasşd_ A_SP*,2.işeç.çöö,şm, ğo ld*-qlçşçdğçdi çşsçd.ç. ğğşğoöçö'));
 
         // syslog(LOG_NOTICE, 'test');
         // syslog(LOG_EMERG, 'site down !!');
@@ -25,6 +30,8 @@ $app = new Controller(
 $app->func(
     'index',  // visitor.guest
     function () {
+
+
 
         $this->view->get(
             'hello_world', 

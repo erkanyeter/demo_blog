@@ -13,6 +13,7 @@
 Class Controller
 {
     public static $instance;              // Controller instance
+    
     public $publicMethods     = array();  // Controller user defined methods. ( @public )
     public $controllerMethods = array();  // Controller user defined methods starts wiht "_" underscore. ( @private )
     public $config, $uri, $router, $logger;  // Default packages

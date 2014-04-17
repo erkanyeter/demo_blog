@@ -63,6 +63,15 @@ $c['config'] = function () {
 */
 require OBULLO .'Obullo'. DS .'Common'. EXT;
 require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
+
+/*
+|--------------------------------------------------------------------------
+| Logger constants
+|--------------------------------------------------------------------------
+*/
+define('LOGGER_FILE', 'file');
+define('LOGGER_SYSLOG', 'syslog');
+define('LOGGER_MONGO', 'mongo');
 /*
 |--------------------------------------------------------------------------
 | Logger
@@ -73,21 +82,21 @@ require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
 $c['logger'] = function () {
     $logger = new Obullo\Log\Logger;
     $logger->addHandler(
-        'file',
+        LOGGER_FILE,
         function () use ($logger) { 
             return new Obullo\Log\Handler\File($logger);  // primary
         },
         3  // priority
     );
     $logger->addHandler(
-        'syslog',
+        LOGGER_SYSLOG,
         function () use ($logger) { 
             return new Obullo\Log\Handler\Syslog($logger);  // primary
         },
         2  // priority
     );
     $logger->addHandler(
-        'mongo', 
+        LOGGER_MONGO, 
         function () use ($logger) { 
             return new Obullo\Log\Handler\Mongo(
                 $logger, 
@@ -99,6 +108,9 @@ $c['logger'] = function () {
         },
         1
     );
+    if (ENV == 'live') {
+        $logger->removeHandler(LOGGER_FILE);  // Remove file handler and use syslog handler as primary in "production" mode.
+    } 
     return $logger;
 };
 /*
@@ -106,7 +118,7 @@ $c['logger'] = function () {
 | Disabled Logger
 |--------------------------------------------------------------------------
 */
-if ($c['config']['logger']['enabled'] == false) {
+if ($c['config']['log']['enabled'] == false) {
     $c['logger'] = function () {
         return new Obullo\Logger\Disabled;
     };
@@ -124,9 +136,9 @@ $c['error'] = function () {
 | Exceptions
 |--------------------------------------------------------------------------
 */
-$c['exception'] = function ($e, $type) {
+$c['exception'] = function ($e) {
     $exception = new Obullo\Exception\Error;
-    $exception->display($e, $type);
+    $exception->display($e);
 };
 /*
 |--------------------------------------------------------------------------

@@ -155,7 +155,7 @@ function exceptionsHandler($e, $type = '')
 
         if (is_object($c)) {
             $exception = $c->raw('exception');
-            $exception($e, $type);
+            $exception($e);
         }
     }
     return;
