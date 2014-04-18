@@ -75,20 +75,26 @@ Class Debug
 
         if ( ! $isXmlHttp AND ! defined('STDIN')) {      // disable html output for ajax and task requests
 
-            $processor = $this->logger->getProcessor('file');
-            $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
-            $processor->top();  // Go to Top
-            $count = $processor->count();
+            $processor = $this->logger->getProcessor(LOGGER_FILE);
 
-            if ($count > 0) {
-                $lines = '';
-                while ($processor->valid()) {         // prepare Lines 
-                    $lines.= str_replace('\n', '<br />', $this->lineFormat($processor->current()));  // output handler must be file for debugging
-                    $processor->next();                                       
+            if ($processor == false) {
+                $lines = sprintf('The log handler %s is not defined.', LOGGER_FILE);
+            } else {
+
+                $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
+                $processor->top();  // Go to Top
+                $count = $processor->count();
+
+                if ($count > 0) {
+                    $lines = '';
+                    while ($processor->valid()) {         // prepare Lines 
+                        $lines.= str_replace('\n', '<br />', $this->lineFormat($processor->current()));  // output handler must be file for debugging
+                        $processor->next();                                       
+                    }
                 }
-            }
-            if ($count == 0) {
-                $lines = 'There is no queue data in file handler.';
+                if ($count == 0) {
+                    $lines = sprintf('There is no queue data in %s handler.', LOGGER_FILE);
+                }
             }
             return '<div style="
                     overflow-y:scroll;

@@ -30,6 +30,7 @@ Class Visitor_Guest
 
         $this->init();
         $this->logger = $c['logger'];
+
         $this->logger->debug('Visitor_Guest Class Initialized');
     }
 
@@ -38,11 +39,6 @@ Class Visitor_Guest
     /**
      * This file specifies which functions run by default 
      * in __construct() level of the controller.
-     * 
-     * In order to keep the framework as light-weight as possible only the
-     * absolute minimal resources are run by default. This file lets
-     * you globally define the controller action that you like to run
-     * by $c->func('index.visitor.guest')
      */
 
     // ------------------------------------------------------------------------
@@ -63,4 +59,4 @@ Class Visitor_Guest
 // END Call_Guest.php File
 /* End of file Guest.php
 
-/* Location: .app/classes/Call/Call_Guest.php */
+/* Location: .app/classes/Visitor/Visitor_Guest.php */

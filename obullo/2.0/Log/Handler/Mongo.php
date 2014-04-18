@@ -16,7 +16,7 @@ use Exception, MongoDate, MongoCollection, MongoClient;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/log/handler/mongo
+ * @link      http://obullo.com/package/log
  */
 Class Mongo implements HandlerInterface
 {
@@ -109,10 +109,9 @@ Class Mongo implements HandlerInterface
             $data = array();
             $i = 0;
             while ($processor->valid()) {         // Prepare Lines
-                $record = $processor->current(); 
+                $data[$i] = $processor->current(); 
                 $processor->next();
-                $data[$i] = $record;
-                if ($hasThreshold AND $record['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
+                if ($hasThreshold AND $data[$i]['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
                     unset($data[$i]);   // remove not matched log records with selected filter.
                 }
                 $i++;

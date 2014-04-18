@@ -83,26 +83,13 @@ Class Controller
     
     public function func($methodName, $methodCallable)
     {
-        $method = strtolower($methodName);
-        $hook   = explode('.', $methodName);
-
-        $method = $hook[0];
-        if (isset($hook[1])) {  // Run Controler Hooks
-            unset($hook[0]);
-            $className = '';
-            foreach ($hook as $class) {
-                $className.= ucfirst($class).'_';
-            }
-            $Class = substr($className, 0, -1);
-            new $Class;
-        }
         //-----------------------------------------------------
         // "One Public Method Per Controller" Rule
         //-----------------------------------------------------
         // if it is not a private method check the "One Public Method Per Controller" rule
 
         if (strncmp($methodName, '_', 1) !== 0 AND strpos($methodName, 'callback_') !== 0) {
-            $this->publicMethods[$method] = $methodName;
+            $this->publicMethods[$methodName] = $methodName;
             if (sizeof($this->publicMethods) > 1) {
                 throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
             }
@@ -110,7 +97,7 @@ Class Controller
         if ( ! is_callable($methodCallable)) {
             throw new InvalidArgumentException('Controller error: Second param must be callable.');
         }
-        $this->controllerMethods[$method] = Closure::bind($methodCallable, $this, get_class());
+        $this->controllerMethods[$methodName] = Closure::bind($methodCallable, $this, get_class());
     }
 
     // ------------------------------------------------------------------------

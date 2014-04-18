@@ -30,8 +30,6 @@ Class Task
         }
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Run cli task
      * 
@@ -42,16 +40,15 @@ Class Task
      */
     public function run($uri, $debug = false)
     {
-        $uri = explode('/', trim($uri));
-        $module = array_shift($uri);
+        $uri       = explode('/', trim($uri));
+        $directory = array_shift($uri);
 
         foreach ($uri as $i => $section) {
             if ( ! $section) {
                 $uri[$i] = 'false';
             }
         }
-
-        $shell = PHP_PATH . ' ' . FPATH . '/' . TASK_FILE . ' ' . $module . ' ' . implode('/', $uri) . ' OB_TASK_REQUEST';
+        $shell = PHP_PATH . ' ' . FPATH . '/' . TASK_FILE . ' ' .$directory . ' ' . implode('/', $uri) . ' OB_TASK_REQUEST';
 
         if ($debug) { // Enable debug output to log folder.
             // @todo escapeshellcmd();
@@ -63,7 +60,6 @@ Class Task
             if ($this->logger instanceof Logger) {
                 $this->logger->debug('$_TASK request: ' . $shell, array('output' => $output));
             }
-
             return $output;
 
         } else {   // continious task

@@ -15,7 +15,7 @@ define('OBULLO_VERSION', '2.0');
 |
 |     o local - Development Mode  ( Quick Debugging, show all php errors )
 |     o test  - Testing     ( Test mode, behaviours like Live )
-|     o live  - Production  ( Production mode, all errors disabled )
+|     o live  - Production  ( Production mode, all errors disabled from config.php )
 |
 */
 define('ENV', 'local');
@@ -50,8 +50,9 @@ define('FPATH', dirname(__FILE__));
 | PUBLIC_FOLDER		- The full "static" server path to the "public" folder
 | PRIVATE_FOLDER 	- The full "static" server path to the "private" folder
 | PUBLIC_DIR  		- The full "dynamic" server path to the "public" folder
-| PRIVATE_DIR 		- The full "dynamic" server path to the "private" folder
+| PRIVATE_DIR 		- The full "static" server path to the "private" folder
 | TASK_FILE   		- The file name for $php task operations.
+| TASK_CLI   		- The full "static" path of the native cli task folder.
 */
 define('ROOT',  realpath(dirname(__FILE__)) . DS);
 define('ASSETS',  ROOT .'assets'. DS);
@@ -59,13 +60,32 @@ define('APP',  ROOT .'app'. DS);
 define('DATA',  ROOT .'data'. DS);
 define('CLASSES',  APP .'classes'. DS);
 define('TEMPLATES',  APP . 'templates'. DS);
-define('OBULLO',  ROOT .'obullo'. DS . OBULLO_VERSION . DS);
 define('PUBLIC_FOLDER', ROOT .'public'. DS);
 define('PRIVATE_FOLDER', ROOT .'private'. DS);
 define('PUBLIC_DIR', (defined('STDIN')) ? APP : PUBLIC_FOLDER);
 define('PRIVATE_DIR', PRIVATE_FOLDER);
 define('TASK_FILE', 'task');
-
+define('TASK_CLI', PHP_PATH .' '. APP .'tasks'. DS .'cli'. DS);
+/*
+|--------------------------------------------------------------------------
+| OBULLO CONSTANTS
+|--------------------------------------------------------------------------
+*/
+define('OBULLO',  ROOT .'obullo'. DS . OBULLO_VERSION . DS);
+define('OBULLO_PHP',  OBULLO .'Obullo'. DS .'Obullo.php');
+define('OBULLO_CONFIG',  OBULLO .'Config'. DS .'Config.php');
+define('OBULLO_CORE',  OBULLO .'Obullo'. DS .'Common.php');
+define('OBULLO_CONTAINER',  OBULLO .'Container'. DS .'Pimple.php');
+define('OBULLO_AUTOLOADER', OBULLO .'Obullo'. DS .'Autoloader.php');
+define('OBULLO_CONTROLLER', OBULLO .'Controller'. DS .'Controller.php');
+/*
+|--------------------------------------------------------------------------
+| LOG CONSTANTS
+|--------------------------------------------------------------------------
+*/
+define('LOGGER_FILE', 'file');
+define('LOGGER_SYSLOG', 'syslog');
+define('LOGGER_MONGO', 'mongo');
 /*
 |---------------------------------------------------------------
 | NOTIFICATION CONSTANTS

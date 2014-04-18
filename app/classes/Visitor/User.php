@@ -25,11 +25,12 @@ Class Visitor_User
     {   
         global $c;
         
-        $c['Sess'];
-        $c['Auth'];
+        $c['sess'];
+        $c['auth'];
 
         $this->init();
         $this->logger = $c['logger'];
+        
         $this->logger->debug('Visitor User Class Initialized');
     }
 
@@ -38,11 +39,6 @@ Class Visitor_User
     /**
      * This file specifies which functions run by default 
      * in __construct() level of the controller.
-     * 
-     * In order to keep the framework as light-weight as possible only the
-     * absolute minimal resources are run by default. This file lets
-     * you globally define the controller action that you like to run
-     * by $c->func('index.visitor.user')
      */
 
     // ------------------------------------------------------------------------
@@ -66,4 +62,4 @@ Class Visitor_User
 // END Public_User Class
 
 /* End of file private_user.php */
-/* Location: ./packages/controller/releases/0.1/private_user.php */
+/* Location: .app/classes/Visitor/Visitor_User.php */

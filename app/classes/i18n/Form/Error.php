@@ -18,4 +18,8 @@ Class I18n_Form_Error
     const USERNAME_REQUIRED      = 'form_error_username_required';
     const PASSWORD_REQUIRED      = 'form_error_password_required';
     const INVALID_EMAIL_ADDRESS  = 'form_error_invalid_email_address';
+
+    function hello(){
+    	echo 'ok';
+    }
 }

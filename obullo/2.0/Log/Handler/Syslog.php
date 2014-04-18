@@ -16,12 +16,14 @@ use Exception;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/log/handler/mongo
+ * @link      http://obullo.com/package/log
  */
 Class Syslog implements HandlerInterface
 {
     public $logger;     // logger instance
-    protected $facility = LOG_USER; // Facility used by this syslog instance
+
+    public $facility = LOG_USER;              // facility used by this syslog instance
+    public $name     = 'Log/Handler/Syslog';  // syslog application name
 
     /**
      * Constructor
@@ -33,10 +35,13 @@ Class Syslog implements HandlerInterface
     {
         $this->logger = $logger;   // logger object
 
-        if (isset($params['facility'])) {
-            $this->facility = $params['facility'];
+        if (isset($params['app.facility'])) {
+            $this->facility = $params['app.facility'];
         }
-        openlog('Log/Handler/Syslog', LOG_PID, $this->facility);
+        if (isset($params['app.name'])) {
+            $this->name = $params['app.name'];
+        }
+        openlog($this->name, LOG_PID, $this->facility);
     }
 
     /**

@@ -1,7 +1,8 @@
 <?php
 
 namespace Obullo\I18n;
-use ArrayAccess, Exception;
+
+use ArrayAccess, RunTimeException;
 
 /**
  * Translator Class
@@ -41,7 +42,7 @@ Class Translator implements ArrayAccess
         $this->default_translation = ($c['config']['locale']['default_translation'] != '') ?  $c['config']['locale']['default_translation'] : 'en_US';
 
         if ( ! extension_loaded('intl')) {
-            throw new Exception(
+            throw new RunTimeException(
                 sprintf(
                     '%s package requires the intl PHP extension', __CLASS__
                 )
@@ -86,7 +87,6 @@ Class Translator implements ArrayAccess
      */
     public function offsetGet($key)
     {
-        echo $key;
         if ( ! isset($this->translate[$key])) {
             return false;
         }

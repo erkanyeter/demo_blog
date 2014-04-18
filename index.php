@@ -18,14 +18,12 @@ error_reporting(1);
 ini_set('display_errors', 'On');
 /*
 |--------------------------------------------------------------------------
-| Set Default Time Zone Identifer.
+| Set Default Time Zone Identifer. @link http://www.php.net/manual/en/timezones.php
 |--------------------------------------------------------------------------                                        
-| Set the default timezone identifier for date function ( Server Time )
-| @link  http://www.php.net/manual/en/timezones.php
+| Set the default timezone identifier for date function ( Server Time ).
 |
 */
 date_default_timezone_set('Europe/London');
-
 /*
 |--------------------------------------------------------------------------
 | Tasks ( Command Line Interface )
@@ -38,21 +36,20 @@ if (defined('STDIN')) {
     set_time_limit(0);                  // Php execution limit, 0 = Unlimited
     ini_set('memory_limit', '100000M'); // Increase the maximum amount of memory available to PHP Cli operations.
 }
+
+require OBULLO_CONTAINER;
+require OBULLO_CONFIG;
 /*
 |--------------------------------------------------------------------------
 | Container ( IOC )
 |--------------------------------------------------------------------------
 */
-require OBULLO .'Container'. DS .'Pimple'. EXT;
-
 $c = new Obullo\Container\Pimple;
 /*
 |--------------------------------------------------------------------------
 | Config
 |--------------------------------------------------------------------------
 */
-require OBULLO .'Config'. DS .'Config'. EXT;
-
 $c['config'] = function () { 
     return new Obullo\Config\Config;
 };
@@ -61,17 +58,8 @@ $c['config'] = function () {
 | Autoloader
 |--------------------------------------------------------------------------
 */
-require OBULLO .'Obullo'. DS .'Common'. EXT;
-require OBULLO .'Obullo'. DS .'Autoloader'. EXT;
-
-/*
-|--------------------------------------------------------------------------
-| Logger constants
-|--------------------------------------------------------------------------
-*/
-define('LOGGER_FILE', 'file');
-define('LOGGER_SYSLOG', 'syslog');
-define('LOGGER_MONGO', 'mongo');
+require OBULLO_CORE;
+require OBULLO_AUTOLOADER;
 /*
 |--------------------------------------------------------------------------
 | Logger
@@ -80,38 +68,7 @@ define('LOGGER_MONGO', 'mongo');
 |
 */
 $c['logger'] = function () {
-    $logger = new Obullo\Log\Logger;
-    $logger->addHandler(
-        LOGGER_FILE,
-        function () use ($logger) { 
-            return new Obullo\Log\Handler\File($logger);  // primary
-        },
-        3  // priority
-    );
-    $logger->addHandler(
-        LOGGER_SYSLOG,
-        function () use ($logger) { 
-            return new Obullo\Log\Handler\Syslog($logger);  // primary
-        },
-        2  // priority
-    );
-    $logger->addHandler(
-        LOGGER_MONGO, 
-        function () use ($logger) { 
-            return new Obullo\Log\Handler\Mongo(
-                $logger, 
-                array(
-                'db.dsn' => 'mongodb://root:12345@localhost:27017/test', 
-                'db.collection' => 'test_logs'
-                )
-            );
-        },
-        1
-    );
-    if (ENV == 'live') {
-        $logger->removeHandler(LOGGER_FILE);  // Remove file handler and use syslog handler as primary in "production" mode.
-    } 
-    return $logger;
+    return new Obullo\Log\Task\Logger(array(LOGGER_FILE, LOGGER_SYSLOG, LOGGER_MONGO));
 };
 /*
 |--------------------------------------------------------------------------
@@ -145,7 +102,7 @@ $c['exception'] = function ($e) {
 | Controller
 |--------------------------------------------------------------------------
 */
-require OBULLO .'Controller'. DS .'Controller'. EXT;
+require OBULLO_CONTROLLER;
 /*
 |--------------------------------------------------------------------------
 | App Controller
@@ -245,7 +202,6 @@ $c['sess'] = function () use ($c) {
 };
 
 // SERVICES
-
 /*
 |--------------------------------------------------------------------------
 | Cache Service
@@ -256,7 +212,6 @@ $c['cache'] = function () use ($c) {
 };
 
 // PROVIDERS
-
 /*
 |--------------------------------------------------------------------------
 | NoSQL Provider
@@ -268,10 +223,10 @@ $c['mongo'] = function ($params) use ($c) {
 };
 /*
 |--------------------------------------------------------------------------
-| Load Framework
+| Start
 |--------------------------------------------------------------------------
 */
-require OBULLO .'Obullo'. DS .'Obullo'. EXT;
+require OBULLO_PHP;
 
 
 /* End of file index.php */

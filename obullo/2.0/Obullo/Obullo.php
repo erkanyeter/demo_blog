@@ -140,7 +140,7 @@ if ($hooks_enabled) {
     $c['hooks']->call('post_system');
 }
 
-$time = microtime(true) - $start;  // End Timer
+$end = microtime(true) - $start;  // End Timer
 
 $extra = array();
 if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark data ? If so, enable and run it.
@@ -148,10 +148,11 @@ if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark 
     if (function_exists('memory_get_usage') AND ($usage = memory_get_usage()) != '') {
         $usage = number_format($usage) . ' bytes';
     }
-    $extra = array('time' => number_format($time, 4), 'memory' => $usage);
+    $extra = array('time' => number_format($end, 4), 'memory' => $usage);
 }
 
 $c['logger']->debug('Final output sent to browser', $extra, -1);
+$c['logger']->shutDown();
 
 
 // END Obullo.php File

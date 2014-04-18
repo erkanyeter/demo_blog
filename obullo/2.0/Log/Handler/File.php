@@ -12,7 +12,7 @@ use Obullo\Log\PriorityQueue;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/logger
+ * @link      http://obullo.com/package/log
  */
 Class File
 {
@@ -28,16 +28,11 @@ Class File
     public function __construct($logger)
     {
         global $c;
-
         $this->logger = $logger;
-        
-        $this->path = self::replacePath($c['config']['log']['path']['app']);   // Application request path
+        $this->path   = self::replacePath($c['config']['log']['path']['app']);   // Application request path
 
-        if (defined('STDIN')) {                   // Cli request
-            if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
-                $this->logger->setProperty('enabled', false);
-            }
-            $this->path = self::replacePath($c['config']['log']['path']['cli']);
+        if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
+            $this->logger->setProperty('enabled', false);
         }
     }
 
@@ -51,7 +46,7 @@ Class File
     public function format($unformatted_record)
     {
         $date_format = $this->logger->getProperty('date_format');
-        
+                        
         $record = array(
             'datetime' => date($date_format),
             'channel'  => $this->logger->getProperty('channel'),
@@ -165,4 +160,4 @@ Class File
 // END File class
 
 /* End of file File.php */
-/* Location: .Obullo/Log/Handler/File.php */
+/* Location: .Obullo/Log/File.php */
