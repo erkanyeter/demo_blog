@@ -114,15 +114,15 @@ $config = array(
                 LOG_INFO,
                 LOG_DEBUG
             ),
-            'queries'   => true,        // If true "all" SQL Queries gets logged.
-            'benchmark' => true,        // If true "all" Application Benchmarks gets logged.
-            'channel'   => 'system',    // Default channel name should be general.
+            'channel'   => 'system',        // Default channel name should be general.
             'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
             'path'      => array(
-                'app'   => 'data/logs/app.log',       // file handler application log path
-                'cli'   => 'data/logs/cli/app.log',   // file handler cli log path  
+                'app'   => 'data/logs/app.log',       // File handler application log path
+                'cli'   => 'data/logs/cli/app.log',   // File handler cli log path  
             ),
-            'date_format' => 'Y-m-d H:i:s',
+            'format'    => 'Y-m-d H:i:s',   // Date format
+            'queries'   => true,            // If true "all" SQL Queries gets logged.
+            'benchmark' => true,            // If true "all" Application Benchmarks gets logged.
     ),
     /*
     |--------------------------------------------------------------------------
@@ -180,6 +180,16 @@ $config = array(
      ),
     /*
     |--------------------------------------------------------------------------
+    | Hooks
+    |--------------------------------------------------------------------------
+    */
+    'hooks' => array(
+        'class'  => '',
+        'method' => '',
+        'params' => '',
+    ),
+    /*
+    |--------------------------------------------------------------------------
     | Cache
     |--------------------------------------------------------------------------
     */
@@ -191,8 +201,8 @@ $config = array(
                               'weight'   => '1'         // The weight parameter effects the consistent hashing 
                                                         // used to determine which server to read/write keys from.
                               ),
-            'auth' =>  '',                         // Just redis cache for connection password
-            'cache_path' =>  '/data/temp/cache/',  // Just cache file .data/temp/cache
+            'auth' =>  '',                         // connection password
+            'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
     ),
     /*
     |--------------------------------------------------------------------------
@@ -253,11 +263,11 @@ $config = array(
     // 1 - The request method gets the uri and serialized string of your data parameters
     // 2 - then it builds md5 hash
     // 3 - finally add it to the end of your hvc uri.
-    // 4 - in this technique the hvc key can be used as a "key" for caching systems.
+    // 4 - using this technique the hvc key can be used as a "key" for caching systems.
 
     // Example Cache Usage
     // $this->hvc->get('private/comments/getuser', array('user_id' => 5), $expiration = 7200);
-
+    
     /*
     |--------------------------------------------------------------------------
     | Output

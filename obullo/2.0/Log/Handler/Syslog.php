@@ -53,10 +53,10 @@ Class Syslog implements HandlerInterface
     */
     public function format($unformatted_record)
     {
-        $date_format = $this->logger->getProperty('date_format');
+        $format = $this->logger->getProperty('format');
         
         $record = array(
-            'datetime' => date($date_format),
+            'datetime' => date($format),
             'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
@@ -124,7 +124,7 @@ Class Syslog implements HandlerInterface
          */
         $processor = $this->logger->getProcessor(LOGGER_SYSLOG); // Get syslog queue
 
-        $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
+        $processor->setExtractFlags(PriorityQueue::EXTR_DATA);   // Queue mode of extraction 
 
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top

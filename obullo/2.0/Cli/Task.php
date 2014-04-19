@@ -50,9 +50,8 @@ Class Task
         }
         $shell = PHP_PATH . ' ' . FPATH . '/' . TASK_FILE . ' ' .$directory . ' ' . implode('/', $uri) . ' OB_TASK_REQUEST';
 
-        if ($debug) { // Enable debug output to log folder.
-            // @todo escapeshellcmd();
-            // clear console colors
+        if ($debug) {  // Enable debug output to log folder.
+            
             // $output = trim(preg_replace('/\n/', '#', $output), "\n");
             // clean cli color codes
             $output = preg_replace(array('/\033\[36m/', '/\033\[31m/', '/\033\[0m/'), array('', '', ''), shell_exec($shell));

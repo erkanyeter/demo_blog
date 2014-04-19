@@ -54,6 +54,13 @@ $this->config['itemname'];
 
 Where <var>itemname</var> is the <dfn>$config<dfn> array index you want to retrieve. For example, to fetch your language choice you'll do this:
 
+
+### Loading From Environment folder
+
+```php
+<?php
+$this->config->load('filename', true);
+```
 ```php
 $lang = $this->config['locale']['default_translation'];
 ```

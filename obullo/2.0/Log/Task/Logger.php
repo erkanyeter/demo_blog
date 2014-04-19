@@ -241,7 +241,7 @@ Class Logger
      */
     public function shutDown()
     {
-        $shell = TASK_CLI .'log'. DS .'write.php '.base64_encode(serialize($this->recordUnformatted));
+        $shell = TASK .'log'. DS .'write.php '.base64_encode(serialize($this->recordUnformatted));
         echo shell_exec($shell);
     }
 }

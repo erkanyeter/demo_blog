@@ -63,10 +63,10 @@ Class Mongo implements HandlerInterface
     */
     public function format($unformatted_record)
     {
-        $date_format = $this->logger->getProperty('date_format');
+        $format = $this->logger->getProperty('format');
 
         $record = array(
-            'datetime' => new MongoDate(strtotime(date($date_format))),
+            'datetime' => new MongoDate(strtotime(date($format))),
             'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],

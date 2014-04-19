@@ -9,7 +9,7 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
-        
+
         // $obj = new i18n_Form_Error;
 
         // $this->logger->debug = true;

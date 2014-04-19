@@ -45,10 +45,10 @@ Class File
     */
     public function format($unformatted_record)
     {
-        $date_format = $this->logger->getProperty('date_format');
+        $format = $this->logger->getProperty('format');
                         
         $record = array(
-            'datetime' => date($date_format),
+            'datetime' => date($format),
             'channel'  => $this->logger->getProperty('channel'),
             'level'    => $unformatted_record['level'],
             'message'  => $unformatted_record['message'],
@@ -133,6 +133,7 @@ Class File
             fwrite($fop, $lines);
             flock($fop, LOCK_UN);
             fclose($fop);
+
             if ( ! defined('STDIN')) {   // Do not do ( chmod ) in CLI mode, it cause write errors
                 chmod($this->path, 0666);
             }
