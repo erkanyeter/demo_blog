@@ -2,10 +2,12 @@
 
 namespace Obullo\Log\Handler;
 
+use Obullo\Log\HandlerInterface;
 use Obullo\Log\PriorityQueue;
 
 /**
  * File Handler Class
+ * We use file handler for local environment use syslog for live.
  * 
  * @category  Log
  * @package   File
@@ -14,7 +16,7 @@ use Obullo\Log\PriorityQueue;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/log
  */
-Class File
+Class File implements HandlerInterface
 {
     public $logger;     // logger object
     public $path;       // log path for file driver
@@ -28,11 +30,15 @@ Class File
     public function __construct($logger)
     {
         global $c;
-        $this->logger = $logger;
-        $this->path   = self::replacePath($c['config']['log']['path']['app']);   // Application request path
 
-        if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
-            $this->logger->setProperty('enabled', false);
+        $this->logger = $logger;
+        $this->path = self::replacePath($c['config']['log']['path']['app']);   // Application request path
+
+        if (defined('STDIN')) {                   // Cli request
+            if (isset($_SERVER['argv'][1]) AND $_SERVER['argv'][1] == 'clear') {   //  Do not keep clear command logs.
+                $this->logger->setProperty('enabled', false);
+            }
+            $this->path = self::replacePath($c['config']['log']['path']['cli']);
         }
     }
 
@@ -120,6 +126,9 @@ Class File
 
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top
+
+            //** Notice: We don't need to push feature in file handler.
+            // We use file handler for local environment use syslog for live.
 
             $lines = '';
             while ($processor->valid()) {         // Prepare Lines

@@ -83,6 +83,7 @@ Class Debug
 
                 $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
                 $processor->top();  // Go to Top
+                
                 $count = $processor->count();
 
                 if ($count > 0) {

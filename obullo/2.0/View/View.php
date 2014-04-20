@@ -1,6 +1,7 @@
 <?php
 
 namespace Obullo\View;
+
 use Closure;
 
 /**
@@ -57,6 +58,7 @@ Class View
     public function fetch($__vPath, $__vFilename, $__vData = null, $__vInclude = true)
     {
         global $c;
+
         $file_extension = substr($__vFilename, strrpos($__vFilename, '.')); 	// Detect the file extension ( e.g. '.tpl' )
         $ext = (strpos($file_extension, '.') === 0) ? '' : EXT;
 
@@ -65,8 +67,9 @@ Class View
                 $this->{$key} = $c['app']->instance->{$key}; 	// e.g. $this->config->getItem('myitem')
             }
         }
-        $this->_isCallable($__vData);
-
+        if (is_callable($__vData)) {
+            $this->bind($__vData);
+        }
         extract($this->_string, EXTR_SKIP);
         extract($this->_array, EXTR_SKIP);
         extract($this->_object, EXTR_SKIP);
@@ -154,25 +157,22 @@ Class View
         global $c;
         $schemes = $c['config']->load('scheme');
         if (isset($schemes[$name]) AND is_callable($schemes[$name])) {
-            call_user_func_array(Closure::bind($schemes[$name], $this, get_class()), array());
+            $this->bind($schemes[$name]);
         }
         return $this;
     }
 
     /**
-     * Check $this->set() value is Closure ?
+     * Run Closure
      *
      * @param mixed $val closure or string
      * 
      * @return mixed
      */
-    private function _isCallable($val)
+    public function bind($val)
     {
-        if (is_callable($val)) { 	// Is callable function ?
-            $func = Closure::bind($val, $this, get_class());
-            return $func();
-        }
-        return $val;
+        $closure = Closure::bind($val, $this, get_class());
+        return $closure();
     }
 
     /**
@@ -184,7 +184,7 @@ Class View
      * 
      * @return string                      
      */
-    public function get($filename, $data_or_no_include = null, $include = true)
+    public function load($filename, $data_or_no_include = null, $include = true)
     {
         $folder = PUBLIC_DIR;
         if (isset($_SERVER['HVC_REQUEST']) AND $_SERVER['HVC_REQUEST'] == true) {

@@ -130,6 +130,14 @@ Class Config implements ArrayAccess
     }
 
 }
+/*
+|--------------------------------------------------------------------------
+| Config
+|--------------------------------------------------------------------------
+*/
+$c['config'] = function () { 
+    return new Config;
+};
 
 // END Config.php File
 /* End of file Config.php

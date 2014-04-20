@@ -2,7 +2,6 @@
 
 namespace Obullo\Log\Handler;
 
-use Obullo\Log\Logger;
 use Obullo\Log\HandlerInterface;
 use Obullo\Log\PriorityQueue;
 
@@ -11,8 +10,8 @@ use Exception, MongoDate, MongoCollection, MongoClient;
 /**
  * Mongo Handler Class
  * 
- * @category  Logger
- * @package   File
+ * @category  Log
+ * @package   Mongo
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
@@ -36,15 +35,7 @@ Class Mongo implements HandlerInterface
         $this->logger = $logger;             // logger object
 
         if ( ! isset($params['db.collection']) OR empty($params['db.collection'])) {
-            throw new Exception(
-                'The log handler "mongo" requires collection name: <pre>\$logger->addHandler(
-        \'mongo\', 
-        function () use ($logger) { 
-            return new Obullo\Logger\Handler\Mongo($logger, array(\'collection\' => \'name\'));
-        },
-        1
-    );</pre>'
-            );
+            throw new RunTimeException('The log handler "mongo" requires collection name please update your components.php');
         }
         $dsn    = explode('/', $params['db.dsn']);
         $dbName = end($dsn);
@@ -117,6 +108,7 @@ Class Mongo implements HandlerInterface
                 $i++;
             }
             $this->mongoCollection->batchInsert($data);
+            print_r($data);
         }
     }
 

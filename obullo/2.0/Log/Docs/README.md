@@ -2,7 +2,7 @@
 
 The Logger class assists you to <kbd>write messages</kbd> to your log handlers. The logger class use php SplPriorityQueue class to manage your handler proirities.
 
-**Note:** This class is initialized automatically by the <b>index.php</b> file so there is no need to do it manually.
+**Note:** This class is initialized automatically by the <b>components.php</b> file so there is no need to do it manually.
 
 **Note:** The <b>logger</b> package uses <kbd>Disabled</kbd> handler as default.
 
@@ -38,10 +38,10 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
 | @link http://www.php.net/manual/en/function.syslog.php
 | ---------------------------------------------------
 */
-'logger' =>   array(
+'log' =>   array(
         'enabled'   => true,        // On / Off logging.
         'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
-        'threshold' => array(       // Set allowed log levels. ( @see http://www.php.net/manual/en/function.syslog.php )
+        'threshold' => array(       // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
             LOG_EMERG,
             LOG_ALERT,
             LOG_CRIT,
@@ -51,15 +51,15 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
             LOG_INFO,
             LOG_DEBUG
         ),
-        'queries'   => true,        // If true "all" SQL Queries gets logged.
-        'benchmark' => true,        // If true "all" Application Benchmarks gets logged.
-        'channel'   => 'system',    // Default channel name should be general.
+        'channel'   => 'system',        // Default channel name should be general.
         'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
         'path'      => array(
-            'app'   => 'data/logs/app.log',       // file handler application log path
-            'cli'   => 'data/logs/cli/app.log',   // file handler cli log path  
+            'app'   => 'data/logs/app.log',       // File handler application log path
+            'cli'   => 'data/logs/cli/app.log',   // File handler cli log path  
         ),
-        'date_format' => 'Y-m-d H:i:s',
+        'format'    => 'Y-m-d H:i:s',   // Date format
+        'queries'   => true,            // If true "all" SQL Queries gets logged.
+        'benchmark' => true,            // If true "all" Application Benchmarks gets logged.
 ),
 ```
 #### Explanation of Settings:
@@ -148,27 +148,49 @@ On your local environment config file  set <kbd>threshold</kbd> level <b>1</b> t
 
 First choose your channel and set log level, you can send your additinonal context data using second parameter.
 
-### Example Logging:
+### Example Logging
 
 ```php
 $this->logger->channel('security');
 $this->logger->alert('Possible hacking attempt !', array('username' => $username));
-$this->logger->push('email');  // send all log data using email handler
-$this->logger->push('mongo', LOG_ALERT);  // send just alert data to mongo db handler.
 ```
-### Example Logging Using Queue Priority:
+
+### Example Push
 
 ```php
-$this->logger->alert('Hello Alert', array('username' => $username), 3);
-$this->logger->notice('Hello Notice', array('username' => $username), 2);
-$this->logger->notice('Hello Another Notice', array('username' => $username), 1);
+$this->logger->load(LOGGER_EMAIL);   // load push handler
+
+$this->logger->channel('security');
+$this->logger->alert('Possible hacking attempt !', array('username' => $username));
+$this->logger->push(LOGGER_MONGO, LOG_ALERT);  // do filter for LOG_ALERT level and send to mongo db handler.
+```
+or you can use multiple push handlers.
+
+```php
+$this->logger->load(LOGGER_EMAIL);
+$this->logger->load(LOGGER_MONGO);  
+
+$this->logger->channel('security');
+
+$this->logger->alert('Something went wrong !', array('username' => $username));
+$this->logger->push(LOGGER_EMAIL, LOG_ALERT);   // do filter for LOG_ALERT level and send to email handler.
+$this->logger->push(LOGGER_MONGO); // sends all log level data to mongo handler
+
+$this->logger->info('User login attempt.', array('username' => $username));
+```
+### Example Log Priority Usage
+
+```php
+$this->logger->alert('Alert', array('username' => $username), 3);
+$this->logger->notice('Notice', array('username' => $username), 2);
+$this->logger->notice('Another Notice', array('username' => $username), 1);
 ```
 
-* VERY IMPORTANT: For a live site you'll usually only enable 0 - 4 to be logged otherwise your log files will fill up very fast.
+* VERY IMPORTANT: For a live site you'll usually only enable for LOG_EMERG,LOG_ALERT,LOG_CRIT,LOG_ERR,LOG_WARNING,LOG_NOTICE levels to be logged otherwise your log files will fill up very fast.
 
 ### Primary Handler
 
-Forexample to switch mongo database as a primary handler just replace "file" as "mongo".
+Open your components.php then switch mongo database as a primary handler replacing "file" as "mongo".
 
 ```php
 <?php
@@ -179,19 +201,30 @@ Forexample to switch mongo database as a primary handler just replace "file" as 
 | Define your handlers the "last parameter" is "priority" of the handler.
 |
 */
-$c['logger'] = function () {
+$c['logger'] = function () use ($c) {
+    
+    if ($c['config']['log']['enabled'] == false) {  // Disabled handler.
+        return new Obullo\Log\Disabled;
+    }
     $logger = new Obullo\Log\Logger;
-    $logger->addHandler(
+
+    $logger->addWriter(
         LOGGER_FILE,
         function () use ($logger) { 
             return new Obullo\Log\Handler\File($logger);  // primary
         },
         3  // priority
     );
+
     $logger->addHandler(
         LOGGER_SYSLOG,
         function () use ($logger) { 
-            return new Obullo\Log\Handler\Syslog($logger);
+            return new Obullo\Log\Handler\Syslog(
+                $logger, array(
+                'app.name' => 'my_application', 
+                'app.facility' => LOG_USER
+                )
+            );
         },
         2  // priority
     );
@@ -206,16 +239,25 @@ $c['logger'] = function () {
                 )
             );
         },
-        1
+        1  // priority
     );
+    /*
+    |--------------------------------------------------------------------------
+    | Removes file handler and use second defined handler as primary 
+    | in "production" mode.
+    |--------------------------------------------------------------------------
+    */
     if (ENV == 'live') {
-        $logger->removeHandler(LOGGER_FILE); // Remove file handler and use syslog handler as primary in "production" mode.
+        $logger->removeWriter(LOGGER_FILE);
+        // $logger->addWriter(); your live log writer
     }
     return $logger;
 };
 ```
 
-#### Displaying Logs
+* TIP: If you have a high traffic web site use one log handler for best performance.
+
+#### Displaying Logs ( Works with only local environment )
 
 You can follow the all log messages using below the command.
 

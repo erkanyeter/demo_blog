@@ -77,6 +77,8 @@ define('OBULLO_CONFIG',  OBULLO .'Config'. DS .'Config.php');
 define('OBULLO_CORE',  OBULLO .'Obullo'. DS .'Common.php');
 define('OBULLO_CONTAINER',  OBULLO .'Container'. DS .'Pimple.php');
 define('OBULLO_AUTOLOADER', OBULLO .'Obullo'. DS .'Autoloader.php');
+define('OBULLO_COMPONENTS', ROOT .'components.php');
+define('OBULLO_SERVICES', ROOT .'services.php');
 define('OBULLO_CONTROLLER', OBULLO .'Controller'. DS .'Controller.php');
 /*
 |--------------------------------------------------------------------------
@@ -91,10 +93,10 @@ define('LOGGER_MONGO', 'mongo');
 | NOTIFICATION CONSTANTS
 |---------------------------------------------------------------
 */
-define('ERROR', 0);
-define('SUCCESS', 1);
-define('INFO', 2);
-define('ALERT', 3);
+define('NOTIFY_ERROR', 0);
+define('NOTIFY_SUCCESS', 1);
+define('NOTIFY_INFO', 2);
+define('NOTIFY_ALERT', 3);
 
 
 /* End of file constants */

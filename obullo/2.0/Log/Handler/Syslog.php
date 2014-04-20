@@ -41,7 +41,7 @@ Class Syslog implements HandlerInterface
         if (isset($params['app.name'])) {
             $this->name = $params['app.name'];
         }
-        openlog($this->name, LOG_PID, $this->facility);
+        openlog('asdsd', LOG_PID, $this->facility);
     }
 
     /**
@@ -129,14 +129,15 @@ Class Syslog implements HandlerInterface
         if ($processor->count() > 0) {
             $processor->top();  // Go to Top
 
-            $threshold = $this->logger->getThreshold(LOGGER_SYSLOG);
+            $hasThreshold = $this->logger->hasThreshold(LOGGER_SYSLOG);
+            $threshold    = $this->logger->getThreshold(LOGGER_SYSLOG);
       
             $i = 0;
             $data = array();
             while ($processor->valid()) {         // Prepare Lines
                 $data[$i] = $processor->current(); 
                 $processor->next();
-                if (is_string($threshold) AND $data[$i]['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
+                if ($hasThreshold AND $data[$i]['level'] != $threshold) { // threshold filter e.g. LOG_NOTICE
                     unset($data[$i]);   // remove not matched log records with selected filter.
                 }
                 syslog(Logger::$priorities[$data[$i]['level']], $this->lineFormat($data[$i]));

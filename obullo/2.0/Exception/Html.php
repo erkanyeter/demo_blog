@@ -52,47 +52,42 @@
 endif;
 ?>
 <h2><?php 
-$error = $c['error'];
-echo $error->getSecurePath($e->getMessage(), true) ?>
+echo $c['error']->getSecurePath($e->getMessage(), true) ?>
 </h2>
 <?php
 if (isset($sql)) {
     echo '<div class="errorFile"><pre>' . $sql . '</pre></div>';
 }
 ?>
-<div class="errorFile errorLine"><?php echo $error->getSecurePath($e->getFile()) . '  Line : ' . $e->getLine() . ' ' ?></div>
+<div class="errorFile errorLine"><?php echo $c['error']->getSecurePath($e->getFile()) . '  Line : ' . $e->getLine() . ' ' ?></div>
 <?php
-$debug = $c['config']['error']['debug'];
 
-// ------------------------------------------------------------------------
+$debug = $c['config']['error']['debug'];
 
 if ($debug['enabled'] === true OR $debug['enabled'] == 1) { // Covert to readable format
     $debug['enabled'] = 'E_ALL';
 }
 
-// ------------------------------------------------------------------------
+$rules         = $c['error']->parseRegex($debug['enabled']);
+$allowedErrors = $c['error']->getAllowedErrors($rules);
 
-$rules = $error->parseRegex($debug['enabled']);
-$allowedErrors = $error->getAllowedErrors($rules);
-$eCode = (isset($sql)) ? 'SQL' : $e->getCode();
-
-// ------------------------------------------------------------------------
+$eCode         = (isset($sql)) ? 'SQL' : $e->getCode();
 
 if (is_string($debug['enabled'])) {      // Show source code for first exception trace
 
     $eTrace['file'] = $e->getFile();
     $eTrace['line'] = $e->getLine();
 
-    echo $error->debugFileSource($eTrace);
+    echo $c['error']->debugFileSource($eTrace);
 
     if ( ! isset($allowedErrors[$eCode])) { // Check debug_backtrace enabled for current error. 
         echo '</div>';
         exit;
     }
-    // ------------------------------------------------------------------------
 
-    $fullTraces = $e->getTrace();
+    $fullTraces  = $e->getTrace();
     $debugTraces = array();
+
     foreach ($fullTraces as $key => $val) {
         if (isset($val['file']) AND isset($val['line'])) {
             $debugTraces[] = $val;
@@ -100,6 +95,7 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
     }
 
     if (isset($debugTraces[0]['file']) AND isset($debugTraces[0]['line'])) {
+
         if ($debugTraces[0]['file'] == $e->getFile() AND $debugTraces[0]['line'] == $e->getLine()) {
             unset($debugTraces[0]);
             $unset = true;
@@ -108,6 +104,7 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
         }
 
         if (isset($debugTraces[1]['file']) AND isset($debugTraces[1]['line'])) {
+            
             $classInfo = '';
             foreach ($debugTraces as $key => $trace) {
                 $prefix = uniqid() . '_';
@@ -141,7 +138,7 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
                                 if ($trace['function'] == 'pdoConnect' AND ($arg_key == 2 OR $arg_key == 1)) { // hide database password for security.
                                     $classInfo.= '<td>***********</td>';
                                 } else {
-                                    $classInfo.= '<td>' . $error->dumpArgument($arg_val) . '</td>';
+                                    $classInfo.= '<td>' . $c['error']->dumpArgument($arg_val) . '</td>';
                                 }
 
                                 $classInfo.= '</tr>';
@@ -163,7 +160,7 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
                 }
                 ?>
                 <div class="errorFile" style="line-height: 1.8em;">
-                    <a href="javascript:void(0);" onclick="ExceptionToggle('error_toggle_' + '<?php echo $prefix . $key ?>');"><?php echo addslashes($error->getSecurePath($trace['file']));
+                    <a href="javascript:void(0);" onclick="ExceptionToggle('error_toggle_' + '<?php echo $prefix . $key ?>');"><?php echo addslashes($c['error']->getSecurePath($trace['file']));
                 echo ' ( ' ?><?php echo ' Line : ' . $trace['line'] . ' ) '; ?></a>
                 </div>
 
@@ -171,7 +168,7 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
                 // Show source codes foreach traces
                 // ------------------------------------------------------------------------
 
-                echo $error->debugFileSource($trace, $key, $prefix);
+                echo $c['error']->debugFileSource($trace, $key, $prefix);
 
                 // ------------------------------------------------------------------------
                 ?>

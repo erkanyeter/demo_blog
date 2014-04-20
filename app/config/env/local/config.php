@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Application "local" environment
@@ -178,16 +177,6 @@ $config = array(
         'time_reference'      => 'local',   // This pref tells the system whether to use your server's local time as the master "now" reference, or convert it to GMT.
         'charset'             => 'UTF-8',   // This determines which character set is used by default.
      ),
-    /*
-    |--------------------------------------------------------------------------
-    | Hooks
-    |--------------------------------------------------------------------------
-    */
-    'hooks' => array(
-        'class'  => '',
-        'method' => '',
-        'params' => '',
-    ),
     /*
     |--------------------------------------------------------------------------
     | Cache

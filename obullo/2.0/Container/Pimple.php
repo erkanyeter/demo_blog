@@ -295,6 +295,14 @@ Class Pimple implements ArrayAccess
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| Container ( IOC )
+|--------------------------------------------------------------------------
+*/
+$c = new Pimple;
+
+
 // END Container class
 
 /* End of file Container.php */

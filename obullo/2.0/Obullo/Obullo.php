@@ -21,10 +21,12 @@ $hooks_enabled = $c['config']['hooks']['enabled'];
 */
 if ($hooks_enabled) {
     $c['hooks']->call('pre_system');
+    // @todo
+    // $['event']->fire('before.request');
 }
 /*
 |--------------------------------------------------------------------------
-| Sanitize Inputs
+| Sanitize inputs
 |--------------------------------------------------------------------------
 */
 if ($c['config']['uri']['query_strings'] == false) {  // Is $_GET data allowed ? If not we'll set the $_GET to an empty array
@@ -64,7 +66,7 @@ $c['logger']->debug('Global POST and COOKIE data sanitized', array(), 10);
  *  Load core components
  * ------------------------------------------------------
  */
-$pageUri = "{$c['router']->fetchDirectory()} / {$c['router']->fetchClass()} / {$c['router']->fetchMethod()}";
+$pageUri    = "{$c['router']->fetchDirectory()} / {$c['router']->fetchClass()} / {$c['router']->fetchMethod()}";
 $controller = PUBLIC_DIR . $c['router']->fetchDirectory() . DS . 'controller' . DS . $c['router']->fetchClass() . EXT;
 
 if ( ! file_exists($controller)) {
@@ -78,12 +80,14 @@ if ( ! file_exists($controller)) {
 if ($hooks_enabled) {
     $c['hooks']->call('pre_controller');
 }
+// $c['event']->fire('before.controller');
 
-require $controller;  // call the controller.  $c variable now Available in HERE !!
+require $controller;  // call the controller.  $app variable now Available in HERE !!
 
-// Do not run private methods. ( _output, _remap, _getInstance .. )
+// Do not run private methods. ( _output, _remap, )
 
-if (strncmp($c['router']->fetchMethod(), '_', 1) == 0 OR in_array(strtolower($c['router']->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
+if (strncmp($c['router']->fetchMethod(), '_', 1) == 0 
+    OR in_array(strtolower($c['router']->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
 ) {
     $c['response']->show404($pageUri);
 }
@@ -95,6 +99,8 @@ if (strncmp($c['router']->fetchMethod(), '_', 1) == 0 OR in_array(strtolower($c[
 if ($hooks_enabled) {
     $c['hooks']->call('post_controller_constructor');
 }
+// $['event']->fire('before.response');
+
 $storedMethods = array_keys($app->controllerMethods);
 
 if ( ! in_array(strtolower($c['router']->fetchMethod()), $storedMethods)) {  // Check method exist or not
@@ -106,6 +112,7 @@ $arguments = array_slice($c['uri']->rsegments, 2);
 if (method_exists($app, '_remap')) {  // Is there a "remap" function? If so, we call it instead
     $app->_remap($c['router']->fetchMethod(), $arguments);
 } else {
+
     // Call the requested method. Any URI segments present (besides the directory / class / method) 
     // will be passed to the method for convenience
     // directory = 0, class = 1,  ( arguments = 2) ( @deprecated  method = 2 method always = index )
@@ -131,6 +138,7 @@ if ($hooks_enabled) {
 } else {
     $c['response']->sendOutput();    // Send the final rendered output to the browser
 }
+
 /*
  * ------------------------------------------------------
  *  Is there a "post_system" hook?
@@ -139,6 +147,8 @@ if ($hooks_enabled) {
 if ($hooks_enabled) {
     $c['hooks']->call('post_system');
 }
+
+// $['event']->fire('after.response');
 
 $end = microtime(true) - $start;  // End Timer
 
@@ -152,7 +162,8 @@ if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark 
 }
 
 $c['logger']->debug('Final output sent to browser', $extra, -1);
-$c['logger']->shutDown();
+
+// $['event']->fire('shutdown');
 
 
 // END Obullo.php File

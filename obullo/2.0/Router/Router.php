@@ -198,7 +198,11 @@ Class Router
 
         if ( ! is_dir($root . $this->fetchDirectory() . DS . 'controller' . DS)) {
             $this->response = new Response;
-            $this->response->showError('The folder "' . $this->fetchDirectory() . DS . 'controller' . '" not found.');
+            $this->response->showError(
+                sprintf(
+                    'The folder %s not found.', $this->fetchDirectory() . DS . 'controller'
+                )
+            );
         }
 
         if ( ! empty($segments[1]) AND file_exists($root . $this->fetchDirectory() . DS . 'controller' . DS . $segments[1] . EXT)) {

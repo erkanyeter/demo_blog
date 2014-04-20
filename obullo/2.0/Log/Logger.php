@@ -2,7 +2,7 @@
 
 namespace Obullo\Log;
 
-use RuntimeException, Closure;
+use Closure, RunTimeException;
 
 /**
  * Logger Adapter Class
@@ -14,7 +14,7 @@ use RuntimeException, Closure;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/log
+ * @link      http://obullo.com/package/logger
  */
 Class Logger
 {
@@ -84,10 +84,10 @@ Class Logger
      */
     public $line = '';       // line output format
     /**
-     * [$date_format description]
+     * Date format
      * @var 
      */
-    public $date_format;
+    public $format = 'Y-m-d H:i:s';
     /**
      * Available  writers: file, mongo, syslog
      * @var array
@@ -120,6 +120,7 @@ Class Logger
     public function __construct()
     {
         global $c;
+
         $this->config          = $c['config']['log'];
         $this->enabled         = $this->config['enabled'];
         $this->debug           = $this->config['debug'];
@@ -128,10 +129,31 @@ Class Logger
         $this->queries         = $this->config['queries'];
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
-        $this->date_format     = $this->config['date_format'];
+        $this->format          = $this->config['format'];
 
         $this->priority_values = array_flip(self::$priorities);
         $this->processor = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
+    }
+    
+    /**
+     * Load the defined log handler
+     * 
+     * @param string $name defined log handler name
+     * 
+     * @return void
+     */
+    public function load($name)
+    {
+        if ( ! isset($this->handlers[$name])) {
+            throw new RunTimeException(
+                sprintf(
+                    'The push handler %s is not defined in your components.php file.', 
+                    $name
+                )
+            );
+        }
+        $val = $this->handlers[$name];
+        $this->addWriter($name, $val['handler'], $val['priority']);
     }
 
     /**
@@ -145,8 +167,7 @@ Class Logger
      */
     public function addHandler($name, Closure $handler, $priority = 0)
     {
-        $this->addWriter($name, $handler, $priority);
-        $this->handlers[$name] = $handler;
+        $this->handlers[$name]  = array('handler' => $handler, 'priority' => $priority);
     }
 
     /**
@@ -158,8 +179,36 @@ Class Logger
      */
     public function removeHandler($name)
     {
-        $this->removeWriter($name);
         unset($this->handlers[$name]);
+    }
+
+    /**
+     * Add writer
+     * 
+     * @param string  $name     handler key
+     * @param object  $handler  handler object
+     * @param integer $priority priority of handler
+     *
+     * @return void
+     */
+    public function addWriter($name, Closure $handler, $priority = 1)
+    {
+        $this->processor[$name] = new PriorityQueue;    // add processor
+        $this->writers[$name]   = array('handler' => $handler(), 'priority' => $priority);
+    }
+
+    /**
+     * Remove Writer
+     * removers handler from processors and writers
+     * 
+     * @param string $name handler name
+     * 
+     * @return void
+     */
+    public function removeWriter($name)
+    {
+        unset($this->processor[$name]);
+        unset($this->writers[$name]);
     }
 
     /**
@@ -188,6 +237,130 @@ Class Logger
     }
 
     /**
+     * Change channel
+     * 
+     * @param string $channel add a channel
+     * 
+     * @return void
+     */
+    public function channel($channel)
+    {
+        $this->setProperty('channel', $channel);
+    }
+
+    /**
+     * Emergency
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function emergency($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+
+    /**
+     * Alert
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function alert($message = '', $context = array(), $priority = null)
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+
+    /**
+     * Critical
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function critical($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+
+    /**
+     * Error
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function error($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+    
+    /**
+     * Warning
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function warning($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+    
+    /**
+     * Notice
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function notice($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+    
+    /**
+     * Info
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function info($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+
+    /**
+     * Info
+     * 
+     * @param string  $message  log message
+     * @param array   $context  data
+     * @param integer $priority message priority
+     * 
+     * @return void
+     */
+    public function debug($message = '', $context = array(), $priority = null) 
+    {
+        $this->log(__FUNCTION__, $message, $context, $priority);
+    }
+
+    /**
      * Push to another handler
      * 
      * $logger->channel('security');
@@ -200,10 +373,24 @@ Class Logger
      * 
      * @return void
      */
-    public function push($handler = 'mongo', $threshold = null)
-    {   
+    public function push($handler = null, $threshold = null)
+    {
         if ( ! isset($this->handlers[$handler])) {
-            throw new RuntimeException(sprintf('The log handler %s is not defined in your index.php file.', $handler));
+            throw new RunTimeException(
+                sprintf(
+                    'The push handler %s is not defined in your components.php file.', 
+                    $handler
+                )
+            );
+        }
+        if ( ! isset($this->writers[$handler])) {
+            throw new RunTimeException(
+                sprintf(
+                    'The push handler %s not available in log writers please first load it using below the command.
+                    <pre>$this->logger->load(LOGGER_HANDLERNAME);</pre>', 
+                    $handler
+                )
+            );
         }
         $this->push[$handler] = 1; // allow push all log data for current push handler.
 
@@ -215,7 +402,7 @@ Class Logger
     /**
      * Check push handler has threshold
      *
-     * @param string $handler name
+     * @param string $handler handler name
      * 
      * @return boolean
      */
@@ -234,40 +421,34 @@ Class Logger
      * 
      * @return integer | boolean
      */
-    public function getThreshold($handler)
+    public function getThreshold($handler = '')
     {
         return $this->push[$handler];
     }
 
     /**
-     * Add writer
+     * Store log data into array
      * 
-     * @param string  $name     handler key
-     * @param object  $handler  handler object
-     * @param integer $priority priority of handler
-     *
+     * @param string  $level    log level
+     * @param string  $message  log message
+     * @param array   $context  context data
+     * @param integer $priority message priority
+     * 
      * @return void
      */
-    public function addWriter($name, Closure $handler, $priority = 1)
+    public function log($level, $message, $context = array(), $priority = null)
     {
-        if ( ! isset($this->writers[$name])) {
-            $this->processor[$name] = new PriorityQueue;    // add processor
-            $this->writers[$name]   = array('handler' => $handler, 'priority' => $priority);
-        }
-    }
+        $record_unformatted = array();
 
-    /**
-     * Remove Writer
-     * removers handler from processors and writers
-     * 
-     * @param string $name handler name
-     * 
-     * @return void
-     */
-    public function removeWriter($name)
-    {
-        unset($this->writers[$name]);
-        unset($this->processor[$name]);
+        if (isset(self::$priorities[$level]) AND in_array(self::$priorities[$level], $this->threshold_array)) { // is Allowed level ?
+
+            $record_unformatted['level']   = $level;
+            $record_unformatted['message'] = $message;
+            $record_unformatted['context'] = $context;
+
+            $this->sendToQueue($record_unformatted, $priority); // Send to Job queue
+            $this->channel($this->channel);          // reset channel to default
+        }
     }
     
     /**
@@ -275,12 +456,17 @@ Class Logger
      * 
      * @param string $handler name
      * 
-     * @return object of handler otherwise "false"
+     * @return object of handler
      */
-    public function getProcessor($handler = 'file')
+    public function getProcessor($handler = LOGGER_FILE)
     {
         if ( ! isset($this->processor[$handler])) {
-            return false;
+            throw new RunTimeException(
+                sprintf(
+                    'The log handler %s is not defined.', 
+                    $handler
+                )
+            );
         }
         return $this->processor[$handler];
     }
@@ -288,40 +474,22 @@ Class Logger
     /**
      * Send logs to Queue for each log handler.
      *
-     * Using SplPriorityQueue Class we send messages to Queue like below : 
-     *
      * $processor = new SplPriorityQueue;
      * $processor->insert($record, $priority = 0); 
      * 
-     * @param array $unformatted unformated log data
+     * @param array   $record_unformatted unformated log data
+     * @param integer $message_priority   message priority
      * 
      * @return void
      */
-    public function sendToQueue($unformatted)
+    public function sendToQueue($record_unformatted, $message_priority = null)
     {
-        foreach ($this->writers as $handler => $val) {
+        foreach ($this->writers as $name => $val) {
 
-            $this->handlers[$handler] = $val['handler'](); // run handler closure
-            $priority = (empty($unformatted['priority'])) ? $val['priority'] : $unformatted['priority'];
+            $formatted = $val['handler']->format($record_unformatted);
+            $priority  = (empty($message_priority)) ? $val['priority'] : $message_priority;
 
-            $this->addRecord($this->processor[$handler], $this->handlers[$handler], $unformatted, $priority);
-        }
-    }
-
-    /**
-     * Add record to processor queue
-     *
-     * @param object  $processor        SplPriority Object
-     * @param object  $handler          handler object
-     * @param array   $unformattedArray unformatted record
-     * @param integer $priority         priority of log message
-     * 
-     * @return void
-     */
-    public function addRecord($processor, $handler, $unformattedArray, $priority)
-    {
-        foreach ($unformattedArray as $data) {
-            $processor->insert($handler->format($data['record']), $priority);
+            $this->processor[$name]->insert($formatted, $priority);
         }
     }
 
@@ -340,13 +508,9 @@ Class Logger
             $debug = new Debug($this);
             echo $debug->printDebugger();
             return;
-        }
-        foreach ($this->writers as $handler => $val) {    // write log data
-            // if (isset($this->push[$handler]) OR key($this->handlers) == $handler) { // if handler is primary writer or push data available !
-                
-                $this->handlers[$handler]->write(); // do write process in task mode.
-            //}
-            unset($val);
+        } 
+        foreach ($this->writers as $val) {    // write log data
+            $val['handler']->write();
         }
         $this->push = array(); // reset push data
     }
