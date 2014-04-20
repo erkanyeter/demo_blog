@@ -69,7 +69,8 @@ $app->func(
        |______||____||_____||_||_||____|
 
         Welcome to Log Manager v2.0 (c) 2014
-Display logs [$php task log], to filter logs [$php task log $level]'."\n\033[0m";
+You are displaying the log file. To filter log data run "$php task log $level"'."\n\033[0m";
+
     }
 );
 

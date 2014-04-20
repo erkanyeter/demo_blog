@@ -23,7 +23,7 @@ $app->func(
        |______||____||_____||_||_||____|
 
         Welcome to Task Manager (c) 2014
-Please run [$php task help] You are in [ app / tasks ] folder.'."\n\033[0m\n";
+You are running $php task help command which is located in app / tasks folder.'."\n\033[0m\n";
 
         echo "\33[1;36mUsage:\33[0m\33[0;36m
 php task [command] [arguments]\n\33[0m\n";
