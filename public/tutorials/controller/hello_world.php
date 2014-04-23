@@ -19,7 +19,10 @@ $app->func(
     'index', 
     function () {
 
-        // echo $a;
+        $nested = new Nested_Category;
+        
+        // $nested->buildTree('first');
+        // $nested->insertFirstChild(1, 1, 'node');
 
         $this->view->load(
             'hello_world', 

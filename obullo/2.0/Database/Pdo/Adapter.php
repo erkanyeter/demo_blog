@@ -202,18 +202,6 @@ Class Adapter
     }
 
     /**
-     * Check array is associative ?
-     * 
-     * @param array $arr data
-     * 
-     * @return boolean
-     */
-    public function isAssocArray($arr)
-    {
-        return is_array($arr) AND array_keys($arr) !== range(0, count($arr) - 1);
-    }
-
-    /**
      * Get pdo instance
      * 
      * @return object of pdo
@@ -485,9 +473,6 @@ Class Adapter
     {
         global $c;
 
-        if ( ! empty($array) AND ! $this->isAssocArray($array)) {
-            throw new Exception('PDO bind data must be associative array');
-        }
         //------------------------------------
 
         $start = microtime(true);
