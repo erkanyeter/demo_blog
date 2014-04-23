@@ -25,9 +25,9 @@
 $config = array(
 
     'default' => function () {
-        $this->set('header', '@get.private/views/header');
-        $this->set('sidebar','@get.private/views/sidebar');
-        $this->set('footer', '@get.tpl.footer');
+        $this->set('header',  '@get.private/views/header');  // @todo  hvc.get.private/views/header
+        $this->set('sidebar', '@get.private/views/sidebar');
+        $this->set('footer',  '@get.tpl.footer');			// @todo  view.getTpl.footer
     },
     'welcome' => function () {
         $this->set('footer', '@get.tpl.footer');

@@ -106,36 +106,12 @@ Class Error
 
         // Log Php Errors
         //-----------------------------------------------------------------------
-
-        if ($this->log_enabled) {
+        
+        if ($this->logger instanceof Logger) {
             $this->logger->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
             $this->logger->__destruct(); // continue log writing
         }
-    
-        // Displaying Errors
-        //-----------------------------------------------------------------------            
-
-        $level = $c['config']['error']['reporting'];
-
-        if (is_numeric($level)) {
-            switch ($level) {
-            case 0:
-                return;
-                break;
-            case 1:
-                echo $error_msg;
-                return;
-                break;
-            }
-        }
-        $rules = $c['error']->parseRegex($level);
-        if ($rules == false) {
-            return;
-        }
-        $allowed_errors = $c['error']->getAllowedErrors($rules);  // Check displaying error enabled for current error.
-        if (isset($allowed_errors[$code])) {
-            echo $error_msg;
-        }
+        echo $error_msg;
     }
 
 }

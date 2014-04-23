@@ -20,7 +20,6 @@ require 'constants';
 require OBULLO_CONTAINER;
 require OBULLO_CONFIG;
 require OBULLO_AUTOLOADER;
-
 /*
 |--------------------------------------------------------------------------
 | Hello Cli Task

@@ -41,7 +41,7 @@ Class Syslog implements HandlerInterface
         if (isset($params['app.name'])) {
             $this->name = $params['app.name'];
         }
-        openlog('asdsd', LOG_PID, $this->facility);
+        openlog($this->name, LOG_PID, $this->facility);
     }
 
     /**

@@ -1,13 +1,5 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| Framework CLI ( TASKS )
-|--------------------------------------------------------------------------
-| Run this command from your project root
-|
-| $ php task
-|
-*/ 
+
 if (isset($_SERVER['REMOTE_ADDR'])) die('Access denied');
 /*
 |--------------------------------------------------------------------------
@@ -66,4 +58,4 @@ require ('constants');
 | to change it from here.
 |
 */ 
-require('index'. EXT);
+require(INDEX_PHP);

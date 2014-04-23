@@ -18,26 +18,12 @@ $c['logger'] = function () use ($c) {
         return new Obullo\Log\Disabled;
     }
     $logger = new Obullo\Log\Logger;
-
     $logger->addWriter(
         LOGGER_FILE,
         function () use ($logger) { 
             return new Obullo\Log\Handler\File($logger);  // primary
         },
         3  // priority
-    );
-
-    $logger->addHandler(
-        LOGGER_SYSLOG,
-        function () use ($logger) { 
-            return new Obullo\Log\Handler\Syslog(
-                $logger, array(
-                'app.name' => 'my_application', 
-                'app.facility' => LOG_USER
-                )
-            );
-        },
-        2  // priority
     );
     /*
     |--------------------------------------------------------------------------
@@ -57,7 +43,7 @@ $c['logger'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['error'] = function () { 
-    return new Obullo\Error\Handler;
+    return new Obullo\Error\Error;
 };
 /*
 |--------------------------------------------------------------------------

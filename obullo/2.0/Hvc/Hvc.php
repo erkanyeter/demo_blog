@@ -174,8 +174,8 @@ Class Hvc
         }
         $method = $this->request_method = strtoupper($method);
 
-        $this->_setConnString($method);        // Set Unique connection string foreach HVC requests
-        $this->_setConnString(serialize($data));
+        $this->setConnString($method);        // Set Unique connection string foreach HVC requests
+        $this->setConnString(serialize($data));
 
         if ($this->query_string != '') {
             $querStringParams = $this->parseQuery($this->query_string);
@@ -295,7 +295,6 @@ Class Hvc
     /**
      * Send Request
      * 
-     * @param string  $type_constant hvc type  public / private
      * @param string  $method     request method
      * @param string  $uri        uri string
      * @param array   $data       request data
@@ -303,7 +302,7 @@ Class Hvc
      * 
      * @return string
      */
-    public function request($type_constant, $method, $uri, $data = array(), $expiration = null)
+    public function request($method, $uri, $data = array(), $expiration = null)
     {
         if ($expiration === true) {  // delete cache before the request
             $this->deleteCache();
@@ -313,7 +312,7 @@ Class Hvc
             $data = array();
         }
         $this->clear(); // clear hvc variables
-        $this->setRequestUrl($type_constant, $uri, $expiration);
+        $this->setRequestUrl($uri, $expiration);
         $this->setMethod($method, $data);
 
         $vsb = $this->getVisibility();

@@ -32,6 +32,7 @@ php task [command] [arguments]\n\33[0m\n";
 log        : Follows the application log file.
 clear      : Clear application log data. It is currently located in data folder.
 update     : Update your Obullo version.
+host       : Create a virtual host file for apache2.
 help       : See list all of available commands.\33[0m\n";
     }
 );

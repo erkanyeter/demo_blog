@@ -1,3 +1,4 @@
+
 ## Quick Usage: PDO Examples <a name="quick-usage-pdo-examples"></a>
 
 Why does Obullo use PDO for database operations ? Download this [document](http://ilia.ws/files/quebec_PDO.pdf) it will give you some introductory information about PDO.
@@ -138,7 +139,7 @@ The above <dfn>getRowArray()</dfn> function returns an <strong>array</strong>. E
 $sql = "INSERT INTO mytable (title, name)
         VALUES (".$this->db->escape($title).", ".$this->db->escape($name).")";
 
-$affected_rows = $this->db->execQuery($sql);
+$affected_rows = $this->db->exec($sql);
 
 // We use execQuery function for <b>native</b> insert, delete, update operations 
 
@@ -147,7 +148,7 @@ echo $affected_rows;
 
 <strong>$this->db->escape()</strong> function just alias of <strong>PDO::quote($str, PDO::PARAM_STR);</strong> function.
 
-We use <strong>execQuery()</strong> function for, insert, delete, update operations... It returns the affected rows automatically.
+Use <strong>exec()</strong> function for, insert, delete, update operations. It returns the affected rows.
 
 ### High Secure Insert
 
@@ -156,12 +157,12 @@ We use <strong>execQuery()</strong> function for, insert, delete, update operati
 Dou you want to <strong>more security ?</strong>
 
 ```php
-// HIGH SECURE NATIVE WAY ...  
+// Secure insert
 
 $sql = "INSERT INTO mytable (title, number)
         VALUES (".$this->db->escape((string)$title).", ".$this->db->escape((int)$number).")";
 
-$affected_rows = $this->db->execQuery($sql);
+$affected_rows = $this->db->exec($sql);
 
 echo $affected_rows;
 ```
@@ -172,7 +173,7 @@ When you use native <strong>(string)</strong> ,<strong> (int)</strong> types fro
 
 ------
 
-The [Active Record Pattern](/ob/obullo/releases/2.0/docs/database/active-record-class) gives you a simplified means of retrieving data:
+The Active Record Pattern gives you a simplified means of retrieving data:
 
 ```php
 $query = $this->db->get('table_name');

@@ -108,7 +108,6 @@ Class Mongo implements HandlerInterface
                 $i++;
             }
             $this->mongoCollection->batchInsert($data);
-            print_r($data);
         }
     }
 

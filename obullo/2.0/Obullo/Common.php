@@ -1,6 +1,5 @@
 <?php
 
-// ------------------------------------------------------
 // Common Functions
 // ------------------------------------------------------
 
@@ -31,8 +30,6 @@ function cleanInputData($str)
     return $str;
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Clean Keys
  *
@@ -51,8 +48,6 @@ function cleanInputKeys($str)
     }
     return $str;
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Remove Invisible Characters
@@ -80,9 +75,6 @@ function removeInvisibleCharacters($str, $url_encoded = true)
     return $str;
 }
 
-// Exception & Errors
-// ------------------------------------------------------------------------
-
 /**
  * Catch All Exceptions
  * 
@@ -107,7 +99,6 @@ function exceptionsHandler($e, $type = '')
         $shutdownError = true;
         $type = ucwords(strtolower($type));
         $code = $e->getCode();
-        $level = $c['config']['error']['reporting'];
 
         if (defined('STDIN')) {  // If Command Line Request.
             echo $type . ': ' . $e->getMessage() . ' File: ' . $c['error']->getSecurePath($e->getFile()) . ' Line: ' . $e->getLine() . "\n";
@@ -118,39 +109,11 @@ function exceptionsHandler($e, $type = '')
             }
             return;
         }
+        include OBULLO . 'Exception' . DS . 'Html' . EXT;
 
-        if ($level > 0 OR is_string($level)) {  // If user want to display all errors
-            if (is_numeric($level)) {
-                switch ($level) {
-                case 0:
-                    return;
-                    break;
-                case 1:
-                    include OBULLO . 'Exception' . DS . 'Html' . EXT;
-                    return;
-                    break;
-                }
-            }
-
-            $rules = $c['error']->parseRegex($level);
-            if ($rules == false) {
-                return;
-            }
-
-            $allowedErrors = $c['error']->getAllowedErrors($rules);  // Check displaying error enabled for current error.
-
-            if (isset($allowedErrors[$code])) {
-                include OBULLO . 'Exception' . DS . 'Html' . EXT;
-            }
-
-        } else {
-            include APP . 'errors' . DS . 'disabled_error' . EXT;  // If error_reporting = 0, we show a blank page template.
-        }
-
-        if ($c['error']->log_enabled) {
+        if ($c['logger'] instanceof Obullo\Logger\Logger) {
             $c['logger']->error($type . ': ' . $e->getMessage() . ' ' . $c['error']->getSecurePath($e->getFile()) . ' ' . $e->getLine());
         }
-        
     } else {  // Is It Exception ? Initialize to Exceptions Component.
 
         if (is_object($c)) {
@@ -161,14 +124,11 @@ function exceptionsHandler($e, $type = '')
     return;
 }
 
-// --------------------------------------------------------------------
-
 /**
  * Main Error Handler
  * Predefined error constants
  * http://usphp.com/manual/en/errorfunc.constants.php
  * 
- * @access private
  * @param int $errno
  * @param string $errstr
  * @param string $errfile
@@ -217,8 +177,6 @@ set_error_handler(
         return;
     }
 );
-
-// -------------------------------------------------------------------- 
 
 set_exception_handler('exceptionsHandler');
 

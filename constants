@@ -53,6 +53,7 @@ define('FPATH', dirname(__FILE__));
 | PRIVATE_DIR 		- The full "static" server path to the "private" folder
 | TASK_FILE   		- The file name for $php task operations.
 | TASK   			- The full "static" path of the native cli task folder.
+| INDEX_PHP			- The path of your index.php file.
 */
 define('ROOT',  realpath(dirname(__FILE__)) . DS);
 define('ASSETS',  ROOT .'assets'. DS);
@@ -66,6 +67,7 @@ define('PUBLIC_DIR', (defined('STDIN')) ? APP : PUBLIC_FOLDER);
 define('PRIVATE_DIR', PRIVATE_FOLDER);
 define('TASK_FILE', 'task');
 define('TASK', PHP_PATH .' '. APP .'tasks'. DS .'cli'. DS);
+define('INDEX_PHP', 'index.php');
 /*
 |--------------------------------------------------------------------------
 | OBULLO CONSTANTS

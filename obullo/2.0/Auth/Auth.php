@@ -51,8 +51,6 @@ Class Auth
         $this->logger->debug('Auth Class Initialized');
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Create Password Hash
      * 
@@ -64,8 +62,6 @@ Class Auth
         $hashPassword = $this->extend['hashPassword']; //  run the closure function
         return $hashPassword($password);
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Create Password Hash
@@ -87,8 +83,6 @@ Class Auth
         return false;
     }
 
-    // ------------------------------------------------------------------------    
-
     /**
      * Authorize to User
      * 
@@ -98,8 +92,6 @@ Class Auth
     {
         $this->sess->set('hasIdentity', 'yes', $this->session_prefix);  // Authenticate the user.
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Autheticate and set Identity items if login is successfull !
@@ -117,8 +109,6 @@ Class Auth
         $this->sess->set($key, $val, $this->session_prefix);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Get User has auth access 
      * if its ok it returns to true otherwise false
@@ -133,8 +123,6 @@ Class Auth
         return false;
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Retrieve authenticated user session data
      * 
@@ -148,8 +136,6 @@ Class Auth
         }
         return $this->sess->get($key, $this->session_prefix);
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Unset session auth data from user session container
@@ -166,8 +152,6 @@ Class Auth
         $this->sess->remove($key, $this->session_prefix);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Override to auth configuration.
      * 
@@ -178,8 +162,6 @@ Class Auth
     {
         $this->{$key} = $val;
     }
-
-    //-------------------------------------------------------------------------
 
     /**
      * Get auth config item.
@@ -192,8 +174,6 @@ Class Auth
         return $this->{$key};
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Remove the identity of user
      * 
@@ -203,8 +183,6 @@ Class Auth
     {
         $this->sess->remove($this->getAllData());
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Get all identity data

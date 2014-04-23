@@ -10,7 +10,6 @@
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://www.php-fig.org/psr/psr-0/
  */
-// ------------------------------------------------------------------------
 
 /**
  * PSR-0 Autoloader

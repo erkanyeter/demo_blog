@@ -509,6 +509,26 @@ The first parameter will contain the table name, the second is an associative ar
 
 **Note:** All values are escaped automatically producing safer queries.
 
+
+#### $this->db->insertString();
+
+This function simplifies the process of writing database inserts. It returns a correctly formatted SQL insert string. Example:
+
+```php
+$data = array('name' => $name, 'email' => $email, 'url' => $url);
+
+$str = $this->db->insertString('table_name', $data);
+```
+
+The first parameter is the table name, the second is an associative array with the data to be inserted. The above example produces:
+
+```php
+INSERT INTO table_name (name, email, url) VALUES ('Obullo', 'obullo@example.com', 'example.com')
+```
+
+**Note:** Values are automatically escaped, producing safer queries.
+
+
 #### $this->db->set();
 
 This function enables you to set values for <dfn>inserts</dfn> or <dfn>updates</dfn>.
@@ -624,6 +644,33 @@ $this->db->update('mytable', $data, array('id' => $id));
 
 You may also use the <dfn>$this->db->set()</dfn> function described above when performing updates.
 
+#### $this->db->updateString();
+
+This function simplifies the process of writing database updates. It returns a correctly formatted SQL update string. Example:
+
+```php
+$data = array('name' => $name, 'email' => $email, 'url' => $url);
+
+$where = "author_id = 1 AND status = 'active'";
+
+$str = $this->db->updateString('table_name', $data, $where);
+```
+
+The first parameter is the table name, the second is an associative array with the data to be updated, and the third parameter is the "where" clause. The above example produces:
+
+```php
+UPDATE table_name 
+SET name = 'Ersin', 
+email = 'ersin@example.com', 
+url = 'example.com' 
+WHERE author_id = 1 
+AND status = 'active'
+```
+
+**Note:** Values are automatically escaped, producing safer queries.
+
+
+
 ### Deleting Data <a name="deleting-data"></a>
 
 ------
@@ -664,27 +711,6 @@ $this->db
 ->where('id', $id)
 ->limit(10, 20)
 ->get();
-```
-
-### Query Binding
-
-```php
-$this->db->prep()  // tell to db class use pdo prepare
-->select("DATE_FORMAT(creation_date, '%d-%m-%Y') as date, title",false)
-->where('title', ':title')
-->where('title', ':title2')
-->get('articles')           // get Function will be passive when u use prep()
-->bindValue(':title', 'my title', PARAM_STR) 
-->bindValue(':title2', 'my title', PARAM_STR)
-->exec();
-
-$a = $this->db->getResultArray();
-
-print_r($a); // Array ( [0] => Array ( [date] => 00-00-0000 [title] => my title ) ) 
-
-echo $this->db->getLastQuery(true);
-
-// Query output:
 ```
 
 ### Active Record Caching<a name="active-record-chaining"></a>

@@ -1,15 +1,31 @@
 <?php
 /*
 |--------------------------------------------------------------------------
-| SERVICES
+| SERVICE PROVIDERS
 |--------------------------------------------------------------------------
-| This file specifies the your application "services" and "service providers".
-| 
-| Put services here.
+|
+| Put your providers here.
 */
 /*
 |--------------------------------------------------------------------------
-| Database
+| NoSQL
+|--------------------------------------------------------------------------
+*/
+$c['mongo'] = function ($params) use ($c) {
+    $mongoClient = new MongoClient('mongodb://root:12345@localhost:27017/'.$params['db.name']);
+    return new MongoCollection($mongoClient->{$params['db.name']}, $params['db.collection']);
+};
+
+/*
+|--------------------------------------------------------------------------
+| SERVICES
+|--------------------------------------------------------------------------
+| 
+| Put your services here.
+*/
+/*
+|--------------------------------------------------------------------------
+| Db
 |--------------------------------------------------------------------------
 */
 $c['db'] = function () use ($c) {
@@ -38,23 +54,6 @@ $c['sess'] = function () use ($c) {
 */
 $c['cache'] = function () use ($c) {
     return $c['app']->cache = new Obullo\Cache\Redis($c['config']['cache']);
-};
-
-/*
-|--------------------------------------------------------------------------
-| PROVIDERS
-|--------------------------------------------------------------------------
-|
-| Put service providers here.
-*/
-/*
-|--------------------------------------------------------------------------
-| NoSQL
-|--------------------------------------------------------------------------
-*/
-$c['mongo'] = function ($params) use ($c) {
-    $mongoClient = new MongoClient('mongodb://root:12345@localhost:27017/'.$params['db.name']);
-    return new MongoCollection($mongoClient->{$params['db.name']}, $params['db.collection']);
 };
 
 

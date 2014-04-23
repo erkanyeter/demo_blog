@@ -286,9 +286,29 @@ php task clear
 
 ------
 
+#### $this->logger->addWriter();
+
+Add a log writer.
+
+#### $this->logger->removeWriter();
+
+Remove a log writer.
+
+#### $this->logger->addHandler();
+
+Add a push handler.
+
+#### $this->logger->removeHandler();
+
+Remove a push handler.
+
 #### $this->logger->debug = true
 
 On / Off debug html output. When it is enabled all handlers will be disabled.
+
+#### $this->logger->load(string push handler);
+
+Load a log handler for push method. Handler constants defined in your root constants file.
 
 #### $this->logger->channel(string $channel);
 

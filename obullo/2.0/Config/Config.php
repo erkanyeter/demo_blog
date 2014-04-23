@@ -130,12 +130,8 @@ Class Config implements ArrayAccess
     }
 
 }
-/*
-|--------------------------------------------------------------------------
-| Config
-|--------------------------------------------------------------------------
-*/
-$c['config'] = function () { 
+
+$c['config'] = function () {  // store to container
     return new Config;
 };
 

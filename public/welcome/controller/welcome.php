@@ -18,7 +18,7 @@ $app->func(
     'index',
     function () {
     
-        $this->view->get(
+        $this->view->load(
             'welcome', 
             function () {
                 $this->set('name', 'Obullo');

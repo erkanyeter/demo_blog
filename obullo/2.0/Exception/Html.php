@@ -67,11 +67,7 @@ $debug = $c['config']['error']['debug'];
 if ($debug['enabled'] === true OR $debug['enabled'] == 1) { // Covert to readable format
     $debug['enabled'] = 'E_ALL';
 }
-
-$rules         = $c['error']->parseRegex($debug['enabled']);
-$allowedErrors = $c['error']->getAllowedErrors($rules);
-
-$eCode         = (isset($sql)) ? 'SQL' : $e->getCode();
+$eCode = (isset($sql)) ? 'SQL' : $e->getCode();
 
 if (is_string($debug['enabled'])) {      // Show source code for first exception trace
 

@@ -14,7 +14,7 @@ if ( ! defined('ROOT')) {  // Cli support
 | For security reasons its default off.
 |
 */
-error_reporting(1);
+error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 /*
 |--------------------------------------------------------------------------
