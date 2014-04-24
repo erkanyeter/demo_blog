@@ -105,8 +105,8 @@ Class Pimple implements ArrayAccess
             $Class = ucfirst($cid);
             $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
 
-            if (strpos($Class, '/') > 0) {      // If we have a folder "/" request.
-                $exp       = explode('/', $Class);
+            if (strpos($Class, '.') > 0) {              // If we have a folder "/" request with dot ( "." ).
+                $exp       = explode('.', $Class);      // e.g. $c['cli.task'] $c['tree.category']
                 $ClassName = end($exp);
                 array_pop($exp);
                 $key = $ClassName;

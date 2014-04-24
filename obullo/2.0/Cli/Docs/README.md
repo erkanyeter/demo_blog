@@ -8,7 +8,7 @@ The task class helps you use CLI operations ( running shell scripts etc..) using
 ------
 
 ```php
-$c['cli/task'];
+$c['cli.task'];
 $this->task->method();
 ```
 

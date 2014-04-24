@@ -9,6 +9,9 @@ $app = new Controller(
     function () {
         global $c;
         $c['view'];
+        // $c['tree.category'];
+
+        // 
         // $c['db'];
         
         // $this->config['debug'] = true;
@@ -19,10 +22,24 @@ $app->func(
     'index', 
     function () {
 
-        $nested = new Nested_Category;
+        // $nested->insertTree('electronics');
+        // $nested->insertFirstChild(2, 2, 'Televisions');
+        // $nested->appendNewChild(2, 5, 'plazma');
+        // $nested->insertSibling(2, 5, 'crt');
+        // $nested->appendSibling(2, 4, '3d lcd');
+        // 
+        // 
+        $this->category = new Tree_Category;
+        // $this->category->insertTree('Electronics', $extra = array('column' => 'value'));
+        // $this->category->insertFirstChild(1, 1, 'Televisions');
+        // $this->category->insertFirstChild(1, 1, 'Portable Electronics');
+        // $this->category->appendNewChild(2, 5, 'Lcd');
+        // $this->category->insertSibling(2, 5, 'Tube');
+        // $this->category->appendSibling(2, 8, 'Plasma');
+        // $this->category->truncateTable();
         
-        // $nested->buildTree('first');
-        // $nested->insertFirstChild(1, 1, 'node');
+        $this->category->updateNode(2, array('name' => 'Televisions', 'column' => 'new value'));
+        
 
         $this->view->load(
             'hello_world', 

@@ -2,7 +2,15 @@
 
 The URI Class provides functions that help you retrieve information from your URI strings. If you use URI routing, you can also retrieve information about the re-routed segments.
 
-**Note:** This class is initialized automatically by the system so there is no need to do it manually.
+
+### Initializing a Uri Class
+
+------
+
+```php
+$c['uri'];
+$this->uri->method();
+```
 
 #### $this->uri->getBaseUrl();
 
