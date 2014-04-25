@@ -29,25 +29,68 @@ Class Logger
     // LOG_INFO    informational message
     // LOG_DEBUG   debug-level message
 
+    const EMERGENCY = 'emergency';
+    const ALERT     = 'alert';
+    const CRITICAL  = 'critical';
+    const ERROR     = 'error';
+    const WARNING   = 'error';
+    const NOTICE    = 'notice';
+    const INFO      = 'info';
+    const DEBUG     = 'debug';
+
     /**
      * Log priorities
      * @var array
      */
     public static $priorities = array(
-        'emergency' => LOG_EMERG,
-        'alert'     => LOG_ALERT,
-        'critical'  => LOG_CRIT,
-        'error'     => LOG_ERR,
-        'warning'   => LOG_WARNING,
-        'notice'    => LOG_NOTICE,
-        'info'      => LOG_INFO,
-        'debug'     => LOG_DEBUG,
+        self::EMERGENCY => LOG_EMERG,
+        self::ALERT     => LOG_ALERT,
+        self::CRITICAL  => LOG_CRIT,
+        self::ERROR     => LOG_ERR,
+        self::WARNING   => LOG_WARNING,
+        self::NOTICE    => LOG_NOTICE,
+        self::INFO      => LOG_INFO,
+        self::DEBUG     => LOG_DEBUG,
     );
+    /**
+     * Map native PHP errors to priority
+     *
+     * @var array
+     */
+    public static $errorPriorities = array(
+        E_NOTICE            => self::NOTICE,
+        E_USER_NOTICE       => self::NOTICE,
+        E_WARNING           => self::WARNING,
+        E_CORE_WARNING      => self::WARNING,
+        E_USER_WARNING      => self::WARNING,
+        E_ERROR             => self::ERROR,
+        E_USER_ERROR        => self::ERROR,
+        E_CORE_ERROR        => self::ERROR,
+        E_RECOVERABLE_ERROR => self::ERROR,
+        E_STRICT            => self::DEBUG,
+        E_DEPRECATED        => self::DEBUG,
+        E_USER_DEPRECATED   => self::DEBUG,
+    );
+
+    /**
+     * Registered error handler
+     *
+     * @var bool
+     */
+    protected static $registeredErrorHandler = false;
+
+    /**
+     * Registered exception handler
+     *
+     * @var bool
+     */
+    protected static $registeredExceptionHandler = false;
+
     /**
      * Priority values
      * @var array
      */
-    public $priority_values = array();
+    public $priorityValues = array();
     /**
      * Config object
      * @var object
@@ -67,7 +110,7 @@ Class Logger
      * Threshold array
      * @var array
      */
-    public $threshold_array = array();
+    public $thresholdArray = array();
     /**
      * Sql Queries
      * @var boolean
@@ -125,14 +168,22 @@ Class Logger
         $this->enabled         = $this->config['enabled'];
         $this->debug           = $this->config['debug'];
         $this->channel         = $this->config['channel'];
-        $this->threshold_array = $this->config['threshold'];
+        $this->thresholdArray  = $this->config['threshold'];
         $this->queries         = $this->config['queries'];
         $this->benchmark       = $this->config['benchmark'];
         $this->line            = $this->config['line'];
         $this->format          = $this->config['format'];
 
-        $this->priority_values = array_flip(self::$priorities);
+        $this->priorityValues = array_flip(self::$priorities);
         $this->processor = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
+
+        if (isset($options['exceptionhandler']) AND $this->config['exceptionhandler'] === true) {
+            static::registerExceptionHandler($this);
+        }
+
+        if (isset($options['errorhandler']) AND $this->config['errorhandler'] === true) {
+            static::registerErrorHandler($this);
+        }
     }
     
     /**
@@ -394,8 +445,8 @@ Class Logger
         }
         $this->push[$handler] = 1; // allow push all log data for current push handler.
 
-        if (isset($this->priority_values[$threshold])) {  // Just push for this priority
-            $this->push[$handler] = $this->priority_values[$threshold];
+        if (isset($this->priorityValues[$threshold])) {  // Just push for this priority
+            $this->push[$handler] = $this->priorityValues[$threshold];
         }
     }
 
@@ -440,7 +491,7 @@ Class Logger
     {
         $record_unformatted = array();
 
-        if (isset(self::$priorities[$level]) AND in_array(self::$priorities[$level], $this->threshold_array)) { // is Allowed level ?
+        if (isset(self::$priorities[$level]) AND in_array(self::$priorities[$level], $this->thresholdArray)) { // is Allowed level ?
 
             $record_unformatted['level']   = $level;
             $record_unformatted['message'] = $message;
@@ -491,6 +542,116 @@ Class Logger
 
             $this->processor[$name]->insert($formatted, $priority);
         }
+    }
+
+    /**
+     * Register logging system as an error handler to log PHP errors
+     *
+     * @link http://www.php.net/manual/function.set-error-handler.php
+     * @param  Logger $logger
+     * @param  bool   $continueNativeHandler
+     * @return mixed  Returns result of set_error_handler
+     */
+    public static function registerErrorHandler(Logger $logger, $continueNativeHandler = false)
+    {
+        // Only register once per instance
+        if (static::$registeredErrorHandler) {
+            return false;
+        }
+        $errorPriorities = static::$errorPriorities;
+
+        $previous = set_error_handler(function ($level, $message, $file, $line)
+            use ($logger, $errorPriorities, $continueNativeHandler)
+        {
+            $iniLevel = error_reporting();
+
+            if ($iniLevel & $level) {
+                if (isset($errorPriorities[$level])) {
+                    $priority = $errorPriorities[$level];
+                } else {
+                    $priority = Logger::INFO;
+                }
+                $logger->log($priority, $message, array(
+                    'errno'   => $level,
+                    'file'    => $file,
+                    'line'    => $line,
+                ));
+            }
+
+            return !$continueNativeHandler;
+        });
+
+        static::$registeredErrorHandler = true;
+        return $previous;
+    }
+
+    /**
+     * Unregister error handler
+     *
+     */
+    public static function unregisterErrorHandler()
+    {
+        restore_error_handler();
+        static::$registeredErrorHandler = false;
+    }
+
+    /**
+     * Register logging system as an exception handler to log PHP exceptions
+     *
+     * @link http://www.php.net/manual/en/function.set-exception-handler.php
+     * @param Logger $logger
+     * @return bool
+     * @throws Exception\InvalidArgumentException if logger is null
+     */
+    public static function registerExceptionHandler(Logger $logger)
+    {
+        // Only register once per instance
+        if (static::$registeredExceptionHandler) {
+            return false;
+        }
+        $errorPriorities = static::$errorPriorities;
+
+        set_exception_handler(function ($exception) use ($logger, $errorPriorities) {
+            $logMessages = array();
+
+            // @see http://www.php.net/manual/tr/errorexception.getseverity.php
+            do {
+                $priority = Logger::ERR;
+                if ($exception instanceof ErrorException AND isset($errorPriorities[$exception->getSeverity()])) {
+                    $priority = $errorPriorities[$exception->getSeverity()];
+                }
+                $extra = array(
+                    'file'  => $exception->getFile(),
+                    'line'  => $exception->getLine(),
+                    'trace' => $exception->getTrace(),
+                );
+                if (isset($exception->xdebug_message)) {
+                    $extra['xdebug'] = $exception->xdebug_message;
+                }
+                $logMessages[] = array(
+                    'priority' => $priority,
+                    'message'  => $exception->getMessage(),
+                    'extra'    => $extra,
+                );
+                $exception = $exception->getPrevious();
+            } while ($exception);
+
+            foreach (array_reverse($logMessages) as $logMessage) {
+                $logger->log($logMessage['priority'], $logMessage['message'], $logMessage['extra']);
+            }
+        });
+
+        static::$registeredExceptionHandler = true;
+        return true;
+    }
+
+    /**
+     * Unregister exception handler
+     */
+    public static function unregisterExceptionHandler()
+    {
+        restore_exception_handler();
+        static::$registeredExceptionHandler = false;
     }
 
     /**

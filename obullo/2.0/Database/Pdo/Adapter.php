@@ -158,7 +158,7 @@ Class Adapter
         $this->prep_queries[] = $sql;  // Save the  query for debugging
         $this->prepare = true;
         ++$this->query_count;
-        return ($this);
+        return $this;
     }
 
     /**
@@ -559,7 +559,7 @@ Class Adapter
      *
      * @return integer
      */
-    public function getCount()
+    public function rowCount()
     {
         return $this->Stmt->rowCount();
     }

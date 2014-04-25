@@ -12,12 +12,11 @@ use Obullo\Logger\Logger;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/router
+ * @link      http://obullo.com/package/log
  */
 Class Error
 {
     public $logger;
-    public $log_enabled = false;
 
     /**
      * Constructor
@@ -28,7 +27,6 @@ Class Error
         $this->logger = $c['logger'];
 
         if ($this->logger instanceof Logger) {
-            $this->log_enabled = true;
             $this->logger->debug('Exceptions Class Initialized');
         }
     }
@@ -46,16 +44,10 @@ Class Error
         global $c;
         $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
 
-        // If user want to close error_reporting in some parts of the application.
-        //-----------------------------------------------------------------------
-
-        if ($c['config']['error']['reporting'] == '0') {
-            $this->logger->info('Error reporting is Off, check the config.php file "error_reporting" item to display errors.');
-            return;
-        }
         if (strpos($e->getMessage(), 'shmop_open') === 0) { // Ignore Shmop open segment key warnings.
             return;
         }
+
         // Database Errors
         //-----------------------------------------------------------------------
 

@@ -10,8 +10,9 @@ $app = new Controller(
         global $c;
         $c['view'];
         // $c['db'];
-        
         // $this->config['debug'] = true;
+        // 
+        
     }
 );
 
