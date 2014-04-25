@@ -37,7 +37,7 @@ $c['db'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['crud'] = function () use ($c) {
-    return $c['app']->db = new Obullo\Crud($c['db']);  // Replace database object with crud.
+    return $c['app']->db = new Obullo\Database\Crud\Crud($c['db']);  // Replace database object with crud.
 };
 /*
 |--------------------------------------------------------------------------
