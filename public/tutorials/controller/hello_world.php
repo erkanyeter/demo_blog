@@ -27,6 +27,8 @@ $app->func(
     'index', 
     function () {
 
+        // echo $sizeOfTree = 2--1;
+
         // print_r($this->treeCategory);
 
         // $nested->insertTree('electronics');
@@ -44,6 +46,40 @@ $app->func(
         // $this->treeCategory->truncateTable();
         
         // $this->treeCategory->updateNode(2, array('name' => 'Televisions', 'column' => 'new value'));
+        
+        $source = array(    // Portable Electronics
+            'lft' => 9,
+            'rgt' => 14
+        );
+
+        $target = array(    // Televisions
+            'lft' => 2,
+            'rgt' => 15 
+        );
+        $this->treeCategory->moveAsNextSibling($source, $target);
+        // 
+        
+        // $source = array(    // Portable Electronics
+        //     'lft' => 9,
+        //     'rgt' => 14
+        // );
+
+        // $target = array(    // Televisions
+        //     'lft' => 2,
+        //     'rgt' => 15 
+        // );
+        // $this->treeCategory->moveAsFirstChild($source, $target);
+
+        // $source = array(    // Portable Electronics
+        //     'lft' => 10,
+        //     'rgt' => 15
+        // );
+
+        // $target = array(    // Televisions
+        //     'lft' => 2,
+        //     'rgt' => 9 
+        // );
+        // $this->treeCategory->moveAsPrevSibling($source, $target);
         
 
         $this->view->load(

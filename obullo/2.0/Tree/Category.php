@@ -44,7 +44,6 @@ Class Category
     public $allowedColumnKeys = array(
         self::TABLE_NAME,
         self::PRIMARY_KEY,
-        self::PARENT_ID,
         self::TEXT,
         self::LEFT,
         self::RIGHT
@@ -60,7 +59,7 @@ Class Category
         global $c;
         $this->db = $c['db'];
 
-        if (count($params) > 0 AND  in_array($this->allowedColumnKeys, $val)) {
+        if (count($params) > 0 AND in_array($this->allowedColumnKeys, $val)) {
             $this->tableName  = $params[self::TABLE_NAME];
             $this->primaryKey = $params[self::PRIMARY_KEY];
             $this->text       = $params[self::TEXT];
@@ -139,12 +138,13 @@ Class Category
         $result = $this->db->getRowArray();
 
         $data = array(
-            $this->text     => $text,
-            $this->lft      => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 1,
-            $this->rgt      => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 2,
+            $this->text => $text,
+            $this->lft  => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 1,
+            $this->rgt  => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 2,
         );
         
         $data = $this->appendExtraData($data, $extra);
+
         $this->insert($this->tableName, $data);
     }
 
@@ -177,35 +177,40 @@ Class Category
      */
     public function addChild($lftValue, $text, $extra = array())
     {
-        $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
-        $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
+        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
+        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
 
-        $this->db->exec(
-            sprintf(
-                $update_lft,
-                $this->protect($this->tableName),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $lftValue
-            )
-        );
-        $this->db->exec(
-            sprintf(
-                $update_rgt,
-                $this->protect($this->tableName),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $lftValue
-            )
-        );
-        $data = array();
-        $data[$this->text]     =   $text;
-        $data[$this->lft]      =   $lftValue + 1;
-        $data[$this->rgt]      =   $lftValue + 2;
+        $this->updateLeft(2, $lftValue + 1);
+        $this->updateRight(2, $lftValue + 1);
+
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_lft,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $lftValue
+        //     )
+        // );
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_rgt,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $lftValue
+        //     )
+        // );
+
+        $data              = array();
+        $data[$this->text] = $text;
+        $data[$this->lft]  = $lftValue + 1;
+        $data[$this->rgt]  = $lftValue + 2;
 
         $data = $this->appendExtraData($data, $extra);
+
         $this->insert($this->tableName, $data);
     }
 
@@ -220,35 +225,40 @@ Class Category
      */
     public function appendChild($rgtValue, $text, $extra = array())
     {
-        $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
-        $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
+        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
+        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
 
-        $this->db->exec(
-            sprintf(
-                $update_lft,
-                $this->protect($this->tableName),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $rgtValue
-            )
-        );
-        $this->db->exec(
-            sprintf(
-                $update_rgt,
-                $this->protect($this->tableName),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $rgtValue
-            )
-        );
-        $data = array();
-        $data[$this->text]     =   $text;
-        $data[$this->lft]      =   $rgtValue;
-        $data[$this->rgt]      =   $rgtValue + 1;
+        $this->updateLeft(2, $rgtValue);
+        $this->updateRight(2, $rgtValue);
+
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_lft,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $rgtValue
+        //     )
+        // );
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_rgt,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $rgtValue
+        //     )
+        // );
+        
+        $data              = array();
+        $data[$this->text] = $text;
+        $data[$this->lft]  = $rgtValue;
+        $data[$this->rgt]  = $rgtValue + 1;
 
         $data = $this->appendExtraData($data, $extra);
+
         $this->insert($this->tableName, $data);
     }
 
@@ -263,40 +273,45 @@ Class Category
      */
     public function addSibling($lftValue, $text, $extra = array())
     {
-        $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
-        $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
+        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
+        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
 
-        $this->db->exec(
-            sprintf(
-                $update_lft,
-                $this->protect($this->tableName),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $lftValue
-            )
-        );
-        $this->db->exec(
-            sprintf(
-                $update_rgt,
-                $this->protect($this->tableName),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $lftValue
-            )
-        );
-        $data = array();
-        $data[$this->text]     =   $text;
-        $data[$this->lft]      =   $lftValue;
-        $data[$this->rgt]      =   $lftValue + 1;
+        $this->updateLeft(2, $lftValue);
+        $this->updateRight(2, $lftValue);
+
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_lft,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $lftValue
+        //     )
+        // );
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_rgt,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $lftValue
+        //     )
+        // );
+        
+        $data              = array();
+        $data[$this->text] = $text;
+        $data[$this->lft]  = $lftValue;
+        $data[$this->rgt]  = $lftValue + 1;
 
         $data = $this->appendExtraData($data, $extra);
+
         $this->insert($this->tableName, $data);
     }
 
     /**
-     * Adds a new node to the right of the supplied focusNode
+     * Insert a new node to the right of the supplied focusNode
      * 
      * @param int    $rgtValue rgt column value
      * @param string $text     value
@@ -306,36 +321,40 @@ Class Category
      */
     public function appendSibling($rgtValue, $text, $extra = array())
     {
-        $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
-        $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
+        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
+        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
 
-        $this->db->exec(
-            sprintf(
-                $update_lft,
-                $this->protect($this->tableName),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                $rgtValue
-            )
-        );
-        $this->db->exec(
-            sprintf(
-                $update_rgt,
-                $this->protect($this->tableName),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                $rgtValue
-            )
-        );
+        $this->updateLeft(2, $rgtValue + 1);
+        $this->updateRight(2, $rgtValue + 1);
 
-        $data = array();
-        $data[$this->text]     =   $text;
-        $data[$this->lft]      =   $rgtValue + 1;
-        $data[$this->rgt]      =   $rgtValue + 2;
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_lft,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         $rgtValue
+        //     )
+        // );
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_rgt,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         $rgtValue
+        //     )
+        // );
+
+        $data              = array();
+        $data[$this->text] = $text;
+        $data[$this->lft]  = $rgtValue + 1;
+        $data[$this->rgt]  = $rgtValue + 2;
 
         $data = $this->appendExtraData($data, $extra);
+
         $this->insert($this->tableName, $data);
     }
 
@@ -365,31 +384,34 @@ Class Category
         );
         $this->db->delete($this->tableName, $where);
 
-        $update_lft = "UPDATE %s SET %s = %s + %s WHERE %s >= %s";
-        $update_rgt = "UPDATE %s SET %s = %s + %s WHERE %s >= %s";
+        $this->updateLeft(2, ($lftValue - $rgtValue - 1));
+        $this->updateRight(2, ($lftValue - $rgtValue - 1));
 
-        $this->db->exec(
-            sprintf(
-                $update_lft,
-                $this->protect($this->tableName),
-                $this->protect($this->lft),
-                $this->protect($this->lft),
-                ($lftValue - $rgtValue - 1),
-                $this->protect($this->lft),
-                $rgtValue
-            )
-        );
-        $this->db->exec(
-            sprintf(
-                $update_rgt,
-                $this->protect($this->tableName),
-                $this->protect($this->rgt),
-                $this->protect($this->rgt),
-                ($lftValue - $rgtValue - 1),
-                $this->protect($this->rgt),
-                $rgtValue
-            )
-        );
+        // $update_lft = "UPDATE %s SET %s = %s + %s WHERE %s >= %s";
+        // $update_rgt = "UPDATE %s SET %s = %s + %s WHERE %s >= %s";
+
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_lft,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->lft),
+        //         $this->protect($this->lft),
+        //         ($lftValue - $rgtValue - 1),
+        //         $this->protect($this->lft),
+        //         $rgtValue
+        //     )
+        // );
+        // $this->db->exec(
+        //     sprintf(
+        //         $update_rgt,
+        //         $this->protect($this->tableName),
+        //         $this->protect($this->rgt),
+        //         $this->protect($this->rgt),
+        //         ($lftValue - $rgtValue - 1),
+        //         $this->protect($this->rgt),
+        //         $rgtValue
+        //     )
+        // );
     }
 
     /**
@@ -406,11 +428,9 @@ Class Category
         foreach ($data as $key => $val) {
             $update .= $this->protect($key) . '=' . $this->db->escape($val) . ',';
         }
-        $sql = "UPDATE %s SET %s WHERE %s = %s";
-
         $this->db->exec(
             sprintf(
-                $sql,
+                'UPDATE %s SET %s WHERE %s = %s',
                 $this->protect($this->tableName),
                 rtrim($update, ','),
                 $this->protect($this->primaryKey),
@@ -419,14 +439,223 @@ Class Category
         );
     }
 
-    // public function moveNd
+    /**
+     * Move as first child
+     * 
+     * @param array $source source
+     * @param array $target target
+     * 
+     * @return void
+     */
+    public function moveAsFirstChild($source, $target)
+    {
+        $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
+        $value      = $target[$this->lft] + 1;
 
-    // public function query()
-    // {
+        /**
+         * Modify Node
+         */
+        $this->updateLeft($sizeOfTree, $value);
+        $this->updateRight($sizeOfTree, $value);
 
-    // }
+        /**
+         * Extend current tree values
+         */
+        if ($source[$this->lft] >= $value) {
+            $source[$this->lft] += $sizeOfTree;
+            $source[$this->rgt] += $sizeOfTree;
+        }
 
+        /**
+         * Modify Range
+         */
+        $this->updateLeft($value - $source[$this->lft], $source[$this->lft], "AND $this->lft <= " .$source[$this->rgt]);
+        $this->updateRight($value - $source[$this->lft], $source[$this->lft], "AND $this->rgt <= " .$source[$this->rgt]);
 
+        /**
+         * Modify Node
+         */
+        $this->updateLeft(- $sizeOfTree, $source[$this->rgt] + 1);
+        $this->updateRight(- $sizeOfTree, $source[$this->rgt] + 1);
+    }
+
+    /**
+     * Move as last child
+     * 
+     * @param array $source source
+     * @param array $target target
+     * 
+     * @return void
+     */
+    public function moveAsLastChild($source, $target)
+    {
+        $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
+        $value      = $target[$this->rgt];
+
+        /**
+         * Modify Node
+         */
+        $this->updateLeft($sizeOfTree, $value);
+        $this->updateRight($sizeOfTree, $value);
+
+        /**
+         * Extend current tree values
+         */
+        if ($source[$this->lft] >= $value) {
+            $source[$this->lft] += $sizeOfTree;
+            $source[$this->rgt] += $sizeOfTree;
+        }
+
+        /**
+         * Modify Range
+         */
+        $this->updateLeft($value - $source[$this->lft], $source[$this->lft], "AND $this->lft <= " .$source[$this->rgt]);
+        $this->updateRight($value - $source[$this->lft], $source[$this->lft], "AND $this->rgt <= " .$source[$this->rgt]);
+
+        /**
+         * Modify Node
+         */
+        $this->updateLeft(- $sizeOfTree, $source[$this->rgt] + 1);
+        $this->updateRight(- $sizeOfTree, $source[$this->rgt] + 1);
+    }
+
+    /**
+     * Move as next sibling
+     * 
+     * @param array $source source
+     * @param array $target target
+     * 
+     * @return void
+     */
+    public function moveAsNextSibling($source, $target)
+    {
+        $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
+        $value      = $target[$this->rgt] + 1;
+
+        /**
+         * Modify Node
+         */
+        $this->updateLeft($sizeOfTree, $value);
+        $this->updateRight($sizeOfTree, $value);
+
+        /**
+         * Extend current tree values
+         */
+        if ($source[$this->lft] >= $value) {
+            $source[$this->lft] += $sizeOfTree;
+            $source[$this->rgt] += $sizeOfTree;
+        }
+
+        /**
+         * Modify Range
+         */
+        $this->updateLeft($value - $source[$this->lft], $source[$this->lft], "AND $this->lft <= " .$source[$this->rgt]);
+        $this->updateRight($value - $source[$this->lft], $source[$this->lft], "AND $this->rgt <= " .$source[$this->rgt]);
+
+        /**
+         * Modify Node
+         */
+        $this->updateLeft(- $sizeOfTree, $source[$this->rgt] + 1);
+        $this->updateRight(- $sizeOfTree, $source[$this->rgt] + 1);
+    }
+
+    /**
+     * Move as prev sibling
+     * 
+     * @param array $source source
+     * @param array $target target
+     * 
+     * @return void
+     */
+    public function moveAsPrevSibling($source, $target)
+    {
+        $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
+        $value      = $target[$this->lft];
+
+        /**
+         * Modify Node
+         */
+        $this->updateLeft($sizeOfTree, $value);
+        $this->updateRight($sizeOfTree, $value);
+
+        /**
+         * Extend current tree values
+         */
+        if ($source[$this->lft] >= $value) {
+            $source[$this->lft] += $sizeOfTree;
+            $source[$this->rgt] += $sizeOfTree;
+        }
+
+        /**
+         * Modify Range
+         */
+        $this->updateLeft($value - $source[$this->lft], $source[$this->lft], "AND $this->lft <= " .$source[$this->rgt]);
+        $this->updateRight($value - $source[$this->lft], $source[$this->lft], "AND $this->rgt <= " .$source[$this->rgt]);
+
+        /**
+         * Modify Node
+         */
+        $this->updateLeft(- $sizeOfTree, $source[$this->rgt] + 1);
+        $this->updateRight(- $sizeOfTree, $source[$this->rgt] + 1);
+    }
+
+    /**
+     * Update left column value
+     * 
+     * @param int    $value          set value
+     * @param int    $conditionValue where condition value
+     * @param string $attribute      extra conditions
+     * 
+     * @return void
+     */
+    protected function updateLeft($value, $conditionValue, $attribute = '')
+    {
+        $sql = "UPDATE %s SET %s = %s + %s WHERE %s >= %s %s";
+
+        $this->db->exec(
+            sprintf(
+                $sql,
+                $this->protect($this->tableName),
+                $this->protect($this->lft),
+                $this->protect($this->lft),
+                $value,
+                $this->protect($this->lft),
+                $conditionValue,
+                $attribute
+            )
+        );
+
+        echo $this->db->lastQuery() . "<br />";
+    }
+
+    /**
+     * Update right column value
+     * 
+     * @param int    $value          set value
+     * @param int    $conditionValue where condition value
+     * @param string $attribute      extra conditions
+     * 
+     * @return void
+     */
+    protected function updateRight($value, $conditionValue, $attribute = '')
+    {
+        $sql = "UPDATE %s SET %s = %s + %s WHERE %s >= %s %s";
+
+        $this->db->exec(
+            sprintf(
+                $sql,
+                $this->protect($this->tableName),
+                $this->protect($this->rgt),
+                $this->protect($this->rgt),
+                $value,
+                $this->protect($this->rgt),
+                $conditionValue,
+                $attribute
+            )
+        );
+
+        echo $this->db->lastQuery() . "<br />";
+    }
 
 }
 
