@@ -284,7 +284,7 @@ This function fetches one item and returns query result as object or false on fa
 
 Identical to the above row() function, except it returns an array.
 
-#### $this->db->getCount();
+#### $this->db->rowCount();
 
 Count number of rows and returns to integer value.
 
@@ -474,13 +474,13 @@ The **double dots** in the query are automatically replaced with the values of *
 ##### $this->db->bindValue($paramater, $variable, $type)
 
 ```php
-$query = $this->db->prepare("SELECT * FROM articles WHERE article_id=:id OR tag=:tag");
+$this->db->prepare("SELECT * FROM articles WHERE article_id=:id OR tag=:tag");
 
-$query->bindValue(':id', 1, PARAM_INT);  
-$query->bindValue(':tag', 'php', PARAM_STR); 
-$query->execute();
+$this->db->bindValue(':id', 1, PARAM_INT);  
+$this->db->bindValue(':tag', 'php', PARAM_STR); 
+$this->db->execute();
 
-$a = $query->getResultArray(); 
+$a = $this->db->getResultArray(); 
 print_r($a);
 ```
 
@@ -491,13 +491,23 @@ The **double dots** in the query are automatically replaced with the values of *
 ##### Question Mark Bind
 
 ```php
-$query = $this->db->prepare("SELECT * FROM articles WHERE article_id = ? OR tag = ?");
+$this->db->prepare("SELECT * FROM articles WHERE article_id = ? OR tag = ?");
 
-$query->bindValue(1, 1, PARAM_INT);  
-$query->bindValue(2,'php', PARAM_STR); 
-$query->execute();
+$this->db->bindValue(1, 1, PARAM_INT);  
+$this->db->bindValue(2,'php', PARAM_STR); 
+$this->db->execute();
 
-$a = $query->getResult(); 
+$a = $this->db->getResult(); 
+var_dump($a);
+```
+
+### Array Bind
+
+```php
+$this->db->prepare("SELECT * FROM articles WHERE article_id = ? OR tag = ?");
+$this->db->execute(array(1, 'php'));
+
+$a = $this->db->getResult(); 
 var_dump($a);
 ```
 

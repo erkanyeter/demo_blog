@@ -147,7 +147,6 @@ if ($hooks_enabled) {
 if ($hooks_enabled) {
     $c['hooks']->call('post_system');
 }
-
 // $['event']->fire('after.response');
 
 $end = microtime(true) - $start;  // End Timer
@@ -164,7 +163,6 @@ if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark 
 $c['logger']->debug('Final output sent to browser', $extra, -1);
 
 // $['event']->fire('shutdown');
-
 
 // END Obullo.php File
 /* End of file Obullo.php

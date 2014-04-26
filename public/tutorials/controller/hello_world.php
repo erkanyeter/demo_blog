@@ -17,8 +17,9 @@ $app = new Controller(
 
         // 
         // $c['db'];
-        
         // $this->config['debug'] = true;
+        // 
+        
     }
 );
 

@@ -128,7 +128,6 @@ Class Pimple implements ArrayAccess
                 }
             );
         }
-
         if (isset($this->raw[$cid])
             || ! is_object($this->values[$cid])
             || isset($this->protected[$this->values[$cid]])

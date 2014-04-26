@@ -336,7 +336,7 @@ Class Uri
      */
     public function getRoutedUriString()
     {
-        return '/' . implode('/', $this->uri->getRoutedSegmentArray()) . '/';
+        return '/' . implode('/', $this->getRoutedSegmentArray()) . '/';
     }
 
     /**
