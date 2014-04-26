@@ -57,7 +57,9 @@ class ErrorHandler
         $handler->setDisplayErrors($displayErrors);
 
         ini_set('display_errors', 0);
+
         set_error_handler(array($handler, 'handle'));
+        
         register_shutdown_function(array($handler, 'handleFatal'));
         $handler->reservedMemory = str_repeat('x', 10240);
 
@@ -100,24 +102,16 @@ class ErrorHandler
      */
     public function handle($level, $message, $file = 'unknown', $line = 0, $context = array())
     {
+        echo 'asdssssssssssssssssssssssssssssssss';
         if (0 === $this->level) {
             return false;
         }
 
         if ($level & (E_USER_DEPRECATED | E_DEPRECATED)) {
-            if (isset(self::$loggers['deprecation'])) {
-                if (version_compare(PHP_VERSION, '5.4', '<')) {
-                    $stack = array_map(
-                        function ($row) {
-                            unset($row['args']);
 
-                            return $row;
-                        },
-                        array_slice(debug_backtrace(false), 0, 10)
-                    );
-                } else {
-                    $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
-                }
+            if (isset(self::$loggers['deprecation'])) {
+
+                $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 
                 self::$loggers['deprecation']->warning($message, array('type' => self::TYPE_DEPRECATION, 'stack' => $stack));
             }

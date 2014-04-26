@@ -110,15 +110,6 @@ Class Mysql extends Adapter
         // remove duplicates if the user already included the escape
         return preg_replace('/[' . $this->_escape_char . ']+/', $this->_escape_char, $str);
     }
-
-    /**
-     * 
-     *
-     * @access   public
-     * @param    string
-     * @param    bool    
-     * @return   string
-     */
     
     /**
      * Escape string
@@ -153,11 +144,7 @@ Class Mysql extends Adapter
                 $str = "%{$str}%";
             }
         }
-        if ($this->prepare === true) {          // make sure is it bind value, if not ...
-            if (strpos($str, ':') === false) {
-                $str = $this->quote($str, PDO::PARAM_STR);
-            }
-        } else {
+        if ($this->prepare === false) {          // make sure is it bind value, if not ...
             $str = $this->quote($str, PDO::PARAM_STR);
         }
         return $str;

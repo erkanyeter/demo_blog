@@ -98,7 +98,7 @@ Class View
      * 
      * @return void
      */
-    public function set($key, $val)
+    public function assign($key, $val)
     {
         if (is_int($val)) {
             $this->_string[$key] = $val;

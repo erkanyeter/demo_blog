@@ -610,7 +610,7 @@ Class Logger
             return false;
         }
         $errorPriorities = static::$errorPriorities;
-
+        
         set_exception_handler(function ($exception) use ($logger, $errorPriorities) {
             $logMessages = array();
 
@@ -640,7 +640,6 @@ Class Logger
                 $logger->log($logMessage['priority'], $logMessage['message'], $logMessage['extra']);
             }
         });
-
         static::$registeredExceptionHandler = true;
         return true;
     }

@@ -52,14 +52,17 @@
 endif;
 ?>
 <h2><?php 
-echo $c['error']->getSecurePath($e->getMessage(), true) ?>
+echo $e->getMessage();
+// echo $c['error']->getSecurePath($e->getMessage(), true) ?>
 </h2>
 <?php
 if (isset($sql)) {
     echo '<div class="errorFile"><pre>' . $sql . '</pre></div>';
 }
 ?>
-<div class="errorFile errorLine"><?php echo $c['error']->getSecurePath($e->getFile()) . '  Line : ' . $e->getLine() . ' ' ?></div>
+<div class="errorFile errorLine"><?php
+// $c['error']->getSecurePath($e->getFile())
+ echo $e->getFile(). '  Line : ' . $e->getLine() . ' ' ?></div>
 <?php
 
 $debug = $c['config']['error']['debug'];
