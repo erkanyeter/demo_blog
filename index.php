@@ -14,8 +14,8 @@ if ( ! defined('ROOT')) {  // Cli support
 | For security reasons its default off.
 |
 */
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
+// error_reporting(E_ALL | E_NOTICE | E_STRICT);
+// ini_set('display_errors', 'On');
 /*
 |--------------------------------------------------------------------------
 | Set Default Time Zone Identifer. @link http://www.php.net/manual/en/timezones.php
@@ -41,12 +41,12 @@ require OBULLO_CONTAINER;
 require OBULLO_CONFIG;
 require OBULLO_CORE;
 require OBULLO_AUTOLOADER;
+
+Obullo\Error\ErrorHandler::register(E_ALL | E_NOTICE);
+
 require OBULLO_COMPONENTS;
 require OBULLO_SERVICES;
 require OBULLO_PHP;
-
-Obullo\Error\ErrorHandler::register(E_ALL);
-
 
 /* End of file index.php */
 /* Location: .index.php */

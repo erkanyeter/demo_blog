@@ -59,7 +59,6 @@ class ErrorHandler
         ini_set('display_errors', 0);
 
         set_error_handler(array($handler, 'handle'));
-        
         register_shutdown_function(array($handler, 'handleFatal'));
         $handler->reservedMemory = str_repeat('x', 10240);
 
@@ -102,7 +101,7 @@ class ErrorHandler
      */
     public function handle($level, $message, $file = 'unknown', $line = 0, $context = array())
     {
-        echo 'asdssssssssssssssssssssssssssssssss';
+
         if (0 === $this->level) {
             return false;
         }
@@ -118,7 +117,8 @@ class ErrorHandler
 
             return true;
         }
-
+        echo 'asdssssssssssssssssssssssssssssssss';
+        
         if ($this->displayErrors && error_reporting() & $level && $this->level & $level) {
             // make sure the ContextErrorException class is loaded (https://bugs.php.net/bug.php?id=65322)
             if (!class_exists('Symfony\Component\Debug\Exception\ContextErrorException')) {
