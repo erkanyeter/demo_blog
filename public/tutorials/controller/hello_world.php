@@ -10,7 +10,8 @@ $app = new Controller(
         global $c;
 
         $c['view'];
-        // $c['tree.category'];
+        $c['tree.db'];
+
         // $c['db'];
         // $this->config['debug'] = true;
         
@@ -27,16 +28,25 @@ $app->func(
     'index', 
     function () {
 
-        // $nested->addTree('electronics');
-        // $nested->addChild(2, 2, 'Televisions');
-        // $nested->appendChild(2, 5, 'plazma');
-        // $nested->addSibling(2, 5, 'crt');
-        // $nested->appendSibling(2, 4, '3d lcd');
+        $this->treeDb->setTablename('nested_category');
+        $this->treeDb->setPrimaryKey('category_id');
+        $this->treeDb->setText('name');
+        $this->treeDb->setLft('lft');
+        $this->treeDb->setRgt('rgt');
+
+        // $source = array(    // Portable Electronics
+        //     'lft' => 9,
+        //     'rgt' => 14
+        // );
+
+        // $target = array(    // Televisions
+        //     'lft' => 2,
+        //     'rgt' => 15 
+        // );
+        // $this->treeDb->moveToNextSibling($source, $target);
         // 
-        // 
-        // $this->category = new Tree_Category;
         
-        // $this->category->addTree('Electronics', $extra = array('column' => 'value'));
+        // $this->treeDb->addTree('Electronics', $extra = array('column' => 'value'));
         // $this->category->addChild(1, 1, 'Televisions');
         // $this->category->addChild(1, 1, 'Portable Electronics');
         // $this->category->appendChild(2, 5, 'Lcd');
@@ -49,6 +59,29 @@ $app->func(
         // $this->category->truncateTable();
         
         // $this->category->updateNode(2, array('name' => 'Televisions', 'column' => 'new value'));
+
+        // $source = array(    // Portable Electronics
+        //     'lft' => 9,
+        //     'rgt' => 14
+        // );
+
+        // $target = array(    // Televisions
+        //     'lft' => 2,
+        //     'rgt' => 15 
+        // );
+        // $this->treeDb->moveAsFirstChild($source, $target);
+
+        // $source = array(    // Portable Electronics
+        //     'lft' => 10,
+        //     'rgt' => 15
+        // );
+
+        // $target = array(    // Televisions
+        //     'lft' => 2,
+        //     'rgt' => 9 
+        // );
+        // $this->treeDb->moveAsPrevSibling($source, $target);
+
         
         $this->view->load(
             'hello_world', 

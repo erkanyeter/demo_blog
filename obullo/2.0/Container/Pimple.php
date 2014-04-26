@@ -106,13 +106,18 @@ Class Pimple implements ArrayAccess
             $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
 
             if (strpos($Class, '.') > 0) {              // If we have a folder "/" request with dot ( "." ).
-                $exp       = explode('.', $Class);      // e.g. $c['cli.task'] $c['tree.category']
+                $exp       = explode('.', $Class);      // e.g. $c['cli.task'] = $this->cliTask->method(),  $c['tree.category'] = $this->treeCategory->method();
+                $ucfirstVal = array_map(
+                    function ($value) {
+                        return ucfirst($value);
+                    }, 
+                    $exp
+                );
                 $ClassName = end($exp);
+                $key = lcfirst(implode('', $ucfirstVal));
                 array_pop($exp);
-                $key = $ClassName;
                 $ObulloPackage = 'Obullo\\'. implode('\\', $exp).'\\'. ucfirst($ClassName);
             }
-
             if (Controller::$instance != null) {  // let's sure controller instance available and is not null
                 Controller::$instance->{$key} = new $ObulloPackage;
             }

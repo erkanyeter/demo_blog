@@ -2,13 +2,12 @@
 
 namespace Obullo\Error;
 
-// use Psr\Log\LoggerInterface;
-// use Symfony\Component\Debug\Exception\ContextErrorException;
-// use Symfony\Component\Debug\Exception\FatalErrorException;
-// use Symfony\Component\Debug\Exception\DummyException;
-// use Symfony\Component\Debug\FatalErrorHandler\UndefinedFunctionFatalErrorHandler;
-// use Symfony\Component\Debug\FatalErrorHandler\ClassNotFoundFatalErrorHandler;
-// use Symfony\Component\Debug\FatalErrorHandler\FatalErrorHandlerInterface;
+// use Debug\Exception\ContextErrorException;
+// use Debug\Exception\FatalErrorException;
+// use Debug\Exception\DummyException;
+// use Debug\FatalErrorHandler\UndefinedFunctionFatalErrorHandler;
+// use Debug\FatalErrorHandler\ClassNotFoundFatalErrorHandler;
+// use Debug\FatalErrorHandler\FatalErrorHandlerInterface;
 
 /**
  * ErrorHandler.

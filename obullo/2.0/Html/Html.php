@@ -22,6 +22,7 @@ Class Html
     public function __construct()
     {
         global $c;
+        
         $this->logger = $c['logger'];
         $this->logger->debug('Html Class Initialized');
     }

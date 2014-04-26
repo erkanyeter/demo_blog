@@ -12,7 +12,7 @@ $config = array(
     | Debug
     |--------------------------------------------------------------------------
     */
-    'debug' => false,             // If debug enabled framework converts all php errors to exceptions.
+    'debug' => true,             // If debug enabled framework converts all php errors to exceptions.
                                  // Should be disabled in "live" mode.
     /*
     |--------------------------------------------------------------------------
@@ -126,8 +126,8 @@ $config = array(
     'database' => array(
             'hostname' => 'localhost',
             'username' => 'root',
-            'password' => '123',
-            'database' => 'nested',
+            'password' => '123456',
+            'database' => 'demo_blog',
             'driver'   => '',   // optional
             'prefix'   => '',
             'dbh_port' => '',
