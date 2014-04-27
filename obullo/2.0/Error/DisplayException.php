@@ -41,8 +41,8 @@
 </script>
 
 <div id="exceptionContent">
-    <h1><?php echo $type; ?></h1>
-    <?php if (isset($shutdownError)) : // Is it compile or fatal error ? // if yes we need to exit. ?>
+    <h1>Exception Error</h1>
+    <?php if ($fatalError) :  ?>
         <h2><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, OBULLO, PUBLIC_DIR, PRIVATE_DIR), array('APP' . DS, 'DATA' . DS, 'CLASSES' . DS, 'ROOT' . DS, 'PACKAGES' . DS, 'PUBLIC' . DS), $e->getMessage()) ?></h2>
         <div class="errorFile errorLine"><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, OBULLO, PUBLIC_DIR, PRIVATE_DIR), array('APP' . DS, 'DATA' . DS, 'CLASSES' . DS, 'ROOT' . DS, 'PACKAGES' . DS, 'PUBLIC' . DS), $e->getFile()) . '  Line : ' . $e->getLine() ?>
         </div>
@@ -51,38 +51,22 @@
     exit; // Shutdown error exit.
 endif;
 ?>
-<h2><?php 
-echo $e->getMessage();
-// echo $c['error']->getSecurePath($e->getMessage(), true) ?>
-</h2>
+
+<h2><?php echo Obullo\Error\DebugOutput::getSecurePath($e->getMessage()); ?></h2>
 <?php
-if (isset($sql)) {
-    echo '<div class="errorFile"><pre>' . $sql . '</pre></div>';
+if (isset($lastQuery) AND ! empty($lastQuery)) {
+    echo '<div class="errorFile"><pre>' . $lastQuery . '</pre></div>';
 }
 ?>
 <div class="errorFile errorLine"><?php
-// $c['error']->getSecurePath($e->getFile())
- echo $e->getFile(). '  Line : ' . $e->getLine() . ' ' ?></div>
+ echo $e->getCode() . ' '.Obullo\Error\DebugOutput::getSecurePath($e->getFile()). '  Line : ' . $e->getLine() . ' ' ?></div>
 <?php
 
-$debug = $c['config']['error']['debug'];
-
-if ($debug['enabled'] === true OR $debug['enabled'] == 1) { // Covert to readable format
-    $debug['enabled'] = 'E_ALL';
-}
-$eCode = (isset($sql)) ? 'SQL' : $e->getCode();
-
-if (is_string($debug['enabled'])) {      // Show source code for first exception trace
-
+    $eTrace = array();
     $eTrace['file'] = $e->getFile();
     $eTrace['line'] = $e->getLine();
 
-    echo $c['error']->debugFileSource($eTrace);
-
-    if ( ! isset($allowedErrors[$eCode])) { // Check debug_backtrace enabled for current error. 
-        echo '</div>';
-        exit;
-    }
+    echo Obullo\Error\DebugOutput::debugFileSource($eTrace);
 
     $fullTraces  = $e->getTrace();
     $debugTraces = array();
@@ -92,7 +76,6 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
             $debugTraces[] = $val;
         }
     }
-
     if (isset($debugTraces[0]['file']) AND isset($debugTraces[0]['line'])) {
 
         if ($debugTraces[0]['file'] == $e->getFile() AND $debugTraces[0]['line'] == $e->getLine()) {
@@ -101,80 +84,73 @@ if (is_string($debug['enabled'])) {      // Show source code for first exception
         } else {
             $unset = false;
         }
-
         if (isset($debugTraces[1]['file']) AND isset($debugTraces[1]['line'])) {
             
-            $classInfo = '';
+            $html = '';
             foreach ($debugTraces as $key => $trace) {
                 $prefix = uniqid() . '_';
 
                 if (isset($trace['file'])) {
-                    $classInfo = '';
+                    $html = '';
 
                     if (isset($trace['class']) AND isset($trace['function'])) {
-                        $classInfo.= $trace['class'] . '->' . $trace['function'];
+                        $html.= $trace['class'] . '->' . $trace['function'];
                     }
 
                     if (!isset($trace['class']) AND isset($trace['function'])) {
-                        $classInfo.= $trace['function'];
+                        $html.= $trace['function'];
                     }
 
                     if (isset($trace['args'])) {
                         if (count($trace['args']) > 0) {
-                            $classInfo.= '(<a href="javascript:void(0);" ';
-                            $classInfo.= 'onclick="ExceptionToggle(\'arg_toggle_' . $prefix . $key . '\');">';
-                            $classInfo.= 'arg';
-                            $classInfo.= '</a>)';
+                            $html.= '(<a href="javascript:void(0);" ';
+                            $html.= 'onclick="ExceptionToggle(\'arg_toggle_' . $prefix . $key . '\');">';
+                            $html.= 'arg';
+                            $html.= '</a>)';
+                            $html.= '<div id="arg_toggle_' . $prefix . $key . '" class="collapsed">';
+                            $html.= '<div class="arguments">';
 
-                            $classInfo.= '<div id="arg_toggle_' . $prefix . $key . '" class="collapsed">';
-                            $classInfo.= '<div class="arguments">';
-
-                            $classInfo.= '<table>';
+                            $html.= '<table>';
                             foreach ($trace['args'] as $arg_key => $arg_val) {
-                                $classInfo.= '<tr>';
-                                $classInfo.= '<td>' . $arg_key . '</td>';
+                                $html.= '<tr>';
+                                $html.= '<td>' . $arg_key . '</td>';
 
                                 if ($trace['function'] == 'pdoConnect' AND ($arg_key == 2 OR $arg_key == 1)) { // hide database password for security.
-                                    $classInfo.= '<td>***********</td>';
+                                    $html.= '<td>***********</td>';
                                 } else {
-                                    $classInfo.= '<td>' . $c['error']->dumpArgument($arg_val) . '</td>';
+                                    $html.= '<td>' . Obullo\Error\DebugOutput::dumpArgument($arg_val) . '</td>';
                                 }
-
-                                $classInfo.= '</tr>';
+                                
+                                $html.= '</tr>';
                             }
-                            $classInfo.= '</table>';
+                            $html.= '</table>';
 
-                            $classInfo.= '</div>';
-                            $classInfo.= '</div>';
+                            $html.= '</div>';
+                            $html.= '</div>';
                         } else {
-                            $classInfo.= (isset($trace['function'])) ? '()' : '';
+                            $html.= (isset($trace['function'])) ? '()' : '';
                         }
                     } else {
-                        $classInfo.= (isset($trace['function'])) ? '()' : '';
+                        $html.= (isset($trace['function'])) ? '()' : '';
                     }
-                    echo '<div class="errorFile" style="line-height: 2em;">' . $classInfo . '</div>';
+                    echo '<div class="errorFile" style="line-height: 2em;">' . $html . '</div>';
                 }
                 if ($unset == false) {
                     ++$key;
                 }
                 ?>
                 <div class="errorFile" style="line-height: 1.8em;">
-                    <a href="javascript:void(0);" onclick="ExceptionToggle('error_toggle_' + '<?php echo $prefix . $key ?>');"><?php echo addslashes($c['error']->getSecurePath($trace['file']));
+                    <a href="javascript:void(0);" onclick="ExceptionToggle('error_toggle_' + '<?php echo $prefix . $key ?>');"><?php echo addslashes(Obullo\Error\DebugOutput::getSecurePath($trace['file']));
                 echo ' ( ' ?><?php echo ' Line : ' . $trace['line'] . ' ) '; ?></a>
                 </div>
 
                 <?php
-                // Show source codes foreach traces
-                // ------------------------------------------------------------------------
-
-                echo $c['error']->debugFileSource($trace, $key, $prefix);
-
-                // ------------------------------------------------------------------------
+                echo Obullo\Error\DebugOutput::debugFileSource($trace, $key, $prefix);
                 ?>
 
-            <?php } // end foreach  ?>
+        <?php } // end foreach  ?>
 
-        <?php }   // end if isset ?>     
-    <?php }   // end if isset ?>
-<?php }   // end if debug backtrace ?>
+    <?php }   // end if isset ?>     
+<?php }   // end if isset ?>
+
 </div>

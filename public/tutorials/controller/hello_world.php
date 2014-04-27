@@ -12,15 +12,10 @@ $app = new Controller(
         $c['view'];
         $c['tree.db'];
 
-        // $c['db'];
-        // $this->config['debug'] = true;
-        
+        $c['db'];
+        // $this->config['debug'] = false;
+
         echo $a;
-
-        // $this->lvc->post('private/query');
-        // if ($r[SUCCESS] == 1) {
-
-        // }
     }
 );
 

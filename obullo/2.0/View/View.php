@@ -115,7 +115,7 @@ Class View
                     $val = $this->getTpl($matches[2], false);
                 } else {
                     $param = (isset($matches[2])) ? $matches[2] : 0;
-                    $val   = $c['hvc']->$method($uri, $param);
+                    $val   = $c['lvc']->$method($uri, $param);
                 }
             }
             $this->_string[$key] = $val;
@@ -187,7 +187,7 @@ Class View
     public function load($filename, $data_or_no_include = null, $include = true)
     {
         $folder = PUBLIC_DIR;
-        if (isset($_SERVER['HVC_REQUEST']) AND $_SERVER['HVC_REQUEST'] == true) {
+        if (isset($_SERVER['LVC_REQUEST']) AND $_SERVER['LVC_REQUEST'] == true) {
             $folder = PRIVATE_DIR;
         }
         return $this->fetch($folder . $this->router->fetchDirectory() . DS . 'view' . DS, $filename, $data_or_no_include, $include);

@@ -18,8 +18,6 @@ Class Controller
     public $controllerMethods = array();  // Controller user defined methods starts wiht "_" underscore. ( @private )
     public $config, $uri, $router, $logger;  // Default packages
 
-    // ------------------------------------------------------------------------
-
     /**
      * Closure function for 
      * construction
@@ -29,6 +27,7 @@ Class Controller
     public function __construct($closure = null)
     {
         global $c;
+
         self::$instance = &$this;
 
         // Assign Default Loaded Packages
@@ -47,8 +46,6 @@ Class Controller
             $closure();
         }
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * We prevent custom variables
@@ -70,8 +67,6 @@ Class Controller
                               // and object types
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Create the controller methods.
      * 
@@ -83,24 +78,23 @@ Class Controller
     
     public function func($methodName, $methodCallable)
     {
-        //-----------------------------------------------------
-        // "One Public Method Per Controller" Rule
-        //-----------------------------------------------------
+        // ** "One Public Method Per Controller" Rule **
         // if it is not a private method check the "One Public Method Per Controller" rule
 
         if (strncmp($methodName, '_', 1) !== 0 AND strpos($methodName, 'callback_') !== 0) {
             $this->publicMethods[$methodName] = $methodName;
             if (sizeof($this->publicMethods) > 1) {
-                throw new Exception('Just one public method allowed, framework has a principle "One Public Method Per Controller". If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>');
+                throw new Exception(
+                    'Just one public method allowed, framework has a principle "One Public Method Per Controller".
+                    If you want to add private methods use underscore ( _methodname ). <pre>$c->func(\'_methodname\', function(){});</pre>'
+                );
             }
         }
         if ( ! is_callable($methodCallable)) {
-            throw new InvalidArgumentException('Controller error: Second param must be callable.');
+            throw new InvalidArgumentException('Controller error: Second parameter must be callable.');
         }
         $this->controllerMethods[$methodName] = Closure::bind($methodCallable, $this, get_class());
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Call the controller method
@@ -115,7 +109,13 @@ Class Controller
         if (isset($this->controllerMethods[$method])) {
             return call_user_func_array($this->controllerMethods[$method], $args);
         }
-        throw new Exception(get_class() . ' error: There is no method "' . $method . '()" to call in the Controller.');
+        throw new Exception(
+            sprintf(
+                '%s error: There is no method "%s()" to call in the Controller.',
+                getClass(),
+                $method
+            )
+        );
     }
 
 }

@@ -42,7 +42,7 @@ require OBULLO_CONFIG;
 require OBULLO_CORE;
 require OBULLO_AUTOLOADER;
 
-// Obullo\Error\ErrorHandler::register(E_ALL | E_NOTICE);
+Obullo\Error\ErrorHandler::register(E_ALL | E_NOTICE);
 
 require OBULLO_COMPONENTS;
 require OBULLO_SERVICES;

@@ -3,7 +3,7 @@
 namespace Lvc;
 
 /**
- * Lvc Class - ( Layered View Controler )
+ * Lvc Class - (L)ayered (V)iew (C)ontroler
  * 
  * @category  Lvc
  * @package   Lvc
@@ -16,7 +16,7 @@ Class Lvc
 {
     // Controller Object
     public $global = null;     // Global instance of the controller object we need to clone it.
-    public $config = array();  // hvc configuration
+    public $config = array();  // Lvc configuration
 
     // Request, Response, Reset
     public $query_string = '';
@@ -32,9 +32,9 @@ Class Lvc
 
     // Cache and Connection
     public $connection = true;
-    protected $conn_string = '';       // Unique HVC connection string that we need to convert it to conn_id.
-    protected static $cid  = array();  // Static HVC Connection ids. DO NOT CLEAR IT !!!
-    protected $hvc_uri;
+    protected $conn_string = '';       // Unique Lvc connection string that we need to convert it to conn_id.
+    protected static $cid  = array();  // Static Lvc Connection ids. DO NOT CLEAR IT !!!
+    protected $lvc_uri;
 
     const KEY = 'Lvc:';                // Lvc key prefix
     public static $start_time = '';    // benchmark start time
@@ -66,7 +66,7 @@ Class Lvc
     {
         global $c;
 
-        $this->config = $c['config']['hvc'];   // Get hvc configuration
+        $this->config = $c['config']['lvc'];   // Get lvc configuration
 
         $c['translator']->load('lvc');         // Load translate file
 
@@ -94,12 +94,12 @@ Class Lvc
         $type = 'public';
         $uriString = trim($uriString, '/');
 
-        if (strpos($uriString, 'private/') === 0) { // Set the visibility of hvc request
+        if (strpos($uriString, 'private/') === 0) { // Set the visibility of lvc request
             $type = 'private';
             $uriString = substr($uriString, 8);
         }
 
-        if (strpos($uriString, 'public/') === 0) { // Set the visibility of hvc request
+        if (strpos($uriString, 'public/') === 0) { // Set the visibility of lvc request
             $type = 'public';
             $uriString = substr($uriString, 6);
         }
@@ -111,8 +111,8 @@ Class Lvc
         unset($_SERVER['HTTP_ACCEPT']);    // Don't touch global server items 
         unset($_SERVER['REQUEST_METHOD']);
 
-        $_SERVER['HVC_REQUEST']      = true;   // Set Hvc Headers
-        $_SERVER['HVC_REQUEST_TYPE'] = $type;  // "public" or "private
+        $_SERVER['LVC_REQUEST']      = true;   // Set Hvc Headers
+        $_SERVER['LVC_REQUEST_TYPE'] = $type;  // "public" or "private
 
         $this->setConnString($uriString);
 
@@ -136,8 +136,8 @@ Class Lvc
         // Clear
         // -----------------------------------------
 
-        $uri->clear();           // Reset uri objects we will reuse it for hvc
-        $router->clear();        // Reset router objects we will reuse it for hvc.
+        $uri->clear();           // Reset uri objects we will reuse it for lvc
+        $router->clear();        // Reset router objects we will reuse it for lvc
 
         // Set Uri String to Uri Object
         //----------------------------------------------
@@ -154,15 +154,15 @@ Class Lvc
         // Set uri string to $_SERVER GLOBAL
         //----------------------------------------------
 
-        $_SERVER['HVC_REQUEST_URI'] = $uriString;
+        $_SERVER['LVC_REQUEST_URI'] = $uriString;
 
-        $this->connection = $router->setRouting(); // Returns false if we have hvc connection error.
+        $this->connection = $router->setRouting(); // Returns false if we have lvc connection error.
     }
 
     /**
      * Set Lvc Request Method
      *
-     * @param string $method hvc method
+     * @param string $method lvc method
      * @param array  $data   params
      * 
      * @return   void
@@ -200,7 +200,7 @@ Class Lvc
     /**
      * Parse Url if there is any possible query string like this
      *
-     * $this->hvc->get('welcome/test/index?foo=im_foo&bar=im_bar');
+     * $this->lvc->get('welcome/test/index?foo=im_foo&bar=im_bar');
      *
      * @param string $query_string string
      * 
@@ -289,7 +289,7 @@ Class Lvc
      */
     public function getVisibility()
     {
-        return (isset($_SERVER['HVC_REQUEST_TYPE'])) ? $_SERVER['HVC_REQUEST_TYPE'] : 'public';
+        return (isset($_SERVER['LVC_REQUEST_TYPE'])) ? $_SERVER['LVC_REQUEST_TYPE'] : 'public';
     }
 
     /**
@@ -311,7 +311,7 @@ Class Lvc
             $expiration = $data;
             $data = array();
         }
-        $this->clear(); // clear hvc variables
+        $this->clear(); // clear lvc variables
         $this->setRequestUrl($uri, $expiration);
         $this->setMethod($method, $data);
 
@@ -321,7 +321,8 @@ Class Lvc
         $errorHeader = '<div style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;
   background:#fff;border:1px solid #ddd;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;padding:5px 10px;color:#069586;font-size:12px;"><span style="font-weight:bold;">';
         $errorFooter = '</div>';
-        $hvc_error = $errorHeader .'</span><span style="font-weight:bold;">Private hvc response must be array and contain at least one of the following keys. ( "private/views" route is excluded ).</span><pre style="border:none;">
+
+        $lvc_error = $errorHeader .'</span><span style="font-weight:bold;">Private lvc response must be array and contain at least one of the following keys. ( "private/views" route is excluded ).</span><pre style="border:none;">
 $r = array(
     \'success\' => integer     // optional
     \'message\' => string,     // optional
@@ -334,7 +335,7 @@ echo json_encode($r); // required
 
 <b>Actual response:</b> '.$rsp.'
 </pre>' . $errorFooter;
-        $hvc_view_error = $errorHeader . '</span><span style="font-weight:bold;">View Controller ( ' . $this->getUri() . ' ) method must echo a string, should not be empty.</span><pre style="border:none;">
+        $lvc_view_error = $errorHeader . '</span><span style="font-weight:bold;">View Controller ( ' . $this->getUri() . ' ) method must echo a string, should not be empty.</span><pre style="border:none;">
 echo $this->view->get(
     \'header\',
     function () {
@@ -361,7 +362,7 @@ echo $this->view->get(
             
             if (strpos(trim($uri, '/'), 'private/views') === 0) { // if request goes to view folder don't check the format
                 if ( ! is_string($rsp) OR empty($rsp)) {
-                    echo $hvc_view_error;
+                    echo $lvc_view_error;
                     return;
                 }
                 return $rsp;
@@ -373,29 +374,29 @@ echo $this->view->get(
                 if ($isXmlHttp) {
                     return array(
                         'success' => 0,
-                        'message' => $hvc_error,
+                        'message' => $lvc_error,
                         'errors' => array()
                     );
                 }
-                echo ($hvc_error);
+                echo ($lvc_error);
                 return;
             }
             //--------- Check the Private Response Format -----------//
 
             $key_errors = array_map(
                 function ($val) {
-                    return in_array($val, array('success','message','errors','results','e')); // Get the keys of hvc result array
+                    return in_array($val, array('success','message','errors','results','e')); // Get the keys of lvc result array
                 }, array_keys($rsp)
             );
             if (in_array(false, $key_errors, true)) {   // throws an exception
                 if ($isXmlHttp) {
                     return array(
                         'success' => 0,
-                        'message' => $hvc_error,
+                        'message' => $lvc_error,
                         'errors' => array()
                     );
                 }
-                echo ($hvc_error);
+                echo ($lvc_error);
                 return;
             }
             // Show exceptional message to developers if environment not LIVE.
@@ -438,10 +439,10 @@ echo $this->view->get(
 
         // ----------------- Static Php Cache -------------------//
 
-        if (isset(self::$cid[$KEY])) {      // Cache the multiple HVC requests in the same controller. 
+        if (isset(self::$cid[$KEY])) {      // Cache the multiple Lvc requests in the same controller. 
                                             // This cache type not related with Cache package.
             $response = $this->getResponseData();
-            $logger->debug('$_HVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+            $logger->debug('$_LVC: '.$this->getKey(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
             $this->reset();
             return $response;    // This is native system cache !
         }
@@ -453,7 +454,7 @@ echo $this->view->get(
         if ($this->config['caching']) {
             $response = $c['cache']->get($KEY);
             if ( ! empty($response)) {              // If cache exists return to cached string.
-                $logger->debug('$_HVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+                $logger->debug('$_LVC_CACHED: '.$uri->getUriString(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
                 $this->reset();
                 return base64_decode($response);    // encoding for specialchars
             }
@@ -467,12 +468,12 @@ echo $this->view->get(
         }
 
         //----------------------------------------------------------------------------
-        //  Create an uniq HVC Uri
+        //  Create an uniq Lvc Uri
         //  A Lvc uri must be unique otherwise
         //  may collission with standart uri, also we need it for caching feature.
         //  --------------------------------------------------------------------------
 
-        $uri->setUriString(rtrim($uri->getUriString(), '/') . '/' .$KEY); // Create an uniq HVC Uri with md5 hash
+        $uri->setUriString(rtrim($uri->getUriString(), '/') . '/' .$KEY); // Create an uniq Lvc Uri with md5 hash
         //  --------------------------------------------------------------------------
 
         $folder = PUBLIC_DIR;
@@ -480,13 +481,13 @@ echo $this->view->get(
             $folder = PRIVATE_DIR;
         }
 
-        $this->hvc_uri = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
+        $this->lvc_uri = "{$router->fetchDirectory()} / {$router->fetchClass()} / {$router->fetchMethod()}";
         $controller = $folder . $router->fetchDirectory() . DS . 'controller' . DS . $router->fetchClass() . EXT;
 
         // --------- Check class is exists in the storage ----------- //
 
-        if (isset($storage[$this->hvc_uri])) {    // Check is multiple call to same class.
-            $app = $storage[$this->hvc_uri];       // Get stored class.
+        if (isset($storage[$this->lvc_uri])) {    // Don't allow multiple call for same class.
+            $app = $storage[$this->lvc_uri];      // Get stored class.
         } else {
             include $controller;        // Call the controller.
         }
@@ -514,7 +515,7 @@ echo $this->view->get(
             OR in_array(strtolower($router->fetchMethod()), array_map('strtolower', get_class_methods('Controller')))
         ) {
             $this->reset();
-            return $this->response->show404($this->hvc_uri, false);
+            return $this->response->show404($this->lvc_uri, false);
         }
 
         // Get application methods
@@ -528,7 +529,7 @@ echo $this->view->get(
 
         if ( ! in_array(strtolower($router->fetchMethod()), $storedMethods)) {
             $this->reset();
-            return $this->response->show404($this->hvc_uri, false);
+            return $this->response->show404($this->lvc_uri, false);
         }
 
         // Slice Arguments
@@ -551,7 +552,7 @@ echo $this->view->get(
         // Store classes to $storage container
         //--------------------------------------
         
-        $storage[$this->hvc_uri] = $app; // Store class names to storage. We fetch it if its available in storage.
+        $storage[$this->lvc_uri] = $app; // Store class names to storage. We fetch it if its available in storage.
 
         // Write to Cache
         //--------------------------------------
@@ -559,14 +560,14 @@ echo $this->view->get(
         if (is_numeric($expiration) AND $this->config['caching']) {
             $c['cache']->set($KEY, base64_encode($response), (int)$expiration);
         }
-        $logger->debug('$_HVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
+        $logger->debug('$_LVC: '.$this->getUri(), array('time' => number_format(microtime(true) - $start, 4), 'key' => $KEY, 'output' => '<br /><div style="float:left;">'.preg_replace('/[\r\n\t]+/', '', $response).'</div><div style="clear:both;"></div>'));
 
         return $response;
     }
 
     /**
-     * Reset router for mutiple hvc requests
-     * or who want to close the hvc connection.
+     * Reset router for mutiple lvc requests
+     * or who want to close the lvc connection.
      *
      * @return   void
      */
@@ -574,36 +575,34 @@ echo $this->view->get(
     {
         global $c;
         
-        if ( ! isset($_SERVER['HVC_REQUEST_URI'])) { // if no hvc header return to null;
+        if ( ! isset($_SERVER['LVC_REQUEST_URI'])) { // if no lvc header return to null;
             return;
         }
         // Assign global variables we copied before ..
         // --------------------------------------------------
         
-        $_SERVER = array();     // Just reset server variable other wise  we don't use global variables in hvc in hvc.
+        $_SERVER = array();     // Just reset server variable other wise  we don't use global variables in lvc in lvc.
         $_SERVER = $GLOBALS['_SERVER_BACKUP'];
 
         // Set original $this to controller instance that we backup before.
         // --------------------------------------------------
 
-        if (is_object($this->global)) {  // fixed HVC object type of integer bug.
+        if (is_object($this->global)) {  // fixed Lvc object type of integer bug.
             Controller::$instance = $this->global;
         }
         $c['app']->uri    = $this->uri;        // restore back original objects
         $c['app']->router = $this->router;   
 
-        $this->clear();  // reset all HVC variables.
-
+        $this->clear();  // reset all Lvc variables.
         $this->process_done = true;  
 
-        // This means hvc process done without any errors.
+        // This means lvc process done without any errors.
         // If process_done == false we say to destruct method "reset the router" variables 
         // and return to original variables of the Framework's before we clone them.
     }
 
-
     /**
-     * Set $_SERVER vars foreach hvc
+     * Set $_SERVER vars foreach lvc
      * requests.
      * 
      * @param string $key key

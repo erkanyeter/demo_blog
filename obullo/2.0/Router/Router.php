@@ -40,7 +40,6 @@ Class Router
 
         $this->routes   = $routes;
         $this->method   = $this->routes['index_method'];
-
         $this->logger   = $c['logger'];
         $this->uri      = $c['uri'];
         $this->config   = $c['config'];
@@ -50,7 +49,7 @@ Class Router
     }
 
     /**
-     * Clean all data for Hvc.
+     * Clean all data for Lvc.
      *
      * @return  void
      */
@@ -67,9 +66,9 @@ Class Router
     }
 
     /**
-     * Clone URI object for HVC Requests,
+     * Clone URI object for Lvc Requests,
      * When we use cloned uri
-     * that means we tell to Router class when Clone word used in HVC Class
+     * that means we tell to Router class when Clone word used in Lvc Class
      * use the cloned URI object instead of orginal.
      *
      * @return void
@@ -80,7 +79,7 @@ Class Router
     }
 
     /**
-     * Set the route mapping ( Access must be public for HVC Class. )
+     * Set the route mapping ( Access must be public for Lvc Class. )
      *
      * This function determines what should be served based on the URI request,
      * as well as any "routes" that have been set in the routing config file.
@@ -91,7 +90,7 @@ Class Router
     {
         global $c;
 
-        if ( ! isset($_SERVER['HVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
+        if ( ! isset($_SERVER['LVC_REQUEST'])) {    // GET request valid for standart router requests not HMVC.
 
             // Are query strings enabled in the config file?
             // If so, we're done since segment based URIs are not used with query strings.
@@ -120,7 +119,7 @@ Class Router
                 $message = 'Unable to determine what should be displayed. A default route has not been specified in the routing file.';
                 $this->response = new Response;
 
-                if (isset($_SERVER['HVC_REQUEST'])) {  // Returns to false if we have Hvc connection error.
+                if (isset($_SERVER['LVC_REQUEST'])) {  // Returns to false if we have Lvc connection error.
                     $this->response->showError($message, false);
                     return false;
                 }
@@ -129,7 +128,7 @@ Class Router
 
             $segments = $this->validateRequest(explode('/', $this->routes['default_controller']));  // Turn the default route into an array.
 
-            if (isset($_SERVER['HVC_REQUEST']) AND $segments === false) {   // Returns to false if we have hvc connection error.
+            if (isset($_SERVER['LVC_REQUEST']) AND $segments === false) {   // Returns to false if we have hvc connection error.
                 return false;  
             }
 
@@ -182,12 +181,12 @@ Class Router
             return $segments;
         }
 
-        if (defined('STDIN') AND ! isset($_SERVER['HVC_REQUEST'])) {  // Command Line Requests
+        if (defined('STDIN') AND ! isset($_SERVER['LVC_REQUEST'])) {  // Command Line Requests
             array_unshift($segments, 'tasks');
         }
 
         $root = PUBLIC_DIR;
-        if (isset($_SERVER['HVC_REQUEST_TYPE']) AND $_SERVER['HVC_REQUEST_TYPE'] == 'private') {
+        if (isset($_SERVER['LVC_REQUEST_TYPE']) AND $_SERVER['LVC_REQUEST_TYPE'] == 'private') {
             $root = PRIVATE_DIR;
         }
 
@@ -220,11 +219,11 @@ Class Router
         // controller class.  We will now see if there is an override
 
         if ( ! empty($this->routes['404_override'])) {
-            $x = explode('/', $this->routes['404_override']);
-            $this->setDirectory($x[0]);
-            $this->setClass($x[1]);
-            $this->setMethod(isset($x[2]) ? $x[2] : 'index');
-            return $x;
+            $exp = explode('/', $this->routes['404_override']);
+            $this->setDirectory($exp[0]);
+            $this->setClass($exp[1]);
+            $this->setMethod(isset($exp[2]) ? $exp[2] : 'index');
+            return $exp;
         }
 
         $error_page = (isset($segments[1])) ? $segments[0] . '/' . $segments[1] : $segments[0];
@@ -234,7 +233,7 @@ Class Router
         //----------------------------
         $this->response = new Response;
 
-        if (isset($_SERVER['HVC_REQUEST'])) {
+        if (isset($_SERVER['LVC_REQUEST'])) {
             $this->response->show404($error_page, false);
             return false;
         }
