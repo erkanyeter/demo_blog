@@ -4,7 +4,7 @@
 
 The Config class provides a means to retrieve configuration preferences. These preferences can come from the default config file <kbd>app/config/env/local/config.php</kbd> or from your own custom config files.
 
-### Initializing a Task Class
+### Initializing the Config Class
 
 ------
 

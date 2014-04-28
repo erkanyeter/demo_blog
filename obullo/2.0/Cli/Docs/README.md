@@ -2,8 +2,7 @@
 
 The task class helps you use CLI operations ( running shell scripts etc..) using the php command line interface.
 
-
-### Initializing a Task Class
+### Initializing the Class
 
 ------
 
