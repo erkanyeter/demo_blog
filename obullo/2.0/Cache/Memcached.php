@@ -2,7 +2,7 @@
 
 namespace Obullo\Cache;
 
-use RunTimeException;
+use RunTimeException, ReflectionClass;
 
 /**
  * Memcached Caching Class
@@ -16,13 +16,13 @@ use RunTimeException;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/cache
  */
-Class Memcache implements DriverInterface
+Class Memcached implements DriverInterface
 {
-    const SERIALIZER_PHP      = 'serializer_php';
-    const SERIALIZER_JSON     = 'serializer_json';
-    const SERIALIZER_IGBINARY = 'serializer_igbinary';
+    const SERIALIZER_PHP      = 'SERIALIZER_PHP';
+    const SERIALIZER_JSON     = 'SERIALIZER_JSON';
+    const SERIALIZER_IGBINARY = 'SERIALIZER_IGBINARY';
     const OPTION_SERIALIZER   = -1003;  // Memcached::OPT_COMPRESSION
-
+    
     /**
      * Serializer types
      * 
@@ -99,13 +99,13 @@ Class Memcache implements DriverInterface
             $this->memcached->setOption(static::OPTION_SERIALIZER, $this->serializerTypes[static::SERIALIZER_PHP]);
             return true;
             break;
+        case static::SERIALIZER_JSON: // The JSON serializer.
+            return $this->memcached->setOption(static::OPTION_SERIALIZER, $this->serializerTypes[static::SERIALIZER_JSON]);
+            break;
         case static::SERIALIZER_IGBINARY: // The » igbinary serializer.
                                           // Instead of textual representation it stores PHP data structures in a compact binary form, resulting in space and time gains.
                                           // https://github.com/igbinary/igbinary
             return $this->memcached->setOption(static::OPTION_SERIALIZER, $this->serializerTypes[static::SERIALIZER_IGBINARY]);
-            break;
-        case static::SERIALIZER_JSON: // The JSON serializer.
-            return $this->memcached->setOption(static::OPTION_SERIALIZER, $this->serializerTypes[static::SERIALIZER_JSON]);
             break;
 
         default:
@@ -116,12 +116,18 @@ Class Memcache implements DriverInterface
 
     /**
      * Get client option.
+     * http://www.php.net/manual/en/memcached.constants.php
+     * 
+     * @param string $option option constant
      * 
      * @return string value
      */
-    public function getOption()
+    public function getOption($option = 'OPTION_SERIALIZER')
     {
-        return $this->redis->getOption($option);
+        $obj      = new ReflectionClass('Memcached');
+        $constant = $obj->getconstant($option);
+
+        return $this->memcached->getOption($constant);
     }
 
     /**
@@ -305,7 +311,7 @@ Class Memcache implements DriverInterface
      */
     public function connect()
     {
-        $this->memcachedd = new \Memcached;
+        $this->memcached = new \Memcached;
 
         if ( ! isset($this->params['servers']['weight'])) {
             $this->params['servers']['weight'] = 1;
@@ -316,7 +322,7 @@ Class Memcache implements DriverInterface
                     return false;
                 }
             } else {
-                if ( ! $this->memcached->connect($this->params['servers']['hostname'], $this->params['servers']['port'], $this->params['servers']['weight'])) {
+                if ( ! $this->memcached->addServer($this->params['servers']['hostname'], $this->params['servers']['port'], $this->params['servers']['weight'])) {
                     return false;
                 }
             }
