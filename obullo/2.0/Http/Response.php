@@ -28,8 +28,8 @@ Class Response
     public function __construct()
     {
         global $c;
+
         $this->logger = $c['logger'];
-        
         $this->logger->debug('Response Class Initialized');
     }
 

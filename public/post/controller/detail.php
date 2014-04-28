@@ -15,11 +15,12 @@ $c = new Controller(
         new View;
         new Post;
         new Hvc;
+        new Private_User;
     }
 );
 
 $c->func(
-    'index.Private_User',
+    'index',
     function ($id) {
         if ($this->post->get('dopost')) {  // if we have submit
 
@@ -30,7 +31,7 @@ $c->func(
 
             if ($this->form->isValid()) {
                 
-                $r = $this->hvc->post('private/comments/create/');
+                $r = $this->lvc->post('private/comments/create/');
 
                 if ($r['success']) {  // save comment
                     $this->form->setNotice($r['message'], SUCCESS);
@@ -44,12 +45,12 @@ $c->func(
         $post  = $this->hvc->get('private/posts/getone/'.$id.'/Published');
         $comments = $this->hvc->get('private/comments/getall/'.$id.'/1');
 
-        $this->view->get(
+        $this->view->load(
             'detail',
             function () use ($post, $comments) {
-                $this->set('post', (object)$post['results']);
-                $this->set('comments', (object)$comments['results']);
-                $this->set('title', 'Details');
+                $this->assign('post', (object)$post['results']);
+                $this->assign('comments', (object)$comments['results']);
+                $this->assign('title', 'Details');
                 $this->getScheme();
             }
         );

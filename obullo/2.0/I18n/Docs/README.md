@@ -106,14 +106,10 @@ Core packages will load framework language files which are located in <kbd>app/t
     - translations
         - en_US
              date.php
-             ftp.php
-             email.php
              validator.php
             ...
         - es_ES
              date.php
-             ftp.php
-             email.php
              validator.php
             ...
 ```
@@ -148,13 +144,13 @@ if ( ! $this->translator['language_key'])) {
 Checking none exist key.
 
 ```php
-var_dump($this->translator['adssadasdsa']);  //  gives false ( boolean )
+var_dump($this->translator['asdasdas']);  //  gives false ( boolean )
 ```
 
 Printing none exist key.
 
 ```php
-echo $this->translator['adssadasdsa'];      //  gives 'adssadasdsa' ( string )
+echo $this->translator['asdasdas'];      //  gives 'asdasdas' ( string )
 ```
 
 ### Using $this->translator->sprintf($key, $arguments , , , ... );

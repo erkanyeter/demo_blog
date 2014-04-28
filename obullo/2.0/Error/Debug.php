@@ -7,6 +7,7 @@ use Obullo\Error\ExceptionHandler;
 
 /**
  * Error Debug Cass
+ * Modeled after Symfony Debug package.
  * 
  * @category  Error
  * @package   Debug

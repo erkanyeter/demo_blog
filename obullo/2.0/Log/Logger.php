@@ -40,6 +40,7 @@ Class Logger
 
     /**
      * Log priorities
+     * 
      * @var array
      */
     public static $priorities = array(
@@ -569,7 +570,7 @@ Class Logger
                 if (isset($errorPriorities[$level])) {
                     $priority = $errorPriorities[$level];
                 } else {
-                    $priority = Logger::INFO;
+                    $priority = Logger::NOTICE;
                 }
                 $logger->log($priority, $message, array(
                     'errno'   => $level,
@@ -610,13 +611,13 @@ Class Logger
             return false;
         }
         $errorPriorities = static::$errorPriorities;
-
+        
         set_exception_handler(function ($exception) use ($logger, $errorPriorities) {
             $logMessages = array();
 
             // @see http://www.php.net/manual/tr/errorexception.getseverity.php
             do {
-                $priority = Logger::ERR;
+                $priority = Logger::ERROR;
                 if ($exception instanceof ErrorException AND isset($errorPriorities[$exception->getSeverity()])) {
                     $priority = $errorPriorities[$exception->getSeverity()];
                 }
@@ -640,7 +641,6 @@ Class Logger
                 $logger->log($logMessage['priority'], $logMessage['message'], $logMessage['extra']);
             }
         });
-
         static::$registeredExceptionHandler = true;
         return true;
     }

@@ -2,7 +2,7 @@
 
 ------
 
-The Html Helper package contains a few functions that assist in working with HTML tags.
+The Html class package contains a few functions that assist in working with HTML tags.
 
 ### Initializing the Class
 

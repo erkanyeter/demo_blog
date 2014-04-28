@@ -1,5 +1,5 @@
 
-## Tree Category Class
+## Tree Db Class
 
 ------
 
@@ -12,8 +12,13 @@ Tree class use nested set model. It is a particular technique for representing n
 ------
 
 ```php
-$c['tree.category'];
-$this->treeCategory->method();
+$c['tree.db'];
+
+$this->treeDb->setTablename('nested_category');
+$this->treeDb->setPrimaryKey('category_id');
+$this->treeDb->setText('name');
+$this->treeDb->setLft('lft');
+$this->treeDb->setRgt('rgt');
 ```
 
 ### Run SQL Code
@@ -38,12 +43,12 @@ ALTER TABLE  `categories` ADD INDEX  `rgt` (  `rgt` );
 
 ### Add root category
 
-#### $this->treeCategory->addTree(string $text);
+#### $this->treeDb->addTree(string $text);
 
 Adds the main category to the table.
 
 ```php
-$this->treeCategory->addTree('Electronics');
+$this->treeDb->addTree('Electronics');
 ```
 Gives
 
@@ -55,12 +60,12 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->addTree(string $text, $extra = array());
+#### $this->treeDb->addTree(string $text, $extra = array());
 
 Adds to extra column data to table.
 
 ```php
-$this->treeCategory->addTree('Electronics', $extra = array('column' => 'value'));
+$this->treeDb->addTree('Electronics', $extra = array('column' => 'value'));
 ```
 Gives
 
@@ -74,12 +79,12 @@ Gives
 
 ### Adding nodes
 
-#### $this->treeCategory->addChild(int $lftValue, string $text, $extra = array());
+#### $this->treeDb->addChild(int $lftValue, string $text, $extra = array());
 
 Inserts a new node as the first child of the supplied parent node.
 
 ```php
-$this->treeCategory->addChild($lft = 1, 'Televisions');
+$this->treeDb->addChild($lft = 1, 'Televisions');
 ```
 Gives
 
@@ -95,7 +100,7 @@ Gives
 Let's add a Portable Electronics node as child of 
 
 ```php
-$this->treeCategory->addChild($lft = 1, 'Portable Electronics');
+$this->treeDb->addChild($lft = 1, 'Portable Electronics');
 ```
 
 Gives
@@ -110,12 +115,12 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->appendChild(int $rgtValue, string $text, $extra = array());
+#### $this->treeDb->appendChild(int $rgtValue, string $text, $extra = array());
 
 Same as addChild except the new node is added as the last child.
 
 ```php
-$this->treeCategory->appendChild($rgt = 5, 'Lcd');
+$this->treeDb->appendChild($rgt = 5, 'Lcd');
 ```
 Gives
 
@@ -130,12 +135,12 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->addSibling(int $lftValue, string $text, $extra = array());
+#### $this->treeDb->addSibling(int $lftValue, string $text, $extra = array());
 
 Inserts a new node as the first sibling of the supplied parent node.
 
 ```php
-$this->treeCategory->addSibling($lft = 5, 'Tube');
+$this->treeDb->addSibling($lft = 5, 'Tube');
 ```
 Gives
 
@@ -151,12 +156,12 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->appendSibling(int $rgtValue, string $text, $extra = array());
+#### $this->treeDb->appendSibling(int $rgtValue, string $text, $extra = array());
 
 Inserts a new node as the last sibling of the supplied parent node.
 
 ```php
-$this->treeCategory->appendSibling($rgt = 8, 'Plasma');
+$this->treeDb->appendSibling($rgt = 8, 'Plasma');
 ```
 Gives
 
@@ -176,12 +181,12 @@ Gives
 ** NOTE: **
 This function added "Plasma" as sibling to "Lcd". If we wanted to add "Plasma" as sibling to "Lcd" we should set the value of the second parameter "Tube's" which represents the value of "rgt".
 
-#### $this->treeCategory->deleteChild(int $lftValue, int $rgtValue);
+#### $this->treeDb->deleteChild(int $lftValue, int $rgtValue);
 
 Deletes the given node (and any children) from the tree table.
 
 ```php
-$this->treeCategory->deleteChild($lft = 5, $rgt = 6); // deletes "Tube"
+$this->treeDb->deleteChild($lft = 5, $rgt = 6); // deletes "Tube"
 ```
 Gives
 
@@ -197,12 +202,12 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->updateNode($category_id, $data = array());
+#### $this->treeDb->updateNode($category_id, $data = array());
 
-Updates your table row using the primary key ( category_id ).
+Updates your table row data using the primary key ( category_id ).
 
 ```php
-$this->treeCategory->updateNode($id = 2, array('name' => 'TV', 'column' => 'test'));
+$this->treeDb->updateNode($id = 2, array('name' => 'TV', 'column' => 'test'));
 ```
 Gives
 
@@ -218,11 +223,11 @@ Gives
 +-------------+----------------------+-----+-----+--------+
 ```
 
-#### $this->treeCategory->moveAsFirstChild($source, $target);
+#### $this->treeDb->moveAsFirstChild($source, $target);
 
 Move as first child.
 
-Our current table.
+Before move operation our current table.
 
 ```php
 +-------------+----------------------+-----+-----+
@@ -251,7 +256,7 @@ $target = array(	// Televisions
 	'lft' => 8,
 	'rgt' => 15	
 );
-$this->treeCategory->moveAsFirstChild($source, $target);
+$this->treeDb->moveAsFirstChild($source, $target);
 ```
 
 After the move operation.
@@ -273,7 +278,7 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->moveAsPrevSibling($source, $target);
+#### $this->treeDb->moveAsPrevSibling($source, $target);
 
 Move as prev sibling.
 
@@ -306,7 +311,7 @@ $target = array(	// Televisions
 	'lft' => 2,
 	'rgt' => 15	
 );
-$this->treeCategory->moveAsPrevSibling($source, $target);
+$this->treeDb->moveAsPrevSibling($source, $target);
 ```
 
 After the move operation.
@@ -328,7 +333,7 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->moveAsLastChild($source, $target);
+#### $this->treeDb->moveAsLastChild($source, $target);
 
 Move as last child.
 
@@ -361,7 +366,7 @@ $target = array(	// Televisions
 	'lft' => 8,
 	'rgt' => 15	
 );
-$this->treeCategory->moveAsLastChild($source, $target);
+$this->treeDb->moveAsLastChild($source, $target);
 ```
 
 After the move operation.
@@ -383,7 +388,7 @@ Gives
 +-------------+----------------------+-----+-----+
 ```
 
-#### $this->treeCategory->moveAsNextSibling($source, $target);
+#### $this->treeDb->moveAsNextSibling($source, $target);
 
 Move as next sibling.
 
@@ -416,7 +421,7 @@ $target = array(	// Televisions
 	'lft' => 2,
 	'rgt' => 15	
 );
-$this->treeCategory->moveAsNextSibling($source, $target);
+$this->treeDb->moveAsNextSibling($source, $target);
 ```
 
 After the move operation.
@@ -439,7 +444,7 @@ Gives
 ```
 
 
-#### $this->treeCategory->truncateTable();
+#### $this->treeDb->truncateTable();
 
 Truncate the table data.
 
@@ -448,54 +453,74 @@ Truncate the table data.
 
 ------
 
-#### $this->treeCategory->setEscapeChar(string $char);
+#### $this->treeDb->setEscapeChar(string $char = '`');
 
-You can set escape character to protect to database column identifiers. It depends on your database driver.
+Allows set escape character to protect database column identifiers. It depends on your database driver.
 
-#### $this->treeCategory->addTree(string $text, $extra = array());
+#### $this->treeDb->setTablename(string $tablename = 'nested_category');
+
+Set table name overridding to default value.
+
+#### $this->treeDb->setPrimaryKey(string $primaryKey = 'category_id');
+
+Set primary key column name overridding to default value.
+
+#### $this->treeDb->setText(string $text = 'name');
+
+Set text column name overridding to default value.
+
+#### $this->treeDb->setLft(string $lft = 'lft');
+
+Set left column name overridding to default value.
+
+#### $this->treeDb->setRgt(string $rgt = 'rgt');
+
+Set right column name overridding to default value.
+
+#### $this->treeDb->addTree(string $text, $extra = array());
 
 Adds the first entry to the table.
 
-#### $this->treeCategory->addChild(int $lftValue, string $text, $extra = array());
+#### $this->treeDb->addChild(int $lftValue, string $text, $extra = array());
 
 Inserts a new node as the first child of the supplied parent node.
 
-#### $this->treeCategory->appendChild(int $rgtValue, string $text, $extra = array());
+#### $this->treeDb->appendChild(int $rgtValue, string $text, $extra = array());
 
 Same as addChild except the new node is added as the last child.
 
-#### $this->treeCategory->addSibling(int $lftValue, string $text, $extra = array());
+#### $this->treeDb->addSibling(int $lftValue, string $text, $extra = array());
 
 Inserts a new node as the first sibling of the supplied parent node.
 
-#### $this->treeCategory->appendSibling(int $rgtValue, string $text, $extra = array());
+#### $this->treeDb->appendSibling(int $rgtValue, string $text, $extra = array());
 
 Inserts a new node as the last sibling of the supplied parent node.
 
-#### $this->treeCategory->deleteChild(int $lftValue, int $rgtValue);
+#### $this->treeDb->deleteChild(int $lftValue, int $rgtValue);
 
 Deletes the given node (and any children) from the tree table.
 
-#### $this->treeCategory->updateNode($category_id, $data = array());
+#### $this->treeDb->updateNode($category_id, $data = array());
 
 Updates your table row using the primary key ( category_id ).
 
-#### $this->treeCategory->truncateTable();
+#### $this->treeDb->truncateTable();
 
 Truncate the table data.
 
-#### $this->treeCategory->moveAsFirstChild(array $source, array $target);
+#### $this->treeDb->moveAsFirstChild(array $source, array $target);
 
 Set node as first child.
 
-#### $this->treeCategory->moveAsPrevSibling(array $source, array $target);
+#### $this->treeDb->moveAsPrevSibling(array $source, array $target);
 
 Set node as prev sibling.
 
-#### $this->treeCategory->moveAsLastChild(array $source, array $target);
+#### $this->treeDb->moveAsLastChild(array $source, array $target);
 
 Set node as last child.
 
-#### $this->treeCategory->moveAsNextSibling(array $source, array $target);
+#### $this->treeDb->moveAsNextSibling(array $source, array $target);
 
 Set node as next sibling.

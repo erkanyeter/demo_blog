@@ -25,6 +25,7 @@ Class Request
     public function __construct()
     {
         global $c;
+        
         $this->logger = $c['logger'];
         $this->logger->debug('Request Class Initialized');
     }

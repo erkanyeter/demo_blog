@@ -90,15 +90,16 @@ define('OBULLO_CONTROLLER', OBULLO .'Controller'. DS .'Controller.php');
 define('LOGGER_FILE', 'file');
 define('LOGGER_SYSLOG', 'syslog');
 define('LOGGER_MONGO', 'mongo');
+
 /*
 |---------------------------------------------------------------
 | NOTIFICATION CONSTANTS
 |---------------------------------------------------------------
 */
-define('NOTIFY_ERROR', 0);
-define('NOTIFY_SUCCESS', 1);
-define('NOTIFY_INFO', 2);
-define('NOTIFY_ALERT', 3);
+define('NOTICE_ERROR', 0);
+define('NOTICE_SUCCESS', 1);
+define('NOTICE_INFO', 2);
+define('NOTICE_ALERT', 3);
 
 
 /* End of file constants */

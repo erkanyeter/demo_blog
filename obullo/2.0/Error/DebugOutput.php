@@ -43,7 +43,7 @@ Class DebugOutput
      * 
      * @return string
      */
-    public function getSecurePath($file, $searchPaths = false)
+    public static function getSecurePath($file, $searchPaths = false)
     {
         if ($searchPaths) {
             $replace = array(
@@ -89,8 +89,10 @@ Class DebugOutput
      * 
      * @return mixed
      */
-    public function dumpArgument(& $var, $length = 128, $level = 0)
+    public static function dumpArgument(& $var, $length = 128, $level = 0)
     {
+        global $c;
+
         if ($var === null) {
             return '<small>null</small>';
         } elseif (is_bool($var)) {
@@ -104,16 +106,16 @@ Class DebugOutput
                 if (isset($meta['uri'])) {
                     $file = $meta['uri'];
                     if (stream_is_local($file)) { 
-                        $file = $this->getSecurePath($file);
+                        $file = static::getSecurePath($file);
                     }
-                    return '<small>resource</small><span>(' . $type . ')</span> ' . htmlspecialchars($file, ENT_NOQUOTES, $this->config['locale']['charset']);
+                    return '<small>resource</small><span>(' . $type . ')</span> ' . htmlspecialchars($file, ENT_NOQUOTES, $c['config']['locale']['charset']);
                 }
             } else {
                 return '<small>resource</small><span>(' . $type . ')</span>';
             }
         } elseif (is_string($var)) {
             // Encode the string
-            $str = htmlspecialchars($var, ENT_NOQUOTES, $this->config['locale']['charset']);
+            $str = htmlspecialchars($var, ENT_NOQUOTES, $c['config']['locale']['charset']);
 
             return '<small>string</small><span>(' . strlen($var) . ')</span> "' . $str . '"';
         } elseif (is_array($var)) {
@@ -138,9 +140,9 @@ Class DebugOutput
                     if ($key === $marker)
                         continue;
                     if (!is_int($key)) {
-                        $key = '"' . htmlspecialchars($key, ENT_NOQUOTES, $this->config['locale']['charset']) . '"';
+                        $key = '"' . htmlspecialchars($key, ENT_NOQUOTES, $c['config']['locale']['charset']) . '"';
                     }
-                    $output[] = "$space$s$key => " . $this->dumpArgument($val, $length, $level + 1);
+                    $output[] = "$space$s$key => " . static::dumpArgument($val, $length, $level + 1);
                 }
                 unset($var[$marker]);
 
@@ -189,7 +191,7 @@ Class DebugOutput
                         $access = '<small>public</small>';
                     }
 
-                    $output[] = "$space$s$access $key => " . $this->dumpArgument($val, $length, $level + 1);
+                    $output[] = "$space$s$access $key => " . static::dumpArgument($val, $length, $level + 1);
                 }
                 unset($objects[$hash]);
 
@@ -201,7 +203,7 @@ Class DebugOutput
 
             return '<small>object</small> <span class="object">' . get_class($var) . '(' . count($array) . ')</span> ' . implode("<br />", $output);
         } else {
-            return '<small>' . gettype($var) . '</small> ' . htmlspecialchars(print_r($var, true), ENT_NOQUOTES, $this->config['locale']['charset']);
+            return '<small>' . gettype($var) . '</small> ' . htmlspecialchars(print_r($var, true), ENT_NOQUOTES, $c['config']['locale']['charset']);
         }
     }
 
@@ -215,8 +217,10 @@ Class DebugOutput
      * 
      * @return string html
      */
-    public function debugFileSource($trace, $key = 0, $prefix = '')
+    public static function debugFileSource($trace, $key = 0, $prefix = '')
     {
+        global $c;
+
         $file = $trace['file'];
         $line_number = $trace['line'];
 
@@ -236,7 +240,7 @@ Class DebugOutput
                 break;
 
             if ($line >= $range['start']) {
-                $row = htmlspecialchars($row, ENT_NOQUOTES, $this->config['locale']['charset']);  // Make the row safe for output
+                $row = htmlspecialchars($row, ENT_NOQUOTES, $c['config']['locale']['charset']);  // Make the row safe for output
 
                 $row = '<span class="number">' . sprintf($format, $line) . '</span> ' . $row;  // Trim whitespace and sanitize the row
 
@@ -253,43 +257,7 @@ Class DebugOutput
 
         return '<div id="error_toggle_' . $prefix . $key . '" ' . $display . '><pre class="source"><code>' . $source . '</code></pre></div>';
     }
-
-    /**
-     * Get Defined Php and Obullo Errors
-     * 
-     * @return array
-     */
-    public function getDefinedErrors()
-    {
-        $errors = array();
-
-        // Shutdown Errors
-        //------------------------------------------------------------------------ 
-        $errors['1'] = 'E_ERROR';             // ERROR
-        $errors['4'] = 'E_PARSE';             // PARSE ERROR
-        $errors['64'] = 'E_COMPILE_ERROR';     // COMPILE ERROR
-        $errors['256'] = 'E_USER_ERROR';        // USER FATAL ERROR   
-        // User Friendly Php Errors
-        //------------------------------------------------------------------------ 
-        $errors['2'] = 'E_WARNING';           // WARNING
-        $errors['8'] = 'E_NOTICE';            // NOTICE
-        $errors['16'] = 'E_CORE_ERROR';        // CORE ERROR
-        $errors['32'] = 'E_CORE_WARNING';      // CORE WARNING
-        $errors['128'] = 'E_COMPILE_WARNING';   // COMPILE WARNING
-        $errors['512'] = 'E_USER_WARNING';      // USER WARNING
-        $errors['1024'] = 'E_USER_NOTICE';       // USER NOTICE
-        $errors['2048'] = 'E_STRICT';            // STRICT ERROR
-        $errors['4096'] = 'E_RECOVERABLE_ERROR'; // RECOVERABLE ERROR
-        $errors['8192'] = 'E_DEPRECATED';        // DEPRECATED ERROR
-        $errors['16384'] = 'E_USER_DEPRECATED';   // USER DEPRECATED ERROR
-        $errors['30719'] = 'E_ALL';               // ERROR
-        // Custom Errors
-        //------------------------------------------------------------------------
-        $errors['0'] = 'E_EXCEPTION';     // OBULLO EXCEPTIONAL ERRORS
-        $errors['SQL'] = 'E_DATABASE';      // OBULLO DATABASE ERRORS
-
-        return $errors;
-    }
+    
 }
 
 // END Error Handler class

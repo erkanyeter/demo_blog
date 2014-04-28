@@ -2,8 +2,10 @@
 
 namespace Obullo\Tree;
 
+use RunTimeException;
+
 /**
- * Nested Set Tree Model
+ * Nested Set Model Tree Class
  * 
  * @category  Tree
  * @package   Category
@@ -12,67 +14,87 @@ namespace Obullo\Tree;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/tree
  */
-Class Category
+Class Db
 {
+    /**
+     * Table Constants
+     */
+    const TABLE_NAME  = 'nested_category';
+    const PRIMARY_KEY = 'category_id';
+    const TEXT        = 'name';
+    const LEFT        = 'lft';
+    const RIGHT       = 'rgt';
+
+    /**
+     * Protect sql query identifiers
+     * default value is for mysql ( ` ).
+     * 
+     * @var string
+     */
     public $escapeChar = '`';
 
     /**
-     * Parameter constants
-     */
-    const TABLE_NAME  = 'db.tablename';      // nested_category';
-    const PRIMARY_KEY = 'db.primary_key';    // category_id;
-    const TEXT        = 'db.text';           // category_id;
-    const LEFT        = 'db.left';           // lft
-    const RIGHT       = 'db.right';          // rgt
-
-    /**
      * $db Pdo object
+     * 
      * @var object
      */
     public $db = null;
 
-    public $tableName  = 'nested_category';
-    public $primaryKey = 'category_id';
-    public $text       = 'name';
-    public $lft        = 'lft';
-    public $rgt        = 'rgt';
+    /**
+     * Tablename
+     * 
+     * @var string
+     */
+    public $tableName;
 
     /**
-     * Allowed column names
-     * @var array
+     * Column name primary key
+     * 
+     * @var string
      */
-    public $allowedColumnKeys = array(
-        self::TABLE_NAME,
-        self::PRIMARY_KEY,
-        self::TEXT,
-        self::LEFT,
-        self::RIGHT
-    );
+    public $primaryKey;
+
+    /**
+     * Column name text
+     * 
+     * @var string
+     */
+    public $text;
+
+    /**
+     * Column name lft
+     * 
+     * @var string
+     */
+    public $lft;
+
+    /**
+     * Column name rgt
+     * @var string
+     */
+    public $rgt;
 
     /**
      * Constructor
-     * 
-     * @param array $params params
      */
-    public function __construct($params = array())
+    public function __construct()
     {
         global $c;
-        $this->db = $c['db'];
 
-        if (count($params) > 0 AND in_array($this->allowedColumnKeys, $val)) {
-            $this->tableName  = $params[self::TABLE_NAME];
-            $this->primaryKey = $params[self::PRIMARY_KEY];
-            $this->text       = $params[self::TEXT];
-            $this->lft        = $params[self::LEFT];
-            $this->rgt        = $params[self::RIGHT];
-        }
+        $this->db = $c['db'];   // set database object.
+
+        $this->tableName  = static::TABLE_NAME;  // set default values
+        $this->primaryKey = static::PRIMARY_KEY;
+        $this->text       = static::TEXT;
+        $this->lft        = static::LEFT;
+        $this->rgt        = static::RIGHT;
     }
 
     /**
      * You can set escape character to protect
      * database column names or identifiers.
      * 
-     * @param string $char char
+     * @param string $char character
      * 
      * @return void
      */
@@ -82,38 +104,73 @@ Class Category
     }
 
     /**
-     * Protect identifiers using your escape character.
+     * Set database table name
      * 
-     * Escape character able to set using $this->setEscapeChar()
-     * method.
-     * 
-     * @param string $identifier identifier
-     * 
-     * @return string
+     * @param array $table database table name
+     *
+     * @return void
      */
-    public function protect($identifier)
+    public function setTablename($table)
     {
-        return $this->escapeChar.$identifier.$this->escapeChar;
+        $this->tableName = $table;
     }
 
     /**
-     * Append extra data.
+     * Set primary key column name
      * 
-     * @param array $data  data
-     * @param array $extra extra data
-     * 
-     * @return array
+     * @param string $key pk name
+     *
+     * @return void
      */
-    public function appendExtraData($data, $extra)
+    public function setPrimaryKey($key)
     {
-        if (count($extra) > 0) {
-            $data = array_merge($data, $extra);
-        }
-        $newData = array();
-        foreach ($data as $k => $v) {
-            $newData[$this->protect($k)] = $v;
-        }
-        return $newData;
+        $this->primaryKey = $key;
+    }
+
+    /**
+     * Set left column name
+     * 
+     * @param string $lft left column name
+     *
+     * @return void
+     */
+    public function setLft($lft)
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * Set right column name
+     * 
+     * @param string $rgt right column name
+     *
+     * @return void
+     */
+    public function setRgt($rgt)
+    {
+        $this->rgt = $rgt;
+    }
+
+    /**
+     * Set text column name
+     * 
+     * @param string $text text column name
+     *
+     * @return void
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * Empties the table currently in use - use with extreme caution!
+     *
+     * @return boolean
+     */
+    public function truncateTable()
+    {
+        return $this->db->exec(sprintf('TRUNCATE TABLE %s', $this->tableName));
     }
 
     /**
@@ -177,32 +234,8 @@ Class Category
      */
     public function addChild($lftValue, $text, $extra = array())
     {
-        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
-        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
-
         $this->updateLeft(2, $lftValue + 1);
         $this->updateRight(2, $lftValue + 1);
-
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_lft,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $lftValue
-        //     )
-        // );
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_rgt,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $lftValue
-        //     )
-        // );
 
         $data              = array();
         $data[$this->text] = $text;
@@ -225,32 +258,8 @@ Class Category
      */
     public function appendChild($rgtValue, $text, $extra = array())
     {
-        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
-        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
-
         $this->updateLeft(2, $rgtValue);
         $this->updateRight(2, $rgtValue);
-
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_lft,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $rgtValue
-        //     )
-        // );
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_rgt,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $rgtValue
-        //     )
-        // );
         
         $data              = array();
         $data[$this->text] = $text;
@@ -273,32 +282,8 @@ Class Category
      */
     public function addSibling($lftValue, $text, $extra = array())
     {
-        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
-        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s";
-
         $this->updateLeft(2, $lftValue);
         $this->updateRight(2, $lftValue);
-
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_lft,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $lftValue
-        //     )
-        // );
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_rgt,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $lftValue
-        //     )
-        // );
         
         $data              = array();
         $data[$this->text] = $text;
@@ -321,32 +306,8 @@ Class Category
      */
     public function appendSibling($rgtValue, $text, $extra = array())
     {
-        // $update_lft = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
-        // $update_rgt = "UPDATE %s SET %s = %s + 2 WHERE %s >= %s + 1";
-
         $this->updateLeft(2, $rgtValue + 1);
         $this->updateRight(2, $rgtValue + 1);
-
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_lft,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         $rgtValue
-        //     )
-        // );
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_rgt,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         $rgtValue
-        //     )
-        // );
 
         $data              = array();
         $data[$this->text] = $text;
@@ -356,16 +317,6 @@ Class Category
         $data = $this->appendExtraData($data, $extra);
 
         $this->insert($this->tableName, $data);
-    }
-
-    /**
-     * Empties the table currently in use - use with extreme caution!
-     *
-     * @return boolean
-     */
-    public function truncateTable()
-    {
-        return $this->db->exec(sprintf('TRUNCATE TABLE %s', $this->tableName));
     }
 
     /**
@@ -386,32 +337,6 @@ Class Category
 
         $this->updateLeft(2, ($lftValue - $rgtValue - 1));
         $this->updateRight(2, ($lftValue - $rgtValue - 1));
-
-        // $update_lft = "UPDATE %s SET %s = %s + %s WHERE %s >= %s";
-        // $update_rgt = "UPDATE %s SET %s = %s + %s WHERE %s >= %s";
-
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_lft,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->lft),
-        //         $this->protect($this->lft),
-        //         ($lftValue - $rgtValue - 1),
-        //         $this->protect($this->lft),
-        //         $rgtValue
-        //     )
-        // );
-        // $this->db->exec(
-        //     sprintf(
-        //         $update_rgt,
-        //         $this->protect($this->tableName),
-        //         $this->protect($this->rgt),
-        //         $this->protect($this->rgt),
-        //         ($lftValue - $rgtValue - 1),
-        //         $this->protect($this->rgt),
-        //         $rgtValue
-        //     )
-        // );
     }
 
     /**
@@ -602,65 +527,92 @@ Class Category
     /**
      * Update left column value
      * 
-     * @param int    $value          set value
-     * @param int    $conditionValue where condition value
-     * @param string $attribute      extra conditions
+     * @param int    $setValue   sql SET value
+     * @param int    $whereValue sql WHERE condition value
+     * @param string $attribute  extra sql conditions e.g. "AND rgt >= 1"
      * 
      * @return void
      */
-    protected function updateLeft($value, $conditionValue, $attribute = '')
+    protected function updateLeft($setValue, $whereValue, $attribute = '')
     {
-        $sql = "UPDATE %s SET %s = %s + %s WHERE %s >= %s %s";
-
         $this->db->exec(
             sprintf(
-                $sql,
+                'UPDATE %s SET %s = %s + %s WHERE %s >= %s %s',
                 $this->protect($this->tableName),
                 $this->protect($this->lft),
                 $this->protect($this->lft),
-                $value,
+                $setValue,
                 $this->protect($this->lft),
-                $conditionValue,
+                $whereValue,
                 $attribute
             )
         );
-
-        echo $this->db->lastQuery() . "<br />";
     }
 
     /**
      * Update right column value
      * 
-     * @param int    $value          set value
-     * @param int    $conditionValue where condition value
-     * @param string $attribute      extra conditions
+     * @param int    $setValue   sql SET value
+     * @param int    $whereValue sql WHERE condition value
+     * @param string $attribute  extra sql conditions e.g. "AND rgt >= 1"
      * 
      * @return void
      */
-    protected function updateRight($value, $conditionValue, $attribute = '')
+    protected function updateRight($setValue, $whereValue, $attribute = '')
     {
-        $sql = "UPDATE %s SET %s = %s + %s WHERE %s >= %s %s";
-
         $this->db->exec(
             sprintf(
-                $sql,
+                'UPDATE %s SET %s = %s + %s WHERE %s >= %s %s',
                 $this->protect($this->tableName),
                 $this->protect($this->rgt),
                 $this->protect($this->rgt),
-                $value,
+                $setValue,
                 $this->protect($this->rgt),
-                $conditionValue,
+                $whereValue,
                 $attribute
             )
         );
+    }
 
-        echo $this->db->lastQuery() . "<br />";
+    /**
+     * Protect identifiers using your escape character.
+     * 
+     * Escape character able to set using $this->setEscapeChar()
+     * method.
+     * 
+     * @param string $identifier identifier
+     * 
+     * @return string
+     */
+    public function protect($identifier)
+    {
+        return $this->escapeChar.$identifier.$this->escapeChar;
+    }
+
+    /**
+     * Append extra data.
+     * 
+     * @param array $data  data
+     * @param array $extra extra data
+     * 
+     * @return array
+     */
+    public function appendExtraData($data, $extra)
+    {
+        if (count($extra) > 0) {
+            $data = array_merge($data, $extra);
+        }
+        $newData = array();
+        foreach ($data as $k => $v) {
+            $newData[$this->protect($k)] = $v;
+        }
+        return $newData;
     }
 
 }
 
 
-// END Category.php File
-/* End of file Category.php
+// END Db.php File
+/* End of file Db.php
 
-/* Location: .Obullo/Tree/Category.php */
+/* Location: .Obullo/Tree/Db.php */

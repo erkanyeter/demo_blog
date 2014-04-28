@@ -44,10 +44,6 @@ Class Error
         global $c;
         $type = ($type != '') ? ucwords(strtolower($type)) : 'Exception Error';
 
-        if (strpos($e->getMessage(), 'shmop_open') === 0) { // Ignore Shmop open segment key warnings.
-            return;
-        }
-
         // Database Errors
         //-----------------------------------------------------------------------
 
@@ -55,10 +51,9 @@ Class Error
         
         $lastQuery = '';
         if (isset($c['app']->db)) {
-            $prepare = (isset($c['app']->db)) ? $c['app']->db->prepare : false;
             $lastQuery = '';
             if (method_exists($c['app']->db, 'lastQuery')) {
-                $lastQuery = $c['app']->db->lastQuery($prepare);
+                $lastQuery = $c['app']->db->lastQuery();
             }
         }
 

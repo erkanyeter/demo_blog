@@ -8,18 +8,14 @@
 $app = new Controller(
     function () {
         global $c;
+
         $c['view'];
-        $c['tree.category'];
-        // $c['tree.list'];
-        // $c['tree.move'];
+        $c['tree.db'];
 
-        // $c['tree.category'];
+        $c['db'];
+        // $this->config['debug'] = false;
 
-        // 
-        // $c['db'];
-        // $this->config['debug'] = true;
-        // 
-        
+        echo $a;
     }
 );
 
@@ -27,38 +23,12 @@ $app->func(
     'index', 
     function () {
 
-        // echo $sizeOfTree = 2--1;
+        $this->treeDb->setTablename('nested_category');
+        $this->treeDb->setPrimaryKey('category_id');
+        $this->treeDb->setText('name');
+        $this->treeDb->setLft('lft');
+        $this->treeDb->setRgt('rgt');
 
-        // print_r($this->treeCategory);
-
-        // $nested->insertTree('electronics');
-        // $nested->insertFirstChild(2, 2, 'Televisions');
-        // $nested->appendNewChild(2, 5, 'plazma');
-        // $nested->insertSibling(2, 5, 'crt');
-        // $nested->appendSibling(2, 4, '3d lcd');
-
-        // $this->treeCategory->insertTree('Electronics', $extra = array('column' => 'value'));
-        // $this->treeCategory->insertFirstChild(1, 1, 'Televisions');
-        // $this->treeCategory->addChild(1, 1, 'Portable Electronics');
-        // $this->treeCategory->appendChild(2, 5, 'Lcd');
-        // $this->treeCategory->insertSibling(2, 5, 'Tube');
-        // $this->treeCategory->appendSibling(2, 8, 'Plasma');
-        // $this->treeCategory->truncateTable();
-        
-        // $this->treeCategory->updateNode(2, array('name' => 'Televisions', 'column' => 'new value'));
-        
-        $source = array(    // Portable Electronics
-            'lft' => 9,
-            'rgt' => 14
-        );
-
-        $target = array(    // Televisions
-            'lft' => 2,
-            'rgt' => 15 
-        );
-        $this->treeCategory->moveAsNextSibling($source, $target);
-        // 
-        
         // $source = array(    // Portable Electronics
         //     'lft' => 9,
         //     'rgt' => 14
@@ -68,7 +38,33 @@ $app->func(
         //     'lft' => 2,
         //     'rgt' => 15 
         // );
-        // $this->treeCategory->moveAsFirstChild($source, $target);
+        // $this->treeDb->moveToNextSibling($source, $target);
+        // 
+        
+        // $this->treeDb->addTree('Electronics', $extra = array('column' => 'value'));
+        // $this->category->addChild(1, 1, 'Televisions');
+        // $this->category->addChild(1, 1, 'Portable Electronics');
+        // $this->category->appendChild(2, 5, 'Lcd');
+        // $this->category->addSibling(2, 5, 'Tube');
+        // $this->category->appendSibling(2, 8, 'Plasma');
+        
+        // $this->category->cache(true);
+        // $this->category->query('SELECT * FROM nested categoy');
+        // $this->catagory->deleteCache();
+        // $this->category->truncateTable();
+        
+        // $this->category->updateNode(2, array('name' => 'Televisions', 'column' => 'new value'));
+
+        // $source = array(    // Portable Electronics
+        //     'lft' => 9,
+        //     'rgt' => 14
+        // );
+
+        // $target = array(    // Televisions
+        //     'lft' => 2,
+        //     'rgt' => 15 
+        // );
+        // $this->treeDb->moveAsFirstChild($source, $target);
 
         // $source = array(    // Portable Electronics
         //     'lft' => 10,
@@ -79,14 +75,14 @@ $app->func(
         //     'lft' => 2,
         //     'rgt' => 9 
         // );
-        // $this->treeCategory->moveAsPrevSibling($source, $target);
-        
+        // $this->treeDb->moveAsPrevSibling($source, $target);
 
+        
         $this->view->load(
             'hello_world', 
             function () {
-                $this->set('name', 'Obullo');
-                $this->set('footer', $this->getTpl('footer', false));
+                $this->assign('name', 'Obullo');
+                $this->assign('footer', $this->getTpl('footer', false));
             }
         );
 

@@ -178,14 +178,14 @@ Class Uri
 
         // defined STDIN FOR task requests
         // we should not prevent "base64encode" characters in CLI mode
-        // the "sync" task controller and schema libraries use "base64encode" function
+        // the "sync" task controller and some schema libraries use "base64encode" function
 
         if ($str != '' AND $this->config['uri']['permitted_chars'] != '' AND $this->config['uri']['query_strings'] == false AND !defined('STDIN')) {
 
             // preg_quote() in PHP 5.3 escapes -, so the str_replace() and addition of - to preg_quote() is to maintain backwards
             // compatibility as many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
 
-            if (!preg_match('|^[' . str_replace(array('\\-', '\-'), '-', preg_quote($this->config['uri']['permitted_chars'], '-')) . ']+$|i', $str)) {
+            if ( ! preg_match('|^[' . str_replace(array('\\-', '\-'), '-', preg_quote($this->config['uri']['permitted_chars'], '-')) . ']+$|i', $str)) {
                 $c['response']->showError('The URI you submitted has disallowed characters.', 400);
             }
         }
@@ -480,7 +480,7 @@ Class Uri
      */
     public function getSlashSegment($number, $where = 'trailing')
     {
-        return $this->uri->_slashSegment($number, $where, 'segment');
+        return $this->_slashSegment($number, $where, 'segment');
     }
 
     /**
@@ -504,7 +504,7 @@ Class Uri
      */
     public function getSlashRoutedSegment($number, $where = 'trailing')
     {
-        return $this->uri->_slashSegment($number, $where, 'rsegment');
+        return $this->_slashSegment($number, $where, 'rsegment');
     }
 
     /**
@@ -514,7 +514,7 @@ Class Uri
      */
     public function getExtension()
     {
-        return $this->uri->uri_extension;
+        return $this->uri_extension;
     }
 
     /**

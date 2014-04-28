@@ -323,7 +323,6 @@ Class Translator implements ArrayAccess
         $this->cookie_path   = ( ! empty($this->config['cookie_path'])) ? $this->config['cookie_path'] : $c['config']['cookie']['path'];
         $this->expiration    = $this->config['cookie_expire'];
 
-        // Set the cookie
         setcookie($this->getCookieKey(), $this->getLocaleCode(), time() + $this->expiration, $this->cookie_path, $this->cookie_domain, 0);
     }
 
