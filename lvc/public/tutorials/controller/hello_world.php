@@ -10,10 +10,10 @@ $app = new Controller(
         global $c;
 
         $c['view'];
-        $c['cache'];
+        $c['db'];
 
         // $this->config['debug'] = false;
-        // echo $a;
+        echo $a;
     }
 );
 

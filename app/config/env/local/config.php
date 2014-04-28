@@ -12,7 +12,7 @@ $config = array(
     | Debug
     |--------------------------------------------------------------------------
     */
-    'debug' => true,            // If debug enabled framework converts all php errors to exceptions.
+    'debug' => false,            // If debug enabled framework converts all php errors to exceptions.
                                  // Should be disabled in "live" mode.
     /*
     |--------------------------------------------------------------------------

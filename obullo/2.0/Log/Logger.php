@@ -5,16 +5,18 @@ namespace Obullo\Log;
 use Closure, RunTimeException;
 
 /**
- * Logger Adapter Class
+ * Logger Class
  *
+ * Modeled after Zend Log package.
+ * 
  * http://www.php.net/manual/en/class.splpriorityqueue.php
  * 
- * @category  Logger
+ * @category  Log
  * @package   Logger
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/logger
+ * @link      http://obullo.com/package/log
  */
 Class Logger
 {
@@ -53,6 +55,7 @@ Class Logger
         self::INFO      => LOG_INFO,
         self::DEBUG     => LOG_DEBUG,
     );
+
     /**
      * Map native PHP errors to priority
      *
@@ -74,6 +77,104 @@ Class Logger
     );
 
     /**
+     * Priority values
+     * 
+     * @var array
+     */
+    public $priorityValues = array();
+
+    /**
+     * Config object
+     * 
+     * @var object
+     */
+    public $config;
+
+    /**
+     * Write all outputs to end of the page
+     * 
+     * @var boolean
+     */
+    public $debug = false;
+
+    /**
+     * On / Off Logging
+     * 
+     * @var boolean
+     */
+    public $enabled = true;
+
+    /**
+     * Threshold array
+     * 
+     * @var array
+     */
+    public $thresholdArray = array();
+
+    /**
+     * Whether to log sql queries
+     * 
+     * @var boolean
+     */
+    public $queries = false;
+
+    /**
+     * Whether to log benchmark, Memory usage ..
+     * 
+     * @var boolean
+     */
+    public $benchmark = false;
+
+    /**
+     * Output format for line based handlers
+     * 
+     * @var string
+     */
+    public $line = '';
+
+    /**
+     * Date format
+     * 
+     * @var string
+     */
+    public $format = 'Y-m-d H:i:s';
+
+    /**
+     * Available  writers: file, mongo, syslog & so on ..
+     * 
+     * @var array
+     */
+    public $writers = array();
+
+    /**
+     * Default log channel
+     * 
+     * @var string
+     */
+    public $channel = 'system';
+
+    /**
+     * Defined handlers in the container
+     * 
+     * @var array
+     */
+    protected $handlers  = array();
+
+    /**
+     * Log queue object
+     * 
+     * @var array
+     */
+    protected $processor = array();
+
+    /**
+     * Push data
+     * 
+     * @var array
+     */
+    protected $push = array();
+
+    /**
      * Registered error handler
      *
      * @var bool
@@ -86,77 +187,6 @@ Class Logger
      * @var bool
      */
     protected static $registeredExceptionHandler = false;
-
-    /**
-     * Priority values
-     * @var array
-     */
-    public $priorityValues = array();
-    /**
-     * Config object
-     * @var object
-     */
-    public $config;
-    /**
-     * Write all outputs to end of the page
-     * @var boolean
-     */
-    public $debug = false;    // Write all outputs to end of the page
-    /**
-     * On / Off Logging
-     * @var boolean
-     */
-    public $enabled = true;
-    /**
-     * Threshold array
-     * @var array
-     */
-    public $thresholdArray = array();
-    /**
-     * Sql Queries
-     * @var boolean
-     */
-    public $queries = false;    // log sql queries
-    /**
-     * Benchmark Data, Memory usage, Cpu info
-     * @var boolean
-     */
-    public $benchmark = false;    // log bechmark data, memory usage etc.
-    /**
-     * Output format for line based handlers
-     * @var string
-     */
-    public $line = '';       // line output format
-    /**
-     * Date format
-     * @var 
-     */
-    public $format = 'Y-m-d H:i:s';
-    /**
-     * Available  writers: file, mongo, syslog
-     * @var array
-     */
-    public $writers = array();
-    /**
-     * Default channel
-     * @var string
-     */
-    public $channel = 'system'; // default log channel
-    /**
-     * Defined handlers in the container
-     * @var array
-     */
-    protected $handlers  = array();
-    /**
-     * Log queue object
-     * @var array
-     */
-    protected $processor = array();
-    /**
-     * Push data
-     * @var array
-     */
-    protected $push = array();
 
     /**
     * Constructor
@@ -176,19 +206,21 @@ Class Logger
         $this->format          = $this->config['format'];
 
         $this->priorityValues = array_flip(self::$priorities);
-        $this->processor = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
+        $this->processor      = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
 
-        if (isset($options['exceptionhandler']) AND $this->config['exceptionhandler'] === true) {
-            static::registerExceptionHandler($this);
-        }
+        // if (isset($options['exceptionhandler']) AND $this->config['exceptionhandler'] === true) {
+        //     static::registerExceptionHandler($this);
+        // }
 
-        if (isset($options['errorhandler']) AND $this->config['errorhandler'] === true) {
-            static::registerErrorHandler($this);
-        }
+        static::registerErrorHandler($this);
+
+        // if (isset($options['errorhandler']) AND $this->config['errorhandler'] === true) {
+        //     static::registerErrorHandler($this);
+        // }
     }
     
     /**
-     * Load the defined log handler
+     * Load defined log handler
      * 
      * @param string $name defined log handler name
      * 
@@ -264,7 +296,7 @@ Class Logger
     }
 
     /**
-     * Get property of the logger
+     * Get property value from logger
      * 
      * @param string $key property of logger
      * 
@@ -276,7 +308,7 @@ Class Logger
     }
 
     /**
-     * Set property to the logger class
+     * Set property value to logger
      * 
      * @param string $key property to logger
      * @param mixed  $val value of property
@@ -399,7 +431,7 @@ Class Logger
     }
 
     /**
-     * Info
+     * Debug
      * 
      * @param string  $message  log message
      * @param array   $context  data
@@ -417,8 +449,8 @@ Class Logger
      * 
      * $logger->channel('security');
      * $logger->alert('Possible hacking attempt !', array('username' => $username));
-     * $logger->push('email');  // send log data using email handler
-     * $logger->push('mongo', LOG_ALERT);  // send log data to mongo db
+     * $logger->push(LOGGER_EMAIL);  // send log data using email handler
+     * $logger->push(LOGGER_MONGO, LOG_ALERT);  // send log data to mongo db
      * 
      * @param string  $handler   set log handler
      * @param integer $threshold set threshold of log message
@@ -548,40 +580,43 @@ Class Logger
     /**
      * Register logging system as an error handler to log PHP errors
      *
-     * @link http://www.php.net/manual/function.set-error-handler.php
-     * @param  Logger $logger
-     * @param  bool   $continueNativeHandler
-     * @return mixed  Returns result of set_error_handler
+     * @param object  $logger                class
+     * @param boolean $continueNativeHandler native handler switch
+     *
+     * @link  http://www.php.net/manual/function.set-error-handler.php
+     * 
+     * @return mixed Returns result of set_error_handler
      */
     public static function registerErrorHandler(Logger $logger, $continueNativeHandler = false)
     {
-        // Only register once per instance
-        if (static::$registeredErrorHandler) {
+        if (static::$registeredErrorHandler) {  // Only register once per instance
             return false;
         }
         $errorPriorities = static::$errorPriorities;
+        $previous = set_error_handler(
+            function ($level, $message, $file, $line) use ($logger, $errorPriorities, $continueNativeHandler) {
+                $iniLevel = error_reporting();
 
-        $previous = set_error_handler(function ($level, $message, $file, $line)
-            use ($logger, $errorPriorities, $continueNativeHandler)
-        {
-            $iniLevel = error_reporting();
+                if ($iniLevel & $level) {
 
-            if ($iniLevel & $level) {
-                if (isset($errorPriorities[$level])) {
-                    $priority = $errorPriorities[$level];
-                } else {
-                    $priority = Logger::NOTICE;
+                    $priority = Logger::ERROR;
+                    if (isset($errorPriorities[$level])) {
+                        $priority = $errorPriorities[$level];
+                    } 
+                    $logger->log(
+                        'error', 
+                        $message, 
+                        array(
+                        'level'   => $level,
+                        'file'    => $file,
+                        'line'    => $line,
+                        ),
+                        $priority
+                    );
                 }
-                $logger->log($priority, $message, array(
-                    'errno'   => $level,
-                    'file'    => $file,
-                    'line'    => $line,
-                ));
+                return ! $continueNativeHandler;
             }
-
-            return !$continueNativeHandler;
-        });
-
+        );
         static::$registeredErrorHandler = true;
         return $previous;
     }
@@ -589,6 +624,7 @@ Class Logger
     /**
      * Unregister error handler
      *
+     * @return void
      */
     public static function unregisterErrorHandler()
     {
@@ -599,54 +635,58 @@ Class Logger
     /**
      * Register logging system as an exception handler to log PHP exceptions
      *
+     * @param object $logger class
+     *
      * @link http://www.php.net/manual/en/function.set-exception-handler.php
-     * @param Logger $logger
-     * @return bool
-     * @throws Exception\InvalidArgumentException if logger is null
+     * 
+     * @return boolean
      */
     public static function registerExceptionHandler(Logger $logger)
     {
-        // Only register once per instance
-        if (static::$registeredExceptionHandler) {
+        if (static::$registeredExceptionHandler) {  // Only register once per instance
             return false;
         }
         $errorPriorities = static::$errorPriorities;
         
-        set_exception_handler(function ($exception) use ($logger, $errorPriorities) {
-            $logMessages = array();
+        set_exception_handler(
+            function ($exception) use ($logger, $errorPriorities) {
+                $logMessages = array();
 
-            // @see http://www.php.net/manual/tr/errorexception.getseverity.php
-            do {
-                $priority = Logger::ERROR;
-                if ($exception instanceof ErrorException AND isset($errorPriorities[$exception->getSeverity()])) {
-                    $priority = $errorPriorities[$exception->getSeverity()];
-                }
-                $extra = array(
-                    'file'  => $exception->getFile(),
-                    'line'  => $exception->getLine(),
-                    'trace' => $exception->getTrace(),
-                );
-                if (isset($exception->xdebug_message)) {
-                    $extra['xdebug'] = $exception->xdebug_message;
-                }
-                $logMessages[] = array(
-                    'priority' => $priority,
-                    'message'  => $exception->getMessage(),
-                    'extra'    => $extra,
-                );
-                $exception = $exception->getPrevious();
-            } while ($exception);
+                // @see http://www.php.net/manual/tr/errorexception.getseverity.php
+                do {
+                    $priority = Logger::ERROR;
+                    if ($exception instanceof ErrorException AND isset($errorPriorities[$exception->getSeverity()])) {
+                        $priority = $errorPriorities[$exception->getSeverity()];
+                    }
+                    $extra = array(
+                        'file'  => $exception->getFile(),
+                        'line'  => $exception->getLine(),
+                        'trace' => $exception->getTrace(),
+                    );
+                    if (isset($exception->xdebug_message)) {
+                        $extra['xdebug'] = $exception->xdebug_message;
+                    }
+                    $logMessages[] = array(
+                        'priority' => $priority,
+                        'message'  => $exception->getMessage(),
+                        'extra'    => $extra,
+                    );
+                    $exception = $exception->getPrevious();
+                } while ($exception);
 
-            foreach (array_reverse($logMessages) as $logMessage) {
-                $logger->log($logMessage['priority'], $logMessage['message'], $logMessage['extra']);
+                foreach (array_reverse($logMessages) as $logMessage) {
+                    $logger->log('error', $logMessage['message'], $logMessage['extra'], $logMessage['priority']);
+                }
             }
-        });
+        );
         static::$registeredExceptionHandler = true;
         return true;
     }
 
     /**
      * Unregister exception handler
+     *
+     * @return void
      */
     public static function unregisterExceptionHandler()
     {

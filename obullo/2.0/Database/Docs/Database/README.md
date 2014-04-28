@@ -488,7 +488,7 @@ The **double dots** in the query are automatically replaced with the values of *
 
 **Note:**  The secondary benefit of using binds is that the values are automatically escaped, producing safer queries. You don't have to remember to manually escape data; the engine does it automatically for you.
 
-##### Question Mark Bind
+### Question Mark Binding
 
 ```php
 $this->db->prepare("SELECT * FROM articles WHERE article_id = ? OR tag = ?");
@@ -501,7 +501,7 @@ $a = $this->db->getResult();
 var_dump($a);
 ```
 
-### Array Bind
+### Array Binding
 
 ```php
 $this->db->prepare("SELECT * FROM articles WHERE article_id = ? OR tag = ?");
@@ -560,12 +560,12 @@ $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 
 $this->db->query(" .. ");
 
-print_r($this->db->getErrors());  // handling pdo errors
+print_r($this->db->errorInfo());  // handling pdo errors
 
 $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // restore error mode
 ```
 
-#### $this->db->getErrorInfo();
+#### $this->db->errorInfo();
 
 Gets the database errors in pdo slient mode instead of getting pdo exceptions.
 

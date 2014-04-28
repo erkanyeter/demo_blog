@@ -4,7 +4,8 @@ namespace Obullo\Event;
 
 /**
  * Event Class
- * Borrowed from Laravel framework.
+ * 
+ * Modeled after Laravel framework Event library.
  * 
  * @category  Event
  * @package   Event
@@ -167,7 +168,7 @@ Class Event {
      * @param  bool    $halt
      * @return array|null
      */
-    public function fire($event, $payload = array(), $halt = false)
+    public function register($event, $payload = array(), $halt = false)
     {
         $responses = array();
 

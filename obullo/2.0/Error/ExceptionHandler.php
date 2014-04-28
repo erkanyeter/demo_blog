@@ -57,6 +57,17 @@ Class ExceptionHandler
     public function handle(\Exception $e)
     {
         global $c;
+
+        $message = $e->getMessage();
+        $file    = $e->getFile();
+        $line    = $e->getLine();
+
+        // Log for local environment
+    
+        if ($c['logger'] instanceof Logger) { 
+            $c['logger']->emergency($message, array('file' => DebugOutput::getSecurePath($file), 'line' => $line));
+            $c['logger']->__destruct(); // continue log writing
+        }
         $c['exception']->showError($e);
     }
 }

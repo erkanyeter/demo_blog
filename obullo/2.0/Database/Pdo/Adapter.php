@@ -363,7 +363,7 @@ Class Adapter
      * 
      * @return type 
      */
-    public function getErrorInfo()
+    public function errorInfo()
     {
         return $this->_conn->errorInfo();
     }

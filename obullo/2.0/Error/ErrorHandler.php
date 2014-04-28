@@ -40,7 +40,10 @@ Class ErrorHandler
         E_ERROR             => 'Error',
         E_CORE_ERROR        => 'Core Error',
         E_COMPILE_ERROR     => 'Compile Error',
-        E_PARSE             => 'Parse',
+        E_COMPILE_WARNING   => 'Compile Warning',
+        E_CORE_WARNING      => 'Core Warning',
+        E_PARSE             => 'Parse Error',
+        E_ALL               => 'All Errors',
     );
 
     /**
@@ -132,18 +135,20 @@ Class ErrorHandler
         if ($level & (E_USER_DEPRECATED | E_DEPRECATED)) {
 
             if (is_object($c) AND $c['logger'] instanceof Logger) {
-
                 $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 
-                $c['logger']->channel('system');
+                $c['logger']->channel($c['config']['log']['channel']);
                 $c['logger']->warning($message, array('type' => self::TYPE_DEPRECATION, 'stack' => $stack));
             }
             return true;
         }
+        unset($context); // remove context data 
+
+        $type = (isset($this->levels[$this->level])) ? $this->levels[$this->level] : $this->level;
 
         // Log for local environment
         if ($c['logger'] instanceof Logger) { 
-            $c['logger']->emergency($message, array('type' => $this->level, 'file' => DebugOutput::getSecurePath($file), 'line' => $line, 'extra' => $context));
+            $c['logger']->emergency($message, array('level' => $type, 'file' => DebugOutput::getSecurePath($file), 'line' => $line, 'extra' => null));
             $c['logger']->__destruct(); // continue log writing
         }
 
@@ -175,9 +180,12 @@ Class ErrorHandler
         if (0 === $this->level OR ! in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
             return;
         }
+
+        $type = (isset($this->levels[$type])) ? $this->levels[$type] : $type;
+
         if ($c['logger'] instanceof Logger) {
-            $c['logger']->channel('system');
-            $c['logger']->emergency($error['message'], array('type' => $type, 'file' => $error['file'], 'line' => $error['line']));
+            $c['logger']->channel($c['config']['log']['channel']);
+            $c['logger']->emergency($error['message'], array('level' => $type, 'file' => $error['file'], 'line' => $error['line']));
         }
         if ( ! $this->displayErrors) {
             return;

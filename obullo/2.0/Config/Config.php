@@ -128,8 +128,11 @@ Class Config implements ArrayAccess
 
         return $this->config[$filename];
     }
-
 }
+
+$c['config'] = function () {
+    return new Config;
+};
 
 // END Config.php File
 /* End of file Config.php
