@@ -10,9 +10,9 @@ $app = new Controller(
         global $c;
 
         $c['view'];
-        $c['tree.db'];
+        // $c['tree.db'];
 
-        $c['db'];
+        // $c['db'];
         // $this->config['debug'] = false;
 
         echo $a;
@@ -23,11 +23,11 @@ $app->func(
     'index', 
     function () {
 
-        $this->treeDb->setTablename('nested_category');
-        $this->treeDb->setPrimaryKey('category_id');
-        $this->treeDb->setText('name');
-        $this->treeDb->setLft('lft');
-        $this->treeDb->setRgt('rgt');
+        // $this->treeDb->setTablename('nested_category');
+        // $this->treeDb->setPrimaryKey('category_id');
+        // $this->treeDb->setText('name');
+        // $this->treeDb->setLft('lft');
+        // $this->treeDb->setRgt('rgt');
 
         // $source = array(    // Portable Electronics
         //     'lft' => 9,

@@ -7,9 +7,13 @@ use RunTimeException;
 /**
  * Nested Set Model Tree Class
  * 
+ * Modeled after https://github.com/olimortimer/ci-nested-sets
+ * 
  * @category  Tree
  * @package   Db
  * @author    Obullo Framework <obulloframework@gmail.com>
+ * @author    Ali Ihsan Caglayan <ihsancaglayan@gmail.com>
+ * @author    Ersin Guvenc <eguvenc@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/tree
@@ -70,9 +74,18 @@ Class Db
 
     /**
      * Column name rgt
+     * 
      * @var string
      */
     public $rgt;
+
+    /**
+     * Sql query or cached sql query 
+     * result array
+     * 
+     * @var object
+     */
+    protected $resultArray;
 
     /**
      * Constructor
@@ -607,6 +620,35 @@ Class Db
             $newData[$this->protect($k)] = $v;
         }
         return $newData;
+    }
+
+    /**
+     * Run sql query
+     * 
+     * @param string  $sql       sql query string
+     * @param integer $cache_ttl expiration time
+     * 
+     * @return string sql query
+     */
+    public function query($sql, $cache_ttl)
+    {
+        if ($cache_ttl > 0) {
+            $key = md5($sql);
+            $this->cache = $c['cache'];
+        }
+
+        $this->db->query($sql);
+        $this->resultArray = $this->db->resultArray();
+    }
+
+    /**
+     * Fetch sql query results as array
+     * 
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->resultArray;
     }
 
 }
