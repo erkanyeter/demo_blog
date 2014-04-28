@@ -53,7 +53,7 @@ $c['sess'] = function () use ($c) {
 |--------------------------------------------------------------------------
 */
 $c['cache'] = function () use ($c) {
-    return $c['app']->cache = new Obullo\Cache\Redis($c['config']['cache']);
+     return $c['app']->cache = new Obullo\Cache\Apc($c['config']['cache']);
 };
 
 

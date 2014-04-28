@@ -80,6 +80,13 @@ Class Db
     public $rgt;
 
     /**
+     * $cache Cache object
+     * 
+     * @var object
+     */
+    public $cache;
+
+    /**
      * Sql query or cached sql query 
      * result array
      * 
@@ -625,12 +632,12 @@ Class Db
     /**
      * Run sql query
      * 
-     * @param string  $sql       sql query string
-     * @param integer $cache_ttl expiration time
+     * @param string  $sql sql query string
+     * @param integer $ttl expiration time
      * 
      * @return string sql query
      */
-    public function query($sql, $cache_ttl)
+    public function query($sql, $ttl)
     {
         if ($cache_ttl > 0) {
             $key = md5($sql);

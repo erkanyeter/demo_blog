@@ -455,11 +455,11 @@ We can retrieve the full tree through the use of a self-join that links parents 
 
 ```php
 $sql = "SELECT node.name
-FROM nested_category AS node,
-nested_category AS parent
-WHERE node.lft BETWEEN parent.lft AND parent.rgt
-AND parent.name = 'Electronics'
-ORDER BY node.lft";
+		FROM nested_category AS node,
+		nested_category AS parent
+		WHERE node.lft BETWEEN parent.lft AND parent.rgt
+		AND parent.name = 'Electronics'
+		ORDER BY node.lft";
 
 $this->treeDb->query($sql);
 ```
@@ -485,8 +485,8 @@ Finding all leaf nodes in the nested set model even simpler than the LEFT JOIN m
 
 ```php
 $sql = "SELECT name
-FROM nested_category
-WHERE rgt = lft + 1";
+		FROM nested_category
+		WHERE rgt = lft + 1";
 
 $this->treeDb->query($sql);
 ```
@@ -502,6 +502,172 @@ Gives
 | Plasma               |
 +----------------------+
 ```
+
+#### Retrieving a Single Path
+
+With the nested set model, we can retrieve a single path without having multiple self-joins:
+
+```php
+$sql = "SELECT parent.name
+		FROM nested_category AS node,
+		nested_category AS parent
+		WHERE node.lft BETWEEN parent.lft AND parent.rgt
+		AND node.name = 'FLASH'
+		ORDER BY parent.lft";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++----------------------+
+| name                 |
++----------------------+
+| Electronics          |
+| Portable Electronics |
+| Flash                |
++----------------------+
+```
+
+#### Finding the Depth of the Nodes
+
+We have already looked at how to show the entire tree, but what if we want to also show the depth of each node in the tree, to better identify how each node fits in the hierarchy? This can be done by adding a COUNT function and a GROUP BY clause to our existing query for showing the entire tree:
+
+```php
+$sql = "SELECT node.name, (COUNT(parent.name) - 1) AS depth
+		FROM nested_category AS node,
+		nested_category AS parent
+		WHERE node.lft BETWEEN parent.lft AND parent.rgt
+		GROUP BY node.name
+		ORDER BY node.lft";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++----------------------+-------+
+| name                 | depth |
++----------------------+-------+
+| Electronics          |     0 |
+| Portable Electronics |     1 |
+| Flash                |     2 |
+| Mp3 Player           |     2 |
+| Televisions          |     1 |
+| Tube                 |     2 |
+| Lcd                  |     2 |
+| Plasma               |     2 |
++----------------------+-------+
+```
+
+We can use the depth value to indent our category names with the CONCAT and REPEAT string functions:
+
+```php
+$sql = "SELECT CONCAT( REPEAT(' ', COUNT(parent.name) - 1), node.name) AS name
+		FROM nested_category AS node,
+		nested_category AS parent
+		WHERE node.lft BETWEEN parent.lft AND parent.rgt
+		GROUP BY node.name
+		ORDER BY node.lft";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++-----------------------+
+| name                  |
++-----------------------+
+| Electronics			|
+|	Portable Electronics|
+|		Mp3 Player	    |
+|   	Flash           |
+|	Televisions         |
+|   	Tube            |
+|   	Lcd             |
+|   	Plasma          |
++-----------------------+
+```
+
+Of course, in a client-side application you will be more likely to use the depth value directly to display your hierarchy. Web developers could loop through the tree, adding ```<li></li>``` and ```<ul></ul>``` tags as the depth number increases and decreases.
+
+#### Depth of a Sub-Tree
+
+When we need depth information for a sub-tree, we cannot limit either the node or parent tables in our self-join because it will corrupt our results. Instead, we add a third self-join, along with a sub-query to determine the depth that will be the new starting point for our sub-tree:
+
+```php
+$sql = "SELECT node.name, (COUNT(parent.name) - (sub_tree.depth + 1)) AS depth
+		FROM nested_category AS node,
+			nested_category AS parent,
+			nested_category AS sub_parent,
+			(
+				SELECT node.name, (COUNT(parent.name) - 1) AS depth
+				FROM nested_category AS node,
+				nested_category AS parent
+				WHERE node.lft BETWEEN parent.lft AND parent.rgt
+				AND node.name = 'PORTABLE ELECTRONICS'
+				GROUP BY node.name
+				ORDER BY node.lft
+			)AS sub_tree
+		WHERE node.lft BETWEEN parent.lft AND parent.rgt
+			AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt
+			AND sub_parent.name = sub_tree.name
+		GROUP BY node.name
+		ORDER BY node.lft";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++----------------------+-------+
+| name                 | depth |
++----------------------+-------+
+| Portable Electronics |     0 |
+| Flash                |     1 |
+| Mp3 Player           |     1 |
++----------------------+-------+
+```
+
+This function can be used with any node name, including the root node. The depth values are always relative to the named node.
+
+#### Find the Immediate Subordinates of a Node
+
+Imagine you are showing a category of electronics products on a retailer web site. When a user clicks on a category, you would want to show the products of that category, as well as list its immediate sub-categories, but not the entire tree of categories beneath it. For this, we need to show the node and its immediate sub-nodes, but no further down the tree. For example, when showing the PORTABLE ELECTRONICS category, we will want to show MP3 PLAYERS, CD PLAYERS, and 2 WAY RADIOS, but not FLASH.
+
+This can be easily accomplished by adding a HAVING clause to our previous query:
+
+```php
+$sql = "SELECT node.name, (COUNT(parent.name) - (sub_tree.depth + 1)) AS depth
+		FROM nested_category AS node,
+			nested_category AS parent,
+			nested_category AS sub_parent,
+			(
+				SELECT node.name, (COUNT(parent.name) - 1) AS depth
+				FROM nested_category AS node,
+				nested_category AS parent
+				WHERE node.lft BETWEEN parent.lft AND parent.rgt
+				AND node.name = 'PORTABLE ELECTRONICS'
+				GROUP BY node.name
+				ORDER BY node.lft
+			)AS sub_tree
+		WHERE node.lft BETWEEN parent.lft AND parent.rgt
+			AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt
+			AND sub_parent.name = sub_tree.name
+		GROUP BY node.name
+		HAVING depth <= 1
+		ORDER BY node.lft";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++----------------------+-------+
+| name                 | depth |
++----------------------+-------+
+| Portable Electronics |     0 |
+| Flash                |     1 |
+| Mp3 Player           |     1 |
++----------------------+-------+
+```
+
+If you do not wish to show the parent node, change the HAVING depth <= 1 line to HAVING depth = 1.
 
 
 ### Function Reference

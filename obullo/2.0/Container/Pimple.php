@@ -79,7 +79,7 @@ Class Pimple implements ArrayAccess
      * @return void
      */
     public function offsetSet($cid, $value)
-    {        
+    {
         if (isset($this->frozen[$cid])) {
             return;
         }
@@ -103,6 +103,7 @@ Class Pimple implements ArrayAccess
         if ( ! isset($this->keys[$cid]) AND class_exists('Controller')) {
 
             $Class = ucfirst($cid);
+
             $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
 
             if (strpos($Class, '.') > 0) {              // If we have a folder "/" request with dot ( "." ).

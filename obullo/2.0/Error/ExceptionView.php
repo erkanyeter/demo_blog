@@ -41,14 +41,15 @@
 </script>
 
 <div id="exceptionContent">
-    <h1>Exception Error</h1>
-    <?php if (isset($fatalError)) :  ?>
-        <h2><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, OBULLO, PUBLIC_DIR, PRIVATE_DIR), array('APP' . DS, 'DATA' . DS, 'CLASSES' . DS, 'ROOT' . DS, 'PACKAGES' . DS, 'PUBLIC' . DS), $e->getMessage()) ?></h2>
-        <div class="errorFile errorLine"><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, OBULLO, PUBLIC_DIR, PRIVATE_DIR), array('APP' . DS, 'DATA' . DS, 'CLASSES' . DS, 'ROOT' . DS, 'PACKAGES' . DS, 'PUBLIC' . DS), $e->getFile()) . '  Line : ' . $e->getLine() ?>
-        </div>
+<?php if (isset($fatalError)) :  ?>
+    <h1>Fatal Error</h1>
+    <h2><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, OBULLO, PUBLIC_DIR, PRIVATE_DIR), array('APP' . DS, 'DATA' . DS, 'CLASSES' . DS, 'ROOT' . DS, 'PACKAGES' . DS, 'PUBLIC' . DS), $e->getMessage()) ?></h2>
+    <div class="errorFile errorLine"><?php echo str_replace(array(APP, DATA, CLASSES, ROOT, OBULLO, PUBLIC_DIR, PRIVATE_DIR), array('APP' . DS, 'DATA' . DS, 'CLASSES' . DS, 'ROOT' . DS, 'PACKAGES' . DS, 'PUBLIC' . DS), $e->getFile()) . '  Line : ' . $e->getLine() ?>
     </div>
-    <?php
-    exit; // Shutdown error exit.
+</div>
+<?php
+exit; // Shutdown error exit.
+else: echo '<h1>Exception Error</h1>';
 endif;
 ?>
 
