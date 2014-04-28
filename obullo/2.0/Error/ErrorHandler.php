@@ -144,22 +144,24 @@ Class ErrorHandler
 
         if (is_object($c)) { 
 
-            $lastQuery = '';                // show last sql query
+            if (defined('STDIN')) {      // Cli
+                echo 'Exception Error: ' .$e->getMessage().' '. DebugOutput::getSecurePath($e->getFile()).' '. $e->getLine(). "\n";
+                return;
+            }
+            if ($this->isXmlHttp()) {    // Ajax
+                echo strip_tags('Exception Error: ' .$e->getMessage().' '. DebugOutput::getSecurePath($e->getFile()).' '. $e->getLine(). "\n");
+                return;
+            }
+            $lastQuery = '';             // Show the last sql query
             if (isset($c['app']->db)) {
                 $lastQuery = '';
                 if (method_exists($c['app']->db, 'lastQuery')) {
                     $lastQuery = $c['app']->db->lastQuery();
                 }
             }
-
             ob_start();
             include OBULLO . 'Error' . DS . 'DisplayException' . EXT;  // load view
-            $error_msg = ob_get_clean();
-
-            if ($this->isXmlHttp()) {
-                $error_msg = strip_tags('Exception Error: ' .$e->getMessage().' '. DebugOutput::getSecurePath($e->getFile()).' '. $e->getLine(). "\n");
-            } 
-            echo $error_msg;
+            echo ob_get_clean();
         }
     }
 
