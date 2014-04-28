@@ -125,7 +125,7 @@ Class Response
     * Lets you set a server header which will be outputted with the final display.
     *
     * Note:  If a file is cached, headers will not be sent.  We need to figure out
-    * how to permit header data to be saved with the cache data...
+    * how to permit header data to be saved with the cache data.
     *
     * @param string  $header  header
     * @param boolean $replace replace override header
@@ -163,12 +163,14 @@ Class Response
     * 404 Page Not Found Handler
     *
     * @param string  $page     page name
-    * @param boolean $http_404 http 404 or hvc 404
+    * @param boolean $http_404 http 404 or lvc 404
     * 
     * @return string
     */
     public function show404($page = '', $http_404 = true)
     {
+        $page = filter_var($page, FILTER_SANITIZE_SPECIAL_CHARS);
+
         $message = '404 Page Not Found --> '.$page;
         $this->logger->error($message);
 
@@ -192,6 +194,8 @@ Class Response
     public function showError($message, $statusCode = 500, $heading = 'An Error Was Encountered')
     {
         global $c;
+
+        $message = filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS);
         $this->logger->error($heading.' --> '.$message, false);
 
         if ($statusCode === false) {
@@ -218,7 +222,9 @@ Class Response
         $this->setHttpResponse($statusCode);
         $message = implode('<br />', ( ! is_array($message)) ? array($message) : $message);
 
-        if (defined('STDIN')) { // If Command Line Request
+        $message = filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS);
+
+        if (defined('STDIN')) { // Cli
             return '['.$heading.']: The url ' .$message. ' you requested was not found.'."\n";
         }
         ob_start();

@@ -131,10 +131,6 @@ Class Config implements ArrayAccess
 
 }
 
-$c['config'] = function () {  // store to container
-    return new Config;
-};
-
 // END Config.php File
 /* End of file Config.php
 

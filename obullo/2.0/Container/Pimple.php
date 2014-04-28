@@ -36,7 +36,7 @@ use SplObjectStorage, ArrayAccess, InvalidArgumentException, Controller;  //  we
  * @author    Ersin Guvenc ( Port to Obullo ) - <eguvenc@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/uri
+ * @link      http://obullo.com/package/container
  */
 Class Pimple implements ArrayAccess
 {
@@ -106,7 +106,7 @@ Class Pimple implements ArrayAccess
             $ObulloPackage = 'Obullo\\'.$Class.'\\'.$Class;
 
             if (strpos($Class, '.') > 0) {              // If we have a folder "/" request with dot ( "." ).
-                $exp       = explode('.', $Class);      // e.g. $c['cli.task'] = $this->cliTask->method(),  $c['tree.category'] = $this->treeCategory->method();
+                $exp       = explode('.', $Class);      // e.g. $c['cli.task'] = $this->cliTask->method(),  $c['tree.db'] = $this->treeDb->method();
                 $ucfirstVal = array_map(
                     function ($value) {
                         return ucfirst($value);
@@ -298,14 +298,6 @@ Class Pimple implements ArrayAccess
         return array_keys($this->values);
     }
 }
-
-/*
-|--------------------------------------------------------------------------
-| Container ( IOC )
-|--------------------------------------------------------------------------
-*/
-$c = new Pimple;
-
 
 // END Container class
 

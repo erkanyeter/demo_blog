@@ -4,20 +4,29 @@ namespace Obullo\Error;
 
 use Obullo\Log\Logger, ErrorException;
 
-// use Debug\Exception\ContextErrorException;
-// use Debug\Exception\FatalErrorException;
-// use Debug\Exception\DummyException;
-// use Debug\FatalErrorHandler\UndefinedFunctionFatalErrorHandler;
-// use Debug\FatalErrorHandler\ClassNotFoundFatalErrorHandler;
-
 /**
- * ErrorHandler.
- * Modeled after Symfony Debug package.
+ * Error Handler Class
+ * Modeled after Symfony ErrorHandler
+ * 
+ * @category  Error
+ * @package   ErrorHandler
+ * @author    Obullo Framework <obulloframework@gmail.com>
+ * @copyright 2009-2014 Obullo
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
+ * @link      http://obullo.com/package/error
  */
 Class ErrorHandler
 {
+    /**
+     * Deprecated constant
+     */
     const TYPE_DEPRECATION = -100;
 
+    /**
+     * Error Levels
+     * 
+     * @var array
+     */
     protected $levels = array(
         E_WARNING           => 'Warning',
         E_NOTICE            => 'Notice',
@@ -34,9 +43,25 @@ Class ErrorHandler
         E_PARSE             => 'Parse',
     );
 
+    /**
+     * Logger class
+     * 
+     * @var object
+     */
     protected $logger;
+
+    /**
+     * Current php error level
+     * 
+     * @var integer
+     */
     protected $level;
-    protected $reservedMemory;
+
+    /**
+     * Display Errors On \ Off
+     * 
+     * @var boolean
+     */
     protected $displayErrors;
 
     /**
@@ -63,7 +88,9 @@ Class ErrorHandler
     /**
      * Sets the level at which the conversion to Exception is done.
      *
-     * @param integer|null $level The level (null to use the error_reporting() value and 0 to disable)
+     * @param integer $level Integer Or "null" - The level (null to use the error_reporting() value and 0 to disable)
+     *
+     * @return void
      */
     public function setLevel($level)
     {
@@ -74,6 +101,8 @@ Class ErrorHandler
      * Sets the display_errors flag value.
      *
      * @param integer $displayErrors The display_errors flag value
+     *
+     * @return void
      */
     public function setDisplayErrors($displayErrors)
     {
@@ -112,6 +141,7 @@ Class ErrorHandler
             return true;
         }
 
+        // Log for local environment
         if ($c['logger'] instanceof Logger) { 
             $c['logger']->emergency($message, array('type' => $this->level, 'file' => DebugOutput::getSecurePath($file), 'line' => $line, 'extra' => $context));
             $c['logger']->__destruct(); // continue log writing
@@ -124,47 +154,16 @@ Class ErrorHandler
             AND $level
         ) {
             $e = new ErrorException($message, $level, 0, $file, $line);
-            $this->displayException($e);
+            $c['exception']->showError($e);
         }
         return false;
     }
 
-
-    public function isXmlHttp()
-    {
-        if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            return true;
-        }
-        return false;
-    }
-
-    public function displayException($e, $fatalError = false)
-    {
-        global $c;
-
-        if (is_object($c)) { 
-
-            if (defined('STDIN')) {      // Cli
-                echo 'Exception Error: ' .$e->getMessage().' '. DebugOutput::getSecurePath($e->getFile()).' '. $e->getLine(). "\n";
-                return;
-            }
-            if ($this->isXmlHttp()) {    // Ajax
-                echo strip_tags('Exception Error: ' .$e->getMessage().' '. DebugOutput::getSecurePath($e->getFile()).' '. $e->getLine(). "\n");
-                return;
-            }
-            $lastQuery = '';             // Show the last sql query
-            if (isset($c['app']->db)) {
-                $lastQuery = '';
-                if (method_exists($c['app']->db, 'lastQuery')) {
-                    $lastQuery = $c['app']->db->lastQuery();
-                }
-            }
-            ob_start();
-            include OBULLO . 'Error' . DS . 'DisplayException' . EXT;  // load view
-            echo ob_get_clean();
-        }
-    }
-
+    /**
+     * Fatal error handler
+     * 
+     * @return void
+     */
     public function handleFatal()
     {
         global $c;
@@ -184,7 +183,12 @@ Class ErrorHandler
             return;
         }
         $e = new ErrorException($error['message'], $type, 0, $error['file'], $error['line']);
-        $this->displayException($e, true);
+        $c['exception']->showError($e, true);
     }
 
 }
+
+// END ErrorHandler class
+
+/* End of file ErrorHandler.php */
+/* Location: .Obullo/Error/ErrorHandler.php */

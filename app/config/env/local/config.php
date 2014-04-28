@@ -12,7 +12,7 @@ $config = array(
     | Debug
     |--------------------------------------------------------------------------
     */
-    'debug' => false,            // If debug enabled framework converts all php errors to exceptions.
+    'debug' => true,            // If debug enabled framework converts all php errors to exceptions.
                                  // Should be disabled in "live" mode.
     /*
     |--------------------------------------------------------------------------
@@ -126,7 +126,7 @@ $config = array(
     'database' => array(
             'hostname' => 'localhost',
             'username' => 'root',
-            'password' => '123456',
+            'password' => '123457',
             'database' => 'demo_blog',
             'driver'   => '',   // optional
             'prefix'   => '',
@@ -194,8 +194,8 @@ $config = array(
     |--------------------------------------------------------------------------
     */
     'security' => array(
-        'encryption_key'   => 'write-your-secret-key',  // If you use the Encryption class you MUST set an encryption key.
-        'xss_filtering'    => false,                    // Whether the XSS filter is always active when GET, POST or COOKIE data is encountered
+        'encryption_key'  => 'write-your-secret-key',  // If you use the Encryption class you MUST set an encryption key.
+        'xss_filtering'   => false,                    // Whether the XSS filter is always active when GET, POST or COOKIE data is encountered
         'csrf' => array(                      
             'protection'  => false,          // Enables a CSRF cookie token to be set. When set to true, token will be
             'token_name'  => 'csrf_token',   // checked on a submitted form. If you are accepting user data, it is strongly

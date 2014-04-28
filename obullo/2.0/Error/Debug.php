@@ -20,6 +20,7 @@ Class Debug
 {
     /**
      * Enable disable debugging
+     * 
      * @var boolean
      */
     protected static $enabled = false;
@@ -33,7 +34,7 @@ Class Debug
      * @return void
      */
     public static function enable($level = null, $displayErrors = true)
-    {
+    {    
         if (static::$enabled) {
             return;
         }
@@ -45,15 +46,11 @@ Class Debug
 
         if ('cli' !== php_sapi_name()) {
 
-            ExceptionHandler::register();
+            ExceptionHandler::register();  // Cli - display errors only if they're not already logged to STDERR
 
-            // CLI - display errors only if they're not already logged to STDERR
-            // 
         } elseif ($displayErrors AND ( ! ini_get('log_errors') OR ini_get('error_log'))) {
             ini_set('display_errors', 1);
         }
-
-        // DebugClassLoader::enable(); Load debug loader
     }
 }
 

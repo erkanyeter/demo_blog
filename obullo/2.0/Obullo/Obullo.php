@@ -22,7 +22,7 @@ $hooks_enabled = $c['config']['hooks']['enabled'];
 if ($hooks_enabled) {
     $c['hooks']->call('pre_system');
     // @todo
-    // $['event']->fire('before.request');
+    // $['event']->register('before.request');
 }
 /*
 |--------------------------------------------------------------------------
@@ -147,7 +147,7 @@ if ($hooks_enabled) {
 if ($hooks_enabled) {
     $c['hooks']->call('post_system');
 }
-// $['event']->fire('after.response');
+// $['event']->register('after.response');
 
 $end = microtime(true) - $start;  // End Timer
 

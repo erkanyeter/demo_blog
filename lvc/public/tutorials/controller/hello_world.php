@@ -12,10 +12,9 @@ $app = new Controller(
         $c['view'];
         // $c['tree.db'];
 
-        // $c['db'];
+        $c['db'];
         // $this->config['debug'] = false;
-
-        echo $a;
+        // echo $a;
     }
 );
 
