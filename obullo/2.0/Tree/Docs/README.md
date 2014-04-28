@@ -484,18 +484,18 @@ Updates your table row using the primary key ( category_id ).
 
 Truncate the table data.
 
-#### $this->treeCategory->moveAsFirstChild($source, $target);
+#### $this->treeCategory->moveAsFirstChild(array $source, array $target);
 
 Set node as first child.
 
-#### $this->treeCategory->moveAsPrevSibling($source, $target);
+#### $this->treeCategory->moveAsPrevSibling(array $source, array $target);
 
 Set node as prev sibling.
 
-#### $this->treeCategory->moveAsLastChild($source, $target);
+#### $this->treeCategory->moveAsLastChild(array $source, array $target);
 
 Set node as last child.
 
-#### $this->treeCategory->moveAsNextSibling($source, $target);
+#### $this->treeCategory->moveAsNextSibling(array $source, array $target);
 
 Set node as next sibling.
