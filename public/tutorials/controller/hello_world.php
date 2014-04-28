@@ -11,7 +11,6 @@ $app = new Controller(
         $c['view'];
     }
 );
-
 $app->func(
     'index', 
     function () {
