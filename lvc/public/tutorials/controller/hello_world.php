@@ -19,6 +19,7 @@ $app = new Controller(
 $app->func(
     'index', 
     function () {
+        var_dump($this->cache->getOption('OPT_SERIALIZER'));
 
         $this->view->load(
             'hello_world', 

@@ -62,20 +62,20 @@ $config = array(
     */
     'routes' => array(
 
-            'tag/(:any)'                   => 'tag/$1',
-            'post/detail/(:num)'           => 'post/detail/$1',
-            'post/preview/(:num)'          => 'post/preview/$1',
-            'post/update/(:num)'           => 'post/update/$1',
-            'post/delete/(:num)'           => 'post/delete/$1',
-            'comment/delete/(:num)'        => 'comment/delete/$1',
-            'comment/update/(:num)/(:any)' => 'comment/update/$1/$2',
+        'tag/(:any)'                   => 'tag/$1',
+        'post/detail/(:num)'           => 'post/detail/$1',
+        'post/preview/(:num)'          => 'post/preview/$1',
+        'post/update/(:num)'           => 'post/update/$1',
+        'post/delete/(:num)'           => 'post/delete/$1',
+        'comment/delete/(:num)'        => 'comment/delete/$1',
+        'comment/update/(:num)/(:any)' => 'comment/update/$1/$2',
 
-            'default_controller' => 'welcome/index', // This is the default controller, application call it as default
-            '404_override' => '',                    // You can redirect 404 errors to specify controller
+        'default_controller' => 'welcome/index', // This is the default controller, application call it as default
+        '404_override' => '',                    // You can redirect 404 errors to specify controller
 
-             // Controller Default Method
-            'index_method' => 'index'                // This is controller default index method for all controllers.
-                                                     // You should configure it before the first run of your application.
+         // Controller Default Method
+        'index_method' => 'index'                // This is controller default index method for all controllers.
+                                                 // You should configure it before the first run of your application.
     ),
     /*
     |--------------------------------------------------------------------------
@@ -96,27 +96,27 @@ $config = array(
     | ---------------------------------------------------
     */
     'log' =>   array(
-            'enabled'   => true,        // On / Off logging.
-            'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
-            'threshold' => array(       // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
-                LOG_EMERG,
-                LOG_ALERT,
-                LOG_CRIT,
-                LOG_ERR,
-                LOG_WARNING,
-                LOG_NOTICE,
-                LOG_INFO,
-                LOG_DEBUG
-            ),
-            'channel'   => 'system',        // Default channel name should be general.
-            'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
-            'path'      => array(
-                'app'   => 'data/logs/app.log',       // File handler application log path
-                'cli'   => 'data/logs/cli/app.log',   // File handler cli log path  
-            ),
-            'format'    => 'Y-m-d H:i:s',   // Date format
-            'queries'   => true,            // If true "all" SQL Queries gets logged.
-            'benchmark' => true,            // If true "all" Application Benchmarks gets logged.
+        'enabled'   => true,        // On / Off logging.
+        'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
+        'threshold' => array(       // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
+            LOG_EMERG,
+            LOG_ALERT,
+            LOG_CRIT,
+            LOG_ERR,
+            LOG_WARNING,
+            LOG_NOTICE,
+            LOG_INFO,
+            LOG_DEBUG
+        ),
+        'channel'   => 'system',        // Default channel name should be general.
+        'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
+        'path'      => array(
+            'app'   => 'data/logs/app.log',       // File handler application log path
+            'cli'   => 'data/logs/cli/app.log',   // File handler cli log path  
+        ),
+        'format'    => 'Y-m-d H:i:s',   // Date format
+        'queries'   => true,            // If true "all" SQL Queries gets logged.
+        'benchmark' => true,            // If true "all" Application Benchmarks gets logged.
     ),
     /*
     |--------------------------------------------------------------------------
@@ -124,16 +124,16 @@ $config = array(
     |--------------------------------------------------------------------------
     */
     'database' => array(
-            'hostname' => 'localhost',
-            'username' => 'root',
-            'password' => '123456',
-            'database' => 'demo_blog',
-            'driver'   => '',   // optional
-            'prefix'   => '',
-            'dbh_port' => '',
-            'char_set' => 'utf8',
-            'dsn'      => '',
-            'options'  => array() // array( PDO::ATTR_PERSISTENT => false ); 
+        'hostname' => 'localhost',
+        'username' => 'root',
+        'password' => '123456',
+        'database' => 'demo_blog',
+        'driver'   => '',   // optional
+        'prefix'   => '',
+        'dbh_port' => '',
+        'char_set' => 'utf8',
+        'dsn'      => '',
+        'options'  => array() // array( PDO::ATTR_PERSISTENT => false ); 
     ),
     /*
     |--------------------------------------------------------------------------
@@ -141,23 +141,23 @@ $config = array(
     |--------------------------------------------------------------------------
     */
     'session' => array(
-            'cookie_name'     => 'session',     // The name you want for the cookie
-            'expiration'      => 7200,          // The number of SECONDS you want the session to last. By default two hours. "0" is no expiration.
-            'expire_on_close' => true,          // Whether to cause the session to expire automatically when the browser window is closed
-            'encrypt_cookie'  => false,         // Whether to encrypt the cookie
-            'match_ip'        => false,         // Whether to match the user's IP address when reading the session data
-            'match_useragent' => true,          // Whether to match the User Agent when reading the session data
-            'time_to_update'  => 1,             // How many seconds between Framework refreshing "Session" Information"
-            'db_container'    => 'Db',         // Container Settings, Db, Cache; Mongo;
-            'db_tablename'    => 'sessions',   // The name of the session database table
+        'cookie_name'     => 'session',     // The name you want for the cookie
+        'expiration'      => 7200,          // The number of SECONDS you want the session to last. By default two hours. "0" is no expiration.
+        'expire_on_close' => true,          // Whether to cause the session to expire automatically when the browser window is closed
+        'encrypt_cookie'  => false,         // Whether to encrypt the cookie
+        'match_ip'        => false,         // Whether to match the user's IP address when reading the session data
+        'match_useragent' => true,          // Whether to match the User Agent when reading the session data
+        'time_to_update'  => 1,             // How many seconds between Framework refreshing "Session" Information"
+        'db_container'    => 'Db',         // Container Settings, Db, Cache; Mongo;
+        'db_tablename'    => 'sessions',   // The name of the session database table
 
-            'php.ini' => array(
-                'session.gc_divisor'      => 100,   // Configure garbage collection
-                'session.gc_maxlifetime'  => 7200,  // REMOVE THIS AND USE "expiration"
-                'session.cookie_lifetime' => 0,
-                'session.save_handler'    => 'redis',
-                'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
-            ),
+        'php.ini' => array(
+            'session.gc_divisor'      => 100,   // Configure garbage collection
+            'session.gc_maxlifetime'  => 7200,  // REMOVE THIS AND USE "expiration"
+            'session.cookie_lifetime' => 0,
+            'session.save_handler'    => 'redis',
+            'session.save_path'       => 'tcp://10.0.0.154:6379?auth=aZX0bjL',
+        ),
     ),
     /*
     |--------------------------------------------------------------------------
@@ -178,16 +178,16 @@ $config = array(
     |--------------------------------------------------------------------------
     */
     'cache' =>  array(
-           'servers' => array(
-                              'hostname' => '127.0.0.1',
-                              'port'     => '11211',
-                               // 'timeout'  => '2.5'   // 2.5 sec timeout, just for redis cache
-                              'weight'   => '1'         // The weight parameter effects the consistent hashing 
-                                                        // used to determine which server to read/write keys from.
-                              ),
-            'auth' =>  '',                         // connection password
-            'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
-            'serializer' =>  'serializer_php',     // serializer_none, serializer_php, serializer_igbinary
+       'servers' => array(
+                      'hostname' => '127.0.0.1',
+                      'port'     => '11211',
+                       // 'timeout'  => '2.5',  // 2.5 sec timeout, just for redis cache
+                      'weight'   => '1'         // The weight parameter effects the consistent hashing 
+                                                // used to determine which server to read/write keys from.
+                    ),
+        'auth'       =>  '',                   // connection password
+        'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
+        'serializer' =>  'serializer_php',     // serializer_none, serializer_php, serializer_igbinary
     ),
     /*
     |--------------------------------------------------------------------------

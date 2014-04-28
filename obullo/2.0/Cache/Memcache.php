@@ -161,7 +161,7 @@ Class Memcache implements DriverInterface
     }
 
     /**
-     * Clean all data
+     * Remove all keys and data from the cache.
      * 
      * @return boolean
      */

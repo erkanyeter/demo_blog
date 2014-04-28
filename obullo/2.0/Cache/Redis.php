@@ -18,9 +18,9 @@ use RunTimeException;
  */
 Class Redis implements DriverInterface
 {
-    const SERIALIZER_PHP      = 'serializer_php';
-    const SERIALIZER_NONE     = 'serializer_none';
-    const SERIALIZER_IGBINARY = 'serializer_igbinary';
+    const SERIALIZER_PHP      = 'SERIALIZER_PHP';
+    const SERIALIZER_NONE     = 'SERIALIZER_NONE';
+    const SERIALIZER_IGBINARY = 'SERIALIZER_IGBINARY';
     const OPTION_SERIALIZER   = 1;      // Redis::OPT_SERIALIZER
 
     /**
