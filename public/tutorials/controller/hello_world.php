@@ -8,22 +8,13 @@
 $app = new Controller(
     function () {
         global $c;
-
         $c['view'];
-        $c['cache'];
     }
 );
 
 $app->func(
     'index', 
     function () {
-
-        $this->cache->set('aly', 'tesasdt deneme', 5);
-        // $this->cache->set('aly1', 'tesasdt deneme', 7);
-        // $this->cache->set('aly2', 'tesasdt deneme', 10);
-        // $this->cache->set('aly3', 'tesasdt deneme', 3);
-        echo '<pre>';
-        print_r($this->cache->get('aly'));
         $this->view->load(
             'hello_world', 
             function () {
