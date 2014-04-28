@@ -180,13 +180,14 @@ $config = array(
     'cache' =>  array(
            'servers' => array(
                               'hostname' => '127.0.0.1',
-                              'port'     => '6379',
+                              'port'     => '11211',
                                // 'timeout'  => '2.5'   // 2.5 sec timeout, just for redis cache
                               'weight'   => '1'         // The weight parameter effects the consistent hashing 
                                                         // used to determine which server to read/write keys from.
                               ),
             'auth' =>  '',                         // connection password
             'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
+            'serializer' =>  'serializer_php',     // serializer_none, serializer_php, serializer_igbinary
     ),
     /*
     |--------------------------------------------------------------------------

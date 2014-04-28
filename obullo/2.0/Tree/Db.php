@@ -80,6 +80,13 @@ Class Db
     public $rgt;
 
     /**
+     * $cache Cache object
+     * 
+     * @var object
+     */
+    public $cache;
+
+    /**
      * Sql query or cached sql query 
      * result array
      * 
