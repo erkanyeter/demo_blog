@@ -21,8 +21,8 @@ $app->func(
         $this->view->load(
             'welcome', 
             function () {
-                $this->set('name', 'Obullo');
-                $this->set('footer', $this->getTpl('footer', false));
+                $this->assign('name', 'Obullo');
+                $this->assign('footer', $this->getTpl('footer', false));
             }
         );
     }

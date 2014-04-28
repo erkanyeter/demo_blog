@@ -10,7 +10,7 @@ namespace Obullo\Cache;
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
- * @link      http://obullo.com/package/log/HandlerInterface
+ * @link      http://obullo.com/package/cache
  */
 interface DriverInterface
 {

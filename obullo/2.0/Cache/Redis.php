@@ -300,9 +300,8 @@ Class Redis implements DriverInterface
         if (sizeof($keys) == 0) {
             return $keys;
         }
-        foreach ($keys as $k => $v) {
+        foreach ($keys as $v) {
             $getData = $this->redis->get($v);
-
             if (empty($getData)) {
                 $getData = $this->sGetMembers($v);
             }
@@ -429,7 +428,7 @@ Class Redis implements DriverInterface
      * @param string $key     cache key.
      * @param string $hashKey hash key.
      * 
-     * @return BOOL TRUE in case of success, FALSE in case of failure
+     * @return boolean TRUE in case of success, FALSE in case of failure
      */
     public function hDel($key, $hashKey)
     {
@@ -465,7 +464,7 @@ Class Redis implements DriverInterface
      * 
      * @param string $key cache key.
      * 
-     * @return BOOL: If the member exists in the hash table, return TRUE, otherwise return FALSE.
+     * @return boolean If the member exists in the hash table, return TRUE, otherwise return FALSE.
      */
     public function hGetAll($key)
     {
@@ -479,7 +478,7 @@ Class Redis implements DriverInterface
      * @param string $member member.
      * @param int    $value  value.
      * 
-     * @return LONG the new value
+     * @return long the new value
      */
     public function hIncrBy($key, $member, $value)
     {
@@ -493,7 +492,7 @@ Class Redis implements DriverInterface
      * @param string $member member.
      * @param float  $value  value.
      * 
-     * @return FLOAT the new value
+     * @return float the new value
      */
     public function hIncrByFloat($key, $member, $value)
     {
@@ -506,7 +505,7 @@ Class Redis implements DriverInterface
      * @param string $key     cache key.
      * @param array  $members key->value array.
      * 
-     * @return BOOL
+     * @return bool
      */
     public function hMSet($key, $members)
     {

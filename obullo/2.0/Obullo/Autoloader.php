@@ -15,6 +15,8 @@
  * PSR-0 Autoloader
  * 
  * @param string $realname classname 
+ *
+ * @see http://www.php-fig.org/psr/psr-0/
  * 
  * @return void
  */
@@ -23,7 +25,7 @@ function Obullo_autoloader($realname)
     if (class_exists($realname, false)) {  // https://github.com/facebook/hiphop-php/issues/947
         return;
     }
-    $className = ltrim($realname, '\\');  // http://www.php-fig.org/psr/psr-0/
+    $className = ltrim($realname, '\\');
     $fileName  = '';
     $namespace = '';
     if ($lastNsPos = strrpos($className, '\\')) {
@@ -42,6 +44,14 @@ function Obullo_autoloader($realname)
 }
 spl_autoload_register('Obullo_autoloader', true);
 
+/**
+ * Register Error Handler
+ * If framework debug enabled
+ * register error & exception handlers.
+ */
+if ($c['config']['debug']) {
+    Obullo\Error\Debug::enable(E_ALL | E_STRICT);
+}
 
 // END Autoloader.php File
 /* End of file Autoloader.php

@@ -13,60 +13,16 @@ In your <dfn>app/config/config.php</dfn> you can control the all application err
 ```php
 /*
 |--------------------------------------------------------------------------
-| Error
+| Debug
 |--------------------------------------------------------------------------
 */
-'error' => array(
-    'reporting' => 1,       // 'E_ALL ^ E_NOTICE'; // 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
-    'debug'     => array(
-                        'enabled' => 'E_ALL',
-                        'padding' => 3
-                    ),
-),
-```
-this configuration will enable all errors and you can use PHP ERROR CONSTANTS like this
+'debug' => true,            // If debug enabled framework converts all php errors to exceptions.
+                            // Should be disabled in "live" mode.
 
-```php
-'error' => array(
-    'reporting' => 1,
-    'debug'     => array(
-                        'enabled' => 'E_ALL ^ E_NOTICE',
-                        'padding' => 3
-                    ),
-),
-```
-
-this configuration will disable all errors.
-
-```php
-'error' => array(
-    'reporting' => 0,
-    'debug'     => array(
-                        'enabled' => 'E_ALL',
-                        'padding' => 3
-                    ),
-),
-```
-
-You can do more using php error constants. Look at below the examples.
-
-```php
-|   String - Custom Regex Mode Examples:
-|
-|   Running errors
-|       'enabled' => 'E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR';
-|   
-|   Running errors + notices
-|       'enabled' => 'E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_NOTICE';
-|   
-|   All errors except notices, warnings, exceptions and database errors
-|       'enabled' => 'E_ALL ^ (E_NOTICE | E_WARNING | E_EXCEPTION | E_DATABASE)';
-|       
-|   All errors except notices 
-|       'enabled' => 'E_ALL ^ E_NOTICE';
 ```
 
 The following functions let you generate errors:
+
 
 #### $this->response->showError('message' [, int $status_code= 500 ] )
 

@@ -39,12 +39,11 @@ $c['logger'] = function () use ($c) {
 };
 /*
 |--------------------------------------------------------------------------
-| Exceptions
+| Exception
 |--------------------------------------------------------------------------
 */
-$c['exception'] = function ($e) {
-    $exception = new Obullo\Exception\Error;
-    $exception->display($e);
+$c['exception'] = function () {
+    return new Obullo\Error\Exception;
 };
 /*
 |--------------------------------------------------------------------------

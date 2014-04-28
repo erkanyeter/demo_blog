@@ -3,7 +3,7 @@
 namespace Lvc;
 
 /**
- * Lvc Class - (L)ayered (V)iew (C)ontroler
+ * Lvc Class - (L) ayered (V) iew (C) ontroller
  * 
  * @category  Lvc
  * @package   Lvc
@@ -119,7 +119,7 @@ Class Lvc
         // don't clone Controller::$instance, we just do backup.
         //----------------------------------------------
         
-        $this->global = Controller::$instance;     // We need create backup $this object of main controller
+        $this->global = \Controller::$instance;     // We need create backup $this object of main controller
 
         // becuse of it will change when HVC process is done.
         //----------------------------------------------
@@ -544,7 +544,6 @@ echo $this->view->get(
         call_user_func_array(array($app, $router->fetchMethod()), $arguments);
 
         $response = ob_get_contents(); // Get the contents of the output buffer
-
         ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
 
         $this->reset();
@@ -588,7 +587,7 @@ echo $this->view->get(
         // --------------------------------------------------
 
         if (is_object($this->global)) {  // fixed Lvc object type of integer bug.
-            Controller::$instance = $this->global;
+            \Controller::$instance = $this->global;
         }
         $c['app']->uri    = $this->uri;        // restore back original objects
         $c['app']->router = $this->router;   

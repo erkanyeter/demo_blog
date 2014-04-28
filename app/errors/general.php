@@ -3,19 +3,20 @@
 <title>Error</title>
 <style type="text/css">
 #errorGeneral  {
-font-family : Verdana, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, Geneva, Arial, Sans-serif;
-font-size:14px;
-width:99%;
-padding:5px;
-background-color: #F0F0F0;
+background-color:    #fff;
+margin:              0px;
+font-size:           14px;
+font-family :        Arial,Verdana, Sans-serif;
+color:               #666;
 }
 #errorGeneral h1 { 
-font-weight:bold;
-font-size:20px;
-color:#333;
-margin:0 0 8px 0;
+font-weight:        bold;
+font-size:          20px;
+color:              #333;
+margin:             0 0 8px 0;
 }
 </style>
+
 </head>
 <body>
 

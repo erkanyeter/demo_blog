@@ -36,14 +36,22 @@ if (defined('STDIN')) {
     set_time_limit(0);                   // Php execution limit, 0 = Unlimited
     ini_set('memory_limit', '100000M');  // Set maximum amount of memory for Cli operations.
 }
-
+/*
+|--------------------------------------------------------------------------
+| Container ( IOC )
+|--------------------------------------------------------------------------
+*/
 require OBULLO_CONTAINER;
+
+$c = new Obullo\Container\Pimple;
+
 require OBULLO_CONFIG;
+
+$c['config'] = function () {
+    return new Obullo\Config\Config;
+};
 require OBULLO_CORE;
 require OBULLO_AUTOLOADER;
-
-Obullo\Error\ErrorHandler::register(E_ALL | E_NOTICE);
-
 require OBULLO_COMPONENTS;
 require OBULLO_SERVICES;
 require OBULLO_PHP;

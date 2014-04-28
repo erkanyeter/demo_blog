@@ -227,7 +227,6 @@ Class Router
         }
 
         $error_page = (isset($segments[1])) ? $segments[0] . '/' . $segments[1] : $segments[0];
-        $error_page = filter_var($error_page, FILTER_SANITIZE_SPECIAL_CHARS);
 
         // HVC 404
         //----------------------------

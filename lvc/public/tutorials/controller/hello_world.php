@@ -8,12 +8,18 @@
 $app = new Controller(
     function () {
         global $c;
+
         $c['view'];
+        $c['cache'];
+
+        // $this->config['debug'] = false;
+        // echo $a;
     }
 );
 $app->func(
     'index', 
     function () {
+
         $this->view->load(
             'hello_world', 
             function () {
