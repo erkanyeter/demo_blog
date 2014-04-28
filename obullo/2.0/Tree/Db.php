@@ -8,7 +8,7 @@ use RunTimeException;
  * Nested Set Model Tree Class
  * 
  * @category  Tree
- * @package   Category
+ * @package   Db
  * @author    Obullo Framework <obulloframework@gmail.com>
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence

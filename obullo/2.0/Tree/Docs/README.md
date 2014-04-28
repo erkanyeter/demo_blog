@@ -15,10 +15,6 @@ Tree class use nested set model. It is a particular technique for representing n
 $c['tree.db'];
 
 $this->treeDb->setTablename('nested_category');
-$this->treeDb->setPrimaryKey('category_id');
-$this->treeDb->setText('name');
-$this->treeDb->setLft('lft');
-$this->treeDb->setRgt('rgt');
 ```
 
 ### Run SQL Code
@@ -449,6 +445,65 @@ Gives
 Truncate the table data.
 
 
+### Querying Tree
+
+------
+
+#### Retrieving a Full Tree
+
+We can retrieve the full tree through the use of a self-join that links parents with nodes on the basis that a node's lft value will always appear between its parent's lft and rgt values:
+
+```php
+$sql = "SELECT node.name
+FROM nested_category AS node,
+nested_category AS parent
+WHERE node.lft BETWEEN parent.lft AND parent.rgt
+AND parent.name = 'Electronics'
+ORDER BY node.lft";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++----------------------+
+| name                 |
++----------------------+
+| Electronics          |
+| Portable Electronics |
+| Flash                |
+| Mp3 Player           |
+| Televisions          |
+| Lcd                  |
+| Tube                 |
+| Plasma               |
++----------------------+
+```
+
+#### Finding all the Leaf Nodes
+
+Finding all leaf nodes in the nested set model even simpler than the LEFT JOIN method used in the adjacency list model. If you look at the nested_category table, you may notice that the lft and rgt values for leaf nodes are consecutive numbers. To find the leaf nodes, we look for nodes where rgt = lft + 1:
+
+```php
+$sql = "SELECT name
+FROM nested_category
+WHERE rgt = lft + 1";
+
+$this->treeDb->query($sql);
+```
+Gives
+```php
++----------------------+
+| name                 |
++----------------------+
+| Flash                |
+| Mp3 Player           |
+| Lcd                  |
+| Tube                 |
+| Plasma               |
++----------------------+
+```
+
+
 ### Function Reference
 
 ------
@@ -524,3 +579,4 @@ Set node as last child.
 #### $this->treeDb->moveAsNextSibling(array $source, array $target);
 
 Set node as next sibling.
+
