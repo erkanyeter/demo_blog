@@ -206,7 +206,7 @@ $c['logger'] = function () use ($c) {
     if ($c['config']['log']['enabled'] == false) {  // Disabled handler.
         return new Obullo\Log\Disabled;
     }
-    $logger = new Obullo\Log\Logger;
+    $logger = new Obullo\Log\Logger($c['config']['log']);
 
     $logger->addWriter(
         LOGGER_FILE,

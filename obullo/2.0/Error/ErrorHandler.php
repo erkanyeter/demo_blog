@@ -132,6 +132,7 @@ Class ErrorHandler
         if (0 === $this->level) {
             return false;
         }
+
         if ($level & (E_USER_DEPRECATED | E_DEPRECATED)) {
 
             if (is_object($c) AND $c['logger'] instanceof Logger) {
@@ -149,7 +150,6 @@ Class ErrorHandler
         // Log for local environment
         if ($c['logger'] instanceof Logger) { 
             $c['logger']->emergency($message, array('level' => $type, 'file' => DebugOutput::getSecurePath($file), 'line' => $line, 'extra' => null));
-            $c['logger']->__destruct(); // continue log writing
         }
 
         if ($this->displayErrors 
@@ -176,6 +176,7 @@ Class ErrorHandler
         if (null === $error = error_get_last()) {
             return;
         }
+
         $type = $error['type'];
         if (0 === $this->level OR ! in_array($type, array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
             return;

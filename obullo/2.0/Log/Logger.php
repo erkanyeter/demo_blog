@@ -2,7 +2,7 @@
 
 namespace Obullo\Log;
 
-use Closure, RunTimeException;
+use Closure, RunTimeException, ErrorException;
 
 /**
  * Logger Class
@@ -189,13 +189,13 @@ Class Logger
     protected static $registeredExceptionHandler = false;
 
     /**
-    * Constructor
-    */
-    public function __construct()
+     * Constructor
+     * 
+     * @param array $params configuration
+     */
+    public function __construct($params = array())
     {
-        global $c;
-
-        $this->config          = $c['config']['log'];
+        $this->config          = $params;
         $this->enabled         = $this->config['enabled'];
         $this->debug           = $this->config['debug'];
         $this->channel         = $this->config['channel'];
@@ -208,11 +208,12 @@ Class Logger
         $this->priorityValues = array_flip(self::$priorities);
         $this->processor      = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
 
+        static::registerExceptionHandler($this);
+        static::registerErrorHandler($this);
+
         // if (isset($options['exceptionhandler']) AND $this->config['exceptionhandler'] === true) {
         //     static::registerExceptionHandler($this);
         // }
-
-        static::registerErrorHandler($this);
 
         // if (isset($options['errorhandler']) AND $this->config['errorhandler'] === true) {
         //     static::registerErrorHandler($this);
@@ -231,7 +232,7 @@ Class Logger
         if ( ! isset($this->handlers[$name])) {
             throw new RunTimeException(
                 sprintf(
-                    'The push handler %s is not defined in your components.php file.', 
+                    'The push handler %s is not defined in your components.php.', 
                     $name
                 )
             );
@@ -702,14 +703,14 @@ Class Logger
      */
     public function __destruct()
     {
-        if ($this->enabled == false) {  // check logger is disabled.
-            return;
-        }
-        if ($this->debug) {             // debug log data if debug
+        if ($this->debug) {             // debug log data if enabled
             $debug = new Debug($this);
             echo $debug->printDebugger();
             return;
         } 
+        if ($this->enabled == false) {  // check logger is disabled.
+            return;
+        }
         foreach ($this->writers as $val) {    // write log data
             $val['handler']->write();
         }

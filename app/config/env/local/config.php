@@ -11,9 +11,38 @@ $config = array(
     |--------------------------------------------------------------------------
     | Debug
     |--------------------------------------------------------------------------
+    */                             // If debug enabled framework converts all php errors to exceptions.
+    'debug' => false,              // Should be disabled in "live" mode.
+    /*
+    |--------------------------------------------------------------------------
+    | Log
+    |--------------------------------------------------------------------------
+    | @see Syslog Protocol http://tools.ietf.org/html/rfc5424
+    | @link http://www.php.net/manual/en/function.syslog.php
     */
-    'debug' => false,            // If debug enabled framework converts all php errors to exceptions.
-                                 // Should be disabled in "live" mode.
+    'log' =>   array(
+        'enabled'   => true,       // On / Off logging.
+        'debug'     => true,       // On / Off debug html output. When it is enabled all handlers will be disabled.
+        'threshold' => array(      // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
+            LOG_EMERG,              
+            LOG_ALERT,          
+            LOG_CRIT,
+            LOG_ERR,
+            LOG_WARNING,
+            LOG_NOTICE,
+            LOG_INFO,
+            LOG_DEBUG
+        ),
+        'channel'   => 'system',       // Default channel name should be general.
+        'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
+        'path'      => array(
+            'app'   => 'data/logs/app.log',       // File handler application log path
+            'cli'   => 'data/logs/cli/app.log',   // File handler cli log path  
+        ),
+        'format'    => 'Y-m-d H:i:s',  // Date format
+        'queries'   => true,           // If true "all" SQL Queries gets logged.
+        'benchmark' => true,           // If true "all" Application Benchmarks gets logged.
+    ),
     /*
     |--------------------------------------------------------------------------
     | Http Url
@@ -79,47 +108,6 @@ $config = array(
     ),
     /*
     |--------------------------------------------------------------------------
-    | Log
-    |--------------------------------------------------------------------------
-    | Severities:
-    | LOG_EMERG (0)    : Emergency: system is unusable.
-    | LOG_ALERT (1)    : Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
-    | LOG_CRIT (2)     : Critical conditions. Example: Application component unavailable, unexpected exception.
-    | LOG_ERR (3)      : Runtime errors that do not require immediate action but should typically be logged and monitored.
-    | LOG_WARNING (4)  : Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
-    | LOG_NOTICE (5)   : Normal but significant events.
-    | LOG_INFO (6)     : Interesting events. Examples: User logs in, SQL logs, Application Benchmarks.
-    | LOG_DEBUG (7)    : Detailed debug information.
-    | ---------------------------------------------------
-    | @see Syslog Protocol http://tools.ietf.org/html/rfc5424
-    | @link http://www.php.net/manual/en/function.syslog.php
-    | ---------------------------------------------------
-    */
-    'log' =>   array(
-        'enabled'   => true,        // On / Off logging.
-        'debug'     => false,       // On / Off debug html output. When it is enabled all handlers will be disabled.
-        'threshold' => array(       // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
-            LOG_EMERG,
-            LOG_ALERT,
-            LOG_CRIT,
-            LOG_ERR,
-            LOG_WARNING,
-            LOG_NOTICE,
-            LOG_INFO,
-            LOG_DEBUG
-        ),
-        'channel'   => 'system',        // Default channel name should be general.
-        'line'      => '[%datetime%] %channel%.%level%: --> %message% %context% %extra%\n',  // This format just for line based log drivers.
-        'path'      => array(
-            'app'   => 'data/logs/app.log',       // File handler application log path
-            'cli'   => 'data/logs/cli/app.log',   // File handler cli log path  
-        ),
-        'format'    => 'Y-m-d H:i:s',   // Date format
-        'queries'   => true,            // If true "all" SQL Queries gets logged.
-        'benchmark' => true,            // If true "all" Application Benchmarks gets logged.
-    ),
-    /*
-    |--------------------------------------------------------------------------
     | Database
     |--------------------------------------------------------------------------
     */
@@ -148,8 +136,8 @@ $config = array(
         'match_ip'        => false,         // Whether to match the user's IP address when reading the session data
         'match_useragent' => true,          // Whether to match the User Agent when reading the session data
         'time_to_update'  => 1,             // How many seconds between Framework refreshing "Session" Information"
-        'db_container'    => 'Db',         // Container Settings, Db, Cache; Mongo;
-        'db_tablename'    => 'sessions',   // The name of the session database table
+        'db_container'    => 'Db',          // Container Settings, Db, Cache; Mongo;
+        'db_tablename'    => 'sessions',    // The name of the session database table
 
         'php.ini' => array(
             'session.gc_divisor'      => 100,   // Configure garbage collection
@@ -179,15 +167,17 @@ $config = array(
     */
     'cache' =>  array(
        'servers' => array(
-                      'hostname' => '127.0.0.1',
-                      'port'     => '11211',
-                       // 'timeout'  => '2.5',  // 2.5 sec timeout, just for redis cache
-                      'weight'   => '1'         // The weight parameter effects the consistent hashing 
-                                                // used to determine which server to read/write keys from.
-                    ),
+                        array(
+                          'hostname' => '127.0.0.1',
+                          'port'     => '11211',
+                           // 'timeout'  => '2.5',  // 2.5 sec timeout, just for redis cache
+                          'weight'   => '1'         // The weight parameter effects the consistent hashing 
+                                                    // used to determine which server to read/write keys from.
+                        ),
+        ),
         'auth'       =>  '',                   // connection password
         'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
-        'serializer' =>  'serializer_php',     // serializer_none, serializer_php, serializer_igbinary
+        'serializer' =>  'SERIALIZER_PHP',     // serializer_none, serializer_php, serializer_igbinary
     ),
     /*
     |--------------------------------------------------------------------------
@@ -221,29 +211,10 @@ $config = array(
     | Proxy
     |--------------------------------------------------------------------------
     */
-    'proxy' => array(
-        'ips' => '',      // Reverse Proxy IPs , If your server is behind a reverse proxy, you must whitelist the proxy IP
-    ),                    // addresses from which the Application should trust the HTTP_X_FORWARDED_FOR
-                          // header in order to properly identify the visitor's IP address.
+    'proxy' => array(     // Reverse Proxy IPs , If your server is behind a reverse proxy, you must whitelist the proxy IP
+        'ips' => '',      // addresses from which the Application should trust the HTTP_X_FORWARDED_FOR
+    ),                    // header in order to properly identify the visitor's IP address.
                           // Comma-delimited, e.g. '10.0.1.200,10.0.1.201'
-    /*
-    |--------------------------------------------------------------------------
-    | Hvc
-    |--------------------------------------------------------------------------
-    */
-    'hvc' => array(
-        'caching' => true,
-    ),
-    // Each Hvc request uri creates a random connection string (hvc key) as the following steps.
-    // 
-    // 1 - The request method gets the uri and serialized string of your data parameters
-    // 2 - then it builds md5 hash
-    // 3 - finally add it to the end of your hvc uri.
-    // 4 - using this technique the hvc key can be used as a "key" for caching systems.
-
-    // Example Cache Usage
-    // $this->hvc->get('private/comments/getuser', array('user_id' => 5), $expiration = 7200);
-    
     /*
     |--------------------------------------------------------------------------
     | Output
