@@ -17,6 +17,12 @@ use RunTimeException;
  * @copyright 2009-2014 Obullo
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL Licence
  * @link      http://obullo.com/package/tree
+ *
+ * https://github.com/olimortimer/ci-nested-sets/blob/master/Nested_set.php
+ * http://framework.zend.com/wiki/display/ZFPROP/Zend_Db_NestedSet+-+Graham+Anderson
+ * https://github.com/fpietka/Zend-Nested-Set/blob/master/library/Nestedset/Model.php
+ * http://ftp.nchu.edu.tw/MySQL/tech-resources/articles/hierarchical-data.html
+ * 
  */
 Class Db
 {
@@ -25,6 +31,7 @@ Class Db
      */
     const TABLE_NAME  = 'nested_category';
     const PRIMARY_KEY = 'category_id';
+    const PARENT_ID   = 'parent_id';
     const TEXT        = 'name';
     const LEFT        = 'lft';
     const RIGHT       = 'rgt';
@@ -50,6 +57,13 @@ Class Db
      * @var string
      */
     public $tableName;
+
+    /**
+     * Column name parent_id
+     * 
+     * @var string
+     */
+    public $parentId;
 
     /**
      * Column name primary key
@@ -105,6 +119,7 @@ Class Db
 
         $this->tableName  = static::TABLE_NAME;  // set default values
         $this->primaryKey = static::PRIMARY_KEY;
+        $this->parentId   = static::PARENT_ID;
         $this->text       = static::TEXT;
         $this->lft        = static::LEFT;
         $this->rgt        = static::RIGHT;
@@ -215,9 +230,10 @@ Class Db
         $result = $this->db->getRowArray();
 
         $data = array(
-            $this->text => $text,
-            $this->lft  => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 1,
-            $this->rgt  => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 2,
+            $this->parentId => 0,
+            $this->text     => $text,
+            $this->lft      => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 1,
+            $this->rgt      => (isset($result[$this->lft])) ? $result[$this->lft] : 0 + 2,
         );
         
         $data = $this->appendExtraData($data, $extra);
@@ -236,31 +252,54 @@ Class Db
     public function insert($tableName, $data)
     {
         $values = rtrim(str_repeat("?,", count($data)), ',');
-
-        $sql = "INSERT INTO $tableName (".implode(',', array_keys($data)).") VALUES (".$values.");";
+        $sql    = "INSERT INTO $tableName (".implode(',', array_keys($data)).") VALUES (".$values.");";
     
         $this->db->prepare($sql);
         $this->db->execute(array_values($data));
     }
 
     /**
+     * Get data
+     * 
+     * @param int $category_id primary key value
+     * 
+     * @return array sql data
+     */
+    public function getRow($category_id)
+    {
+        $this->db->query(
+            sprintf(
+                'SELECT * FROM %s WHERE %s = %s LIMIT 1',
+                $this->protect($this->tableName),
+                $this->protect($this->primaryKey),
+                $this->db->escape((int)$category_id)
+            )
+        );
+        return $this->db->getRowArray();
+    }
+
+    /**
      * Inserts a new node as the first child of the supplied parent node.
      * 
-     * @param int    $lftValue lft column value
-     * @param string $text     value
-     * @param array  $extra    extra data
+     * @param int    $category_id primary key column value
+     * @param string $text        value
+     * @param array  $extra       extra data
      * 
      * @return void
      */
-    public function addChild($lftValue, $text, $extra = array())
+    public function addChild($category_id, $text, $extra = array())
     {
+        $row      = $this->getRow((int)$category_id);
+        $lftValue = $row[$this->lft];
+
         $this->updateLeft(2, $lftValue + 1);
         $this->updateRight(2, $lftValue + 1);
 
-        $data              = array();
-        $data[$this->text] = $text;
-        $data[$this->lft]  = $lftValue + 1;
-        $data[$this->rgt]  = $lftValue + 2;
+        $data                  = array();
+        $data[$this->parentId] = $category_id;
+        $data[$this->text]     = $text;
+        $data[$this->lft]      = $lftValue + 1;
+        $data[$this->rgt]      = $lftValue + 2;
 
         $data = $this->appendExtraData($data, $extra);
 
@@ -269,22 +308,26 @@ Class Db
 
     /**
      * Same as addChild except the new node is added as the last child
-     * 
-     * @param int    $rgtValue rgt column value
-     * @param string $text     value
-     * @param array  $extra    extra data
+     *
+     * @param int    $category_id primary key column value
+     * @param string $text        value
+     * @param array  $extra       extra data
      * 
      * @return void
      */
-    public function appendChild($rgtValue, $text, $extra = array())
+    public function appendChild($category_id, $text, $extra = array())
     {
+        $row      = $this->getRow((int)$category_id);
+        $rgtValue = $row[$this->rgt];
+
         $this->updateLeft(2, $rgtValue);
         $this->updateRight(2, $rgtValue);
         
-        $data              = array();
-        $data[$this->text] = $text;
-        $data[$this->lft]  = $rgtValue;
-        $data[$this->rgt]  = $rgtValue + 1;
+        $data                  = array();
+        $data[$this->parentId] = $category_id;
+        $data[$this->text]     = $text;
+        $data[$this->lft]      = $rgtValue;
+        $data[$this->rgt]      = $rgtValue + 1;
 
         $data = $this->appendExtraData($data, $extra);
 
@@ -294,21 +337,25 @@ Class Db
     /**
      * Inserts a new node as the first sibling of the supplied parent node.
      *
-     * @param int    $lftValue lft column value
-     * @param string $text     value
-     * @param array  $extra    extra data
+     * @param int    $category_id primary key column value
+     * @param string $text        value
+     * @param array  $extra       extra data
      * 
      * @return void
      */
-    public function addSibling($lftValue, $text, $extra = array())
+    public function addSibling($category_id, $text, $extra = array())
     {
+        $row      = $this->getRow((int)$category_id);
+        $lftValue = $row[$this->lft];
+
         $this->updateLeft(2, $lftValue);
         $this->updateRight(2, $lftValue);
         
-        $data              = array();
-        $data[$this->text] = $text;
-        $data[$this->lft]  = $lftValue;
-        $data[$this->rgt]  = $lftValue + 1;
+        $data                  = array();
+        $data[$this->parentId] = $row[$this->parentId];
+        $data[$this->text]     = $text;
+        $data[$this->lft]      = $lftValue;
+        $data[$this->rgt]      = $lftValue + 1;
 
         $data = $this->appendExtraData($data, $extra);
 
@@ -318,21 +365,25 @@ Class Db
     /**
      * Insert a new node to the right of the supplied focusNode
      * 
-     * @param int    $rgtValue rgt column value
-     * @param string $text     value
-     * @param array  $extra    extra data
+     * @param int    $category_id primary key column value
+     * @param string $text        value
+     * @param array  $extra       extra data
      * 
      * @return void
      */
-    public function appendSibling($rgtValue, $text, $extra = array())
+    public function appendSibling($category_id, $text, $extra = array())
     {
+        $row      = $this->getRow((int)$category_id);
+        $rgtValue = $row[$this->rgt];
+
         $this->updateLeft(2, $rgtValue + 1);
         $this->updateRight(2, $rgtValue + 1);
 
-        $data              = array();
-        $data[$this->text] = $text;
-        $data[$this->lft]  = $rgtValue + 1;
-        $data[$this->rgt]  = $rgtValue + 2;
+        $data                  = array();
+        $data[$this->parentId] = $row[$this->parentId];
+        $data[$this->text]     = $text;
+        $data[$this->lft]      = $rgtValue + 1;
+        $data[$this->rgt]      = $rgtValue + 2;
 
         $data = $this->appendExtraData($data, $extra);
 
@@ -342,21 +393,28 @@ Class Db
     /**
      * Deletes the given node (and any children) from the tree table.
      * 
-     * @param int $lftValue lft value
-     * @param int $rgtValue rgt value
+     * @param int $category_id primary key value
      *
      * @return boolean
      */
-    public function deleteNode($lftValue, $rgtValue)
+    public function deleteNode($category_id)
     {
-        $where = array(
-            $this->lft . ' >=' => $lftValue,
-            $this->rgt . ' <=' => $rgtValue,
-        );
-        $this->db->delete($this->tableName, $where);
+        $row      = $this->getRow((int)$category_id);
+        $lftValue = $row[$this->lft];
+        $rgtValue = $row[$this->rgt];
 
-        $this->updateLeft(2, ($lftValue - $rgtValue - 1));
-        $this->updateRight(2, ($lftValue - $rgtValue - 1));
+        $this->db->query(
+            sprintf(
+                'DELETE FROM %s WHERE %s >= %s AND  %s <= %s',
+                $this->protect($this->tableName),
+                $this->protect($this->lft),
+                $this->db->escape($lftValue),
+                $this->protect($this->rgt),
+                $this->db->escape($rgtValue)
+            )
+        );
+        $this->updateLeft(($lftValue - $rgtValue - 1), $rgtValue + 1);
+        $this->updateRight(($lftValue - $rgtValue - 1), $rgtValue + 1);
     }
 
     /**
@@ -379,7 +437,38 @@ Class Db
                 $this->protect($this->tableName),
                 rtrim($update, ','),
                 $this->protect($this->primaryKey),
-                $category_id
+                $this->db->escape($category_id)
+            )
+        );
+    }
+
+    /**
+     * Update parent id
+     * 
+     * @param int $source      source data
+     * @param int $category_id target category_id
+     * 
+     * @return void
+     */
+    public function updateParentId($source, $category_id)
+    {
+        if (isset($source[$this->parentId]) AND is_numeric($source[$this->parentId])) {
+            $parent_id = $source[$this->parentId];
+        } else {
+            $parent_id = $this->getParentId($source[$this->primaryKey]);
+        }
+
+        if ($parent_id == $category_id) {
+            return;
+        }
+        $this->db->exec(
+            sprintf(
+                'UPDATE %s SET %s = %s WHERE %s = %s',
+                $this->protect($this->tableName),
+                $this->protect($this->parentId),
+                $this->db->escape($category_id),
+                $this->protect($this->primaryKey),
+                $this->db->escape($source[$this->primaryKey])
             )
         );
     }
@@ -387,15 +476,20 @@ Class Db
     /**
      * Move as first child
      * 
-     * @param array $source source
-     * @param array $target target
+     * @param array $sourceId source primary key value (category_id)
+     * @param array $targetId target primary key value (category_id)
      * 
      * @return void
      */
-    public function moveAsFirstChild($source, $target)
+    public function moveAsFirstChild($sourceId, $targetId)
     {
+        $source     = $this->getRow((int)$sourceId);
+        $target     = $this->getRow((int)$targetId);
+        
         $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
         $value      = $target[$this->lft] + 1;
+
+        $this->updateParentId($source, $target[$this->primaryKey]);
 
         /**
          * Modify Node
@@ -427,15 +521,20 @@ Class Db
     /**
      * Move as last child
      * 
-     * @param array $source source
-     * @param array $target target
+     * @param array $sourceId source primary key value (category_id)
+     * @param array $targetId target primary key value (category_id)
      * 
      * @return void
      */
-    public function moveAsLastChild($source, $target)
+    public function moveAsLastChild($sourceId, $targetId)
     {
+        $source     = $this->getRow((int)$sourceId);
+        $target     = $this->getRow((int)$targetId);
+
         $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
         $value      = $target[$this->rgt];
+
+        $this->updateParentId($source, $target[$this->primaryKey]);
 
         /**
          * Modify Node
@@ -467,15 +566,20 @@ Class Db
     /**
      * Move as next sibling
      * 
-     * @param array $source source
-     * @param array $target target
+     * @param array $sourceId source primary key value (category_id)
+     * @param array $targetId target primary key value (category_id)
      * 
      * @return void
      */
-    public function moveAsNextSibling($source, $target)
+    public function moveAsNextSibling($sourceId, $targetId)
     {
+        $source     = $this->getRow((int)$sourceId);
+        $target     = $this->getRow((int)$targetId);
+
         $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
         $value      = $target[$this->rgt] + 1;
+
+        $this->updateParentId($source, $target[$this->parentId]);
 
         /**
          * Modify Node
@@ -507,15 +611,20 @@ Class Db
     /**
      * Move as prev sibling
      * 
-     * @param array $source source
-     * @param array $target target
+     * @param array $sourceId source primary key value (category_id)
+     * @param array $targetId target primary key value (category_id)
      * 
      * @return void
      */
-    public function moveAsPrevSibling($source, $target)
+    public function moveAsPrevSibling($sourceId, $targetId)
     {
+        $source     = $this->getRow((int)$sourceId);
+        $target     = $this->getRow((int)$targetId);
+
         $sizeOfTree = $source[$this->rgt] - $source[$this->lft] + 1;
         $value      = $target[$this->lft];
+
+        $this->updateParentId($source, $target[$this->parentId]);
 
         /**
          * Modify Node
@@ -606,7 +715,7 @@ Class Db
      */
     public function protect($identifier)
     {
-        return $this->escapeChar.$identifier.$this->escapeChar;
+        return $this->escapeChar . $identifier . $this->escapeChar;
     }
 
     /**
@@ -630,6 +739,211 @@ Class Db
     }
 
     /**
+     * Get all tree
+     * 
+     * @param integer $nodeId node id
+     * 
+     * @return array
+     */
+    public function getAllTree($nodeId = 1)
+    {
+        $columnName = $this->primaryKey;
+        if (is_string($nodeId)) {
+            $columnName = $this->text;
+        }
+
+        $sql = sprintf(
+            'SELECT node.%s
+                FROM %s AS node,
+                     %s AS parent
+                WHERE node.%s BETWEEN parent.%s
+                AND parent.%s
+                AND parent.%s = %s
+                ORDER BY node.%s',
+            $this->protect($this->text),
+            $this->protect($this->tableName),
+            $this->protect($this->tableName),
+            $this->protect($this->lft),
+            $this->protect($this->lft),
+            $this->protect($this->rgt),
+            $columnName,
+            $this->db->escape($nodeId),
+            $this->lft
+        );
+
+        $this->db->query($sql);
+        return $this->db->resultArray();
+    }
+
+    /**
+     * Get depth of sub tree
+     * 
+     * @param mix $nodeId node id
+     * 
+     * @return array
+     */
+    public function getDepthOfSubTree($nodeId = 1)
+    {
+        $columnName = $this->primaryKey;
+        if (is_string($nodeId)) {
+            $columnName = $this->text;
+        }
+
+        $sql = sprintf(
+            'SELECT node.%s, (COUNT(parent.%s) - (sub_tree.depth + 1)) AS depth
+                FROM %s AS node,
+                     %s AS parent,
+                     %s AS sub_parent,
+                    (
+                        SELECT node.%s, (COUNT(parent.%s) - 1) AS depth
+                        FROM %s AS node,
+                             %s AS parent
+                        WHERE node.%s BETWEEN parent.%s AND parent.%s
+                        AND node.%s = %s
+                        GROUP BY node.%s
+                        ORDER BY node.%s
+                    ) AS sub_tree
+                WHERE node.%s BETWEEN parent.%s AND parent.%s
+                    AND node.%s BETWEEN sub_parent.%s AND sub_parent.%s
+                    AND sub_parent.%s = sub_tree.%s
+                GROUP BY node.%s
+                HAVING depth > 0
+                ORDER BY node.%s',
+            $this->protect($this->text),
+            $this->protect($this->text),
+            $this->protect($this->tableName),
+            $this->protect($this->tableName),
+            $this->protect($this->tableName),
+            $this->protect($this->text),
+            $this->protect($this->text),
+            $this->protect($this->tableName),
+            $this->protect($this->tableName),
+            $this->protect($this->lft),
+            $this->protect($this->lft),
+            $this->protect($this->rgt),
+            $columnName,
+            $this->db->escape($nodeId),
+            $columnName,
+            $this->protect($this->lft),
+            $this->protect($this->lft),
+            $this->protect($this->lft),
+            $this->protect($this->rgt),
+            $this->protect($this->lft),
+            $this->protect($this->lft),
+            $this->protect($this->rgt),
+            $this->protect($this->text),
+            $this->protect($this->text),
+            $columnName,
+            $this->protect($this->lft)
+        );
+        $this->db->query($sql);
+        return $this->db->resultArray();
+    }
+
+    /**
+     * Get depth of all tree
+     * 
+     * [0] => Array
+     *  (
+     *      [name] => Electronics
+     *      [parent_id] => 0
+     *      [depth] => 0
+     *  )
+     *
+     *  [1] => Array
+     *  (
+     *      [name] => Portable Electronics
+     *      [parent_id] => 1
+     *      [depth] => 1
+     *  )
+     * 
+     * @return array
+     */
+    public function getDepthOfAllTree()
+    {
+        $sql = sprintf(
+            'SELECT node.%s,node.%s, (COUNT(parent.%s) - 1) AS depth
+                FROM %s AS node,
+                     %s AS parent
+                WHERE node.%s BETWEEN parent.%s
+                AND parent.%s
+                GROUP BY node.%s
+                ORDER BY node.%s',
+            $this->protect($this->text),
+            $this->protect($this->parentId),
+            $this->protect($this->text),
+            $this->protect($this->tableName),
+            $this->protect($this->tableName),
+            $this->protect($this->lft),
+            $this->protect($this->lft),
+            $this->protect($this->rgt),
+            $this->protect($this->text),
+            $this->protect($this->lft)
+        );
+        $this->db->query($sql);
+        return $this->db->resultArray();
+    }
+
+    /**
+     * Return a root node
+     * 
+     * @return array
+     */
+    public function getRoot()
+    {
+        $sql = sprintf(
+            'SELECT %s FROM %s WHERE %s = 0',
+            $this->protect($this->text),
+            $this->protect($this->tableName),
+            $this->protect($this->parentId)
+        );
+        $this->db->query($sql);
+        return $this->db->resultArray();
+    }
+
+    /**
+     * Return all the siblings of this node.
+     * 
+     * @param int $category_id category id
+     * 
+     * @return array
+     */
+    public function getSiblings($category_id)
+    {
+        $parent_id = $this->getParentId((int)$category_id);
+
+        $sql = sprintf(
+            'SELECT %s FROM %s WHERE %s = %s',
+            $this->protect($this->text),
+            $this->protect($this->tableName),
+            $this->protect($this->parentId),
+            $this->db->escape($parent_id[$this->parentId])
+        );
+        $this->db->query($sql);
+        return $this->db->resultArray();
+    }
+
+    /**
+     * Get parent id
+     * 
+     * @param int $category_id category id
+     * 
+     * @return array
+     */
+    public function getParentId($category_id)
+    {
+        $sql = sprintf(
+            'SELECT %s FROM %s WHERE %s = %s LIMIT 1',
+            $this->protect($this->parentId),
+            $this->protect($this->tableName),
+            $this->protect($this->primaryKey),
+            $this->db->escape((int)$category_id)
+        );
+        $this->db->query($sql);
+        return $this->db->rowArray();
+    }
+
+    /**
      * Run sql query
      * 
      * @param string  $sql sql query string
@@ -646,16 +960,6 @@ Class Db
 
         $this->db->query($sql);
         $this->resultArray = $this->db->resultArray();
-    }
-
-    /**
-     * Fetch sql query results as array
-     * 
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->resultArray;
     }
 
 }

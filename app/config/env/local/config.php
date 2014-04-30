@@ -177,7 +177,7 @@ $config = array(
         ),
         'auth'       =>  '',                   // connection password
         'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
-        'serializer' =>  'SERIALIZER_PHP',     // serializer_none, serializer_php, serializer_igbinary
+        'serializer' =>  'SERIALIZER_PHP',     // SERIALIZER_NONE, SERIALIZER_PHP, SERIALIZER_IGBINARY
     ),
     /*
     |--------------------------------------------------------------------------

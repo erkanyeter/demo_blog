@@ -8,24 +8,21 @@
 $app = new Controller(
     function () {
         global $c;
-
+        
         $c['view'];
         // $c['db'];
 
-
-
         // $this->config['debug'] = false;
-        echo $a;
+        // echo $a;
     }
 );
 $app->func(
-    'index', 
+    'index',
     function () {
 
-        // var_dump($this->cache->getOption('OPT_SERIALIZER'));
-
+        
         $this->view->load(
-            'hello_world', 
+            'hello_world',
             function () {
                 $this->assign('name', 'Obullo');
                 $this->assign('footer', $this->getTpl('footer', false));
@@ -34,6 +31,7 @@ $app->func(
 
     }
 );
+
 
 /* End of file hello_world.php */
 /* Location: .public/tutorials/controller/hello_world.php */

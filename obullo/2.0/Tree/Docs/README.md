@@ -30,7 +30,7 @@ CREATE TABLE categories (
 );
 ```
 
-Don’t forget to add some indexes on your tables to speed up the “reading” process. You should add indexes for parent_id, lft and rght:
+Donâ€™t forget to add some indexes on your tables to speed up the â€œreadingâ€ process. You should add indexes for parent_id, lft and rght:
 
 ```php
 ALTER TABLE  `categories` ADD INDEX  `lft` (  `lft` );
@@ -49,11 +49,11 @@ $this->treeDb->addTree('Electronics');
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  2  |
-+-------------+----------------------+-----+-----+
++-------------+-------------+----------------------+-----------+-----+-----+
+| category_id |	identifier  | name                 | parent_id | lft | rgt |
++-------------+-------------+----------------------+-----------+-----+-----+
+|           1 | 0:1:2 |		| Electronics          | 0  	   |  1  |  2  |
++-------------+-------------+----------------------+-----------+-----+-----+
 ```
 
 #### $this->treeDb->addTree(string $text, $extra = array());
@@ -66,136 +66,136 @@ $this->treeDb->addTree('Electronics', $extra = array('column' => 'value'));
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+--------+
-| category_id | name                 | lft | rgt | column |
-+-------------+----------------------+-----+-----+--------+
-|           1 | Electronics          |  1  |  2  |  value |
-+-------------+----------------------+-----+-----+--------+
++-------------+----------------------+-----------+-----+-----+--------+
+| category_id | name                 | parent_id | lft | rgt | column |
++-------------+----------------------+-----------+-----+-----+--------+
+|           1 | Electronics          | 0 		 |  1  |  2  |  value |
++-------------+----------------------+-----------+-----+-----+--------+
 ```
 
 ### Adding nodes
 
-#### $this->treeDb->addChild(int $lftValue, string $text, $extra = array());
+#### $this->treeDb->addChild(int $category_id, string $text, $extra = array());
 
 Inserts a new node as the first child of the supplied parent node.
 
 ```php
-$this->treeDb->addChild($lft = 1, 'Televisions');
+$this->treeDb->addChild($category_id = 1, 'Televisions');
 ```
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  4  |
-|           2 | Televisions          |  2  |  3  |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  4  |
+|           2 | Televisions          | 1 		 |  2  |  3  |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 Let's add a Portable Electronics node as child of 
 
 ```php
-$this->treeDb->addChild($lft = 1, 'Portable Electronics');
+$this->treeDb->addChild($category_id = 2, 'Portable Electronics');
 ```
 
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  6  |
-|           3 | Portable Electronics |  2  |  3  |
-|           2 | Televisions          |  4  |  5  |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0 		 |  1  |  6  |
+|           3 | Portable Electronics | 1 		 |  2  |  3  |
+|           2 | Televisions          | 1 		 |  4  |  5  |
++-------------+----------------------+-----------+-----+-----+
 ```
 
-#### $this->treeDb->appendChild(int $rgtValue, string $text, $extra = array());
+#### $this->treeDb->appendChild(int $category_id, string $text, $extra = array());
 
 Same as addChild except the new node is added as the last child.
 
 ```php
-$this->treeDb->appendChild($rgt = 5, 'Lcd');
+$this->treeDb->appendChild($category_id = 2, 'Lcd');
 ```
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  8  |
-|           3 | Portable Electronics |  2  |  3  |
-|           2 | Televisions          |  4  |  7  |
-|           4 | Lcd				 	 |  5  |  6  |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  8  |
+|           3 | Portable Electronics | 1 		 |  2  |  3  |
+|           2 | Televisions          | 1 		 |  4  |  7  |
+|           4 | Lcd				 	 | 2 		 |  5  |  6  |
++-------------+----------------------+-----------+-----+-----+
 ```
 
-#### $this->treeDb->addSibling(int $lftValue, string $text, $extra = array());
+#### $this->treeDb->addSibling(int $category_id, string $text, $extra = array());
 
 Inserts a new node as the first sibling of the supplied parent node.
 
 ```php
-$this->treeDb->addSibling($lft = 5, 'Tube');
+$this->treeDb->addSibling($category_id = 4, 'Tube');
 ```
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  10 |
-|           3 | Portable Electronics |  2  |  3  |
-|           2 | Televisions          |  4  |  9  |
-|           5 | Tube				 |  5  |  6  |
-|           4 | Lcd					 |  7  |  8  |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  10 |
+|           3 | Portable Electronics | 1		 |  2  |  3  |
+|           2 | Televisions          | 1		 |  4  |  9  |
+|           5 | Tube				 | 2 		 |  5  |  6  |
+|           4 | Lcd					 | 2		 |  7  |  8  |
++-------------+----------------------+-----------+-----+-----+
 ```
 
-#### $this->treeDb->appendSibling(int $rgtValue, string $text, $extra = array());
+#### $this->treeDb->appendSibling(int $category_id, string $text, $extra = array());
 
 Inserts a new node as the last sibling of the supplied parent node.
 
 ```php
-$this->treeDb->appendSibling($rgt = 8, 'Plasma');
+$this->treeDb->appendSibling($category_id = 4, 'Plasma');
 ```
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  12 |
-|           3 | Portable Electronics |  2  |  3  |
-|           2 | Televisions          |  4  |  11 |
-|           5 | Tube				 |  5  |  6  |
-|           4 | Lcd					 |  7  |  8  |
-|           6 | Plasma				 |  9  |  10 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  12 |
+|           3 | Portable Electronics | 1		 |  2  |  3  |
+|           2 | Televisions          | 1		 |  4  |  11 |
+|           5 | Tube				 | 2		 |  5  |  6  |
+|           4 | Lcd					 | 2		 |  7  |  8  |
+|           6 | Plasma				 | 2 		 |  9  |  10 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 ** NOTE: **
 This function added "Plasma" as sibling to "Lcd". If we wanted to add "Plasma" as sibling to "Lcd" we should set the value of the second parameter "Tube's" which represents the value of "rgt".
 
-#### $this->treeDb->deleteChild(int $lftValue, int $rgtValue);
+#### $this->treeDb->deleteNode(int $category_id);
 
 Deletes the given node (and any children) from the tree table.
 
 ```php
-$this->treeDb->deleteChild($lft = 5, $rgt = 6); // deletes "Tube"
+$this->treeDb->deleteNode($category_id = 5); // deletes "Tube"
 ```
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  10 |
-|           3 | Portable Electronics |  2  |  3  |
-|           2 | Televisions          |  4  |  9  |
-|           4 | Lcd					 |  5  |  6  |
-|           6 | Plasma				 |  7  |  8  |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  10 |
+|           3 | Portable Electronics | 1		 |  2  |  3  |
+|           2 | Televisions          | 1		 |  4  |  9  |
+|           4 | Lcd					 | 2		 |  5  |  6  |
+|           6 | Plasma				 | 2		 |  7  |  8  |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 #### $this->treeDb->updateNode($category_id, $data = array());
@@ -208,15 +208,15 @@ $this->treeDb->updateNode($id = 2, array('name' => 'TV', 'column' => 'test'));
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+--------+
-| category_id | name                 | lft | rgt | column |
-+-------------+----------------------+-----+-----+--------+
-|           1 | Electronics          |  1  |  10 |		  |
-|           3 | Portable Electronics |  2  |  3  |		  |
-|           2 | TV		             |  4  |  9  | test   |
-|           4 | Lcd					 |  5  |  6  |		  |
-|           6 | Plasma				 |  7  |  8  |		  |
-+-------------+----------------------+-----+-----+--------+
++-------------+----------------------+-----------+-----+-----+--------+
+| category_id | name                 | parent_id | lft | rgt | column |
++-------------+----------------------+-----------+-----+-----+--------+
+|           1 | Electronics          | 0		 |  1  |  10 |		  |
+|           3 | Portable Electronics | 1		 |  2  |  3  |		  |
+|           2 | TV		             | 1		 |  4  |  9  | test   |
+|           4 | Lcd					 | 2		 |  5  |  6  |		  |
+|           6 | Plasma				 | 2		 |  7  |  8  |		  |
++-------------+----------------------+-----------+-----+-----+--------+
 ```
 
 #### $this->treeDb->moveAsFirstChild($source, $target);
@@ -226,33 +226,27 @@ Move as first child.
 Before move operation our current table.
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           2 | Portable Electronics |  2  |  7  |
-|           3 | Flash				 |  3  |  4  |
-|           4 | Mp3 Player			 |  5  |  6  |
-|           5 | Televisions          |  8  |  15 |
-|           6 | Lcd					 |  9  |  10 |
-|           7 | Tube				 |  11 |  12 |
-|           8 | Plasma				 |  13 |  14 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           2 | Portable Electronics | 1		 |  2  |  7  |
+|           3 | Flash				 | 2		 |  3  |  4  |
+|           4 | Mp3 Player			 | 2		 |  5  |  6  |
+|           5 | Televisions          | 1 		 |  8  |  15 |
+|           6 | Lcd					 | 5		 |  9  |  10 |
+|           7 | Tube				 | 5		 |  11 |  12 |
+|           8 | Plasma				 | 5		 |  13 |  14 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 We want to move "Portable Electronics" under the "Televisions" to be the first child.
 
 ```php
-$source = array(    // Portable Electronics
-	'lft' => 2,
-	'rgt' => 7
-);
+$sourceId = 2; // Portable Electronics primary key (category_id)
+$targetId = 5; // Televisions primary key (category_id)
 
-$target = array(	// Televisions
-	'lft' => 8,
-	'rgt' => 15	
-);
-$this->treeDb->moveAsFirstChild($source, $target);
+$this->treeDb->moveAsFirstChild($sourceId, $targetId);
 ```
 
 After the move operation.
@@ -260,18 +254,18 @@ After the move operation.
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           5 | Televisions          |  2  |  15 |
-|           2 | Portable Electronics |  3  |  8  |
-|           3 | Flash				 |  4  |  5  |
-|           4 | Mp3 Player			 |  6  |  7  |
-|           6 | Lcd					 |  9  |  10 |
-|           7 | Tube				 |  11 |  12 |
-|           8 | Plasma				 |  13 |  14 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           5 | Televisions          | 1		 |  2  |  15 |
+|           2 | Portable Electronics | 5		 |  3  |  8  |
+|           3 | Flash				 | 2		 |  4  |  5  |
+|           4 | Mp3 Player			 | 2		 |  6  |  7  |
+|           6 | Lcd					 | 5		 |  9  |  10 |
+|           7 | Tube				 | 5		 |  11 |  12 |
+|           8 | Plasma				 | 5		 |  13 |  14 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 #### $this->treeDb->moveAsPrevSibling($source, $target);
@@ -281,33 +275,27 @@ Move as prev sibling.
 Before move operation our current table.
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           5 | Televisions          |  2  |  15 |
-|           2 | Portable Electronics |  3  |  8  |
-|           3 | Flash				 |  4  |  5  |
-|           4 | Mp3 Player			 |  6  |  7  |
-|           6 | Lcd					 |  9  |  10 |
-|           7 | Tube				 |  11 |  12 |
-|           8 | Plasma				 |  13 |  14 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           5 | Televisions          | 1		 |  2  |  15 |
+|           2 | Portable Electronics | 5		 |  3  |  8  |
+|           3 | Flash				 | 2		 |  4  |  5  |
+|           4 | Mp3 Player			 | 2		 |  6  |  7  |
+|           6 | Lcd					 | 5		 |  9  |  10 |
+|           7 | Tube				 | 5		 |  11 |  12 |
+|           8 | Plasma				 | 5		 |  13 |  14 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 We want to move "Portable Electronics" as a previous sibling of "Televisions" 
 
 ```php
-$source = array(    // Portable Electronics
-	'lft' => 3,
-	'rgt' => 8
-);
+$sourceId = 2; // Portable Electronics primary key (category_id)
+$targetId = 5; // Televisions primary key (category_id)
 
-$target = array(	// Televisions
-	'lft' => 2,
-	'rgt' => 15	
-);
-$this->treeDb->moveAsPrevSibling($source, $target);
+$this->treeDb->moveAsPrevSibling($sourceId, $targetId);
 ```
 
 After the move operation.
@@ -315,18 +303,18 @@ After the move operation.
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           2 | Portable Electronics |  2  |  7  |
-|           3 | Flash				 |  3  |  4  |
-|           4 | Mp3 Player			 |  5  |  6  |
-|           5 | Televisions          |  8  |  15 |
-|           6 | Lcd					 |  9  |  10 |
-|           7 | Tube				 |  11 |  12 |
-|           8 | Plasma				 |  13 |  14 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           2 | Portable Electronics | 1		 |  2  |  7  |
+|           3 | Flash				 | 2		 |  3  |  4  |
+|           4 | Mp3 Player			 | 2		 |  5  |  6  |
+|           5 | Televisions          | 1		 |  8  |  15 |
+|           6 | Lcd					 | 5		 |  9  |  10 |
+|           7 | Tube				 | 5		 |  11 |  12 |
+|           8 | Plasma				 | 5		 |  13 |  14 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 #### $this->treeDb->moveAsLastChild($source, $target);
@@ -336,33 +324,27 @@ Move as last child.
 Before move operation our current table.
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           2 | Portable Electronics |  2  |  7  |
-|           3 | Flash				 |  3  |  4  |
-|           4 | Mp3 Player			 |  5  |  6  |
-|           5 | Televisions          |  8  |  15 |
-|           6 | Lcd					 |  9  |  10 |
-|           7 | Tube				 |  11 |  12 |
-|           8 | Plasma				 |  13 |  14 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           2 | Portable Electronics | 1		 |  2  |  7  |
+|           3 | Flash				 | 2		 |  3  |  4  |
+|           4 | Mp3 Player			 | 2		 |  5  |  6  |
+|           5 | Televisions          | 1		 |  8  |  15 |
+|           6 | Lcd					 | 5		 |  9  |  10 |
+|           7 | Tube				 | 5		 |  11 |  12 |
+|           8 | Plasma				 | 5		 |  13 |  14 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 We want to move "Portable Electronics" under the "Televisions" as a last child.
 
 ```php
-$source = array(    // Portable Electronics
-	'lft' => 2,
-	'rgt' => 7
-);
+$sourceId = 2; // Portable Electronics primary key (category_id)
+$targetId = 5; // Televisions primary key (category_id)
 
-$target = array(	// Televisions
-	'lft' => 8,
-	'rgt' => 15	
-);
-$this->treeDb->moveAsLastChild($source, $target);
+$this->treeDb->moveAsLastChild($sourceId, $targetId);
 ```
 
 After the move operation.
@@ -370,18 +352,18 @@ After the move operation.
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           5 | Televisions          |  2  |  15 |
-|           6 | Lcd					 |  3  |  4  |
-|           7 | Tube				 |  5  |  6  |
-|           8 | Plasma				 |  7  |  8  |
-|           2 | Portable Electronics |  9  |  14 |
-|           3 | Flash				 |  10 |  11 |
-|           4 | Mp3 Player			 |  12 |  13 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           5 | Televisions          | 1		 |  2  |  15 |
+|           6 | Lcd					 | 5		 |  3  |  4  |
+|           7 | Tube				 | 5		 |  5  |  6  |
+|           8 | Plasma				 | 5		 |  7  |  8  |
+|           2 | Portable Electronics | 5		 |  9  |  14 |
+|           3 | Flash				 | 2		 |  10 |  11 |
+|           4 | Mp3 Player			 | 2		 |  12 |  13 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 #### $this->treeDb->moveAsNextSibling($source, $target);
@@ -391,33 +373,27 @@ Move as next sibling.
 Before move operation our current table.
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           5 | Televisions          |  2  |  15 |
-|           6 | Lcd					 |  3  |  4  |
-|           7 | Tube				 |  5  |  6  |
-|           8 | Plasma				 |  7  |  8  |
-|           2 | Portable Electronics |  9  |  14 |
-|           3 | Flash				 |  10 |  11 |
-|           4 | Mp3 Player			 |  12 |  13 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           5 | Televisions          | 1		 |  2  |  15 |
+|           6 | Lcd					 | 5		 |  3  |  4  |
+|           7 | Tube				 | 5		 |  5  |  6  |
+|           8 | Plasma				 | 5		 |  7  |  8  |
+|           2 | Portable Electronics | 5		 |  9  |  14 |
+|           3 | Flash				 | 2		 |  10 |  11 |
+|           4 | Mp3 Player			 | 2		 |  12 |  13 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 We want to move "Portable Electronics" as a next sibling of "Televisions" 
 
 ```php
-$source = array(    // Portable Electronics
-	'lft' => 9,
-	'rgt' => 14
-);
+$sourceId = 2; // Portable Electronics primary key (category_id)
+$targetId = 5; // Televisions primary key (category_id)
 
-$target = array(	// Televisions
-	'lft' => 2,
-	'rgt' => 15	
-);
-$this->treeDb->moveAsNextSibling($source, $target);
+$this->treeDb->moveAsNextSibling($sourceId, $targetId);
 ```
 
 After the move operation.
@@ -425,18 +401,18 @@ After the move operation.
 Gives
 
 ```php
-+-------------+----------------------+-----+-----+
-| category_id | name                 | lft | rgt |
-+-------------+----------------------+-----+-----+
-|           1 | Electronics          |  1  |  16 |
-|           5 | Televisions          |  2  |  9  |
-|           6 | Lcd					 |  3  |  4  |
-|           7 | Tube				 |  5  |  6  |
-|           8 | Plasma				 |  7  |  8  |
-|           2 | Portable Electronics |  10 |  15 |
-|           3 | Flash				 |  11 |  12 |
-|           4 | Mp3 Player			 |  13 |  14 |
-+-------------+----------------------+-----+-----+
++-------------+----------------------+-----------+-----+-----+
+| category_id | name                 | parent_id | lft | rgt |
++-------------+----------------------+-----------+-----+-----+
+|           1 | Electronics          | 0		 |  1  |  16 |
+|           5 | Televisions          | 1		 |  2  |  9  |
+|           6 | Lcd					 | 5		 |  3  |  4  |
+|           7 | Tube				 | 5		 |  5  |  6  |
+|           8 | Plasma				 | 5		 |  7  |  8  |
+|           2 | Portable Electronics | 1		 |  10 |  15 |
+|           3 | Flash				 | 2		 |  11 |  12 |
+|           4 | Mp3 Player			 | 2		 |  13 |  14 |
++-------------+----------------------+-----------+-----+-----+
 ```
 
 
