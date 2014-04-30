@@ -42,14 +42,7 @@ if (defined('STDIN')) {
 |--------------------------------------------------------------------------
 */
 require OBULLO_CONTAINER;
-
-$c = new Obullo\Container\Pimple;
-
 require OBULLO_CONFIG;
-
-$c['config'] = function () {
-    return new Obullo\Config\Config;
-};
 require OBULLO_CORE;
 require OBULLO_AUTOLOADER;
 require OBULLO_COMPONENTS;

@@ -43,7 +43,7 @@ Class Debug
         error_reporting(-1);
 
         ErrorHandler::register($level, $displayErrors);
-
+        
         if ('cli' !== php_sapi_name()) {
 
             ExceptionHandler::register();  // Cli - display errors only if they're not already logged to STDERR

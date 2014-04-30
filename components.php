@@ -17,12 +17,13 @@ $c['logger'] = function () use ($c) {
     if ($c['config']['log']['enabled'] == false) {  // Use disabled handler if config disabled.
         return new Obullo\Log\Disabled;
     }
-    $logger = new Obullo\Log\Logger;
+    $logger = new Obullo\Log\Logger($c['config']['log']);
+    
     $logger->addWriter(
         LOGGER_FILE,
         function () use ($logger) { 
             return new Obullo\Log\Handler\File($logger);  // primary
-        },
+        },                                                // must be available working on local server.
         3  // priority
     );
     /*
@@ -85,19 +86,19 @@ $c['translator'] = function () use ($c) {
 };
 /*
 |--------------------------------------------------------------------------
-| Hooks
-|--------------------------------------------------------------------------
-*/
-$c['hooks'] = function () use ($c) { 
-    return new Obullo\Hooks\Hooks($c['config']->load('hooks'));
-};
-/*
-|--------------------------------------------------------------------------
 | Security
 |--------------------------------------------------------------------------
 */
 $c['security'] = function () { 
     return $c['app']->security = new Obullo\Security\Security;
+};
+/*
+|--------------------------------------------------------------------------
+| Layered Vc
+|--------------------------------------------------------------------------
+*/
+$c['lvc'] = function () { 
+    return $c['app']->lvc = new Obullo\Lvc\Lvc(array('cache' => true));
 };
 /*
 |--------------------------------------------------------------------------

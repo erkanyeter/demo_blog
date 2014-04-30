@@ -10,12 +10,20 @@ $app = new Controller(
         global $c;
         
         $c['view'];
+<<<<<<< HEAD:lvc/public/tutorials/controller/hello_world.php
         $c['tree.db'];
+=======
+        $c['db'];
+
+        // $this->config['debug'] = false;
+        echo $a;
+>>>>>>> 66e5e5486c9aac5c81e6dd10ab65c7589234e803:workspace/public/tutorials/controller/hello_world.php
     }
 );
 $app->func(
     'index',
     function () {
+<<<<<<< HEAD:lvc/public/tutorials/controller/hello_world.php
         
         
         
@@ -30,6 +38,10 @@ $app->func(
         $this->treeDb->deleteNode($category_id = 7);
 
 
+=======
+
+        // var_dump($this->cache->getOption('OPT_SERIALIZER'));
+>>>>>>> 66e5e5486c9aac5c81e6dd10ab65c7589234e803:workspace/public/tutorials/controller/hello_world.php
 
         // $this->treeDb->moveAsPrevSibling(8, 5);
 

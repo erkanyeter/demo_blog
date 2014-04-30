@@ -6,6 +6,8 @@ use Obullo\Http\Response;
 
 /**
  * Request Class
+ *
+ * Modeled after Codeigniter Router Class.
  * 
  * @category  Router
  * @package   Request

@@ -80,13 +80,13 @@ Class Debug
             if ($processor == false) {
                 $lines = sprintf('The log handler %s is not defined.', LOGGER_FILE);
             } else {
-
-                $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
-                $processor->top();  // Go to Top
                 
+                $processor->setExtractFlags(PriorityQueue::EXTR_DATA); // Queue mode of extraction 
                 $count = $processor->count();
 
                 if ($count > 0) {
+
+                    $processor->top();  // Go to Top
                     $lines = '';
                     while ($processor->valid()) {         // prepare Lines 
                         $lines.= str_replace('\n', '<br />', $this->lineFormat($processor->current()));  // output handler must be file for debugging

@@ -82,10 +82,6 @@ function removeInvisibleCharacters($str, $url_encoded = true)
     return $str;
 }
 
-/**
- * If debug enabled from config.
- */
-if ($c['config']['debug']) {
 
     // /**
     //  * Catch All Exceptions
@@ -214,8 +210,6 @@ if ($c['config']['debug']) {
     //         exceptionsHandler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']), $type);
     //     }
     // );
-
-}  // end debug functions.
 
 
 // END Common.php File
