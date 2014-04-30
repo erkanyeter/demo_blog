@@ -13,7 +13,7 @@ $app = new Controller(
         // $c['db'];
 
         // $this->config['debug'] = false;
-        // echo $a;
+        echo $a;
     }
 );
 $app->func(

@@ -3,9 +3,9 @@
 if (isset($_SERVER['REMOTE_ADDR'])) die('Access denied');
 /*
 |--------------------------------------------------------------------------
-| Log writer task
+| IP Address
 |--------------------------------------------------------------------------
-| Send log data to queue
+| Prevent ip adress errors
 |
 */
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';

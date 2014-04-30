@@ -187,11 +187,12 @@ Class Adapter
         $time = microtime(true) - $start;
 
         //------------------------------------
+        
+        ++$this->query_count;
 
         if ($c['config']['log']['queries']) {
-            $c['logger']->debug('$_SQL ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $c['logger']->debug('$_SQL '.$this->query_count.' ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
-        ++$this->query_count;
         return ($this);
     }
 
@@ -486,7 +487,7 @@ Class Adapter
         //------------------------------------
 
         if ($c['config']['log']['queries'] AND isset($this->prep_queries[0])) {
-            $c['logger']->debug('$_SQL ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
+            $c['logger']->debug('$_SQL '.$this->query_count.' ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")));
         }
 
         $this->prepare = false;   // reset prepare variable and prevent collision with next query ..
@@ -535,8 +536,10 @@ Class Adapter
 
         //------------------------------------
 
+        ++$this->query_count;
+
         if ($c['config']['log']['queries']) {
-            $c['logger']->debug('$_SQL ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
+            $c['logger']->debug('$_SQL '.$this->query_count.' ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")));
         }
         return $affected_rows;
     }
