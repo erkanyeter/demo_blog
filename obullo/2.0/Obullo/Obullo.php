@@ -160,7 +160,7 @@ if ($c['config']['log']['benchmark']) {     // Do we need to generate benchmark 
     $extra = array('time' => number_format($end, 4), 'memory' => $usage);
 }
 
-$c['logger']->debug('Final output sent to browser', $extra, -1);
+$c['logger']->debug('Final output sent to browser', $extra, -99);
 
 // $['event']->fire('shutdown');
 
