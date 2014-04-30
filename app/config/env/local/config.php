@@ -126,8 +126,8 @@ $config = array(
     'database' => array(
         'hostname' => 'localhost',
         'username' => 'root',
-        'password' => '123456',
-        'database' => 'demo_blog',
+        'password' => '123',
+        'database' => 'nested',
         'driver'   => '',   // optional
         'prefix'   => '',
         'dbh_port' => '',
@@ -187,7 +187,7 @@ $config = array(
                     ),
         'auth'       =>  '',                   // connection password
         'cache_path' =>  '/data/temp/cache/',  // cache file storage path .data/temp/cache
-        'serializer' =>  'serializer_php',     // serializer_none, serializer_php, serializer_igbinary
+        'serializer' =>  'SERIALIZER_PHP',     // SERIALIZER_NONE, SERIALIZER_PHP, SERIALIZER_IGBINARY
     ),
     /*
     |--------------------------------------------------------------------------
