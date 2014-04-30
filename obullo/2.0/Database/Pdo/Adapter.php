@@ -191,7 +191,7 @@ Class Adapter
         ++$this->query_count;
 
         if ($c['config']['log']['queries']) {
-            $c['logger']->debug('$_SQL '.$this->query_count.' ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")), $this->query_count);
+            $c['logger']->debug('$_SQL '.$this->query_count.' ( Query ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")), ($this->query_count * -1 ));
         }
         return ($this);
     }
@@ -487,7 +487,7 @@ Class Adapter
         //------------------------------------
 
         if ($c['config']['log']['queries'] AND isset($this->prep_queries[0])) {
-            $c['logger']->debug('$_SQL '.$this->query_count.' ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")), $this->query_count);
+            $c['logger']->debug('$_SQL '.$this->query_count.' ( Execute ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', end($this->prep_queries)), "\n")), ($this->query_count * -1 ));
         }
 
         $this->prepare = false;   // reset prepare variable and prevent collision with next query ..
@@ -539,7 +539,7 @@ Class Adapter
         ++$this->query_count;
 
         if ($c['config']['log']['queries']) {
-            $c['logger']->debug('$_SQL '.$this->query_count.' ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")), $this->query_count);
+            $c['logger']->debug('$_SQL '.$this->query_count.' ( Exec ):', array('time' => number_format($time, 4), 'output' => trim(preg_replace('/\n/', ' ', $sql), "\n")), ($this->query_count * -1 ));
         }
         return $affected_rows;
     }
