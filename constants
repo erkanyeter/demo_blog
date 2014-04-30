@@ -76,7 +76,7 @@ define('INDEX_PHP', 'index.php');
 define('OBULLO',  ROOT .'obullo'. DS . OBULLO_VERSION . DS);
 define('OBULLO_PHP',  OBULLO .'Obullo'. DS .'Obullo.php');
 define('OBULLO_CONFIG',  OBULLO .'Config'. DS .'Config.php');
-define('OBULLO_CORE',  OBULLO .'Obullo'. DS .'Common.php');
+define('OBULLO_CORE',  OBULLO .'Obullo'. DS .'Core.php');
 define('OBULLO_CONTAINER',  OBULLO .'Container'. DS .'Pimple.php');
 define('OBULLO_AUTOLOADER', OBULLO .'Obullo'. DS .'Autoloader.php');
 define('OBULLO_COMPONENTS', ROOT .'components.php');

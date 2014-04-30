@@ -2,7 +2,7 @@
 
 defined('STDIN') or die('Access Denied');
 
-error_reporting(E_ERROR | E_WARNING | E_PARSE); // error reporting
+error_reporting(E_ALL | E_NOTICE | E_STRICT); // error reporting
 
 set_error_handler(
     function ($errno, $errstr, $errfile, $errline) {
@@ -86,6 +86,7 @@ $app->func(
         echo "\33[0;36mFollowing log data ...\33[0m\n";
 
         static $lines = array();
+
         $size = 0;
         while (true) {
 
@@ -108,50 +109,51 @@ $app->func(
                 if ($i == 0) {
                     $line = str_replace("\n", '', $line);
                 }
-                // remove all newlines
-                // $line = trim(preg_replace('/[\r\n]/', ' ', $line), "\n");
-                
+                // remove all newlines   
                 $line = trim(preg_replace('/[\r\n]/', "\n", $line), "\n");
-                // $line = str_replace('[@]', "\n", $line); // new line
-                $out  = explode('.', $line);  // echo print_r($out, true)."\n\n";
+                $out  = explode('.', $line);
 
                 if (isset($out[1])) {
+                    $message_body = $out[1];
+                }
 
-                    if (strpos($out[1], '$_SQL') !== false) {   // remove unnecessary spaces from sql output
+                if (isset($message_body)) {
+
+                    if (strpos($message_body, '$_SQL') !== false) {   // remove unnecessary spaces from sql output
                         $line = "\033[1;32m".preg_replace('/[\s]+/', ' ', $line)."\033[0m";
                         $line = preg_replace('/[\r\n]/', "\n", $line);
                     }
-                    if (strpos($out[1], '$_') !== false) {
+                    if (strpos($message_body, '$_') !== false) {
                         $line = preg_replace('/\s+/', ' ', $line);
                         $line = preg_replace('/\[/', "[", $line);  // do some cleaning
 
-                        if (strpos($out[1], '$_REQUEST_URI') !== false) {
+                        if (strpos($message_body, '$_REQUEST_URI') !== false) {
                             $break = "\n------------------------------------------------------------------------------------------";
-                            $line = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
-                        } elseif (strpos($out[1], '$_HVC') !== false) {
+                            $line  = "\033[1;36m".$break."\n".$line.$break."\n\033[0m";
+                        } elseif (strpos($message_body, '$_HVC') !== false) {
                             $line = "\033[1;34m".strip_tags($line)."\033[0m";
                         } else {
                             $line = "\033[1;35m".$line."\033[0m";
                         }
                     }
-                    if (strpos($out[1], '$_TASK') !== false) {
+                    if (strpos($message_body, '$_TASK') !== false) {
                         $line = "\033[1;34m".$line."\033[0m";
                     }
-                    if (strpos($out[1], 'loaded:') !== false) {
+                    if (strpos($message_body, 'loaded:') !== false) {
                         $line = "\033[0;35m".$line."\033[0m";
                     }
-                    if (strpos($out[1], 'debug') !== false) {   // Do not write two times
+                    if (strpos($message_body, 'debug') !== false) {   // Do not write two times
                         if ($level == '' OR $level == 'debug') {
-                            if (strpos($out[1], 'Final output sent to browser') !== false) {
+                            if (strpos($message_body, 'Final output sent to browser') !== false) {
                                 $line = "\033[1;36m".$line."\033[0m";
                             }
                             $line = "\033[0;35m".$line."\033[0m";
-                            if ( ! isset($lines[$line])) {
+                            if ( ! isset($lines[$i])) {
                                 echo $line."\n";
                             }
                         }
                     }
-                    if (strpos($out[1], 'info') !== false) {
+                    if (strpos($message_body, 'info') !== false) {
                         if ($level == '' OR $level == 'info') {
                             $line = "\033[1;33m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
@@ -159,7 +161,7 @@ $app->func(
                             }
                         }
                     }
-                    if (strpos($out[1], 'error') !== false) {
+                    if (strpos($message_body, 'error') !== false) {
                         if ($level == '' OR $level == 'error') {
                             $line = "\033[1;31m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
@@ -167,7 +169,7 @@ $app->func(
                             }
                         }
                     }
-                    if (strpos($out[1], 'alert') !== false) {
+                    if (strpos($message_body, 'alert') !== false) {
                         if ($level == '' OR $level == 'alert') {
                             $line = "\033[1;31m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
@@ -175,7 +177,7 @@ $app->func(
                             }
                         }
                     }
-                    if (strpos($out[1], 'emergency') !== false) {
+                    if (strpos($message_body, 'emergency') !== false) {
                         if ($level == '' OR $level == 'emergency') {
                             $line = "\033[1;31m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
@@ -183,7 +185,7 @@ $app->func(
                             }
                         }
                     }
-                    if (strpos($out[1], 'critical') !== false) {
+                    if (strpos($message_body, 'critical') !== false) {
                         if ($level == '' OR $level == 'critical') {
                             $line = "\033[1;31m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
@@ -191,7 +193,7 @@ $app->func(
                             }
                         }
                     }
-                    if (strpos($out[1], 'warning') !== false) {
+                    if (strpos($message_body, 'warning') !== false) {
                         if ($level == '' OR $level == 'warning') {
                             $line = "\033[1;31m".$line."\033[0m";
                             if ( ! isset($lines[$line])) {
@@ -199,7 +201,7 @@ $app->func(
                             }
                         }
                     }
-                    if (strpos($out[1], 'notice') !== false) {
+                    if (strpos($message_body, 'notice') !== false) {
                         if ($level == '' OR $level == 'notice') {
                             $line = "\033[1;35m".$line."\033[0m";   // 1;44
                             if ( ! isset($lines[$line])) {
@@ -211,7 +213,7 @@ $app->func(
                 } // end isset
 
                 $i++;
-                $lines[$line] = $line;
+                $lines[$line] = $i;
             }
             fclose($fh);
             clearstatcache();

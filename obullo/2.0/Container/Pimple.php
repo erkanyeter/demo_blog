@@ -300,8 +300,6 @@ Class Pimple implements ArrayAccess
     }
 }
 
-$c = new Pimple;
-
 // END Container class
 
 /* End of file Container.php */

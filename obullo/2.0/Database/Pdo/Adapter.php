@@ -51,6 +51,8 @@ Class Adapter
     public $Stmt = null;      // PDOStatement Object
     public $pdo_crud = null;  // Pdo Crud Object;
 
+    protected $startQueryTimer;
+
     /**
      * Pdo connection object.
      *
@@ -154,6 +156,8 @@ Class Adapter
      */
     public function prepare($sql, $options = array())
     {
+        $this->startQueryTimer = microtime(true);
+
         $this->Stmt = $this->_conn->prepare($sql, $options);
         $this->prep_queries[] = $sql;  // Save the  query for debugging
         $this->prepare = true;
@@ -475,11 +479,9 @@ Class Adapter
 
         //------------------------------------
 
-        $start = microtime(true);
-
         $this->Stmt->execute($array);
 
-        $time = microtime(true) - $start;
+        $time = microtime(true) - $this->startQueryTimer;
 
         //------------------------------------
 

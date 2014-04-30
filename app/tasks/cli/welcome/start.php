@@ -18,7 +18,7 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 */
 require 'constants';
 require OBULLO_CONTAINER;
-require OBULLO_CONFIG;
+require OBULLO_CORE;
 require OBULLO_AUTOLOADER;
 /*
 |--------------------------------------------------------------------------

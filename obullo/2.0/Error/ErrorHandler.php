@@ -148,7 +148,8 @@ Class ErrorHandler
         $type = (isset($this->levels[$this->level])) ? $this->levels[$this->level] : $this->level;
 
         // Log for local environment
-        if ($c['logger'] instanceof Logger) { 
+        if ($c['logger'] instanceof Logger) {
+            $c['logger']->channel($c['config']['log']['channel']);
             $c['logger']->emergency($message, array('level' => $type, 'file' => DebugOutput::getSecurePath($file), 'line' => $line, 'extra' => null));
         }
 

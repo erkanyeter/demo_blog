@@ -47,9 +47,22 @@ Class Exception
                     $lastQuery = $c['app']->db->lastQuery();
                 }
             }
+
             ob_start();
             include OBULLO . 'Error' . DS . 'ExceptionView' . EXT;  // load view
-            echo ob_get_clean();
+            $content =  ob_get_clean();
+
+            echo '<!DOCTYPE html>
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+                    <meta name="robots" content="noindex,nofollow" />
+                    <style>
+
+                    </style>
+                </head>
+                <body><div>'.$content.'</div></body></html>';
+
         }
     }
 

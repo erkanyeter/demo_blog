@@ -195,6 +195,8 @@ Class Logger
      */
     public function __construct($params = array())
     {
+        global $c;
+
         $this->config          = $params;
         $this->enabled         = $this->config['enabled'];
         $this->debug           = $this->config['debug'];
@@ -208,16 +210,11 @@ Class Logger
         $this->priorityValues = array_flip(self::$priorities);
         $this->processor      = array();  //  new PriorityQueue; ( Php SplPriorityQueue Class )
 
-        static::registerExceptionHandler($this);
-        static::registerErrorHandler($this);
-
-        // if (isset($options['exceptionhandler']) AND $this->config['exceptionhandler'] === true) {
-        //     static::registerExceptionHandler($this);
-        // }
-
-        // if (isset($options['errorhandler']) AND $this->config['errorhandler'] === true) {
-        //     static::registerErrorHandler($this);
-        // }
+        if ($c['config']['debug'] == false) {          // If debug disabled from config file
+                                                       // use logger class error handlers and send all errors to log.
+            static::registerExceptionHandler($this);
+            static::registerErrorHandler($this);
+        }
     }
     
     /**
@@ -696,8 +693,8 @@ Class Logger
     }
 
     /**
-     * End of the logs and beginning of 
-     * the handler process.
+     * End of the logs and beginning  
+     * the handler.
      *
      * @return void
      */

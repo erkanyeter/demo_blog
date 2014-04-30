@@ -12,7 +12,7 @@ $config = array(
     | Debug
     |--------------------------------------------------------------------------
     */                             // If debug enabled framework converts all php errors to exceptions.
-    'debug' => false,              // Should be disabled in "live" mode.
+    'debug' => true,              // Should be disabled in "live" mode.
     /*
     |--------------------------------------------------------------------------
     | Log
@@ -22,7 +22,7 @@ $config = array(
     */
     'log' =>   array(
         'enabled'   => true,       // On / Off logging.
-        'debug'     => true,       // On / Off debug html output. When it is enabled all handlers will be disabled.
+        'debug'     => false,      // On / Off debug html output. When it is enabled all handlers will be disabled.
         'threshold' => array(      // Set allowed log levels.  ( @see http://www.php.net/manual/en/function.syslog.php )
             LOG_EMERG,              
             LOG_ALERT,          
@@ -114,7 +114,7 @@ $config = array(
     'database' => array(
         'hostname' => 'localhost',
         'username' => 'root',
-        'password' => '123456',
+        'password' => '1234563',
         'database' => 'demo_blog',
         'driver'   => '',   // optional
         'prefix'   => '',

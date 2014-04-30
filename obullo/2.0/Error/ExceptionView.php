@@ -1,3 +1,5 @@
+
+<div id="obullo_debug">
 <style type="text/css">
     #exceptionContent {font-family:Arial,Verdana,Sans-serif;font-size:12px;width:99%;padding:5px;background-color: #F0F0F0;}
     #exceptionContent  h1 {font-size:18px;color:#069586;margin:0;}
@@ -8,7 +10,7 @@
     #exceptionContent div.collapsed { display: none; }
     #exceptionContent div.arguments { }
     #exceptionContent div.arguments table { font-family: Verdana, Arial, Sans-serif;font-size: 12px; border-collapse: collapse;border-spacing: 0; background: #fff;}
-    #exceptionContent div.arguments table td { text-align: left; padding: 5px; border: 1px solid #ccc; }
+    #exceptionContent div.arguments table td { text-align: left; padding: 0 4px 0 4px; border: 1px solid #ccc; }
     #exceptionContent div.arguments table td .object_name { color: blue; }
     #exceptionContent pre.source span.line { display: block; }
     #exceptionContent pre.source span.highlight { background: #DBDBDB; }
@@ -153,5 +155,5 @@ if (isset($lastQuery) AND ! empty($lastQuery)) {
 
     <?php }   // end if isset ?>     
 <?php }   // end if isset ?>
-
+</div>
 </div>

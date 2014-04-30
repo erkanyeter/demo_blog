@@ -42,7 +42,6 @@ if (defined('STDIN')) {
 |--------------------------------------------------------------------------
 */
 require OBULLO_CONTAINER;
-require OBULLO_CONFIG;
 require OBULLO_CORE;
 require OBULLO_AUTOLOADER;
 require OBULLO_COMPONENTS;

@@ -2,13 +2,13 @@
 
 Framework lets you build error reporting into your applications using the functions described below. In addition, it has an error logging class that permits error and debugging messages to be saved as text files.
 
-**Note:** By default, Framework displays all PHP errors. You might wish to change this behavior once your development is complete. Disabling error reporting will NOT prevent log files from being written if there are errors.
+**Note:** Whe you use "local" environment framework displays all PHP errors. Disabling debug will NOT prevent log files from being written if there are errors.
 
 ### Enable / Disable Errors
 
 ------
 
-In your <dfn>app/config/config.php</dfn> you can control the all application errors.
+In your <dfn>app/config/$env/config.php</dfn> file you can enable application errors.
 
 ```php
 /*
@@ -20,6 +20,9 @@ In your <dfn>app/config/config.php</dfn> you can control the all application err
                             // Should be disabled in "live" mode.
 
 ```
+
+**Note:** Working under the "local" environment errors should be "true" in production mode it should be "false".
+
 
 The following functions let you generate errors:
 
